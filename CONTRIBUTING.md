@@ -1,5 +1,34 @@
 # Contributing to @flipova/foundation
 
+## Quick reference: commit flow
+
+### Tooling / CI / docs (no published code change)
+
+```bash
+npx changeset add --empty
+git add -A
+git commit -m "chore: description"
+git push
+```
+
+### Published code (new component, fix, feature)
+
+```bash
+npx changeset              # choose patch/minor/major + write summary
+git add -A
+git commit -m "feat: description"
+git push
+```
+
+### What happens after push
+
+1. CI runs typecheck + build on Node 20 and 22
+2. The `release.yml` workflow detects pending changesets on `main`
+3. It opens a PR titled "chore: version packages" that bumps version + updates CHANGELOG
+4. When a maintainer merges that PR, the package is published to GitHub Packages automatically
+
+---
+
 ## Getting started
 
 ```bash
@@ -54,6 +83,10 @@ Every PR that changes published code must include a changeset:
 
 ```bash
 npx changeset
+
+# Or if no release to create
+npx changeset add --empty`
+
 ```
 
 This prompts you to:
