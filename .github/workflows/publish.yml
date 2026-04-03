@@ -24,14 +24,11 @@ jobs:
 
       - run: npm run build
 
-      - name: Configure npm for GitHub Packages
-        run: |
-          cat > .npmrc << EOF
-          @flipova:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
-
-      - name: Publish
-        run: npm publish
+      - name: Write .npmrc and publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          echo "@flipova:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
+          cat .npmrc
+          npm publish
