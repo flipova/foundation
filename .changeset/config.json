@@ -1,10 +1,5 @@
 ﻿{
-    "changelog": [
-        "@changesets/changelog-github",
-        {
-            "repo": "flipova/foundation"
-        }
-    ],
+    "changelog": "@changesets/cli/changelog",
     "commit": false,
     "fixed": [],
     "linked": [],
