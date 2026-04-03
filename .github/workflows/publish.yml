@@ -7,14 +7,10 @@ on:
 permissions:
   contents: read
   packages: write
-  id-token: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v4
 
@@ -30,9 +26,6 @@ jobs:
 
       - run: npm run build
 
-      - run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > .npmrc
-          echo "@flipova:registry=https://npm.pkg.github.com" >> .npmrc
-          npm publish
+      - run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN || secrets.GITHUB_TOKEN }}
