@@ -1,0 +1,15 @@
+﻿{
+    "changelog": [
+        "@changesets/changelog-github",
+        {
+            "repo": "flipova/foundation"
+        }
+    ],
+    "commit": false,
+    "fixed": [],
+    "linked": [],
+    "access": "restricted",
+    "baseBranch": "main",
+    "updateInternalDependencies": "patch",
+    "ignore": []
+}

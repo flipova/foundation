@@ -1,0 +1,49 @@
+tokens:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/tokens/**"
+
+theme:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/theme/**"
+
+layout:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/ui/*.tsx"
+
+primitives:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/ui/primitives/**"
+
+components:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/ui/components/**"
+
+blocks:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/ui/blocks/**"
+
+registry:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/registry/**"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/config/**"
+
+hooks:
+  - changed-files:
+      - any-glob-to-any-file: "foundation/layout/hooks/**"
+
+studio:
+  - changed-files:
+      - any-glob-to-any-file: "studio/**"
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - "**/*.md"
