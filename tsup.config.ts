@@ -7,6 +7,8 @@ export default defineConfig({
     "theme/index": "foundation/theme/index.ts",
     "layout/index": "foundation/layout/index.ts",
     "config/index": "foundation/config/index.ts",
+    "studio/index": "studio/index.ts",
+    "studio/cli/index": "studio/cli/index.ts",
   },
   format: ["cjs", "esm"],
   dts: true,
@@ -30,5 +32,7 @@ export default defineConfig({
     "react-native-reanimated",
     "react-native-safe-area-context",
     "lucide-react-native",
+    "express",
+    "ws",
   ],
 });

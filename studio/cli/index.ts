@@ -4,20 +4,19 @@
  * Flipova Studio CLI
  *
  * Usage:
- *   npx @flipova/studio          → Start the builder on port 4200
- *   npx @flipova/studio --port 3000
- *   npx @flipova/studio generate  → Generate code without starting the server
+ *   npx flipova-studio              Start the builder on port 4200
+ *   npx flipova-studio --port 3000  Start on a custom port
+ *   npx flipova-studio generate     Generate code from the saved project
  */
 
+import fs from "fs";
+import path from "path";
 import { startServer } from "../server";
+import { generateProject } from "../engine/codegen";
 
 const args = process.argv.slice(2);
 
 if (args.includes("generate")) {
-  const fs = require("fs");
-  const path = require("path");
-  const { generateProject } = require("../engine/codegen");
-
   const studioDir = path.join(process.cwd(), ".flipova-studio");
   const projectFile = path.join(studioDir, "project.json");
 

@@ -39,10 +39,19 @@
       "types": "./dist/config/index.d.ts",
       "import": "./dist/config/index.mjs",
       "require": "./dist/config/index.js"
+    },
+    "./studio": {
+      "types": "./dist/studio/index.d.ts",
+      "import": "./dist/studio/index.mjs",
+      "require": "./dist/studio/index.js"
     }
+  },
+  "bin": {
+    "flipova-studio": "./dist/studio/cli/index.js"
   },
   "files": [
     "dist",
+    "studio/web",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
@@ -100,8 +109,10 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
+    "@types/express": "^5.0.6",
     "@types/react": "^19.0.0",
     "@types/react-native": "^0.73.0",
+    "@types/ws": "^8.18.1",
     "expo-camera": "^55.0.13",
     "expo-haptics": "^55.0.11",
     "expo-linear-gradient": "^12.0.0",
@@ -123,5 +134,9 @@
     "ui",
     "flipova",
     "expo"
-  ]
+  ],
+  "dependencies": {
+    "express": "^5.2.1",
+    "ws": "^8.20.0"
+  }
 }

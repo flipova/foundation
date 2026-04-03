@@ -19,6 +19,6 @@
       "@/*": ["./foundation/*"]
     }
   },
-  "include": ["foundation"],
-  "exclude": ["node_modules", "dist", "studio", "**/*.example.ts"]
+  "include": ["foundation", "studio"],
+  "exclude": ["node_modules", "dist", "studio/web", "**/*.example.ts"]
 }

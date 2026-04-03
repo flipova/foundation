@@ -6,7 +6,7 @@
  * immediately runnable in an Expo/RN project.
  */
 
-import type { TreeNode, PageDocument, ProjectDocument, NavigationConfig } from "../tree/types";
+import type { TreeNode, PageDocument } from "../tree/types";
 
 const IMPORT_MAP: Record<string, string> = {
   layout: "@flipova/foundation",

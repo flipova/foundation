@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Flipova Studio</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e1a;--s1:#0f1525;--s2:#151c30;--s3:#1a2238;
+  --b:#1e2a45;--b2:#253352;
+  --t:#d4daf0;--t2:#8892b0;--t3:#5a6480;
+  --p:#3b82f6;--p2:#2563eb;--pf:#fff;
+  --ok:#22c55e;--warn:#f59e0b;--err:#ef4444;
+  --r:8px;--r2:12px;
+  --f:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{font-family:var(--f);background:var(--bg);color:var(--t);height:100vh;overflow:hidden;font-size:13px}
+input,select,button{font-family:var(--f)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+
+#app{display:grid;grid-template-columns:240px 1fr 300px;grid-template-rows:48px 1fr 28px;height:100vh}
+
+.topbar{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 12px;gap:8px;z-index:10}
+.topbar .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;color:var(--p);padding-right:16px;border-right:1px solid var(--b);margin-right:8px}
+.topbar .logo svg{width:22px;height:22px}
+.topbar .hist{display:flex;gap:2px}
+.topbar .hist button{width:30px;height:30px;border:none;background:transparent;color:var(--t3);border-radius:6px;cursor:pointer;font-size:14px}
+.topbar .hist button:hover{background:var(--s2);color:var(--t)}
+.topbar .device-sel{background:var(--s2);border:1px solid var(--b);color:var(--t);padding:5px 10px;border-radius:6px;font-size:12px;cursor:pointer}
+.topbar .sp{flex:1}
+.topbar .actions{display:flex;gap:2px}
+.topbar .act{width:34px;height:34px;border:none;background:transparent;color:var(--t3);border-radius:6px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+.topbar .act:hover{background:var(--s2);color:var(--t)}
+.topbar .act.on{color:var(--p);background:var(--s3)}
+
+.left{background:var(--s1);border-right:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden}
+.left .search{padding:8px;border-bottom:1px solid var(--b)}
+.left .search input{width:100%;background:var(--s2);border:1px solid var(--b);color:var(--t);padding:7px 10px 7px 30px;border-radius:6px;font-size:12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235a6480' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center}
+.left .search input:focus{outline:none;border-color:var(--p)}
+.left .ltabs{display:flex;border-bottom:1px solid var(--b)}
+.left .ltab{flex:1;padding:9px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.left .ltab.on{color:var(--p)}
+.left .lib{flex:1;overflow-y:auto;padding:4px 8px}
+.left .cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--t3);padding:12px 4px 6px}
+.left .citem{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:2px 0;border-radius:var(--r);cursor:grab;transition:.1s}
+.left .citem:hover{background:var(--s2)}
+.left .citem.dragging{opacity:.3}
+.left .citem .ico{width:32px;height:32px;border-radius:6px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.left .citem .ico.layout{color:#a78bfa}
+.left .citem .ico.component{color:#4ade80}
+.left .citem .ico.block{color:#fbbf24}
+.left .citem .info .nm{font-size:12px;font-weight:600}
+.left .citem .info .sub{font-size:10px;color:var(--t3)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* continued styles injected via JS to keep the file manageable */
+const extraCSS = `
+.left .bottom{border-top:1px solid var(--b)}
+.left .btabs{display:flex;border-bottom:1px solid var(--b)}
+.left .btab{flex:1;padding:8px;text-align:center;font-size:10px;font-weight:600;cursor:pointer;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+.left .btab.on{color:var(--p)}
+.left .layers{flex:1;overflow-y:auto;padding:4px 8px}
+.layer{display:flex;align-items:center;gap:8px;padding:6px 8px;margin:1px 0;border-radius:6px;cursor:pointer;font-size:12px}
+.layer:hover{background:var(--s2)}
+.layer.sel{background:var(--p);color:var(--pf)}
+.layer .l-ico{width:24px;height:24px;border-radius:4px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.layer.sel .l-ico{background:rgba(255,255,255,.15)}
+.layer .l-info{flex:1;min-width:0}
+.layer .l-nm{font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layer .l-type{font-size:9px;color:var(--t3)}
+.layer.sel .l-type{color:rgba(255,255,255,.6)}
+.layer .l-acts{display:flex;gap:2px;opacity:0}
+.layer:hover .l-acts,.layer.sel .l-acts{opacity:1}
+.layer .l-act{width:20px;height:20px;border:none;background:transparent;color:var(--t3);border-radius:4px;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center}
+.layer .l-act:hover{background:rgba(255,255,255,.1);color:var(--t)}
+.layer.sel .l-act{color:rgba(255,255,255,.5)}
+.layer.sel .l-act:hover{color:#fff}
+
+.center{background:var(--bg);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.canvas-tools{height:40px;display:flex;align-items:center;justify-content:center;gap:6px;background:var(--s1);border-bottom:1px solid var(--b)}
+.zt{display:flex;align-items:center;gap:4px;background:var(--s2);border-radius:6px;padding:2px}
+.zt button{width:28px;height:28px;border:none;background:transparent;color:var(--t3);border-radius:4px;cursor:pointer;font-size:12px}
+.zt button:hover{background:var(--s3);color:var(--t)}
+.zt span{font-size:11px;color:var(--t2);min-width:36px;text-align:center}
+.canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:24px}
+.device{width:375px;min-height:667px;background:#fff;border-radius:40px;box-shadow:0 0 0 10px #1a2238,0 0 0 12px #253352,0 20px 60px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.device .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#1a2238;border-radius:0 0 16px 16px;z-index:5}
+.device .screen{padding:36px 8px 8px;min-height:667px}
+.device .root-label{position:absolute;top:32px;left:8px;font-size:9px;background:var(--p);color:#fff;padding:1px 6px;border-radius:3px;z-index:4}
+.dz{min-height:50px;border:2px dashed rgba(59,130,246,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;color:rgba(59,130,246,.4);font-size:10px;margin:4px;transition:.15s}
+.dz.over{border-color:var(--p);background:rgba(59,130,246,.06);color:var(--p)}
+.snode{margin:4px;border:1px solid transparent;border-radius:6px;transition:.1s;position:relative}
+.snode:hover{border-color:rgba(59,130,246,.3)}
+.snode.sel{border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
+.snode .sn-label{position:absolute;top:-1px;left:6px;font-size:8px;background:var(--p);color:#fff;padding:0 4px;border-radius:0 0 3px 3px;opacity:0;transition:.1s;z-index:3}
+.snode:hover .sn-label,.snode.sel .sn-label{opacity:1}
+.snode .sn-body{padding:6px;min-height:32px;background:rgba(59,130,246,.02);border-radius:5px}
+.snode.sel .sn-body{background:rgba(59,130,246,.04)}
+
+.right{background:var(--s1);border-left:1px solid var(--b);display:flex;flex-direction:column;overflow:hidden}
+.right .r-head{padding:10px 14px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px}
+.right .r-head .r-ico{width:28px;height:28px;border-radius:6px;background:var(--p);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff}
+.right .r-head .r-info{flex:1}
+.right .r-head .r-nm{font-size:13px;font-weight:700}
+.right .r-head .r-type{font-size:10px;color:var(--t3)}
+.right .r-head .r-acts{display:flex;gap:2px}
+.right .rtabs{display:flex;border-bottom:1px solid var(--b)}
+.right .rtab{flex:1;padding:8px;text-align:center;font-size:11px;font-weight:500;cursor:pointer;color:var(--t3)}
+.right .rtab.on{color:var(--p)}
+.right .r-body{flex:1;overflow-y:auto;padding:4px 0}
+.section{border-bottom:1px solid var(--b)}
+.section .s-head{padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600}
+.section .s-head .s-ico{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.section .s-head .s-ico.style{background:#1e1b4b;color:#a78bfa}
+.section .s-head .s-ico.layout{background:#052e16;color:#4ade80}
+.section .s-head .s-ico.behavior{background:#422006;color:#fbbf24}
+.section .s-head .s-ico.content{background:#0c2d48;color:#38bdf8}
+.section .s-head .arr{margin-left:auto;color:var(--t3);font-size:10px}
+.section .s-body{padding:4px 14px 12px}
+.pf{margin-bottom:8px}
+.pf label{display:block;font-size:10px;color:var(--t3);margin-bottom:3px;font-weight:500}
+.pf input,.pf select{width:100%;background:var(--s2);border:1px solid var(--b);color:var(--t);padding:6px 8px;border-radius:6px;font-size:12px}
+.pf input[type=checkbox]{width:auto}
+.pf input:focus,.pf select:focus{outline:none;border-color:var(--p)}
+.pf .row{display:flex;gap:4px;align-items:center}
+.pf .row input,.pf .row select{flex:1}
+
+.statusbar{grid-column:1/-1;background:var(--s1);border-top:1px solid var(--b);display:flex;align-items:center;padding:0 12px;font-size:10px;color:var(--t3);gap:14px}
+.statusbar .dot{width:5px;height:5px;border-radius:50%;background:var(--ok)}
+.btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:.1s}
+.btn-p{background:var(--p);color:#fff}.btn-p:hover{background:var(--p2)}
+.btn-g{background:var(--ok);color:#fff}
+.btn-o{background:transparent;border:1px solid var(--b);color:var(--t)}
+`;
+const st=document.createElement('style');st.textContent=extraCSS;document.head.appendChild(st);
+
+let R={layouts:[],components:[],blocks:[]},P=null,curPage=null,selId=null,ws=null;
+let libTab='library',sideTab='layouts',bottomTab='layers',rightTab='properties',zoom=100;
+let dragData=null,search='',previewCode='';
+
+async function api(m,p,b){const o={method:m,headers:{'Content-Type':'application/json'}};if(b)o.body=JSON.stringify(b);return(await fetch('/api'+p,o)).json()}
+function gid(){return'n_'+Date.now()+'_'+Math.random().toString(36).slice(2,6)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+async function init(){
+  R=await api('GET','/registry');
+  P=await api('GET','/project');
+  if(!P.pages.length){const pg=await api('POST','/pages',{name:'Home',layoutId:'VoidLayout'});P.pages.push(pg)}
+  curPage=P.pages[0].id;
+  connectWS();render();
+}
+
+function connectWS(){
+  ws=new WebSocket(`${location.protocol==='https:'?'wss':'ws'}://${location.host}/ws`);
+  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.type==='page:updated'){const i=P.pages.findIndex(p=>p.id===m.payload.id);if(i!==-1)P.pages[i]=m.payload;render()}};
+  ws.onclose=()=>setTimeout(connectWS,2000);
+}
+
+function pg(){return P?.pages.find(p=>p.id===curPage)}
+function fnd(r,id){if(!r)return null;if(r.id===id)return r;for(const c of r.children||[]){const f=fnd(c,id);if(f)return f}return null}
+function fpar(r,id){for(const c of r.children||[]){if(c.id===id)return r;const f=fpar(c,id);if(f)return f}return null}
+async function save(){const p=pg();if(p)await api('PUT','/pages/'+p.id,p)}
+
+function meta(kind,rid){return(kind==='layout'?R.layouts:kind==='component'?R.components:R.blocks).find(m=>m.id===rid)}
+
+function mkNode(kind,rid){
+  const n={id:gid(),kind,registryId:rid,props:{},children:[]};
+  const m=meta(kind,rid);
+  if(m){for(const p of m.props)if(p.default!==undefined)n.props[p.name]=p.default;if(m.variants?.length)n.variant=m.variants[0].name}
+  return n;
+}
+
+function addTo(parentId,kind,rid){const p=pg();if(!p)return;const n=mkNode(kind,rid);const t=parentId?fnd(p.root,parentId):p.root;if(t)t.children.push(n);selId=n.id;save();render()}
+function rm(nid){const p=pg();if(!p)return;const par=fpar(p.root,nid);if(par)par.children=par.children.filter(c=>c.id!==nid);if(selId===nid)selId=null;save();render()}
+function setProp(nid,k,v){const p=pg();if(!p)return;const n=fnd(p.root,nid);if(n)n.props[k]=v;save();render()}
+async function addPage(){const nm=prompt('Page name:');if(!nm)return;const p=await api('POST','/pages',{name:nm,layoutId:'VoidLayout'});P.pages.push(p);curPage=p.id;render()}
+async function gen(){const r=await api('POST','/generate');alert('Generated '+r.files.length+' files')}
+async function openSnack(){const p=pg();if(!p)return;const r=await api('POST','/generate/preview/'+p.id);window.open('https://snack.expo.dev/?platform=web&code='+encodeURIComponent(r.code),'_blank')}
+
+const ICONS={page:'◫',content:'▦',navigation:'☰',card:'◳',scroll:'↕',special:'✦',input:'⌨',action:'▶',display:'◉',feedback:'◌',overlay:'▣',auth:'🔐',profile:'👤','navigation':'☰',data:'📊'};
+function ico(cat){return ICONS[cat]||'◻'}
+
+function render(){
+  const p=pg(),sn=p&&selId?fnd(p.root,selId):null,sm=sn?meta(sn.kind,sn.registryId):null;
+  const total=R.layouts.length+R.components.length+R.blocks.length;
+
+  document.getElementById('app').innerHTML=`
+  <div class="topbar">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>Flipova Studio</div>
+    <div class="hist"><button title="Undo">↶</button><button title="Redo">↷</button></div>
+    <select class="device-sel"><option>iPhone 14 Pro</option><option>iPhone SE</option><option>Pixel 7</option><option>iPad</option></select>
+    <div class="sp"></div>
+    <div class="actions">
+      ${P.pages.map(pp=>`<button class="act ${pp.id===curPage?'on':''}" title="${esc(pp.name)}" onclick="curPage='${pp.id}';selId=null;render()">◫</button>`).join('')}
+      <button class="act" title="Add page" onclick="addPage()">+</button>
+      <button class="act" title="Preview in Snack" onclick="openSnack()">▶</button>
+      <button class="act" title="Code" onclick="openSnack()">⟨/⟩</button>
+      <button class="act" title="Settings">⚙</button>
+      <button class="btn btn-g" onclick="gen()" style="margin-left:8px">Generate</button>
+    </div>
+  </div>
+
+  <div class="left">
+    <div class="search"><input type="text" placeholder="Search components..." value="${esc(search)}" oninput="search=this.value;render()"></div>
+    <div class="ltabs">
+      <div class="ltab ${libTab==='library'?'on':''}" onclick="libTab='library';render()">⊞ Library</div>
+      <div class="ltab ${libTab==='custom'?'on':''}" onclick="libTab='custom';render()">✦ Custom</div>
+    </div>
+    ${libTab==='library'?`
+    <div class="ltabs" style="border-bottom:1px solid var(--b)">
+      <div class="ltab ${sideTab==='layouts'?'on':''}" onclick="sideTab='layouts';render()">Layouts</div>
+      <div class="ltab ${sideTab==='components'?'on':''}" onclick="sideTab='components';render()">UI</div>
+      <div class="ltab ${sideTab==='blocks'?'on':''}" onclick="sideTab='blocks';render()">Blocks</div>
+    </div>
+    <div class="lib">${renderLib()}</div>`:`<div class="lib" style="padding:20px;color:var(--t3);text-align:center;font-size:11px">Custom components coming soon</div>`}
+    <div class="bottom" style="height:200px;display:flex;flex-direction:column">
+      <div class="btabs">
+        <div class="btab ${bottomTab==='layers'?'on':''}" onclick="bottomTab='layers';render()">⊟ Layers</div>
+        <div class="btab ${bottomTab==='screens'?'on':''}" onclick="bottomTab='screens';render()">◫ Screens</div>
+      </div>
+      <div class="layers" style="flex:1;overflow-y:auto;padding:4px 8px">
+        ${bottomTab==='layers'&&p?renderLayers(p.root,0):''}
+        ${bottomTab==='screens'?P.pages.map(pp=>`<div class="layer ${pp.id===curPage?'sel':''}" onclick="curPage='${pp.id}';selId=null;render()"><div class="l-ico">◫</div><div class="l-info"><div class="l-nm">${esc(pp.name)}</div></div></div>`).join(''):''}
+      </div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="canvas-tools">
+      <div class="zt">
+        <button onclick="zoom=Math.max(25,zoom-25);render()">−</button>
+        <span>${zoom}%</span>
+        <button onclick="zoom=Math.min(200,zoom+25);render()">+</button>
+      </div>
+    </div>
+    <div class="canvas-wrap">
+      <div class="device" style="transform:scale(${zoom/100});transform-origin:top center">
+        <div class="notch"></div>
+        <div class="root-label">${p?p.root.registryId:'Root'}</div>
+        <div class="screen">${p?renderDevice(p.root):'<div style="color:#999;text-align:center;padding:40px;font-size:12px">No page</div>'}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    ${sn?`
+    <div class="r-head">
+      <div class="r-ico">${ico(sm?.category)}</div>
+      <div class="r-info"><div class="r-nm">${sn.registryId}</div><div class="r-type">${sn.kind} › ${sm?.category||''}</div></div>
+      <div class="r-acts"><button class="act" title="Duplicate">⧉</button><button class="act" title="Delete" onclick="rm('${sn.id}')">🗑</button></div>
+    </div>
+    <div class="rtabs">
+      <div class="rtab ${rightTab==='properties'?'on':''}" onclick="rightTab='properties';render()">✦ Properties</div>
+      <div class="rtab ${rightTab==='design'?'on':''}" onclick="rightTab='design';render()">◎ Design</div>
+      <div class="rtab ${rightTab==='logic'?'on':''}" onclick="rightTab='logic';render()">⚡ Logic</div>
+    </div>
+    <div class="r-body">${rightTab==='properties'&&sm?renderProps(sn,sm):rightTab==='design'?'<div style="padding:14px;color:var(--t3);font-size:11px">Design tokens coming soon</div>':'<div style="padding:14px;color:var(--t3);font-size:11px">Logic & events coming soon</div>'}</div>
+    `:`<div style="padding:20px;color:var(--t3);text-align:center;font-size:11px">Select a node to edit</div>`}
+  </div>
+
+  <div class="statusbar"><span class="dot"></span>Connected<span>${P.pages.length} pages</span><span>${total} components</span><span>Theme: ${P.theme}</span></div>`;
+
+  bindDrag();
+}
+
+function renderLib(){
+  const items=sideTab==='layouts'?R.layouts:sideTab==='components'?R.components:R.blocks;
+  const kind=sideTab==='layouts'?'layout':sideTab==='components'?'component':'block';
+  const filtered=search?items.filter(i=>i.label.toLowerCase().includes(search.toLowerCase())||i.tags?.some(t=>t.includes(search.toLowerCase()))):items;
+  const g={};for(const i of filtered){const c=i.category||'other';if(!g[c])g[c]=[];g[c].push(i)}
+  let h='';
+  for(const[c,its]of Object.entries(g)){
+    h+=`<div class="cat">${c}</div>`;
+    for(const i of its)h+=`<div class="citem" draggable="true" data-kind="${kind}" data-rid="${i.id}"><div class="ico ${kind}">${ico(c)}</div><div class="info"><div class="nm">${esc(i.label)}</div><div class="sub">${esc(i.id)}</div></div></div>`;
+  }
+  return h||'<div style="padding:20px;color:var(--t3);text-align:center;font-size:11px">No results</div>';
+}
+
+function renderLayers(n,d){
+  const sel=n.id===selId;
+  const m=meta(n.kind,n.registryId);
+  let h=`<div class="layer ${sel?'sel':''}" style="padding-left:${8+d*12}px" onclick="selId='${n.id}';render()">
+    <div class="l-ico">${ico(m?.category)}</div>
+    <div class="l-info"><div class="l-nm">${n.registryId}</div><div class="l-type">${n.kind}</div></div>
+    <div class="l-acts">
+      <button class="l-act" title="Toggle visibility">👁</button>
+      ${d>0?`<button class="l-act" title="Delete" onclick="event.stopPropagation();rm('${n.id}')">🗑</button>`:''}
+    </div>
+  </div>`;
+  for(const c of n.children||[])h+=renderLayers(c,d+1);
+  return h;
+}
+
+function renderDevice(n){
+  const sel=n.id===selId;
+  const m=meta(n.kind,n.registryId);
+  const hasSlots=(m?.slots?.length||0)>0;
+  let ch='';
+  if(n.children?.length)ch=n.children.map(c=>renderDevice(c)).join('');
+  const label=n.registryId;
+  const bg=n.kind==='layout'?'rgba(99,102,241,.03)':n.kind==='block'?'rgba(251,191,36,.03)':'rgba(74,222,128,.03)';
+  return`<div class="snode ${sel?'sel':''}" onclick="event.stopPropagation();selId='${n.id}';render()" style="background:${bg}">
+    <div class="sn-label">${label}</div>
+    <div class="sn-body">${ch}${hasSlots?`<div class="dz" data-parent="${n.id}">Drop here</div>`:''}</div>
+  </div>`;
+}
+
+function renderProps(n,m){
+  const g={};for(const p of m.props){const gr=p.group||'other';if(!g[gr])g[gr]=[];g[gr].push(p)}
+  let h='';
+  for(const[gr,ps]of Object.entries(g)){
+    const icoClass=gr==='style'?'style':gr==='layout'?'layout':gr==='behavior'?'behavior':'content';
+    h+=`<div class="section"><div class="s-head"><div class="s-ico ${icoClass}">${gr==='style'?'◎':gr==='layout'?'⊞':gr==='behavior'?'⚡':'✎'}</div>${gr}<span class="arr" style="margin-left:auto">▾</span></div><div class="s-body">`;
+    for(const p of ps){
+      const v=n.props[p.name]??p.default??'';
+      h+=`<div class="pf"><label>${esc(p.label)}</label>`;
+      if(p.type==='boolean')h+=`<input type="checkbox" ${v?'checked':''} onchange="setProp('${n.id}','${p.name}',this.checked)">`;
+      else if(p.type==='enum'&&p.options)h+=`<select onchange="setProp('${n.id}','${p.name}',this.value)">${p.options.map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+      else if(p.type==='number'||p.type==='spacing'||p.type==='ratio')h+=`<input type="number" value="${v}" step="${p.type==='ratio'?'0.1':'1'}" ${p.min!=null?`min="${p.min}"`:''} ${p.max!=null?`max="${p.max}"`:''} onchange="setProp('${n.id}','${p.name}',+this.value)">`;
+      else if(p.type==='color')h+=`<div class="row"><input type="color" value="${v||'#000000'}" style="width:32px;padding:2px" onchange="setProp('${n.id}','${p.name}',this.value)"><input type="text" value="${esc(v)}" onchange="setProp('${n.id}','${p.name}',this.value)"></div>`;
+      else if(p.type==='radius')h+=`<select onchange="setProp('${n.id}','${p.name}',this.value)">${['none','xs','sm','base','md','lg','xl','2xl','3xl','full'].map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+      else if(p.type==='shadow')h+=`<select onchange="setProp('${n.id}','${p.name}',this.value)">${['none','sm','base','md','lg','xl','2xl'].map(o=>`<option ${v===o?'selected':''}>${o}</option>`).join('')}</select>`;
+      else h+=`<input type="text" value="${esc(v)}" onchange="setProp('${n.id}','${p.name}',this.value)">`;
+      h+=`</div>`;
+    }
+    h+=`</div></div>`;
+  }
+  if(m.variants?.length){
+    h+=`<div class="section"><div class="s-head"><div class="s-ico style">◎</div>Variant<span class="arr" style="margin-left:auto">▾</span></div><div class="s-body"><div class="pf"><select onchange="const nd=fnd(pg().root,'${n.id}');if(nd){nd.variant=this.value;nd.props.variant=this.value}save();render()">`;
+    for(const v of m.variants)h+=`<option ${n.variant===v.name?'selected':''}>${v.name}</option>`;
+    h+=`</select></div></div></div>`;
+  }
+  return h;
+}
+
+function bindDrag(){
+  document.querySelectorAll('.citem[data-kind]').forEach(el=>{
+    el.ondragstart=e=>{dragData={kind:el.dataset.kind,rid:el.dataset.rid};el.classList.add('dragging');e.dataTransfer.effectAllowed='copy'};
+    el.ondragend=()=>{el.classList.remove('dragging');dragData=null};
+    el.onclick=()=>addTo(selId||pg()?.root?.id,el.dataset.kind,el.dataset.rid);
+  });
+  document.querySelectorAll('.dz[data-parent]').forEach(el=>{
+    el.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';el.classList.add('over')};
+    el.ondragleave=()=>el.classList.remove('over');
+    el.ondrop=e=>{e.preventDefault();el.classList.remove('over');if(dragData)addTo(el.dataset.parent,dragData.kind,dragData.rid);dragData=null};
+  });
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,11 +1,7 @@
 /**
  * Studio Server
  *
- * Express server that:
- * - Serves the web builder UI (static files)
- * - Provides REST API for project CRUD
- * - WebSocket for live preview sync
- * - Triggers code generation on save
+ * Express server that serves the builder UI, REST API, and WebSocket.
  */
 
 import express from "express";
@@ -16,6 +12,20 @@ import fs from "fs";
 import { createRouter } from "./api";
 
 const DEFAULT_PORT = 4200;
+
+function findWebUI(): string | null {
+  const candidates = [
+    path.resolve(__dirname, "../web/index.html"),
+    path.resolve(__dirname, "../../studio/web/index.html"),
+    path.resolve(__dirname, "../../../studio/web/index.html"),
+    path.resolve(process.cwd(), "studio/web/index.html"),
+    path.resolve(process.cwd(), "node_modules/@flipova/foundation/studio/web/index.html"),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+}
 
 export function startServer(options: { port?: number; projectDir?: string } = {}) {
   const port = options.port || DEFAULT_PORT;
@@ -29,19 +39,19 @@ export function startServer(options: { port?: number; projectDir?: string } = {}
   const app = express();
   app.use(express.json({ limit: "10mb" }));
 
-  const webDir = path.join(__dirname, "../web/dist");
-  if (fs.existsSync(webDir)) {
-    app.use(express.static(webDir));
-  }
-
   app.use("/api", createRouter(studioDir, projectDir));
 
-  app.get("*", (_req, res) => {
-    const indexPath = path.join(webDir, "index.html");
-    if (fs.existsSync(indexPath)) {
-      res.sendFile(indexPath);
+  const webUIPath = findWebUI();
+  let webUIContent: string | null = null;
+  if (webUIPath) {
+    webUIContent = fs.readFileSync(webUIPath, "utf-8");
+  }
+
+  app.get("/", (_req, res) => {
+    if (webUIContent) {
+      res.type("html").send(webUIContent);
     } else {
-      res.json({ status: "studio-api-only", message: "Web UI not built yet. Run the web build." });
+      res.json({ status: "studio-api-only", message: "Web UI not found. Searched: studio/web/index.html" });
     }
   });
 
@@ -67,7 +77,9 @@ export function startServer(options: { port?: number; projectDir?: string } = {}
   (app as any).broadcast = broadcast;
 
   server.listen(port, () => {
-    console.log(`\n  Flipova Studio running at http://localhost:${port}\n`);
+    console.log(`\n  ✦ Flipova Studio`);
+    console.log(`  http://localhost:${port}`);
+    console.log(`  UI: ${webUIPath ? "loaded" : "not found"}\n`);
   });
 
   return { app, server, wss, broadcast };

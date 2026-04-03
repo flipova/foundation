@@ -77,6 +77,13 @@ foundation/
           ├── [layouts]     23 layout components
           ├── components/   Button, TextInput
           └── blocks/       AuthFormBlock, HeaderBlock
+
+studio/
+├── cli/           CLI entry point (npx flipova-studio)
+├── server/        Express + WebSocket server with REST API
+└── engine/
+     ├── tree/      Document tree (types + immutable operations)
+     └── codegen/   Code generation (page → .tsx, project → full app)
 ```
 
 ## Modules
@@ -88,6 +95,21 @@ foundation/
 | `@flipova/foundation/theme` | Theme system only |
 | `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry |
 | `@flipova/foundation/config` | defineConfig, FoundationProvider |
+| `@flipova/foundation/studio` | Studio engine (tree, codegen, server) |
+
+## Studio (visual builder)
+
+```bash
+npx flipova-studio
+```
+
+Opens a local web UI at http://localhost:4200 where you can:
+- Drag & drop layouts, components, and blocks from the registry
+- Configure props visually
+- Preview pages in real time
+- Generate a full React Native project
+
+See [studio/README.md](studio/README.md) for the full API documentation.
 
 ## License
 
