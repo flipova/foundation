@@ -1,0 +1,38 @@
+import { colors } from "../../tokens";
+import type { ColorScheme } from "../types";
+
+export const createTheme = (overrides: Partial<ColorScheme> = {}): ColorScheme => ({
+  background: colors.white,
+  foreground: colors.gray900,
+  card: colors.white,
+  cardForeground: colors.gray900,
+  primary: colors.primary600,
+  primaryForeground: colors.white,
+  secondary: colors.secondary600,
+  secondaryForeground: colors.white,
+  muted: colors.gray100,
+  mutedForeground: colors.gray600,
+  accent: colors.primary50,
+  accentForeground: colors.primary900,
+  destructive: colors.error600,
+  destructiveForeground: colors.white,
+  border: colors.gray200,
+  input: colors.gray200,
+  ring: colors.primary600,
+  success: colors.success600,
+  warning: colors.warning600,
+  error: colors.error600,
+  info: colors.info600,
+  transparent: colors.transparent,
+  gradients: {
+    primary: [colors.primary400, colors.primary600],
+    secondary: [colors.secondary400, colors.secondary600],
+    success: [colors.success500, colors.success600],
+    warning: [colors.warning500, colors.warning600],
+    error: [colors.error500, colors.error600],
+    info: [colors.info500, colors.info600],
+    subtle: [colors.gray50, colors.gray100],
+    vibrant: [colors.primary500, colors.secondary500],
+  },
+  ...overrides,
+});

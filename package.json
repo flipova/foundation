@@ -1,0 +1,123 @@
+{
+  "name": "@flipova/foundation",
+  "version": "1.0.0",
+  "description": "Design tokens, theming system, and layout primitives for React Native (iOS, Android, Web)",
+  "author": "Flipova",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flipova/foundation.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./tokens": {
+      "types": "./dist/tokens/index.d.ts",
+      "import": "./dist/tokens/index.mjs",
+      "require": "./dist/tokens/index.js"
+    },
+    "./theme": {
+      "types": "./dist/theme/index.d.ts",
+      "import": "./dist/theme/index.mjs",
+      "require": "./dist/theme/index.js"
+    },
+    "./layout": {
+      "types": "./dist/layout/index.d.ts",
+      "import": "./dist/layout/index.mjs",
+      "require": "./dist/layout/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "import": "./dist/config/index.mjs",
+      "require": "./dist/config/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build && npm run typecheck"
+  },
+  "peerDependencies": {
+    "expo-haptics": ">=13.0.0",
+    "expo-linear-gradient": ">=12.0.0",
+    "expo-navigation-bar": ">=3.0.0",
+    "expo-status-bar": ">=2.0.0",
+    "lucide-react-native": ">=0.300.0",
+    "expo-camera": ">=15.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.73.0",
+    "react-native-gesture-handler": ">=2.0.0",
+    "react-native-reanimated": ">=3.0.0",
+    "react-native-safe-area-context": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo-linear-gradient": {
+      "optional": true
+    },
+    "expo-haptics": {
+      "optional": true
+    },
+    "expo-status-bar": {
+      "optional": true
+    },
+    "expo-navigation-bar": {
+      "optional": true
+    },
+    "react-native-gesture-handler": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-safe-area-context": {
+      "optional": true
+    },
+    "lucide-react-native": {
+      "optional": true
+    },
+    "expo-camera": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-native": "^0.73.0",
+    "expo-camera": "^55.0.13",
+    "expo-haptics": "^55.0.11",
+    "expo-linear-gradient": "^12.0.0",
+    "expo-navigation-bar": "^55.0.10",
+    "expo-status-bar": "^55.0.5",
+    "lucide-react-native": "^1.7.0",
+    "react-native-gesture-handler": "^2.0.0",
+    "react-native-reanimated": "^3.0.0",
+    "react-native-safe-area-context": "^4.0.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "react-native",
+    "design-system",
+    "design-tokens",
+    "theming",
+    "layout",
+    "ui",
+    "flipova",
+    "expo"
+  ]
+}
