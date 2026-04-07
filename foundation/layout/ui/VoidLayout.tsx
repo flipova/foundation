@@ -45,14 +45,14 @@ const VoidLayout: React.FC<VoidLayoutProps> = (rawProps) => {
       flex={1}
       width="100%"
       justifyContent={centerContent ? "center" : undefined}
-      alignItems={centerContent ? "center" : undefined}
+      alignItems={centerContent ? "center" : "stretch"}
     >
       {children}
     </Box>
   );
 
   return (
-    <Box flex={1} bg={background}>
+    <Box flex={1} bg={background} minHeight="100%" style={{ flexGrow: 1 }}>
       <Box
         flex={1}
         borderRadius={borderRadius}
@@ -64,7 +64,7 @@ const VoidLayout: React.FC<VoidLayoutProps> = (rawProps) => {
         style={borderStyle}
       >
         {scrollable ? (
-          <Scroll {...resolveLayoutPadding(padding)}>
+          <Scroll {...resolveLayoutPadding(padding)} contentContainerStyle={{ flexGrow: 1 }}>
             {body}
           </Scroll>
         ) : (

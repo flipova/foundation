@@ -33,6 +33,8 @@ export interface SidebarLayoutProps {
   sidebarBorderRadius?: RadiusToken;
   padding?: LayoutPadding;
   resizable?: boolean;
+  sidebarMinWidth?: number;
+  sidebarMaxWidth?: number;
 }
 
 const SidebarLayout: React.FC<SidebarLayoutProps> = (rawProps) => {
@@ -41,6 +43,7 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = (rawProps) => {
     sidebar, content, sidebarWidth, position, collapsible, spacing,
     maxWidth, scrollable, background, borderRadius,
     sidebarBackground, sidebarBorderRadius, padding, resizable,
+    sidebarMinWidth, sidebarMaxWidth,
   } = applyDefaults(rawProps, META, theme) as Required<SidebarLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -74,8 +77,8 @@ const SidebarLayout: React.FC<SidebarLayoutProps> = (rawProps) => {
         canResize
           ? ({
               resize: position === "left" ? "horizontal" : "none",
-              minWidth: 150,
-              maxWidth: 600,
+              minWidth: sidebarMinWidth,
+              maxWidth: sidebarMaxWidth,
               borderRightWidth: position === "left" ? 1 : 0,
               borderLeftWidth: position === "right" ? 1 : 0,
               borderColor: theme.border,

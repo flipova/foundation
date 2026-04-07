@@ -1,0 +1,6 @@
+{
+  "name": "@flipova/studio-app",
+  "private": true,
+  "version": "0.0.1",
+  "main": "expo-router/entry"
+}

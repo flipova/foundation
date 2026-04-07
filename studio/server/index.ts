@@ -1,7 +1,8 @@
 /**
  * Studio Server
  *
- * Express server that serves the builder UI, REST API, and WebSocket.
+ * Serves the pre-built studio UI, REST API, and WebSocket.
+ * The UI must be built before starting (npm run build handles this).
  */
 
 import express from "express";
@@ -13,16 +14,16 @@ import { createRouter } from "./api";
 
 const DEFAULT_PORT = 4200;
 
-function findWebUI(): string | null {
+function findStudioDist(): string | null {
   const candidates = [
-    path.resolve(__dirname, "../web/index.html"),
-    path.resolve(__dirname, "../../studio/web/index.html"),
-    path.resolve(__dirname, "../../../studio/web/index.html"),
-    path.resolve(process.cwd(), "studio/web/index.html"),
-    path.resolve(process.cwd(), "node_modules/@flipova/foundation/studio/web/index.html"),
+    path.resolve(__dirname, "../app/dist"),
+    path.resolve(__dirname, "../../studio/app/dist"),
+    path.resolve(__dirname, "../../../studio/app/dist"),
+    path.resolve(process.cwd(), "studio/app/dist"),
+    path.resolve(process.cwd(), "node_modules/@flipova/foundation/studio/app/dist"),
   ];
   for (const p of candidates) {
-    if (fs.existsSync(p)) return p;
+    if (fs.existsSync(p) && fs.existsSync(path.join(p, "index.html"))) return p;
   }
   return null;
 }
@@ -38,48 +39,31 @@ export function startServer(options: { port?: number; projectDir?: string } = {}
 
   const app = express();
   app.use(express.json({ limit: "10mb" }));
-
   app.use("/api", createRouter(studioDir, projectDir));
 
-  const webUIPath = findWebUI();
-  let webUIContent: string | null = null;
-  if (webUIPath) {
-    webUIContent = fs.readFileSync(webUIPath, "utf-8");
+  const dist = findStudioDist();
+  if (dist) {
+    app.use(express.static(dist));
+    app.get("/{0,}", (_req, res) => { res.sendFile(path.join(dist, "index.html")); });
+  } else {
+    app.get("/", (_req, res) => {
+      res.status(503).json({ error: "Studio UI not built. Run: npm run build" });
+    });
   }
-
-  app.get("/", (_req, res) => {
-    if (webUIContent) {
-      res.type("html").send(webUIContent);
-    } else {
-      res.json({ status: "studio-api-only", message: "Web UI not found. Searched: studio/web/index.html" });
-    }
-  });
 
   const server = http.createServer(app);
   const wss = new WebSocketServer({ server, path: "/ws" });
-
   const clients = new Set<WebSocket>();
-
-  wss.on("connection", (ws) => {
-    clients.add(ws);
-    ws.on("close", () => clients.delete(ws));
-  });
+  wss.on("connection", (ws) => { clients.add(ws); ws.on("close", () => clients.delete(ws)); });
 
   const broadcast = (type: string, payload: unknown) => {
-    const message = JSON.stringify({ type, payload });
-    for (const client of clients) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    }
+    const msg = JSON.stringify({ type, payload });
+    for (const c of clients) if (c.readyState === WebSocket.OPEN) c.send(msg);
   };
-
   (app as any).broadcast = broadcast;
 
   server.listen(port, () => {
-    console.log(`\n  ✦ Flipova Studio`);
-    console.log(`  http://localhost:${port}`);
-    console.log(`  UI: ${webUIPath ? "loaded" : "not found"}\n`);
+    console.log(`  UI: ${dist ? "ready" : "NOT BUILT (run npm run build)"}`);
   });
 
   return { app, server, wss, broadcast };

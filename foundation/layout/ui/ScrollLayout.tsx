@@ -34,6 +34,10 @@ export interface ScrollLayoutProps {
   headerBackground?: string;
   footerBackground?: string;
   contentBackground?: string;
+  headerPadding?: SpacingToken;
+  footerPadding?: SpacingToken;
+  mobileHeaderHeight?: number;
+  mobileFooterHeight?: number;
 }
 
 const ScrollLayout: React.FC<ScrollLayoutProps> = (rawProps) => {
@@ -43,6 +47,7 @@ const ScrollLayout: React.FC<ScrollLayoutProps> = (rawProps) => {
     footerHeight, scrollDirection, showScrollIndicator, enableBounces,
     stickyHeader, stickyFooter, background, borderRadius,
     headerBackground, footerBackground, contentBackground,
+    headerPadding, footerPadding, mobileHeaderHeight, mobileFooterHeight,
   } = applyDefaults(rawProps, META, theme) as Required<ScrollLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -52,10 +57,10 @@ const ScrollLayout: React.FC<ScrollLayoutProps> = (rawProps) => {
 
   const dims = useMemo(
     () => ({
-      h: isMobile ? 60 : headerHeight,
-      f: isMobile ? 50 : footerHeight,
+      h: isMobile ? mobileHeaderHeight : headerHeight,
+      f: isMobile ? mobileFooterHeight : footerHeight,
     }),
-    [isMobile, headerHeight, footerHeight]
+    [isMobile, headerHeight, footerHeight, mobileHeaderHeight, mobileFooterHeight]
   );
 
   const scrollProps = useMemo(
@@ -78,8 +83,7 @@ const ScrollLayout: React.FC<ScrollLayoutProps> = (rawProps) => {
       }
       bg={headerBackground}
       borderRadius={borderRadius}
-      p={4}
-      pt={isSticky && isMobile && useSafeAreaInsets ? undefined : undefined}
+      p={headerPadding}
       mb={isSticky ? 0 : spacing}
     >
       {header}
@@ -94,7 +98,7 @@ const ScrollLayout: React.FC<ScrollLayoutProps> = (rawProps) => {
       }
       bg={footerBackground}
       borderRadius={borderRadius}
-      p={4}
+      p={footerPadding}
       mt={isSticky ? 0 : spacing}
     >
       {footer}

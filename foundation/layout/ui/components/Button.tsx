@@ -90,7 +90,7 @@ const Button: React.FC<ButtonProps> = (rawProps) => {
         borderRadius={borderRadius}
         justifyContent="center"
         alignItems="center"
-        style={colors.border ? { borderWidth: 1, borderColor: colors.border } : undefined}
+        style={colors.border ? { borderWidth: 1, borderColor: colors.border } : {}}
       >
         {content}
       </Box>

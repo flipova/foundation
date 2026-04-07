@@ -18,6 +18,8 @@ import Animated, {
     withSpring,
     withTiming
 } from 'react-native-reanimated';
+import { useTheme } from '../../theme/providers/ThemeProvider';
+import { applyDefaults, getLayoutMeta } from '../registry';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -26,10 +28,23 @@ interface Slide {
 }
 
 interface Swipe2ScreenLayoutProps {
-    slides: Slide[];
+    slides?: Slide[];
+    containerBackground?: string;
+    screenBackground?: string;
+    swipeThreshold?: number;
+    projectedScale?: number;
+    animationDuration?: number;
 }
 
-const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
+const META = getLayoutMeta("Swipe2ScreenLayout")!;
+
+const Swipe2ScreenLayout: React.FC<Swipe2ScreenLayoutProps> = (rawProps) => {
+    const { theme } = useTheme();
+    const {
+        containerBackground, screenBackground, swipeThreshold,
+        projectedScale, animationDuration, slides,
+    } = applyDefaults(rawProps, META, theme) as Required<Swipe2ScreenLayoutProps>;
+
     const [permission, requestPermission] = useCameraPermissions();
     const [isConnected, setIsConnected] = useState(false);
     const [isProjected, setIsProjected] = useState(false);
@@ -74,14 +89,14 @@ const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
         .onEnd((event) => {
             if (isLocked) return;
 
-            if (event.translationY < -100 && !isProjected) {
-                translateY.value = withTiming(-SCREEN_HEIGHT, { duration: 300 }, () => {
+            if (event.translationY < -swipeThreshold && !isProjected) {
+                translateY.value = withTiming(-SCREEN_HEIGHT, { duration: animationDuration }, () => {
                     runOnJS(setIsProjected)(true);
                     runOnJS(syncWeb)(true);
                     translateY.value = 0;
-                    scale.value = withSpring(0.8);
+                    scale.value = withSpring(projectedScale);
                 });
-            } else if (event.translationY > 100 && isProjected) {
+            } else if (event.translationY > swipeThreshold && isProjected) {
                 runOnJS(setIsProjected)(false);
                 runOnJS(setIsLocked)(false);
                 runOnJS(syncWeb)(false);
@@ -89,7 +104,7 @@ const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
                 translateY.value = withSpring(0);
             } else {
                 translateY.value = withSpring(0);
-                scale.value = withSpring(isProjected ? 0.8 : 1);
+                scale.value = withSpring(isProjected ? projectedScale : 1);
             }
         });
 
@@ -113,7 +128,7 @@ const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: containerBackground }]}>
             {!isConnected && Platform.OS !== 'web' ? (
                 <CameraView 
                     onBarcodeScanned={({ data }: { data: string }) => {
@@ -131,7 +146,7 @@ const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
             ) : (
                 <>
                     <GestureDetector gesture={gesture}>
-                        <Animated.View style={[styles.screen, animatedStyle]}>
+                        <Animated.View style={[styles.screen, { backgroundColor: screenBackground }, animatedStyle]}>
                             <FlatList 
                                 data={slides}
                                 horizontal
@@ -170,9 +185,9 @@ const Swipe2ScreenLayout = ({ slides }: Swipe2ScreenLayoutProps) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#000' },
+    container: { flex: 1 },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    screen: { flex: 1, backgroundColor: '#fff' },
+    screen: { flex: 1 },
     btn: { backgroundColor: '#007AFF', paddingHorizontal: 25, paddingVertical: 12, borderRadius: 12 },
     lockBtn: {
         position: 'absolute', bottom: 50, right: 30, width: 64, height: 64, borderRadius: 32,

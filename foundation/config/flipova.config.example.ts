@@ -18,7 +18,7 @@
  * ```
  */
 
-import { defineConfig } from "@flipova/foundation/config";
+import { defineConfig } from "./index";
 
 export default defineConfig({
   tokens: {

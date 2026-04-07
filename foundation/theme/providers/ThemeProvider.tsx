@@ -104,8 +104,9 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   defaultTheme,
   customThemes = {}
 }) => {
+  const systemColorScheme = useColorScheme();
   const [currentTheme, setCurrentTheme] = useState<ThemeMode | CustomThemeMode>(
-    defaultTheme || useColorScheme()
+    defaultTheme || systemColorScheme
   );
   const [isManualSelection, setIsManualSelection] = useState(false);
   
@@ -122,9 +123,22 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     christmas: christmasTheme,
     ...customThemes,
   };
+
+  // Sync with defaultTheme prop changes (e.g. from studio theme selector)
+  useEffect(() => {
+    if (defaultTheme) {
+      setCurrentTheme(defaultTheme);
+    }
+  }, [defaultTheme]);
+
+  // Rebuild registry when customThemes change
+  useEffect(() => {
+    if (defaultTheme && customThemes && Object.keys(customThemes).length > 0) {
+      setCurrentTheme(prev => prev);
+    }
+  }, [customThemes, defaultTheme]);
   
   // Listen for system theme changes when no explicit theme is set
-  const systemColorScheme = useColorScheme();
   useEffect(() => {
     // Only auto-update if user hasn't manually selected a theme
     if (!isManualSelection && !defaultTheme) {

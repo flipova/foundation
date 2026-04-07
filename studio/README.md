@@ -1,6 +1,6 @@
 # Flipova Studio
 
-Visual app builder for React Native. Drag & drop layouts, components, and blocks from the foundation registry. Configure props visually. Generate clean, production-ready React Native code.
+Visual app builder for React Native. Drag & drop layouts, components, and blocks from the foundation registry. Configure props visually. Generate clean React Native code.
 
 ## Quick start
 
@@ -8,31 +8,45 @@ Visual app builder for React Native. Drag & drop layouts, components, and blocks
 npx flipova-studio
 ```
 
-Opens the builder at http://localhost:4200.
+This single command:
+1. Builds the web UI if not already built
+2. Starts the Express server on port 4200
+3. Opens the builder at http://localhost:4200
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `npx flipova-studio` | Start the builder UI on port 4200 |
+| `npx flipova-studio` | Start the builder (auto-builds UI if needed) |
 | `npx flipova-studio --port 3000` | Start on a custom port |
+| `npx flipova-studio --dev` | Dev mode: API on 4200 + Vite HMR on 5173 |
 | `npx flipova-studio generate` | Generate code from the saved project |
 
-## How it works
+## Development
 
-Studio reads the foundation registries (layouts, components, blocks) to know what's available. When you build a page in the UI, it creates a document tree (JSON). The code generator transforms that tree into `.tsx` files that import from `@flipova/foundation`.
+For working on the studio UI itself:
+
+```bash
+npx flipova-studio --dev
+```
+
+This starts:
+- Express API server on http://localhost:4200
+- Vite dev server on http://localhost:5173 (with hot reload and API proxy)
+
+Open http://localhost:5173 for the dev experience with instant updates.
+
+## Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Studio Web UI (http://localhost:4200)           │
-│  ┌──────────┐ ┌──────────────┐ ┌─────────────┐  │
-│  │ Registry │ │   Canvas     │ │  Props Panel │  │
-│  │ Panel    │ │  (drag/drop) │ │  (configure) │  │
-│  └──────────┘ └──────────────┘ └─────────────┘  │
+│  React Web UI (Vite + React + TypeScript)        │
+│  studio/web/src/                                 │
+│  Built to studio/web/dist/ → served by Express   │
 └──────────────────────┬──────────────────────────┘
-                       │ WebSocket (live sync)
+                       │ fetch /api/* + WebSocket /ws
 ┌──────────────────────▼──────────────────────────┐
-│  Studio Server (Express + WS)                    │
+│  Express Server (studio/server/)                 │
 │  ├── /api/registry     → foundation registries   │
 │  ├── /api/project      → project CRUD            │
 │  ├── /api/pages/:id    → page tree CRUD          │
@@ -41,16 +55,15 @@ Studio reads the foundation registries (layouts, components, blocks) to know wha
                        │
 ┌──────────────────────▼──────────────────────────┐
 │  .flipova-studio/project.json                    │
-│  (document tree, pages, services, navigation)    │
 └──────────────────────┬──────────────────────────┘
                        │ generate
 ┌──────────────────────▼──────────────────────────┐
 │  ./generated/                                    │
 │  ├── App.tsx                                     │
-│  ├── screens/HomeScreen.tsx                      │
+│  ├── screens/*.tsx                               │
 │  ├── navigation/index.tsx                        │
 │  ├── theme/index.ts                              │
-│  └── services/...                                │
+│  └── services/*.ts                               │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -94,74 +107,12 @@ Studio reads the foundation registries (layouts, components, blocks) to know wha
 
 Connect to `ws://localhost:4200/ws` for live updates.
 
-### Events (server → client)
-
 | Event | Payload | When |
 |-------|---------|------|
 | `page:created` | PageDocument | New page created |
 | `page:updated` | PageDocument | Page tree modified |
 | `page:deleted` | `{ id }` | Page removed |
 | `theme:changed` | `{ theme }` | Theme switched |
-
-## Document tree format
-
-Each page is a tree of nodes:
-
-```json
-{
-  "id": "node_123",
-  "kind": "layout",
-  "registryId": "DashboardLayout",
-  "props": { "spacing": 4, "borderRadius": "md" },
-  "children": [
-    {
-      "id": "node_124",
-      "kind": "block",
-      "registryId": "HeaderBlock",
-      "props": { "height": 56 },
-      "children": [],
-      "slotName": "header"
-    },
-    {
-      "id": "node_125",
-      "kind": "component",
-      "registryId": "Button",
-      "props": { "label": "Click me", "variant": "primary" },
-      "variant": "primary",
-      "children": [],
-      "slotName": "content"
-    }
-  ]
-}
-```
-
-### Node kinds
-
-| Kind | Description | Example |
-|------|-------------|---------|
-| `layout` | Page-level layout | DashboardLayout, AuthLayout |
-| `component` | Base UI component | Button, TextInput |
-| `block` | Functional block | AuthFormBlock, HeaderBlock |
-| `slot` | Named content area | header, sidebar, footer |
-| `text` | Raw text node | "Hello world" |
-
-## Generated code example
-
-Input tree → Output `.tsx`:
-
-```tsx
-import React from "react";
-import { DashboardLayout, Button, HeaderBlock } from "@flipova/foundation";
-
-export default function HomeScreen() {
-  return (
-    <DashboardLayout spacing={4} borderRadius="md">
-      <HeaderBlock height={56} />
-      <Button label="Click me" variant="primary" />
-    </DashboardLayout>
-  );
-}
-```
 
 ## Project structure
 
@@ -170,13 +121,16 @@ studio/
 ├── cli/index.ts           CLI entry point (npx flipova-studio)
 ├── server/
 │   ├── index.ts           Express + WebSocket server
-│   └── api.ts             REST API routes
+│   └── api.ts             REST API routes (imports foundation registries)
 ├── engine/
 │   ├── tree/
 │   │   ├── types.ts       TreeNode, PageDocument, ProjectDocument
-│   │   └── operations.ts  createNode, insertChild, removeNode, moveNode, updateProps
+│   │   └── operations.ts  Immutable tree operations
 │   └── codegen/
 │       ├── generator.ts   Page → .tsx code
 │       └── project.ts     Project → full app scaffold
-└── README.md              This file
+└── web/                   React app (Vite + TypeScript)
+    ├── src/               React components
+    ├── dist/              Built statics (served by Express)
+    └── package.json       Separate deps (react, react-dom, vite)
 ```

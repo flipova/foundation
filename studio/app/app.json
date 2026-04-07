@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "Flipova Studio",
+    "slug": "flipova-studio",
+    "version": "1.0.0",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "scheme": "flipova-studio"
+  }
+}

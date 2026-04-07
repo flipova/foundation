@@ -13,7 +13,6 @@ import Animated, {
     Extrapolation,
     interpolate,
     runOnJS,
-    useAnimatedReaction,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
@@ -24,6 +23,8 @@ import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, SpacingToken } from "../../tokens";
 import { LayoutPadding } from "../types";
 import { applyDefaults, getLayoutMeta, getConstants } from "../registry";
+import { usePlatformInfo } from "../hooks/usePlatformInfo";
+import { useStudioItems } from "../hooks/useStudioItems";
 import Box from './primitives/Box';
 
 const META = getLayoutMeta("FlipLayout")!;
@@ -33,16 +34,15 @@ const SWIPE_THRESHOLD    = C.swipeThreshold!;
 const FLIP_THRESHOLD     = C.flipThreshold!;
 const SCALE_FACTOR       = C.scaleFactor!;
 const FLIP_SCALE_FACTOR  = C.flipScaleFactor!;
-const DEZOOM_DURATION    = C.dezoomDuration!;
-const FLIP_DURATION      = C.flipDuration!;
-const SLIDE_OUT_DURATION = C.slideOutDuration!;
 const SPRING_NO_BOUNCE   = C.springNoBounce!;
 const SPRING_SNAP        = C.springSnap!;
 const EXIT_LEFT          = C.exitLeft!;
 const EXIT_RIGHT         = C.exitRight!;
 
 export interface FlipLayoutProps {
-    children: React.ReactNode[];
+    items?: React.ReactNode[];
+    cards?: React.ReactNode[];         // alias for items
+    children?: React.ReactNode | React.ReactNode[]; // backward compat
     backContent?: React.ReactNode[];
     onFlip?: (index: number, isFlipped: boolean) => void;
     onSwipe?: (index: number, direction: 'left' | 'right') => void;
@@ -51,10 +51,15 @@ export interface FlipLayoutProps {
     background?: string;
     borderRadius?: RadiusToken;
     cardBackground?: string;
-    cardBorderRadius?: RadiusToken;
+    cardBorderRadius?: number;
+    cardAspectRatio?: number;
+    cardMaxHeight?: number;
     flipPerspective?: number;
     swipeThreshold?: number;
     padding?: LayoutPadding;
+    dezoomDuration?: number;
+    flipDuration?: number;
+    slideOutDuration?: number;
 }
 
 interface WebButtonProps {
@@ -89,17 +94,38 @@ const WebButton = React.memo(({
 const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
     const { theme } = useTheme();
     const {
-        children, backContent, onFlip, onSwipe, background,
+        items: itemsProp, cards: cardsRaw, children: childrenRaw, backContent: backContentRaw, onFlip, onSwipe, background,
         borderRadius, cardBackground, flipPerspective, swipeThreshold, padding,
+        cardBorderRadius, cardAspectRatio, cardMaxHeight,
+        dezoomDuration, flipDuration, slideOutDuration,
     } = applyDefaults(rawProps, META, theme) as Required<FlipLayoutProps>;
-    const isWeb = Platform.OS === 'web';
+    const { isWeb } = usePlatformInfo();
+
+    // Standard: items > cards > children (backward compat)
+    const rawCards = Array.isArray(itemsProp) && itemsProp.length > 0
+        ? itemsProp
+        : Array.isArray(cardsRaw) && cardsRaw.length > 0
+        ? cardsRaw
+        : Array.isArray(childrenRaw) ? childrenRaw
+        : childrenRaw != null ? React.Children.toArray(childrenRaw as React.ReactNode) : [];
+
+    // Normalize to arrays — Studio may pass a single ReactNode (named slot mode) or an array
+    const children: React.ReactNode[] = rawCards;
+    const backContent: React.ReactNode[] = Array.isArray(backContentRaw)
+        ? backContentRaw
+        : backContentRaw != null ? React.Children.toArray(backContentRaw as React.ReactNode) : [];
+
+    const resolvedChildren = useStudioItems(
+        children,
+        3,
+        (i) => <Box key={i} flex={1} bg={cardBackground} style={{ borderRadius: cardBorderRadius }} opacity={0.4} />
+    );
 
     const finalBackground = background;
     const finalCardBg     = cardBackground;
 
     const [currentIndex,  setCurrentIndex]  = useState(0);
     const [displayIndex,  setDisplayIndex]  = useState(0);
-    const [pendingIndex,  setPendingIndex]  = useState<number | null>(null);
 
     const currentIndexRef = useRef(0);
     useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
@@ -111,7 +137,6 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
     const opacity      = useSharedValue(1);
     const isFlipping   = useSharedValue(false);
     const isFlippedSV  = useSharedValue(false);
-    const slideInReady = useSharedValue(false);
 
     const context = useSharedValue({
         startX: 0,
@@ -119,35 +144,10 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
         isHorizontal: null as boolean | null,
     });
 
-    const cards = useMemo(() => children.map((front, i) => ({
+    const cards = useMemo(() => resolvedChildren.map((front, i) => ({
         front,
         back: backContent[i] ?? null,
-    })), [children, backContent]);
-
-    const doSlideIn = useCallback(() => {
-        'worklet';
-        opacity.value = 1;
-        translateX.value = withSpring(0, { ...SPRING_SNAP, velocity: 2 }, () => {
-            scale.value = withSpring(1, SPRING_NO_BOUNCE);
-        });
-    }, [opacity, translateX, scale]);
-
-    useAnimatedReaction(
-        () => slideInReady.value,
-        (ready, prev) => {
-            if (ready && !prev) {
-                slideInReady.value = false;
-                doSlideIn();
-            }
-        },
-        [doSlideIn],
-    );
-
-    useEffect(() => {
-        if (pendingIndex === null) return;
-        setPendingIndex(null);
-        slideInReady.value = true;
-    }, [pendingIndex]);
+    })), [resolvedChildren, backContent]);
 
     const handleFlipState = useCallback((next: boolean) => {
         isFlippedSV.value = next;
@@ -157,7 +157,6 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
     const handleSwipeStart = useCallback((
         direction: 'left' | 'right',
         length: number,
-        entryX: number,
     ) => {
         const computeNewIndex = (prev: number) => direction === 'left'
             ? (prev + 1) % length
@@ -167,14 +166,10 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
 
         setCurrentIndex(newIndex);
         setDisplayIndex(newIndex);
-        setPendingIndex(newIndex);
-
-        translateX.value = entryX;
-        scale.value = SCALE_FACTOR;
         isFlippedSV.value = false;
 
         onSwipe?.(newIndex, direction);
-    }, [onSwipe, translateX, scale, isFlippedSV]);
+    }, [onSwipe, isFlippedSV]);
 
     const performFlip = useCallback(() => {
         'worklet';
@@ -183,18 +178,18 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
 
         const targetRotation = isFlippedSV.value ? 0 : 180;
 
-        scale.value = withTiming(FLIP_SCALE_FACTOR, { duration: DEZOOM_DURATION }, () => {
-            rotateY.value = withTiming(targetRotation, { duration: FLIP_DURATION }, () => {
+        scale.value = withTiming(FLIP_SCALE_FACTOR, { duration: dezoomDuration }, () => {
+            rotateY.value = withTiming(targetRotation, { duration: flipDuration }, () => {
                 scale.value = withSpring(1, SPRING_SNAP, () => {
                     runOnJS(handleFlipState)(!isFlippedSV.value);
                     isFlipping.value = false;
                 });
             });
         });
-    }, [isFlipping, isFlippedSV, scale, rotateY, handleFlipState]);
+    }, [isFlipping, isFlippedSV, scale, rotateY, handleFlipState, dezoomDuration, flipDuration]);
 
-    const childrenLengthRef = useRef(children.length);
-    useEffect(() => { childrenLengthRef.current = children.length; }, [children.length]);
+    const childrenLengthRef = useRef(resolvedChildren.length);
+    useEffect(() => { childrenLengthRef.current = resolvedChildren.length; }, [resolvedChildren.length]);
 
     const performSwipe = useCallback((direction: 'left' | 'right') => {
         'worklet';
@@ -204,12 +199,21 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
         const entryX = direction === 'left' ? EXIT_RIGHT : EXIT_LEFT;
         const len    = childrenLengthRef.current;
 
-        runOnJS(handleSwipeStart)(direction, len, entryX);
+        runOnJS(handleSwipeStart)(direction, len);
 
-        translateX.value = withTiming(exitX, { duration: SLIDE_OUT_DURATION }, () => {
+        translateX.value = withTiming(exitX, { duration: slideOutDuration }, (finished) => {
+            if (!finished) return;
+            // Reset position to entry side, then fade back in
             opacity.value = 0;
+            translateX.value = entryX;
+            scale.value = SCALE_FACTOR;
+            opacity.value = withTiming(1, { duration: 80 }, () => {
+                translateX.value = withSpring(0, { ...SPRING_SNAP, velocity: 2 }, () => {
+                    scale.value = withSpring(1, SPRING_NO_BOUNCE);
+                });
+            });
         });
-    }, [isFlipping, translateX, opacity, handleSwipeStart]);
+    }, [isFlipping, translateX, opacity, scale, handleSwipeStart, slideOutDuration]);
 
     const panGesture = useMemo(() => Gesture.Pan()
         .activeOffsetX([-10, 10])
@@ -272,7 +276,7 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
             { scale: scale.value },
         ],
         opacity: opacity.value,
-    }), [flipPerspective]);
+    }));
 
     const frontAnimStyle = useAnimatedStyle(() => {
         const angle   = ((rotateY.value % 360) + 360) % 360;
@@ -304,11 +308,10 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
         };
     });
 
-    const cardWrapperStyle: ViewStyle = useMemo(() => isWeb ? {
-        aspectRatio: 9 / 16,
+    const cardWrapperStyle: ViewStyle = useMemo(() => isWeb ? {        ...(cardAspectRatio ? { aspectRatio: cardAspectRatio } : {}),
         height: '80%' as any,
-        maxHeight: 750,
-        borderRadius: 20,
+        ...(cardMaxHeight ? { maxHeight: cardMaxHeight } : {}),
+        borderRadius: cardBorderRadius,
         overflow: 'hidden',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 8 },
@@ -317,22 +320,26 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
     } : {
         width: '100%',
         flex:  1,
-    }, [isWeb]);
+    }, [isWeb, cardAspectRatio, cardMaxHeight, cardBorderRadius]);
+
+    const backNode = useMemo(() => {
+        const card = cards[displayIndex];
+        return card?.back ?? (
+            <Box flex={1} bg={finalCardBg} justifyContent="center" alignItems="center">
+                <Text style={{ color: theme.foreground, fontWeight: '600' }}>
+                    {`Verso ${displayIndex + 1}`}
+                </Text>
+            </Box>
+        );
+    }, [cards, displayIndex, finalCardBg, theme.foreground]);
 
     const card = cards[displayIndex];
-    const backNode = card?.back ?? (
-        <Box flex={1} bg={finalCardBg} justifyContent="center" alignItems="center">
-            <Text style={{ color: theme.foreground, fontWeight: '600' }}>
-                {`Verso ${displayIndex + 1}`}
-            </Text>
-        </Box>
-    );
 
     const onPressLeft  = useCallback(() => performSwipe('right'), [performSwipe]);
     const onPressRight = useCallback(() => performSwipe('left'),  [performSwipe]);
     const onPressFlip  = useCallback(() => performFlip(),         [performFlip]);
 
-    if (children.length === 0) {
+    if (resolvedChildren.length === 0) {
         return (
             <Box
                 flex={1}
@@ -368,7 +375,7 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
                             border={theme.border}
                             primary={theme.primary}
                         >
-                            <ChevronLeft color={theme.foreground} size={24} strokeWidth={2} />
+                            <ChevronLeft {...{color:theme.foreground, size:24, strokeWidth:2} as any} />
                         </WebButton>
                     </View>
                     <View style={{ position: 'absolute', right: '10%', zIndex: 100 }}>
@@ -379,7 +386,7 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
                             border={theme.border}
                             primary={theme.primary}
                         >
-                            <ChevronRight color={theme.foreground} size={24} strokeWidth={2} />
+                            <ChevronRight {...{color:theme.foreground, size:24, strokeWidth:2} as any} />
                         </WebButton>
                     </View>
                     <View style={{ position: 'absolute', bottom: 30, zIndex: 100 }}>
@@ -391,7 +398,7 @@ const FlipLayout: React.FC<FlipLayoutProps> = (rawProps) => {
                             border={theme.border}
                             primary={theme.primary}
                         >
-                            <RotateCcw color="#FFF" size={20} strokeWidth={2} />
+                            <RotateCcw {...{color:"#FFF", size:20, strokeWidth:2} as any} />
                         </WebButton>
                     </View>
                 </>

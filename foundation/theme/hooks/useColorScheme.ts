@@ -30,12 +30,7 @@ import { useColorScheme as useRNColorScheme } from 'react-native';
  *   consistent theming across the entire application
  */
 export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
-  // If an explicit theme is provided, use it directly
-  if (theme) return theme;
-  
-  // Otherwise, fall back to the device's native color scheme
   const nativeScheme = useRNColorScheme();
-  
-  // Default to 'light' if native scheme is null/undefined
+  if (theme) return theme;
   return (nativeScheme ?? 'light') as 'light' | 'dark';
 }

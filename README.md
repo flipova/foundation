@@ -103,11 +103,14 @@ studio/
 npx flipova-studio
 ```
 
-Opens a local web UI at http://localhost:4200 where you can:
-- Drag & drop layouts, components, and blocks from the registry
-- Configure props visually
-- Preview pages in real time
-- Generate a full React Native project
+Starts the builder at http://localhost:4200. This single command auto-builds the web UI if needed, starts the server, and serves the React app.
+
+| Command | Description |
+|---------|-------------|
+| `npx flipova-studio` | Start the builder |
+| `npx flipova-studio --port 3000` | Custom port |
+| `npx flipova-studio --dev` | Dev mode with Vite HMR |
+| `npx flipova-studio generate` | Generate React Native code |
 
 See [studio/README.md](studio/README.md) for the full API documentation.
 

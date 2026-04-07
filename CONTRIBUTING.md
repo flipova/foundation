@@ -1,218 +1,165 @@
-# Contributing to @flipova/foundation
+# Contributing to Flipova Foundation & Studio
 
-## Quick reference: commit flow
-
-### Tooling / CI / docs (no published code change)
-
-```bash
-npx changeset add --empty
-git add -A
-git commit -m "chore: description"
-git push
-```
-
-### Published code (new component, fix, feature)
-
-```bash
-npx changeset              # choose patch/minor/major + write summary
-git add -A
-git commit -m "feat: description"
-git push
-```
-
-### What happens after push
-
-1. CI runs typecheck + build on Node 20 and 22
-2. The `release.yml` workflow detects pending changesets on `main`
-3. It opens a PR titled "chore: version packages" that bumps version + updates CHANGELOG
-4. When a maintainer merges that PR, the package is published to GitHub Packages automatically
-
----
-
-## Getting started
-
-```bash
-git clone https://github.com/flipova/foundation.git
-cd foundation
-npm install
-npm run typecheck   # Must pass with zero errors
-npm run build       # Generates dist/
-```
-
-## Branching strategy
-
-We follow a trunk-based workflow with short-lived feature branches.
+## Architecture Overview
 
 ```
-main (protected, always deployable)
- ├── feat/my-new-layout
- ├── fix/button-border-radius
- ├── docs/update-readme
- └── chore/upgrade-deps
+foundation/           # Design system library (published as @flipova/foundation)
+├── config/           # defineConfig, FoundationProvider, resolveConfig
+├── layout/
+│   ├── hooks/        # useBreakpoint, usePlatformInfo, PlatformOverride
+│   ├── registry/     # layouts.ts, components.ts, blocks.ts, primitives.ts, defaults.ts
+│   ├── types/        # LayoutMeta, ComponentMeta, BlockMeta, shared types
+│   ├── ui/
+│   │   ├── primitives/  # Box, Stack, Inline, Center, Scroll, Divider
+│   │   ├── components/  # Button, TextInput, Badge, Avatar, Image, Video...
+│   │   ├── blocks/      # AuthFormBlock, CardBlock, FormBlock, ModalBlock...
+│   │   └── *.tsx        # Layout components (RootLayout, AuthLayout, DashboardLayout...)
+│   └── utils/        # responsive, platform, spacing resolution
+├── theme/            # ThemeProvider, theme definitions (light, dark, neon...)
+└── tokens/           # spacing, colors, radii, typography, shadows, motion...
+
+studio/               # Visual app builder
+├── app/              # Expo Router app (the studio UI)
+│   ├── app/          # Routes (_layout.tsx, index.tsx)
+│   └── src/
+│       ├── renderer/ # NodeRenderer, componentMap, slotConfig, PlatformSimulator
+│       ├── store/    # StudioProvider (state), tokens (resolution)
+│       └── ui/       # Topbar, LibraryPanel, LayersPanel, DeviceCanvas,
+│                     # PropertiesPanel, DesignPanel, CodePanel, Statusbar,
+│                     # shared/SmartInput, modals/...
+├── cli/              # npx flipova-studio
+├── engine/
+│   ├── codegen/      # generator.ts (page→TSX), project.ts (full project)
+│   └── tree/         # types.ts (TreeNode, ProjectDocument), operations.ts
+└── server/           # Express + WebSocket server, REST API
 ```
 
-### Branch naming
+## Adding a New Foundation Component
 
-| Prefix | Use |
-|--------|-----|
-| `feat/` | New feature (layout, component, block, hook) |
-| `fix/` | Bug fix |
-| `refactor/` | Code improvement without behavior change |
-| `docs/` | Documentation only |
-| `chore/` | Dependencies, CI, tooling |
+### 1. Define in Registry
 
-### Workflow
-
-1. Fork the repo (external) or create a branch (maintainer)
-2. Make your changes
-3. Add a changeset: `npx changeset`
-4. Push and open a PR against `main`
-5. CI runs typecheck + build on Node 20 and 22
-6. Get a review, address feedback
-7. Squash-merge into `main`
-8. The release workflow collects changesets and opens a "Version Packages" PR
-9. When that PR is merged, the package is published automatically
-
-## Versioning with Changesets
-
-We use [Changesets](https://github.com/changesets/changesets) for automatic versioning and changelog generation.
-
-### Adding a changeset
-
-Every PR that changes published code must include a changeset:
-
-```bash
-npx changeset
-
-# Or if no release to create
-npx changeset add --empty`
-
-```
-
-This prompts you to:
-1. Select `@flipova/foundation`
-2. Choose bump type:
-   - `patch` — bug fixes, internal refactors
-   - `minor` — new components, layouts, blocks, hooks, non-breaking features
-   - `major` — breaking changes (removed props, renamed exports, changed defaults)
-3. Write a summary (appears in CHANGELOG.md)
-
-The changeset file (`.changeset/random-name.md`) is committed with your PR.
-
-### What happens on merge
-
-1. The `release.yml` workflow detects pending changesets
-2. It opens a PR titled "chore: version packages" that:
-   - Bumps the version in `package.json`
-   - Updates `CHANGELOG.md`
-   - Removes consumed changeset files
-3. When a maintainer merges that PR, the package is published to GitHub Packages
-
-## Adding a new layout
-
-1. Create `foundation/layout/ui/MyLayout.tsx`
-2. Add the registry entry in `foundation/layout/registry/layouts.ts`
-3. Export from `foundation/layout/ui/index.ts`
-
-### Layout file structure
-
-```tsx
-/**
- * MyLayout
- *
- * One-line description.
- */
-
-import React from "react";
-import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getLayoutMeta } from "../registry";
-import Box from "./primitives/Box";
-
-const META = getLayoutMeta("MyLayout")!;
-
-export interface MyLayoutProps {
-  children: React.ReactNode;
-  background?: string;
-}
-
-const MyLayout: React.FC<MyLayoutProps> = (rawProps) => {
-  const { theme } = useTheme();
-  const { children, background } = applyDefaults(rawProps, META, theme) as Required<MyLayoutProps>;
-
-  return <Box flex={1} bg={background}>{children}</Box>;
-};
-
-export default MyLayout;
-```
-
-### Registry entry
+Add to `foundation/layout/registry/components.ts`:
 
 ```ts
 {
-  id: "MyLayout",
-  label: "My Layout",
+  id: "MyComponent",
+  label: "My Component",
   description: "What it does.",
-  category: "page",
-  themeMapping: { root: "background" },
-  slots: [{ name: "children", label: "Content", required: true }],
-  responsive: false,
-  animated: false,
-  tags: ["my", "layout"],
+  category: "display",  // input | action | display | feedback | media | navigation
+  tags: ["my", "component"],
+  themeMapping: { bg: "card", text: "foreground" },
+  sizes: ["sm", "md", "lg"],
+  variants: [
+    { name: "default", label: "Default", overrides: {} },
+  ],
   props: [
-    { name: "background", label: "Background", type: "color", group: "style", themeDefault: "background" },
+    { name: "label",       label: "Label",        type: "string",  group: "content",  default: "Hello" },
+    { name: "variant",     label: "Variant",      type: "enum",    group: "style",    default: "default", options: ["default"] },
+    { name: "size",        label: "Size",         type: "enum",    group: "style",    default: "md", options: ["sm", "md", "lg"] },
+    { name: "disabled",    label: "Disabled",     type: "boolean", group: "behavior", default: false },
+    { name: "background",  label: "Background",   type: "color",   group: "style",    themeDefault: "card" },
+    { name: "borderRadius",label: "Border radius",type: "radius",  group: "style",    default: "md" },
   ],
 }
 ```
 
-## Adding a new component
+**Prop types:** `string`, `number`, `boolean`, `enum`, `color`, `radius`, `shadow`, `spacing`, `padding`, `ratio`, `background`
 
-1. Create `foundation/layout/ui/components/MyComponent.tsx`
-2. Add registry entry in `foundation/layout/registry/components.ts`
-3. Export from `foundation/layout/ui/components/index.ts`
+**Groups:** `content`, `style`, `layout`, `behavior`
 
-Components must support variants and sizes defined in the registry.
+### 2. Implement the Component
 
-## Adding a new block
+Create `foundation/layout/ui/components/MyComponent.tsx`:
 
-1. Create `foundation/layout/ui/blocks/MyBlock.tsx`
-2. Add registry entry in `foundation/layout/registry/blocks.ts`
-3. Export from `foundation/layout/ui/blocks/index.ts`
+```tsx
+import React from "react";
+import { Text } from "react-native";
+import { useTheme } from "../../../theme/providers/ThemeProvider";
+import { applyDefaults, getComponentMeta } from "../../registry";
+import Box from "../primitives/Box";
 
-Blocks must declare their `components` dependencies and `slots`.
+const META = getComponentMeta("MyComponent")!;
 
-## Code rules
+export interface MyComponentProps {
+  label?: string;
+  variant?: "default";
+  size?: "sm" | "md" | "lg";
+  disabled?: boolean;
+  background?: string;
+  borderRadius?: string;
+  children?: React.ReactNode;
+}
 
-- Build on primitives only (Box, Stack, Inline, Center, Scroll). No raw View/ScrollView/StyleSheet.
-- All defaults from registry via `applyDefaults(rawProps, META, theme)`. No hardcoded defaults.
-- Color fallbacks via `themeDefault` in registry. No `|| theme.background` in components.
-- Animation constants via `getConstants(META)`. No hardcoded spring configs.
-- Only a top-level JSDoc comment. No inline comments, no section separators.
-- English only.
-- `useBreakpoint()` for responsive. Never derive `isMobile` manually.
+const MyComponent: React.FC<MyComponentProps> = (rawProps) => {
+  const { theme } = useTheme();
+  const { label, size, disabled, background, borderRadius } =
+    applyDefaults(rawProps, META, theme) as Required<MyComponentProps>;
 
-## PR checklist
+  return (
+    <Box bg={background || theme.card} borderRadius={borderRadius as any}
+      style={disabled ? { opacity: 0.5 } : {}}>
+      <Text style={{ color: theme.foreground }}>{label}</Text>
+    </Box>
+  );
+};
 
-- [ ] Registry entry added/updated
-- [ ] `applyDefaults(rawProps, META, theme)` used
-- [ ] No hardcoded defaults
-- [ ] No raw View/ScrollView/StyleSheet
-- [ ] No inline comments
-- [ ] Exported from index.ts
-- [ ] `npm run typecheck` passes
-- [ ] `npm run build` passes
-- [ ] Changeset added (`npx changeset`)
-
-## Releases
-
-Maintainers only:
-
-```bash
-# Manual release (if not using the automated workflow)
-npx changeset version   # Bumps versions, updates CHANGELOG
-npm run release          # Builds, typechecks, publishes
-git push --follow-tags
+export default MyComponent;
 ```
 
-## Code of conduct
+**Rules:**
+- Use primitives only (Box, Stack, Inline, Center, Scroll) — no raw View/ScrollView
+- Get defaults from registry via `applyDefaults(rawProps, META, theme)`
+- Use `useTheme()` for colors
+- Style conditionals: `condition ? {...} : {}` (never `undefined`)
+- Cast spacing props: `p={padding as any}` when value comes from registry
 
-Be respectful. We're building something together.
+### 3. Export from Barrel
+
+Add to `foundation/layout/ui/components/index.ts`:
+```ts
+export { default as MyComponent } from "./MyComponent";
+export type { MyComponentProps } from "./MyComponent";
+```
+
+### 4. Map in Studio
+
+Add to `studio/app/src/renderer/componentMap.ts`:
+```ts
+import MyComponent from '../../../../foundation/layout/ui/components/MyComponent';
+// ...
+MyComponent: safe(MyComponent),
+```
+
+### 5. Build & Test
+
+```bash
+npm run build          # Build foundation + studio
+npx flipova-studio     # Start studio, component appears in Library > Components
+```
+
+## Adding a New Block
+
+Same process but use `foundation/layout/registry/blocks.ts` and `foundation/layout/ui/blocks/`.
+Blocks have `slots` and `components` arrays in their registry entry.
+
+## Adding a New Layout
+
+Same process but use `foundation/layout/registry/layouts.ts` and `foundation/layout/ui/`.
+Layouts have `slots`, `responsive`, `animated`, `dependencies`, and `constants`.
+
+## SmartInput Linking
+
+All linkable data is available in the SmartInput linker:
+- `$` Tokens, `T` Theme, `S` State, `G` Global, `Q` Queries
+- `N` Nav, `C` Config, `D` Device, `@` Vars, `#` Nodes
+
+States from `setState` actions in triggers are auto-discovered.
+
+## Code Generation
+
+The codegen in `studio/engine/codegen/` transforms the tree into:
+- Page TSX files with imports, hooks, JSX
+- Project scaffold (app.json, package.json, tsconfig, eas.json)
+- Service clients, query hooks, auth provider, global state
+- StyleSheet.create for optimized styles
+- Screen groups with route guards

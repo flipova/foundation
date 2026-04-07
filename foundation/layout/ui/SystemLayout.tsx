@@ -5,11 +5,14 @@
  * Handles platform-specific system UI configuration including Android navigation bar styling.
  */
 
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import React, { useEffect, useMemo } from 'react';
 import { Platform, StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { applyDefaults, getLayoutMeta } from '../registry';
 import Box from './primitives/Box';
+
+const META = getLayoutMeta("SystemLayout")!;
 
 interface SystemUIWrapperProps {
   children: React.ReactNode;
@@ -31,15 +34,16 @@ const getContrastStyle = (hexColor: string): 'light' | 'dark' => {
   return luminance > 0.5 ? 'dark' : 'light';
 };
 
-export const SystemUIWrapper: React.FC<SystemUIWrapperProps> = ({
-  children,
-  rootBackgroundColor = '#0c3ddbff',
-  statusBarContentStyle = 'auto',
-  navigationBarContentStyle,
-  navigationBarReferenceColor,
-  edges = ['top', 'bottom', 'left', 'right'],
-  style,
-}) => {
+export const SystemUIWrapper: React.FC<SystemUIWrapperProps> = (rawProps) => {
+  const {
+    children,
+    rootBackgroundColor,
+    statusBarContentStyle,
+    navigationBarContentStyle,
+    navigationBarReferenceColor,
+    edges,
+    style,
+  } = applyDefaults(rawProps, META) as Required<SystemUIWrapperProps>;
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
 
@@ -99,7 +103,11 @@ export const SystemUIWrapper: React.FC<SystemUIWrapperProps> = ({
 
   return (
     <View style={styles.root}>
-      <StatusBar style={finalStatusStyle} translucent animated />
+      <StatusBar
+        barStyle={finalStatusStyle === 'light' ? 'light-content' : 'dark-content'}
+        translucent
+        animated
+      />
 
       <Box
         flex={1}

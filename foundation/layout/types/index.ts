@@ -27,6 +27,18 @@ export interface SlotDescriptor {
   name: string;
   label: string;
   required: boolean;
+  /**
+   * kind — explicit slot mode, no heuristic needed.
+   *
+   * - "children"    : standard React children (layout receives `children` prop)
+   * - "items"       : primary array slot (layout receives `items={[...]}` or named prop)
+   * - "named"       : single ReactNode passed as a named prop (e.g. `header={<Header />}`)
+   * - "named-array" : array of ReactNodes passed as a named prop (e.g. `backContent={[...]}`)
+   *
+   * Defaults to "children" when omitted for backward compatibility.
+   */
+  kind?: "children" | "items" | "named" | "named-array";
+  /** @deprecated use `kind: "items"` instead */
   array?: boolean;
 }
 
@@ -41,7 +53,8 @@ export type PropType =
   | "background"
   | "padding"
   | "enum"
-  | "ratio";
+  | "ratio"
+  | "json";
 
 export interface PropDescriptor<T = unknown> {
   name: string;
@@ -58,8 +71,8 @@ export interface PropDescriptor<T = unknown> {
 }
 
 export type LayoutCategory = "page" | "content" | "navigation" | "card" | "scroll" | "special";
-export type ComponentCategory = "input" | "action" | "display" | "feedback" | "overlay";
-export type BlockCategory = "auth" | "profile" | "navigation" | "content" | "data" | "feedback";
+export type ComponentCategory = "input" | "action" | "display" | "feedback" | "overlay" | "media" | "navigation";
+export type BlockCategory = "auth" | "profile" | "navigation" | "content" | "data" | "feedback" | "form" | "overlay" | "social" | "ecommerce" | "finance" | "onboarding" | "messaging" | "calendar" | "files" | "location" | "media";
 
 export interface SpringConfig {
   damping: number;
@@ -107,6 +120,8 @@ export interface LayoutMeta extends BaseMeta {
   responsive: boolean;
   animated: boolean;
   dependencies?: string[];
+  /** Number of placeholder items to show in Studio when the slot is empty (default: 3) */
+  previewItemCount?: number;
 }
 
 export interface ComponentMeta extends BaseMeta {

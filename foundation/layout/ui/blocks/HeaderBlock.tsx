@@ -37,9 +37,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = (rawProps) => {
     <Box
       height={height}
       bg={bg}
-      px={padding}
+      px={padding as any}
       justifyContent="center"
-      style={borderBottom ? { borderBottomWidth: 1, borderBottomColor: theme.border } : undefined}
+      style={borderBottom ? { borderBottomWidth: 1, borderBottomColor: theme.border } : {}}
     >
       <Inline justify="space-between" align="center" fillWidth>
         <Box width={44} alignItems="flex-start">
@@ -51,9 +51,9 @@ const HeaderBlock: React.FC<HeaderBlockProps> = (rawProps) => {
         </Box>
 
         <Inline spacing={2} align="center" justify="flex-end" style={{ minWidth: 44 }}>
-          {right?.map((action, i) => (
+          {Array.isArray(right) ? right.map((action, i) => (
             <React.Fragment key={i}>{action}</React.Fragment>
-          ))}
+          )) : right}
         </Inline>
       </Inline>
     </Box>

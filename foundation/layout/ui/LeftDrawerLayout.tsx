@@ -42,6 +42,11 @@ export interface LeftDrawerLayoutProps {
   borderRadius?: RadiusToken;
   defaultOpen?: boolean;
   onToggle?: (isOpen: boolean) => void;
+  handleColor?: string;
+  backdropOpacity?: number;
+  contentScaleWhenOpen?: number;
+  handleBarColor?: string;
+  handleBarWidth?: number;
 }
 
 const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
@@ -49,7 +54,8 @@ const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
   const {
     content, drawerContent, drawerWidth, maxWidth, scrollable,
     drawerBackground, drawerBorderRadius, background, borderRadius,
-    defaultOpen, onToggle,
+    defaultOpen, onToggle, handleColor, backdropOpacity, contentScaleWhenOpen,
+    handleBarColor, handleBarWidth,
   } = applyDefaults(rawProps, META, theme) as Required<LeftDrawerLayoutProps>;
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const translateX = useSharedValue(defaultOpen ? 0 : -drawerWidth);
@@ -67,7 +73,7 @@ const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
     });
     setIsOpen(open);
     if (onToggle) onToggle(open);
-  }, [drawerWidth, onToggle]);
+  }, [drawerWidth, onToggle, translateX]);
 
   const closePanGesture = Gesture.Pan()
     .onStart(() => {
@@ -87,13 +93,13 @@ const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: interpolate(translateX.value, [-drawerWidth, 0], [0, 8], Extrapolation.CLAMP) },
-      { scale: interpolate(translateX.value, [-drawerWidth, 0], [1, 0.98], Extrapolation.CLAMP) }
+      { scale: interpolate(translateX.value, [-drawerWidth, 0], [1, contentScaleWhenOpen], Extrapolation.CLAMP) }
     ],
     opacity: interpolate(translateX.value, [-drawerWidth, 0], [1, 0.9], Extrapolation.CLAMP),
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(translateX.value, [-drawerWidth, 0], [0, 0.4], Extrapolation.CLAMP),
+    opacity: interpolate(translateX.value, [-drawerWidth, 0], [0, backdropOpacity], Extrapolation.CLAMP),
     pointerEvents: translateX.value <= -drawerWidth ? 'none' : 'auto' as any,
   }));
 
@@ -122,13 +128,13 @@ const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
                 style={({ pressed }) => [
                   styles.handleButton, 
                   { 
-                    backgroundColor: theme.primary, 
+                    backgroundColor: handleColor, 
                     opacity: pressed ? 0.8 : 1,
                     transform: [{ scale: pressed ? 0.95 : 1 }] 
                   }
                 ]}
               >
-                <Fingerprint size={20} color="white" strokeWidth={2.5} />
+                <Fingerprint {...{size:20, color:"white", strokeWidth:2.5} as any} />
               </Pressable>
             </AnimatedBox>
           </Box>
@@ -147,8 +153,8 @@ const LeftDrawerLayout: React.FC<LeftDrawerLayoutProps> = (rawProps) => {
           </Box>
 
           <GestureDetector gesture={closePanGesture}>
-            <Box position="absolute" right={0} top={0} bottom={0} width={40} alignItems="center" justifyContent="center" zIndex={102}>
-               <Box width={4} height={40} bg={theme.border} borderRadius="full" opacity={0.2} />
+            <Box position="absolute" right={0} top={0} bottom={0} width={handleBarWidth} alignItems="center" justifyContent="center" zIndex={102}>
+               <Box width={4} height={40} bg={handleBarColor} borderRadius="full" opacity={0.2} />
             </Box>
           </GestureDetector>
         </AnimatedBox>

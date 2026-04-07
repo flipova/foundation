@@ -7,7 +7,7 @@
 
 import * as Haptics from 'expo-haptics';
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Platform, StyleSheet } from "react-native";
+import { Platform } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
     LinearTransition,
@@ -20,38 +20,50 @@ import Animated, {
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { spacing as spacingTokens } from "../../tokens/spacing";
 import { useBreakpoint } from "../hooks/useBreakpoint";
-import { applyDefaults, getLayoutMeta, getConstants } from "../registry";
+import { applyDefaults, getLayoutMeta } from "../registry";
 import Box from "./primitives/Box";
 import Scroll from "./primitives/Scroll";
 
 const META = getLayoutMeta("CrossTabLayout")!;
-const { springConfig: SPRING_CONFIG } = getConstants(META);
 
 type SpacingKey = keyof typeof spacingTokens;
 
 export interface CrossTabLayoutProps {
-    children: React.ReactElement[];
+    items?: React.ReactElement[];
+    children?: React.ReactNode | React.ReactElement[]; // backward compat
     columns?: number;
     spacing?: SpacingKey;
     itemBackground?: string;
     itemBorderRadius?: number;
     scrollEnabled?: boolean;
     onOrderChange?: (newOrderKeys: string[]) => void;
+    springDamping?: number;
+    springStiffness?: number;
+    longPressDuration?: number;
+    dragScale?: number;
+    background?: string;
 }
 
 const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
     const { theme } = useTheme();
     const {
-        children, columns, spacing, itemBackground,
+        items: itemsProp, children: childrenProp, columns, spacing, itemBackground,
         itemBorderRadius, scrollEnabled, onOrderChange,
+        springDamping, springStiffness, longPressDuration, dragScale, background,
     } = applyDefaults(rawProps, META, theme) as Required<CrossTabLayoutProps>;
+    const SPRING = { damping: springDamping, stiffness: springStiffness, mass: 0.5 };
     const isWeb = Platform.OS === "web";
     const [containerWidth, setContainerWidth] = useState(0);
-    
-    const [items, setItems] = useState(() => React.Children.toArray(children));
+
+    // Standard: items > children (backward compat)
+    const rawItems = Array.isArray(itemsProp) && itemsProp.length > 0
+        ? itemsProp
+        : React.Children.toArray(childrenProp as React.ReactNode) as React.ReactElement[];
+
+    const [items, setItems] = useState(() => rawItems);
 
     useEffect(() => {
-        const newChildren = React.Children.toArray(children);
+        const newChildren = rawItems;
         
         setItems(prevItems => {
             if (newChildren.length === prevItems.length) {
@@ -64,7 +76,7 @@ const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
             }
             return newChildren;
         });
-    }, [children]);
+    }, [rawItems]);
 
     const gap = useMemo(() => spacingTokens[spacing as SpacingKey] ?? 0, [spacing]);
     const cellWidth = useMemo(() => (containerWidth || 300) / columns, [containerWidth, columns]);
@@ -86,7 +98,7 @@ const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
         if (!isWeb) {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         }
-    }, [items, onOrderChange]);
+    }, [items, onOrderChange, isWeb]);
 
     const Content = (
         <Box 
@@ -106,6 +118,9 @@ const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
                     itemBorderRadius={itemBorderRadius}
                     onSwap={handleSwap}
                     totalItems={items.length}
+                    spring={SPRING}
+                    longPressDuration={longPressDuration}
+                    dragScale={dragScale}
                 >
                     {child}
                 </DraggableCell>
@@ -114,7 +129,7 @@ const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
     );
 
     return (
-        <GestureHandlerRootView style={styles.flex}>
+        <GestureHandlerRootView style={{ flex: 1, backgroundColor: background }}>
             {scrollEnabled ? (
                 <Scroll showsVerticalScrollIndicator={false}>
                     {Content}
@@ -128,7 +143,8 @@ const CrossTabLayout: React.FC<CrossTabLayoutProps> = (rawProps) => {
 
 const DraggableCell = ({ 
     children, index, columns, spacing, 
-    cellWidth, itemBackground, itemBorderRadius, onSwap, totalItems 
+    cellWidth, itemBackground, itemBorderRadius, onSwap, totalItems,
+    spring, longPressDuration, dragScale,
 }: any) => {
     const isDragging = useSharedValue(false);
     const translateX = useSharedValue(0);
@@ -139,7 +155,7 @@ const DraggableCell = ({
     };
 
     const gesture = Gesture.Pan()
-        .activateAfterLongPress(250)
+        .activateAfterLongPress(longPressDuration)
         .onStart(() => {
             isDragging.value = true;
             runOnJS(triggerHaptic)();
@@ -158,8 +174,8 @@ const DraggableCell = ({
             runOnJS(onSwap)(index, clampedIndex);
             
             isDragging.value = false;
-            translateX.value = withSpring(0, SPRING_CONFIG);
-            translateY.value = withSpring(0, SPRING_CONFIG);
+            translateX.value = withSpring(0, spring);
+            translateY.value = withSpring(0, spring);
         });
 
     const animatedStyle = useAnimatedStyle(() => ({
@@ -167,7 +183,7 @@ const DraggableCell = ({
         transform: [
             { translateX: translateX.value },
             { translateY: translateY.value },
-            { scale: withSpring(isDragging.value ? 1.05 : 1, SPRING_CONFIG) },
+            { scale: withSpring(isDragging.value ? dragScale : 1, spring) },
         ],
         shadowOpacity: withTiming(isDragging.value ? 0.2 : 0),
         elevation: isDragging.value ? 10 : 0,
@@ -192,9 +208,5 @@ const DraggableCell = ({
         </GestureDetector>
     );
 };
-
-const styles = StyleSheet.create({
-    flex: { flex: 1 }
-});
 
 export default CrossTabLayout;

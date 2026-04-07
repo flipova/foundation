@@ -17,7 +17,6 @@
  *   - Pas de centrage sémantique (→ Center)
  */
 
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useMemo } from "react";
 import { View, ViewProps, ViewStyle } from "react-native";
 import { useTheme } from "../../../theme/providers/ThemeProvider";
@@ -32,6 +31,15 @@ import {
 } from "../../../tokens";
 import { useResponsiveValue } from "../../hooks/useResponsiveValue";
 import { ResponsiveValue } from "../../utils/responsive";
+
+// expo-linear-gradient may not be available in all environments (e.g. studio preview)
+let LinearGradient: React.ComponentType<any> | null = null;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  LinearGradient = require("expo-linear-gradient").LinearGradient ?? null;
+} catch {
+  LinearGradient = null;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -289,7 +297,7 @@ const Box: React.FC<BoxProps> = ({
     overflow, opacity, position, top, right, bottom, left, zIndex, style,
   ]);
 
-  if (gradientConfig) {
+  if (gradientConfig && LinearGradient) {
     return (
       <LinearGradient
         colors={gradientConfig.colors as [string, string, ...string[]]}

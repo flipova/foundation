@@ -47,6 +47,13 @@ export interface TopDrawerLayoutProps {
   borderRadius?: RadiusToken;
   defaultOpen?: boolean;
   onToggle?: (isOpen: boolean) => void;
+  handleColor?: string;
+  backdropOpacity?: number;
+  contentScaleWhenOpen?: number;
+  closeButtonBackground?: string;
+  closeButtonSize?: number;
+  closeButtonBorderColor?: string;
+  closeButtonTextColor?: string;
 }
 
 const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
@@ -55,7 +62,8 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
     const {
       content, drawerContent, drawerHeight, maxWidth, scrollable,
       drawerBackground, drawerBorderRadius, background, borderRadius,
-      defaultOpen, onToggle,
+      defaultOpen, onToggle, handleColor, backdropOpacity, contentScaleWhenOpen,
+      closeButtonBackground, closeButtonSize, closeButtonBorderColor, closeButtonTextColor,
     } = applyDefaults(rawProps, META, theme) as Required<TopDrawerLayoutProps>;
 
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -81,7 +89,7 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
         setIsOpen(open);
         if (onToggle) onToggle(open);
       },
-      [drawerHeight, onToggle]
+      [drawerHeight, onToggle, translateY]
     );
 
     useImperativeHandle(
@@ -123,7 +131,7 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
           scale: interpolate(
             translateY.value,
             [-drawerHeight, 0],
-            [1, 0.95],
+            [1, contentScaleWhenOpen],
             Extrapolation.CLAMP
           ),
         },
@@ -154,7 +162,7 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
       opacity: interpolate(
         translateY.value,
         [-drawerHeight, 0],
-        [0, 0.4],
+        [0, backdropOpacity],
         Extrapolation.CLAMP
       ),
       pointerEvents:
@@ -214,14 +222,14 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
                 position: 'absolute',
                 top: 16,
                 right: 16,
-                width: 36,
-                height: 36,
-                borderRadius: 18,
+                width: closeButtonSize,
+                height: closeButtonSize,
+                borderRadius: closeButtonSize / 2,
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderWidth: 1,
-                backgroundColor: `${theme.muted}20`,
-                borderColor: `${theme.border}30`,
+                backgroundColor: closeButtonBackground,
+                borderColor: closeButtonBorderColor,
                 zIndex: 102,
               }}
             >
@@ -230,7 +238,7 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
                   fontSize: 20,
                   fontWeight: '600',
                   lineHeight: 20,
-                  color: theme.mutedForeground,
+                  color: closeButtonTextColor,
                 }}
               >
                 ×
@@ -261,7 +269,7 @@ const TopDrawerLayout = React.forwardRef<TopDrawerHandle, TopDrawerLayoutProps>(
                 <Box
                   width={40}
                   height={5}
-                  bg={theme.border}
+                  bg={handleColor}
                   borderRadius="full"
                   opacity={0.5}
                 />

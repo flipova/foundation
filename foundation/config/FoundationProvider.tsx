@@ -39,7 +39,7 @@ export function useTokens(): ResolvedConfig["tokens"] {
 }
 
 interface FoundationProviderProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   config?: FoundationConfig;
 }
 

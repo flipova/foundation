@@ -37,6 +37,9 @@ export interface ResponsiveLayoutProps {
   contentBackground?: string;
   padding?: LayoutPadding;
   contentPadding?: LayoutPadding;
+  mobileHeaderHeight?: number;
+  tabletFooterHeight?: number;
+  sidebarMaxWidth?: number;
 }
 
 const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = (rawProps) => {
@@ -46,19 +49,20 @@ const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = (rawProps) => {
     footerHeight, adaptiveMode, hideHeader, hideFooter, collapseFooterOnTablet,
     background, borderRadius, headerBackground, sidebarBackground,
     footerBackground, contentBackground, padding, contentPadding,
+    mobileHeaderHeight, tabletFooterHeight, sidebarMaxWidth,
   } = applyDefaults(rawProps, META, theme) as Required<ResponsiveLayoutProps>;
 
   const { breakpoint, isMobile } = useBreakpoint();
   const isTabletRange = breakpoint === 'md' || breakpoint === 'lg';
 
   const config = useMemo(() => ({
-    hHeight: isMobile ? 56 : headerHeight,
-    fHeight: isTabletRange && collapseFooterOnTablet ? 48 : footerHeight,
-    sWidth: Math.min(sidebarWidth, 320),
+    hHeight: isMobile ? mobileHeaderHeight : headerHeight,
+    fHeight: isTabletRange && collapseFooterOnTablet ? tabletFooterHeight : footerHeight,
+    sWidth: Math.min(sidebarWidth, sidebarMaxWidth),
     showHeader: !!header && !hideHeader,
     showSidebar: !!sidebar && !isMobile && (adaptiveMode === 'sidebar' || adaptiveMode === 'full'),
     showFooter: !!footer && !hideFooter,
-  }), [isMobile, isTabletRange, header, footer, sidebar, hideHeader, hideFooter, adaptiveMode, headerHeight, footerHeight, sidebarWidth, collapseFooterOnTablet]);
+  }), [isMobile, isTabletRange, header, footer, sidebar, hideHeader, hideFooter, adaptiveMode, headerHeight, footerHeight, sidebarWidth, collapseFooterOnTablet, mobileHeaderHeight, tabletFooterHeight, sidebarMaxWidth]);
 
   return (
     <Box 
