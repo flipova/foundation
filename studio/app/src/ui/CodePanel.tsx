@@ -42,8 +42,10 @@ const SkeletonLine: React.FC<{ width?: string | number; height?: number }> = ({ 
     anim.start();
     return () => anim.stop();
   }, []);
+  // Convert string width to number for Animated.View compatibility
+  const widthValue = typeof width === 'string' ? parseFloat(width) || 100 : width;
   return (
-    <Animated.View style={{ width, height, borderRadius: 4, backgroundColor: C.s2, opacity, marginBottom: 6 }} />
+    <Animated.View style={{ width: widthValue, height, borderRadius: 4, backgroundColor: C.s2, opacity, marginBottom: 6 }} />
   );
 };
 

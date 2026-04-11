@@ -25,6 +25,7 @@ export interface TreeNode {
   events?: Record<string, ActionDef[]>;
   bindings?: Record<string, string>;
   conditionalRender?: { expression: string; mode: "show" | "hide" };
+  parentId?: string;
   /**
    * repeatBinding — iterates an array and passes each item to children.
    * Used for the primary items slot (kind: "items") in DATA mode.
@@ -83,7 +84,7 @@ export interface AnimationConfig {
   stateExpression?: string;
 }
 
-export type ActionType = "navigate" | "setState" | "callApi" | "callCustomFn" | "openModal" | "closeModal" | "alert" | "toast" | "consoleLog" | "playSound" | "haptics" | "share" | "sendSMS" | "biometrics" | "getLocation" | "clipboard" | "openURL" | "custom";
+export type ActionType = "navigate" | "setState" | "callApi" | "callCustomFn" | "openModal" | "closeModal" | "alert" | "toast" | "consoleLog" | "playSound" | "haptics" | "share" | "sendSMS" | "biometrics" | "getLocation" | "clipboard" | "openURL" | "custom" | "transform" | "compute" | "conditional" | "delay";
 
 /**
  * CustomFunction — a user-defined hook stored in the project.
