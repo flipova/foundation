@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+### Minor Changes
+
+- 6fb7929: Fix TypeScript errors in TriggerBlock.tsx and LogicPanel.items.test.tsx. Improve CONTRIBUTING.md with comprehensive Git workflow and version management documentation.
+
 ## 1.1.0
 
 ### Minor Changes
