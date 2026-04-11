@@ -39,15 +39,28 @@ const ActionNode: React.FC<{
   const meta = ACTION_META[action.type as keyof typeof ACTION_META] as { icon: React.ComponentProps<typeof Feather>['name']; color: string; label: string } | undefined;
 
   // Summary line shown when collapsed
-  const summary = (() => {
-    const p = action.payload;
-    if (action.type === 'setState') return p.key ? `${p.key} = ${String(p.value ?? '').slice(0, 20)}` : '';
-    if (action.type === 'transform') return p.storeAs ? `→ $state.${p.storeAs}` : '';
-    if (action.type === 'compute') return p.storeAs ? `→ $state.${p.storeAs}` : '';
-    if (action.type === 'conditional') return p.condition ? String(p.condition).slice(0, 24) : '';
-    if (action.type === 'navigate') return p.screen || '';
-    if (action.type === 'delay') return `${p.ms || 500}ms`;
-    return p.key || p.message || p.url || '';
+  const summary: string | null = (() => {
+    const p = action.payload as any;
+    switch (action.type) {
+      case 'setState':
+        return p.key ? `${p.key} = ${String(p.value ?? '').slice(0, 20)}` : null;
+      case 'transform':
+        return p.storeAs ? `→ $state.${p.storeAs}` : null;
+      case 'compute':
+        return p.storeAs ? `→ $state.${p.storeAs}` : null;
+      case 'conditional':
+        return p.condition ? String(p.condition).slice(0, 24) : null;
+      case 'navigate':
+        return p.screen || null;
+      case 'delay':
+        return `${p.ms || 500}ms`;
+      case 'callApi':
+        return p.url || null;
+      case 'toast':
+        return p.message || null;
+      default:
+        return p.key || p.message || p.url || null;
+    }
   })();
 
   return (
@@ -57,7 +70,7 @@ const ActionNode: React.FC<{
           <Feather name={(meta?.icon as React.ComponentProps<typeof Feather>['name']) || 'zap'} size={11} color={color} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={[s.nodeTitle, { color }]}>{(meta?.label as string) || action.type}</Text>
+          <Text style={[s.nodeTitle, { color }]}>{meta?.label || action.type || 'Unknown'}</Text>
           {!expanded && summary ? <Text style={s.nodeSubtitle} numberOfLines={1}>{summary}</Text> : null}
         </View>
         <View style={s.nodeActions}>
