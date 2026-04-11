@@ -1,0 +1,95 @@
+---
+sidebar_position: 1
+---
+
+# Introduction
+
+Welcome to **Flipova Foundation** - a comprehensive design system, theming library, and layout primitives for React Native applications.
+
+## What is Flipova Foundation?
+
+Flipova Foundation provides:
+
+- **Design Tokens**: A consistent set of design tokens for colors, spacing, typography, and more
+- **Theming System**: A powerful theming system with built-in support for light/dark modes
+- **Layout Primitives**: Pre-built layout components that work across iOS, Android, and Web
+- **TypeScript Support**: Full TypeScript support with comprehensive type definitions
+- **Cross-Platform**: Works seamlessly on iOS, Android, and Web platforms
+
+## Installation
+
+```bash
+npm install @flipova/foundation
+```
+
+Or using GitHub Packages:
+
+```bash
+npm install @flipova/foundation --registry=https://npm.pkg.github.com
+```
+
+## Quick Start
+
+```tsx
+import { ThemeProvider, Button, Card } from '@flipova/foundation';
+
+function App() {
+  return (
+    <ThemeProvider>
+      <Card>
+        <Button variant="primary">Click me</Button>
+      </Card>
+    </ThemeProvider>
+  );
+}
+```
+
+## Key Features
+
+### Design Tokens
+Access design tokens directly in your code:
+
+```tsx
+import { tokens } from '@flipova/foundation';
+
+const styles = {
+  backgroundColor: tokens.colors.primary,
+  padding: tokens.spacing.md,
+};
+```
+
+### Theming
+Switch between themes effortlessly:
+
+```tsx
+import { useTheme } from '@flipova/foundation';
+
+function MyComponent() {
+  const { theme, toggleTheme } = useTheme();
+  return <button onClick={toggleTheme}>Toggle Theme</button>;
+}
+```
+
+### Layout Components
+Use pre-built layout components:
+
+```tsx
+import { FlexLayout, BentoLayout } from '@flipova/foundation';
+
+<FlexLayout direction="row" gap={16}>
+  <div>Item 1</div>
+  <div>Item 2</div>
+</FlexLayout>
+```
+
+## Documentation Structure
+
+- **Guides**: Learn how to use Flipova Foundation in your projects
+- **API Reference**: Detailed API documentation for all components and utilities
+- **Contributing**: Guidelines for contributing to the project
+
+## Next Steps
+
+- Read the [Getting Started](#) guide to set up your first project
+- Explore the [API Reference](/docs/api/intro) for detailed component documentation
+- Check out the [Contributing](/docs/contributing) guide if you want to contribute

@@ -1,0 +1,223 @@
+---
+sidebar_position: 2
+---
+
+# Contributing
+
+Thank you for your interest in contributing to Flipova Foundation! This guide will help you get started with contributing to the project.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js version 20.0 or above
+- npm or yarn package manager
+- Git
+- A GitHub account
+
+### Setting Up Your Development Environment
+
+1. **Fork the repository**
+
+   Visit the [Flipova Foundation repository](https://github.com/flipova/foundation) and click the "Fork" button in the top-right corner.
+
+2. **Clone your fork**
+
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/foundation.git
+   cd foundation
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+4. **Set up the upstream remote**
+
+   ```bash
+   git remote add upstream https://github.com/flipova/foundation.git
+   ```
+
+## Development Workflow
+
+### Branch Strategy
+
+We follow a Git flow-based branching strategy:
+
+- **main**: Protected branch for production releases
+- **feature/**: New features and enhancements
+- **fix/**: Bug fixes
+- **docs/**: Documentation changes
+- **hotfix/**: Urgent production fixes
+
+### Creating a Feature Branch
+
+```bash
+git checkout main
+git pull upstream main
+git checkout -b feature/your-feature-name
+```
+
+### Making Changes
+
+1. **Run type checking**
+
+   ```bash
+   npm run typecheck
+   ```
+
+2. **Build the project**
+
+   ```bash
+   npm run build
+   ```
+
+3. **Add a changeset**
+
+   ```bash
+   npx changeset
+   ```
+
+   Follow the prompts to describe your changes. This helps with version management and changelog generation.
+
+4. **Commit your changes**
+
+   ```bash
+   git add .
+   git commit -m "feat: add your feature description"
+   ```
+
+   Use conventional commit messages:
+   - `feat:` for new features
+   - `fix:` for bug fixes
+   - `docs:` for documentation changes
+   - `refactor:` for code refactoring
+   - `test:` for adding tests
+   - `chore:` for maintenance tasks
+
+5. **Push your branch**
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+### Creating a Pull Request
+
+1. Visit your fork on GitHub
+2. Click "New Pull Request"
+3. Select your feature branch
+4. Fill in the PR template:
+   - **What**: Brief description of what you changed
+   - **Why**: Explain why this change is needed
+   - **Type**: Select the type of change (feature, fix, docs, etc.)
+   - **Checklist**: Ensure all items are checked
+
+### Pull Request Checklist
+
+Before submitting your PR, ensure:
+
+- [ ] Code passes `npm run typecheck`
+- [ ] Code passes `npm run build`
+- [ ] Changeset has been added (unless it's a documentation-only change)
+- [ ] Code follows project conventions
+- [ ] Tests are added/updated if applicable
+- [ ] Documentation is updated if needed
+
+## Code Style Guidelines
+
+### TypeScript
+
+- Use TypeScript for all new code
+- Avoid `any` types when possible
+- Use proper type annotations
+- Export types that are used externally
+
+### React Native Components
+
+- Use functional components with hooks
+- Follow the existing component structure
+- Use the `applyDefaults` utility for default props
+- Avoid inline comments in JSX
+- Export components from `index.ts`
+
+### Testing
+
+- Write unit tests for new utilities and helpers
+- Use Vitest for testing
+- Keep tests focused and maintainable
+
+## Documentation
+
+### Updating Documentation
+
+Documentation is built with Docusaurus and located in the `docs/` directory:
+
+- **Guides**: User-facing documentation in `docs/docs/`
+- **API Reference**: API documentation in `docs/docs/api/`
+- **Blog**: Blog posts in `docs/blog/`
+
+To update documentation:
+
+1. Edit the relevant `.mdx` file
+2. Test locally:
+   ```bash
+   cd docs
+   npm run start
+   ```
+3. Commit and push your changes
+
+### API Documentation
+
+API documentation is generated from TypeScript comments. Follow JSDoc conventions:
+
+```typescript
+/**
+ * Button component with multiple variants and sizes.
+ * 
+ * @param variant - Button variant ('primary' | 'secondary' | 'ghost')
+ * @param size - Button size ('small' | 'medium' | 'large')
+ * @param onPress - Callback when button is pressed
+ * @param children - Button content
+ * 
+ * @example
+ * ```tsx
+ * <Button variant="primary" onPress={handlePress}>
+ *   Click me
+ * </Button>
+ * ```
+ */
+export function Button({ variant, size, onPress, children }: ButtonProps) {
+  // ...
+}
+```
+
+## Release Process
+
+Releases are managed using Changesets:
+
+1. When a PR is merged to `main`, the Release workflow detects changesets
+2. It creates a "Version Packages" PR that bumps the version
+3. Merging this PR triggers the Publish workflow
+4. The package is published to GitHub Packages automatically
+
+### Version Bumping
+
+- **patch**: Bug fixes (1.1.0 → 1.1.1)
+- **minor**: New features (1.1.0 → 1.2.0)
+- **major**: Breaking changes (1.1.0 → 2.0.0)
+
+## Getting Help
+
+- **GitHub Issues**: Report bugs and request features
+- **GitHub Discussions**: Ask questions and discuss ideas
+- **Code Review**: Request reviews on your PRs
+
+## Code of Conduct
+
+Be respectful, inclusive, and constructive in all interactions. We're all here to learn and build together.
+
+## License
+
+By contributing to Flipova Foundation, you agree that your contributions will be licensed under the MIT License.

@@ -1,0 +1,91 @@
+---
+sidebar_position: 1
+---
+
+# API Reference
+
+Welcome to the Flipova Foundation API reference documentation. This section provides detailed information about all components, utilities, and types available in the library.
+
+## Core Modules
+
+### Design Tokens
+Access the design system tokens for consistent styling across your application.
+
+- [`colors`](/docs/api/colors) - Color palette and semantic color tokens
+- [`spacing`](/docs/api/spacing) - Spacing scale and utilities
+- [`typography`](/docs/api/typography) - Typography scale and font utilities
+- [`borders`](/docs/api/borders) - Border radius and border width tokens
+- [`shadows`](/docs/api/shadows) - Shadow depth tokens
+
+### Components
+Pre-built React Native components ready to use in your application.
+
+- [`ThemeProvider`](/docs/api/theme-provider) - Theme context provider
+- [`Button`](/docs/api/button) - Button component with variants
+- [`Card`](/docs/api/card) - Card container component
+- [`FlexLayout`](/docs/api/flex-layout) - Flexbox layout component
+- [`BentoLayout`](/docs/api/bento-layout) - Bento grid layout component
+
+### Layout Primitives
+Advanced layout components for complex UI structures.
+
+- [`GridLayout`](/docs/api/grid-layout) - Grid-based layout
+- [`DeckLayout`](/docs/api/deck-layout) - Card deck layout
+- [`SwiperLayout`](/docs/api/swiper-layout) - Swipeable card layout
+- [`MasonryLayout`](/docs/api/masonry-layout) - Masonry grid layout
+- [`ParallaxLayout`](/docs/api/parallax-layout) - Parallax scrolling layout
+- [`CrossTabLayout`](/docs/api/cross-tab-layout) - Cross-tab navigation layout
+
+### Utilities
+Helper functions and utilities for common tasks.
+
+- [`useTheme`](/docs/api/use-theme) - Hook for accessing theme context
+- [`applyDefaults`](/docs/api/apply-defaults) - Apply default props to components
+- [`createStyles`](/docs/api/create-styles) - Create styled components with theme support
+
+### Types
+TypeScript type definitions for type safety.
+
+- [`Theme`](/docs/api/theme) - Theme interface definition
+- [`DesignTokens`](/docs/api/design-tokens) - Design tokens type definitions
+- [`ComponentProps`](/docs/api/component-props) - Component prop type definitions
+
+## Usage Example
+
+```tsx
+import { ThemeProvider, Button, Card, useTheme } from '@flipova/foundation';
+import { tokens } from '@flipova/foundation';
+
+function MyComponent() {
+  const { theme } = useTheme();
+  
+  return (
+    <ThemeProvider>
+      <Card style={{ padding: tokens.spacing.lg }}>
+        <Button variant="primary" onPress={() => {}}>
+          Click me
+        </Button>
+      </Card>
+    </ThemeProvider>
+  );
+}
+```
+
+## Type Safety
+
+All components and utilities are fully typed with TypeScript. You can leverage autocomplete and type checking in your IDE:
+
+```tsx
+import type { ButtonProps, Theme } from '@flipova/foundation';
+
+const buttonProps: ButtonProps = {
+  variant: 'primary', // Type-safe: only 'primary' | 'secondary' | 'ghost'
+  size: 'medium',    // Type-safe: only 'small' | 'medium' | 'large'
+};
+```
+
+## Next Steps
+
+- Explore the [Design Tokens](/docs/api/colors) to understand the design system
+- Check out the [Components](/docs/api/button) for component documentation
+- Learn about [Layout Primitives](/docs/api/grid-layout) for advanced layouts
