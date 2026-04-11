@@ -296,7 +296,7 @@ describe('ItemsDataSourceSection — display state (Req 3.4)', () => {
   });
 
   it('shows empty string in source input when no repeatBinding', () => {
-    const repeat: RepeatBinding = undefined;
+    const repeat: RepeatBinding | undefined = undefined as any;
     const inputValue = repeat?.source || '';
     expect(inputValue).toBe('');
   });
