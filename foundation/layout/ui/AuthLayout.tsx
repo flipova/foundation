@@ -29,6 +29,9 @@ export interface AuthLayoutProps {
   brandingRatio?: number;
   padding?: SpacingToken;
   shadowed?: boolean;
+  formMaxWidth?: number;
+  formScrollPaddingY?: SpacingToken;
+  formScrollPaddingX?: SpacingToken;
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = (rawProps) => {
@@ -36,6 +39,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = (rawProps) => {
   const {
     children, branding, brandingBackground, background,
     borderRadius, spacing, brandingRatio, padding, shadowed,
+    formMaxWidth, formScrollPaddingY, formScrollPaddingX,
   } = applyDefaults(rawProps, META, theme) as Required<AuthLayoutProps>;
 
   const { breakpoint, isMobile } = useBreakpoint();
@@ -64,12 +68,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = (rawProps) => {
           )}
 
           <Box flex={1} bg={formBg} gradient={formGradient}>
-            <Scroll py={8} px={4}>
+            <Scroll py={formScrollPaddingY} px={formScrollPaddingX}>
               <Center flex={1}>
                 <Stack
                   spacing={8}
                   width="100%"
-                  maxWidth={520}
+                  maxWidth={formMaxWidth}
                   align="stretch"
                   p={isMobile ? padding : 0}
                   borderRadius={isMobile ? "3xl" : "none"}

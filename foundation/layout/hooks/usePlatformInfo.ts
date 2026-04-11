@@ -13,6 +13,7 @@
  */
 
 import { Platform } from "react-native";
+import { usePlatformOverride } from "./PlatformOverride";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,9 +30,13 @@ export interface PlatformInfo {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export const usePlatformInfo = (): PlatformInfo => ({
-  isWeb: Platform.OS === "web",
-  isNative: Platform.OS !== "web",
-  isIOS: Platform.OS === "ios",
-  isAndroid: Platform.OS === "android",
-});
+export const usePlatformInfo = (): PlatformInfo => {
+  const override = usePlatformOverride();
+  if (override?.platform) return override.platform;
+  return {
+    isWeb: Platform.OS === "web",
+    isNative: Platform.OS !== "web",
+    isIOS: Platform.OS === "ios",
+    isAndroid: Platform.OS === "android",
+  };
+};

@@ -1,0 +1,29 @@
+# Source files (only dist is published)
+foundation/
+studio/app/src/
+studio/app/app/
+studio/app/metro.config.js
+studio/app/app.json
+studio/app/package.json
+studio/app/tsconfig.json
+studio/engine/
+studio/server/
+studio/cli/
+studio/index.ts
+studio/README.md
+
+# Dev files
+.github/
+.kiro/
+.changeset/
+.vscode/
+generated/
+node_modules/
+studio/app/node_modules/
+
+# Config
+tsup.config.ts
+tsconfig.json
+.gitignore
+.npmrc
+*.log

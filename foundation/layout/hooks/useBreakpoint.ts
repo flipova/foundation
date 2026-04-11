@@ -19,6 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Dimensions, Platform } from "react-native";
 import { Breakpoint } from "../../tokens/breakpoints";
 import { getBreakpoint } from "../utils/responsive";
+import { usePlatformOverride } from "./PlatformOverride";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,10 +66,10 @@ const deriveInfo = (bp: Breakpoint | null): BreakpointInfo => ({
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 export const useBreakpoint = (): BreakpointInfo => {
+  const override = usePlatformOverride();
   const [bp, setBp] = useState<Breakpoint | null>(getInitialBreakpoint);
 
   useEffect(() => {
-    // Sur web, si on était en SSR, on résout ici au premier mount
     if (bp === null) {
       setBp(getBreakpoint(window.innerWidth));
     }
@@ -77,7 +78,8 @@ export const useBreakpoint = (): BreakpointInfo => {
       setBp(getBreakpoint());
     });
     return () => subscription?.remove();
-  }, []);
+  }, [bp]);
 
-  return useMemo(() => deriveInfo(bp), [bp]);
+  const real = useMemo(() => deriveInfo(bp), [bp]);
+  return override?.breakpoint ?? real;
 };

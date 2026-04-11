@@ -34,6 +34,12 @@ export interface DashboardLayoutProps {
   borderRadius?: RadiusToken;
   background?: string;
   disableContentScroll?: boolean;
+  headerBackground?: string;
+  sidebarBackground?: string;
+  contentBackground?: string;
+  footerBackground?: string;
+  headerPaddingX?: SpacingToken;
+  mobileHeaderMinHeight?: number;
 }
 
 const META = getLayoutMeta("DashboardLayout")!;
@@ -54,6 +60,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
     header, sidebar, content, footer,
     sidebarWidth, sidebarCollapsedWidth, headerHeight, footerHeight,
     spacing, borderRadius, background, disableContentScroll,
+    headerBackground, sidebarBackground, contentBackground, footerBackground,
+    headerPaddingX, mobileHeaderMinHeight,
   } = applyDefaults(rawProps, META, theme) as Required<DashboardLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -68,7 +76,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
       next ? sidebarCollapsedWidth : sidebarWidth,
       { damping: 20, stiffness: 90 }
     );
-  }, [isCollapsed, sidebarWidth, sidebarCollapsedWidth]);
+  }, [isCollapsed, sidebarWidth, sidebarCollapsedWidth, sidebarAnimWidth]);
 
   const sidebarAnimStyle = useAnimatedStyle(() => ({
     width: isMobile ? "100%" : sidebarAnimWidth.value,
@@ -81,11 +89,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
 
       <Box
         height={isMobile ? undefined : headerHeight}
-        minHeight={isMobile ? 60 : undefined}
-        bg={theme.card}
+        minHeight={isMobile ? mobileHeaderMinHeight : undefined}
+        bg={headerBackground}
         borderRadius={borderRadius}
         justifyContent="center"
-        px={4}
+        px={headerPaddingX}
       >
         {header}
       </Box>
@@ -98,7 +106,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
         {sidebar && (
           <AnimatedBox
             style={[sidebarAnimStyle, { overflow: "hidden" }]}
-            bg={theme.card}
+            bg={sidebarBackground}
             borderRadius={borderRadius}
           >
             {!isMobile && (
@@ -112,7 +120,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
           </AnimatedBox>
         )}
 
-        <Box flex={1} bg={theme.card} borderRadius={borderRadius} overflow="hidden">
+        <Box flex={1} bg={contentBackground} borderRadius={borderRadius} overflow="hidden">
           {disableContentScroll
             ? content
             : <Scroll showsVerticalScrollIndicator={false}>{content}</Scroll>
@@ -123,7 +131,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = (rawProps) => {
       {footer && (
         <Box
           height={isMobile ? undefined : footerHeight}
-          bg={theme.card}
+          bg={footerBackground}
           borderRadius={borderRadius}
           justifyContent="center"
           px={4}

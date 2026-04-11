@@ -42,6 +42,11 @@ export interface BottomDrawerLayoutProps {
   borderRadius?: RadiusToken;
   defaultOpen?: boolean;
   onToggle?: (isOpen: boolean) => void;
+  handleColor?: string;
+  backdropOpacity?: number;
+  contentScaleWhenOpen?: number;
+  handleBarColor?: string;
+  handleButtonSize?: number;
 }
 
 const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
@@ -49,7 +54,8 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
   const {
     content, drawerContent, drawerHeight, maxWidth, scrollable,
     drawerBackground, drawerBorderRadius, background, borderRadius,
-    defaultOpen, onToggle,
+    defaultOpen, onToggle, handleColor, backdropOpacity, contentScaleWhenOpen,
+    handleBarColor, handleButtonSize,
   } = applyDefaults(rawProps, META, theme) as Required<BottomDrawerLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -69,7 +75,7 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
     });
     setIsOpen(open);
     if (onToggle) onToggle(open);
-  }, [drawerHeight, onToggle]);
+  }, [drawerHeight, onToggle, translateY, triggerHaptic]);
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -113,7 +119,7 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
 
   const contentAnimatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { scale: interpolate(translateY.value, [0, drawerHeight], [0.95, 1], Extrapolation.CLAMP) },
+      { scale: interpolate(translateY.value, [0, drawerHeight], [contentScaleWhenOpen, 1], Extrapolation.CLAMP) },
       { translateY: interpolate(translateY.value, [0, drawerHeight], [-10, 0], Extrapolation.CLAMP) }
     ],
     opacity: interpolate(translateY.value, [0, drawerHeight], [0.8, 1], Extrapolation.CLAMP),
@@ -121,7 +127,7 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
   }));
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(translateY.value, [0, drawerHeight], [0.4, 0], Extrapolation.CLAMP),
+    opacity: interpolate(translateY.value, [0, drawerHeight], [backdropOpacity, 0], Extrapolation.CLAMP),
     pointerEvents: translateY.value >= drawerHeight ? 'none' : 'auto' as any,
   }));
 
@@ -153,30 +159,16 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
                 style={({ pressed }) => [
                   styles.handleButton, 
                   { 
-                    backgroundColor: theme.primary, 
+                    backgroundColor: handleColor, 
                     opacity: pressed ? 0.8 : 1,
-                    transform: [{ scale: pressed ? 0.95 : 1 }]
+                    transform: [{ scale: pressed ? 0.95 : 1 }],
+                    width: handleButtonSize,
                   }
                 ]}
               >
-                <Fingerprint size={24} color="white" strokeWidth={2.5} />
+                <Fingerprint {...{size:24, color:"white", strokeWidth:2.5} as any} />
               </Pressable>
             </AnimatedBox>
-            <Box position="absolute" bottom={60} alignItems="center">
-              <Box 
-                width={40} 
-                height={4} 
-                bg={theme.primary} 
-                borderRadius="full" 
-                opacity={0.6}
-                style={{
-                  shadowColor: theme.primary,
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 4,
-                }}
-              />
-            </Box>
           </Box>
         )}
 
@@ -191,7 +183,7 @@ const BottomDrawerLayout: React.FC<BottomDrawerLayoutProps> = (rawProps) => {
           <GestureDetector gesture={panGesture}>
             <Box flex={1}>
               <Box width="100%" height={60} alignItems="center" justifyContent="center" style={styles.grabber as any}>
-                <Box width={40} height={5} bg={theme.border} borderRadius="full" opacity={0.5} />
+                <Box width={40} height={5} bg={handleBarColor} borderRadius="full" opacity={0.5} />
               </Box>
               
               <Box flex={1}>
@@ -237,7 +229,6 @@ const styles = StyleSheet.create({
       android: { elevation: 16 },
     }),
   },
-  scrollContent: { paddingBottom: 40 }
 });
 
 export default BottomDrawerLayout;

@@ -51,14 +51,17 @@
   },
   "files": [
     "dist",
-    "studio/web",
+    "studio/app/dist",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "npm run build:studio && npm run build:foundation",
+    "build:foundation": "tsup",
+    "build:studio": "cd studio/app && npx expo export --platform web --output-dir dist",
     "dev": "tsup --watch",
+    "dev:studio": "cd studio/app && npx expo start --web --port 4201",
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
     "version": "changeset version",
@@ -110,6 +113,7 @@
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
     "@types/express": "^5.0.6",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.0",
     "@types/react-native": "^0.73.0",
     "@types/ws": "^8.18.1",
@@ -118,12 +122,14 @@
     "expo-linear-gradient": "^12.0.0",
     "expo-navigation-bar": "^55.0.10",
     "expo-status-bar": "^55.0.5",
+    "fast-check": "^4.6.0",
     "lucide-react-native": "^1.7.0",
     "react-native-gesture-handler": "^2.0.0",
     "react-native-reanimated": "^3.0.0",
-    "react-native-safe-area-context": "^4.0.0",
+    "react-native-safe-area-context": "^5.7.0",
     "tsup": "^8.5.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^4.1.2"
   },
   "keywords": [
     "react-native",
@@ -136,7 +142,22 @@
     "expo"
   ],
   "dependencies": {
+    "@craftzdog/react-native-buffer": "^6.0.5",
+    "@expo/metro-runtime": "^55.0.9",
+    "@expo/vector-icons": "^15.1.1",
+    "@react-native-async-storage/async-storage": "~2.1.0",
+    "expo": "~55.0.0",
+    "expo-router": "~55.0.0",
     "express": "^5.2.1",
+    "qrcode": "^1.5.4",
+    "react": ">=18.0.0",
+    "react-dom": "^19.0.0",
+    "react-native": ">=0.73.0",
+    "react-native-safe-area-context": ">=4.0.0",
+    "react-native-screens": "~4.24.0",
+    "react-native-web": "~0.20.0",
+    "readable-stream": "^4.5.2",
+    "snack-sdk": "^3.8.0",
     "ws": "^8.20.0"
   }
 }

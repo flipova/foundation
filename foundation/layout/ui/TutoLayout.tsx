@@ -86,15 +86,20 @@ export interface TutoStep {
 }
 
 export interface TutoLayoutProps {
-    steps: TutoStep[];
-    visible: boolean;
-    onFinish: () => void;
+    steps?: TutoStep[];
+    children?: React.ReactNode;
+    visible?: boolean;
+    onFinish?: () => void;
     onStepChange?: (index: number) => void;
     overlayOpacity?: number;
     overlayColor?: string;
     showSkip?: boolean;
     nextLabel?: string;
     finishLabel?: string;
+    accentColor?: string;
+    textBackground?: string;
+    textColor?: string;
+    mutedTextColor?: string;
 }
 
 export const useTutoRef = () => useRef<View>(null);
@@ -198,7 +203,7 @@ const GestureIndicator = ({
         }
 
         return () => { cancelAnimation(progress); cancelAnimation(op); };
-    }, [gesture]);
+    }, [gesture, arrow, op, progress]);
 
     const dotStyle = useAnimatedStyle(() => ({
         opacity: op.value,
@@ -279,7 +284,7 @@ const HighlightZone = ({ zone, color }: { zone: ResolvedZone; color: string }) =
         const delay = zone.delay ?? 0;
         op.value = withDelay(delay, withTiming(1, { duration: 300 }));
         return () => { cancelAnimation(op); };
-    }, [zone.id]);
+    }, [zone.id, zone.delay, op]);
 
     const wrapStyle  = useAnimatedStyle(() => ({ opacity: op.value }));
     const labelStyle = getLabelStyle(zone.labelPosition ?? 'bottom', zx, zy, zw, zh);
@@ -330,9 +335,14 @@ const HighlightZone = ({ zone, color }: { zone: ResolvedZone; color: string }) =
 
 export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
     const {
-        steps, visible, onFinish, onStepChange,
+        steps: stepsProp, children, visible, onFinish, onStepChange,
         overlayOpacity, overlayColor, showSkip, nextLabel, finishLabel,
-    } = applyDefaults(rawProps, META) as Required<TutoLayoutProps>;
+        accentColor, textBackground, textColor, mutedTextColor,
+    } = applyDefaults(rawProps, META, useTheme().theme) as Required<TutoLayoutProps>;
+
+    const steps: TutoStep[] = Array.isArray(stepsProp) ? stepsProp : [];
+    const isVisible = visible ?? false;
+    const handleFinish = onFinish ?? (() => {});
 
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
@@ -369,9 +379,9 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
     };
 
     useEffect(() => {
-        if (visible) {
+        if (isVisible) {
             setStepIndex(0);
-            setTimeout(() => resolveZones(steps[0].zones), 80);
+            if (steps[0]?.zones) setTimeout(() => resolveZones(steps[0].zones), 80);
             overlayOp.value = withTiming(overlayOpacity, { duration: 340 });
             contentOp.value = withDelay(200, withTiming(1, { duration: 280 }));
             contentY.value  = withDelay(200, withSpring(0, { damping: 22, stiffness: 200 }));
@@ -379,7 +389,7 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
             overlayOp.value = withTiming(0, { duration: 220 });
             contentOp.value = withTiming(0, { duration: 160 });
         }
-    }, [visible]);
+    }, [isVisible, overlayOpacity, overlayOp, contentOp, contentY, steps]);
 
     const applyStep = async (index: number) => {
         setStepIndex(index);
@@ -401,17 +411,17 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
             goToStep(stepIndex + 1);
         } else {
             overlayOp.value = withTiming(0, { duration: 220 });
-            contentOp.value = withTiming(0, { duration: 160 }, () => runOnJS(onFinish)());
+            contentOp.value = withTiming(0, { duration: 160 }, () => runOnJS(handleFinish)());
         }
     };
 
     useEffect(() => {
         if (autoTimer.current) clearTimeout(autoTimer.current);
-        if (visible && step?.autoDuration) {
+        if (isVisible && step?.autoDuration) {
             autoTimer.current = setTimeout(handleNext, step.autoDuration);
         }
         return () => { if (autoTimer.current) clearTimeout(autoTimer.current); };
-    }, [stepIndex, visible]);
+    }, [stepIndex, isVisible, handleNext, step?.autoDuration]);
 
     const activeGesture = resolvedZones.find(z => z.gesture)?.gesture;
 
@@ -445,10 +455,10 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
 
     const textPos = step?.textPosition ?? 'bottom';
 
-    if (!visible) return null;
+    if (!isVisible) return null;
 
     return (
-        <Modal transparent animationType="none" visible={visible} statusBarTranslucent>
+        <Modal transparent animationType="none" visible={isVisible} statusBarTranslucent>
             <Animated.View
                 style={[overlayStyle, StyleSheet.absoluteFill, { backgroundColor: bgColor }]}
                 {...(activeGesture ? panResponder.panHandlers : {})}
@@ -458,7 +468,7 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                 <HighlightZone
                     key={`${stepIndex}-${zone.id}`}
                     zone={zone}
-                    color={theme.primary ?? '#fff'}
+                    color={accentColor ?? theme.primary ?? '#fff'}
                 />
             ))}
 
@@ -473,7 +483,7 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                                                { bottom: 32 + insets.bottom }),
                 },
             ]}>
-                <Box style={[s.band, { backgroundColor: `${theme.background}F8` }]}>
+                <Box style={[s.band, { backgroundColor: textBackground ?? `${theme.background}F8` }]}>
                     <View style={s.dots}>
                         {steps.map((_, i) => (
                             <View
@@ -483,8 +493,8 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                                     {
                                         width: i === stepIndex ? spacing[3] : 4,
                                         backgroundColor: i === stepIndex
-                                            ? theme.primary
-                                            : `${theme.foreground}2E`,
+                                            ? (accentColor ?? theme.primary)
+                                            : `${textColor ?? theme.foreground}2E`,
                                     },
                                 ]}
                             />
@@ -494,12 +504,12 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                     {(step?.title || step?.description) ? (
                         <View style={s.textWrap}>
                             {step.title && (
-                                <Text style={[s.title, { color: theme.foreground }]}>
+                                <Text style={[s.title, { color: textColor ?? theme.foreground }]}>
                                     {step.title}
                                 </Text>
                             )}
                             {step.description && (
-                                <Text style={[s.desc, { color: `${theme.foreground}99` }]}>
+                                <Text style={[s.desc, { color: mutedTextColor ?? `${theme.foreground}99` }]}>
                                     {step.description}
                                 </Text>
                             )}
@@ -511,11 +521,11 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                     <View style={s.actions}>
                         {showSkip && !isLast && (
                             <Pressable
-                                onPress={onFinish}
+                                onPress={handleFinish}
                                 hitSlop={12}
                                 style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
                             >
-                                <Text style={[s.skipText, { color: `${theme.foreground}55` }]}>
+                                <Text style={[s.skipText, { color: mutedTextColor ?? `${theme.foreground}55` }]}>
                                     Skip
                                 </Text>
                             </Pressable>
@@ -526,7 +536,7 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                             style={({ pressed }) => [
                                 s.nextBtn,
                                 {
-                                    backgroundColor: theme.primary,
+                                backgroundColor: accentColor ?? theme.primary,
                                     opacity: pressed ? 0.85 : 1,
                                 },
                             ]}
@@ -535,7 +545,7 @@ export const TutoLayout: React.FC<TutoLayoutProps> = (rawProps) => {
                                 {isLast ? finishLabel : nextLabel}
                             </Text>
                             {!isLast && (
-                                <ChevronRight size={13} color={theme.primaryForeground ?? '#fff'} strokeWidth={2.5} />
+                                <ChevronRight {...{size:13, color:theme.primaryForeground ?? '#fff', strokeWidth:2.5} as any} />
                             )}
                         </Pressable>
                     </View>

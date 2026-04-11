@@ -29,9 +29,6 @@ import { useEffect, useState } from 'react';
  * - Falls back to 'light' on environments where `matchMedia` is unavailable (e.g. SSR)
  */
 export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
-  // If an explicit theme is provided, use it directly
-  if (theme) return theme;
-
   const getSystemScheme = (): 'light' | 'dark' => {
     if (typeof window === 'undefined' || !window.matchMedia) return 'light';
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -41,17 +38,14 @@ export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
 
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
-
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
     const handleChange = (event: MediaQueryListEvent) => {
       setScheme(event.matches ? 'dark' : 'light');
     };
-
-    // Use modern addEventListener API
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  if (theme) return theme;
   return scheme;
 }

@@ -28,6 +28,8 @@ export interface SplitLayoutProps {
   borderRadius?: RadiusToken;
   leftBackground?: string;
   rightBackground?: string;
+  leftBorderRadius?: RadiusToken;
+  rightBorderRadius?: RadiusToken;
 }
 
 const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
@@ -35,6 +37,7 @@ const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
   const {
     left, right, spacing, leftWidth, ratio, orientation,
     hideLeftOnMobile, background, borderRadius, leftBackground, rightBackground,
+    leftBorderRadius, rightBorderRadius,
   } = applyDefaults(rawProps, META, theme) as Required<SplitLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -49,7 +52,7 @@ const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
       flex={leftFlex}
       width={leftWidth && !isVertical ? leftWidth : undefined}
       bg={leftBackground}
-      borderRadius={borderRadius}
+      borderRadius={leftBorderRadius}
       overflow="hidden"
     >
       <Scroll>{left}</Scroll>
@@ -57,7 +60,7 @@ const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
   );
 
   const rightPanel = (
-    <Box flex={rightFlex} bg={rightBackground} borderRadius={borderRadius} overflow="hidden">
+    <Box flex={rightFlex} bg={rightBackground} borderRadius={rightBorderRadius} overflow="hidden">
       <Scroll>{right}</Scroll>
     </Box>
   );
@@ -65,7 +68,7 @@ const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
   return (
     <Box flex={1} bg={background}>
       {isMobile && hideLeftOnMobile ? (
-        <Box flex={1} bg={rightBackground} borderRadius={borderRadius} overflow="hidden">
+        <Box flex={1} bg={rightBackground} borderRadius={rightBorderRadius} overflow="hidden">
           <Scroll>{right}</Scroll>
         </Box>
       ) : (

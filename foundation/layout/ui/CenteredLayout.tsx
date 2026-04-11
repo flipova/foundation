@@ -25,6 +25,8 @@ export interface CenteredLayoutProps {
   cardBackground?: string;
   borderRadius?: RadiusToken;
   shadowed?: boolean;
+  mobilePadding?: SpacingToken;
+  desktopPadding?: SpacingToken;
 }
 
 const CenteredLayout: React.FC<CenteredLayoutProps> = (rawProps) => {
@@ -37,6 +39,8 @@ const CenteredLayout: React.FC<CenteredLayoutProps> = (rawProps) => {
     cardBackground,
     borderRadius,
     shadowed,
+    mobilePadding,
+    desktopPadding,
   } = applyDefaults(rawProps, META, theme) as Required<CenteredLayoutProps>;
 
   const { isMobile } = useBreakpoint();
@@ -47,7 +51,7 @@ const CenteredLayout: React.FC<CenteredLayoutProps> = (rawProps) => {
   return (
     <Box flex={1} bg={pageBg}>
       <Scroll showsVerticalScrollIndicator={false}>
-        <Center p={isMobile ? 4 : 6}>
+        <Center p={isMobile ? mobilePadding : desktopPadding}>
           <Box
             width="100%"
             maxWidth={isMobile ? undefined : maxWidth}

@@ -10,13 +10,15 @@ import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, SpacingToken } from "../../tokens";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 import { applyDefaults, getLayoutMeta } from "../registry";
+import { useStudioItems } from "../hooks/useStudioItems";
 import Box from "./primitives/Box";
 import Scroll from "./primitives/Scroll";
 
 const META = getLayoutMeta("GridLayout")!;
 
 export interface GridLayoutProps {
-  children: React.ReactNode[];
+  items?: React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[]; // backward compat
   columns?: number;
   cellHeight?: number | "auto";
   spacing?: SpacingToken;
@@ -44,27 +46,36 @@ const GridLayout: React.FC<GridLayoutProps> = (rawProps) => {
   const columns = cfg.columns ?? defaultColumns;
   const finalSpacing = cfg.compact ? 2 as SpacingToken : cfg.spacing;
 
+  // Standard: accept `items` (primary) or `children` (backward compat)
+  const rawItems = Array.isArray(cfg.items) && cfg.items.length > 0
+    ? cfg.items
+    : React.Children.toArray(cfg.children as React.ReactNode).filter(Boolean);
+  const resolvedChildren = useStudioItems(
+    rawItems,
+    4,
+    (i) => <Box key={i} flex={1} minHeight={80} bg={cfg.itemBackground} borderRadius={cfg.itemBorderRadius} opacity={0.4} />
+  );
+
   const gridRows = useMemo(() => {
-    const arr = React.Children.toArray(cfg.children).filter(Boolean);
     const rows: React.ReactNode[][] = [];
-    for (let i = 0; i < arr.length; i += columns) {
-      rows.push(arr.slice(i, i + columns));
+    for (let i = 0; i < resolvedChildren.length; i += columns) {
+      rows.push(resolvedChildren.slice(i, i + columns));
     }
     return rows;
-  }, [cfg.children, columns]);
+  }, [resolvedChildren, columns]);
 
   const content = (
     <Box flex={1} p={cfg.padding} width="100%" maxWidth={cfg.maxWidth} alignSelf="center" gap={finalSpacing}>
       {gridRows.map((row, rowIndex) => (
         <Box key={`row-${rowIndex}`} flexDirection="row" gap={finalSpacing} width="100%">
           {row.map((child, colIndex) => (
-            <Box key={`col-${colIndex}`} flex={1} height={cfg.cellHeight} bg={cfg.itemBackground} borderRadius={cfg.itemBorderRadius} overflow="hidden">
+            <Box key={`col-${colIndex}`} flex={1} height={cfg.cellHeight ?? undefined} bg={cfg.itemBackground} borderRadius={cfg.itemBorderRadius} overflow="hidden">
               {child}
             </Box>
           ))}
           {row.length < columns &&
             Array.from({ length: columns - row.length }).map((_, i) => (
-              <Box key={`empty-${i}`} flex={1} height={cfg.cellHeight} bg="transparent" />
+              <Box key={`empty-${i}`} flex={1} height={cfg.cellHeight ?? undefined} bg="transparent" />
             ))}
         </Box>
       ))}

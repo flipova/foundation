@@ -20,6 +20,7 @@ import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, SpacingToken } from "../../tokens";
 import { LayoutPadding } from "../types";
 import { applyDefaults, getLayoutMeta, getConstants } from "../registry";
+import { useStudioItems } from "../hooks/useStudioItems";
 import Box from './primitives/Box';
 
 const META = getLayoutMeta("SwiperLayout")!;
@@ -28,13 +29,16 @@ const SWIPE_THRESHOLD_DEFAULT = C.swipeThreshold!;
 const SCALE_FACTOR = C.scaleFactor!;
 
 export interface SwiperLayoutProps {
-  children: React.ReactNode[];
+  items?: React.ReactNode[];
+  slides?: React.ReactNode[];        // alias for items
+  children?: React.ReactNode | React.ReactNode[]; // backward compat
   onSwipeLeft?: (index: number) => void;
   onSwipeRight?: (index: number) => void;
   onSwipeUp?: (index: number) => void;
   onSwipeDown?: (index: number) => void;
   cardStyle?: ViewStyle;
-  springConfig?: { damping?: number; stiffness?: number; mass?: number };
+  springDamping?: number;
+  springStiffness?: number;
   enableSwipeUp?: boolean;
   enableSwipeDown?: boolean;
   maxWidth?: number;
@@ -46,16 +50,35 @@ export interface SwiperLayoutProps {
   preloadRange?: number;
   swipeThreshold?: number;
   padding?: LayoutPadding;
+  cardCountBackground?: string;
+  cardCountTextColor?: string;
 }
 
 const SwiperLayout: React.FC<SwiperLayoutProps> = (rawProps) => {
   const { theme } = useTheme();
   const {
-    children, onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown,
-    cardStyle, springConfig, enableSwipeUp, enableSwipeDown, maxWidth,
+    items: itemsProp, slides: slidesProp, children: childrenProp,
+    onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown,
+    cardStyle, springDamping, springStiffness, enableSwipeUp, enableSwipeDown, maxWidth,
     background, borderRadius, cardBackground, cardBorderRadius,
     showCardCount, preloadRange, swipeThreshold, padding,
+    cardCountBackground, cardCountTextColor,
   } = applyDefaults(rawProps, META, theme) as Required<SwiperLayoutProps>;
+
+  const springConfig = { damping: springDamping, stiffness: springStiffness };
+
+  // Standard: items > slides > children (backward compat)
+  const rawItems = Array.isArray(itemsProp) && itemsProp.length > 0
+    ? itemsProp
+    : Array.isArray(slidesProp) && slidesProp.length > 0
+    ? slidesProp
+    : Array.isArray(childrenProp) ? childrenProp : React.Children.toArray(childrenProp as React.ReactNode);
+
+  const resolvedChildren = useStudioItems(
+    rawItems,
+    3,
+    (i) => <Box key={i} flex={1} bg={cardBackground} borderRadius={cardBorderRadius} opacity={0.4} />
+  );
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -72,17 +95,17 @@ const SwiperLayout: React.FC<SwiperLayoutProps> = (rawProps) => {
 
   const preloadedCards = useMemo(() => {
     const start = Math.max(0, currentIndex - preloadRange);
-    const end = Math.min(children.length - 1, currentIndex + preloadRange);
+    const end = Math.min(resolvedChildren.length - 1, currentIndex + preloadRange);
     const cards = new Map<number, React.ReactNode>();
-    for (let i = start; i <= end; i++) { cards.set(i, children[i]); }
+    for (let i = start; i <= end; i++) { cards.set(i, resolvedChildren[i]); }
     return cards;
-  }, [currentIndex, children, preloadRange]);
+  }, [currentIndex, resolvedChildren, preloadRange]);
 
   const handleSwipeComplete = (direction: 'left' | 'right' | 'up' | 'down') => {
     const isForward = direction === 'left' || direction === 'up';
     const newIndex = isForward ? currentIndex + 1 : currentIndex - 1;
 
-    if (newIndex >= 0 && newIndex < children.length) {
+    if (newIndex >= 0 && newIndex < resolvedChildren.length) {
       setCurrentIndex(newIndex);
       if (direction === 'left') onSwipeLeft?.(currentIndex);
       if (direction === 'right') onSwipeRight?.(currentIndex);
@@ -151,8 +174,8 @@ const SwiperLayout: React.FC<SwiperLayoutProps> = (rawProps) => {
           : (trans < 0 ? 'up' : 'down');
 
         const canSwipe = isHorizontalGesture.value 
-          ? (direction === 'left' ? currentIndex < children.length - 1 : currentIndex > 0)
-          : (direction === 'up' ? enableSwipeUp && currentIndex < children.length - 1 : enableSwipeDown && currentIndex > 0);
+          ? (direction === 'left' ? currentIndex < resolvedChildren.length - 1 : currentIndex > 0)
+          : (direction === 'up' ? enableSwipeUp && currentIndex < resolvedChildren.length - 1 : enableSwipeDown && currentIndex > 0);
 
         if (canSwipe) {
           performSwipe(direction);
@@ -193,10 +216,10 @@ const SwiperLayout: React.FC<SwiperLayoutProps> = (rawProps) => {
       {showCardCount && (
         <Box 
           position="absolute" top={20} right={20} zIndex={10}
-          bg="rgba(0,0,0,0.6)" px={12} py={6} borderRadius="full"
+          bg={cardCountBackground} px={12} py={6} borderRadius="full"
         >
-          <Text style={{ color: '#fff', fontSize: 12, fontWeight: '700' }}>
-            {currentIndex + 1} / {children.length}
+          <Text style={{ color: cardCountTextColor, fontSize: 12, fontWeight: '700' }}>
+            {currentIndex + 1} / {resolvedChildren.length}
           </Text>
         </Box>
       )}
@@ -222,7 +245,7 @@ const SwiperLayout: React.FC<SwiperLayoutProps> = (rawProps) => {
             borderRadius={cardBorderRadius} 
             style={{ overflow: 'hidden' }}
           >
-            {preloadedCards.get(currentIndex) || children[currentIndex]}
+            {preloadedCards.get(currentIndex) || resolvedChildren[currentIndex]}
           </Box>
         </Animated.View>
       </GestureDetector>

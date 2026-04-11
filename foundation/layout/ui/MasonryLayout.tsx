@@ -10,13 +10,15 @@ import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, SpacingToken } from "../../tokens";
 import { LayoutPadding } from "../types";
 import { applyDefaults, getLayoutMeta } from "../registry";
+import { useStudioItems } from "../hooks/useStudioItems";
 import Box from "./primitives/Box";
 import Scroll from "./primitives/Scroll";
 
 const META = getLayoutMeta("MasonryLayout")!;
 
 export interface MasonryLayoutProps {
-  items: React.ReactNode[];
+  items?: React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[]; // backward compat
   columns?: number;
   spacing?: SpacingToken;
   maxWidth?: number;
@@ -31,17 +33,29 @@ export interface MasonryLayoutProps {
 const MasonryLayout: React.FC<MasonryLayoutProps> = (rawProps) => {
   const { theme } = useTheme();
   const {
-    items, columns, spacing, maxWidth, scrollable,
+    items: itemsProp, children: childrenProp,
+    columns, spacing, maxWidth, scrollable,
     background, borderRadius, itemBackground, itemBorderRadius, padding,
   } = applyDefaults(rawProps, META, theme) as Required<MasonryLayoutProps>;
 
+  // Standard: items > children (backward compat)
+  const rawItems = Array.isArray(itemsProp) && itemsProp.length > 0
+    ? itemsProp
+    : React.Children.toArray(childrenProp as React.ReactNode).filter(Boolean);
+
+  const resolvedItems = useStudioItems(
+    rawItems,
+    4,
+    (i) => <Box key={i} height={120} bg={itemBackground} borderRadius={itemBorderRadius} opacity={0.4} />
+  );
+
   const columnWrappers = useMemo(() => {
     const wrappers: React.ReactNode[][] = Array.from({ length: columns }, () => []);
-    items.forEach((item, index) => {
+    resolvedItems.forEach((item, index) => {
       wrappers[index % columns].push(item);
     });
     return wrappers;
-  }, [items, columns]);
+  }, [resolvedItems, columns]);
 
   const renderMasonryContent = () => (
     <Box 

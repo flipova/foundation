@@ -11,6 +11,7 @@ import { RadiusToken } from "../../tokens/radii";
 import { SpacingToken } from "../../tokens/spacing";
 import { useBreakpoint } from "../hooks/useBreakpoint";
 import { applyDefaults, getLayoutMeta } from "../registry";
+import { useStudioItems } from "../hooks/useStudioItems";
 import Box from "./primitives/Box";
 import Scroll from "./primitives/Scroll";
 
@@ -24,7 +25,8 @@ export interface BentoCellConfig {
 }
 
 export interface BentoLayoutProps {
-  items: React.ReactNode[];
+  items?: React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[]; // backward compat
   spacing?: SpacingToken;
   itemBackground?: string;
   itemBorderRadius?: RadiusToken;
@@ -67,22 +69,33 @@ const generateModernBentoConfig = (itemCount: number, isMobile: boolean): BentoC
 const BentoLayout: React.FC<BentoLayoutProps> = (rawProps) => {
   const { theme } = useTheme();
   const {
-    items, spacing, itemBackground, itemBorderRadius,
+    items: itemsProp, children: childrenProp,
+    spacing, itemBackground, itemBorderRadius,
     scrollable, maxWidth, cellConfig, baseHeight, background, borderRadius,
   } = applyDefaults(rawProps, META, theme) as Required<BentoLayoutProps>;
 
   const { isMobile } = useBreakpoint();
   const maxCols = isMobile ? 2 : 4;
-  
+
+  // Standard: items > children (backward compat)
+  const rawItems = Array.isArray(itemsProp) && itemsProp.length > 0
+    ? itemsProp
+    : React.Children.toArray(childrenProp as React.ReactNode).filter(Boolean);
+
+  const resolvedItems = useStudioItems(
+    rawItems,
+    4,
+    (i) => <Box key={i} flex={1} bg={itemBackground} borderRadius={itemBorderRadius} opacity={0.4} />
+  );
+
   const itemPadding = useMemo(() => (Number(spacing) / 2) as SpacingToken, [spacing]);
 
   const bentoConfig = useMemo(() => 
-    cellConfig || generateModernBentoConfig(items.length, isMobile),
-    [items.length, isMobile, cellConfig]
+    cellConfig || generateModernBentoConfig(resolvedItems.length, isMobile),
+    [resolvedItems.length, isMobile, cellConfig]
   );
 
-  const { placements, totalHeight } = useMemo(() => {
-    const grid: Record<number, Record<number, boolean>> = {};
+  const { placements, totalHeight } = useMemo(() => {    const grid: Record<number, Record<number, boolean>> = {};
     const results: any[] = [];
 
     const canPlace = (row: number, col: number, cols: number, rows: number) => {
@@ -114,7 +127,7 @@ const BentoLayout: React.FC<BentoLayoutProps> = (rawProps) => {
     });
 
     return { placements: results, totalHeight: Math.max(...results.map(p => p.row + p.rows), 1) * baseHeight };
-  }, [bentoConfig, isMobile, baseHeight, maxCols]);
+  }, [bentoConfig, baseHeight, maxCols]);
 
   const GridContent = (
     <Box
@@ -138,7 +151,7 @@ const BentoLayout: React.FC<BentoLayoutProps> = (rawProps) => {
             borderRadius={itemBorderRadius}
             overflow="hidden"
           >
-            {items[p.index]}
+            {resolvedItems[p.index]}
           </Box>
         </Box>
       ))}

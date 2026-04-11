@@ -54,8 +54,8 @@ const AuthFormBlock: React.FC<AuthFormBlockProps> = (rawProps) => {
   const submitLabel = mode === "login" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password";
 
   return (
-    <Box bg={background} borderRadius={borderRadius} p={padding}>
-      <Stack spacing={spacing}>
+    <Box bg={background} borderRadius={borderRadius as any} p={padding as any}>
+      <Stack spacing={spacing as any}>
         {header}
 
         {mode === "signup" && (
@@ -105,11 +105,11 @@ const AuthFormBlock: React.FC<AuthFormBlockProps> = (rawProps) => {
 
         <Button label={submitLabel} variant={buttonVariant} fullWidth onPress={handleSubmit} />
 
-        {social && social.length > 0 && (
+        {social && (Array.isArray(social) ? social.length > 0 : true) && (
           <Stack spacing={2} align="stretch">
-            {social.map((provider, i) => (
+            {Array.isArray(social) ? social.map((provider, i) => (
               <React.Fragment key={i}>{provider}</React.Fragment>
-            ))}
+            )) : social}
           </Stack>
         )}
 

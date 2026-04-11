@@ -9,3 +9,4 @@ export { applyDefaults, applyVariant, extractDefaults, getConstants, resolveThem
 export { layoutRegistry, getLayoutMeta } from "./layouts";
 export { componentRegistry, getComponentMeta } from "./components";
 export { blockRegistry, getBlockMeta } from "./blocks";
+export { primitiveRegistry, getPrimitiveMeta } from "./primitives";

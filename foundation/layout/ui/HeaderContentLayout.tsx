@@ -36,6 +36,7 @@ export interface HeaderContentLayoutProps {
   borderRadius?: RadiusToken;
   padding?: SpacingToken;
   headerPadding?: SpacingToken;
+  scrollEventThrottle?: number;
 }
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
@@ -45,7 +46,7 @@ const HeaderContentLayout: React.FC<HeaderContentLayoutProps> = (rawProps) => {
   const {
     header, content, headerHeight, headerCollapsedHeight, spacing, maxWidth,
     headerBackground, headerBorderRadius, contentBackground, contentBorderRadius,
-    background, borderRadius, padding, headerPadding,
+    background, borderRadius, padding, headerPadding, scrollEventThrottle,
   } = applyDefaults(rawProps, META, theme) as Required<HeaderContentLayoutProps>;
 
   const scrollY = useSharedValue(0);
@@ -84,7 +85,7 @@ const HeaderContentLayout: React.FC<HeaderContentLayoutProps> = (rawProps) => {
       overflow="hidden"
     >
       <AnimatedBox
-        style={[headerAnimatedStyle]}
+        style={headerAnimatedStyle}
         bg={headerBackground}
         borderRadius={headerBorderRadius}
         p={headerPadding}
@@ -100,7 +101,7 @@ const HeaderContentLayout: React.FC<HeaderContentLayoutProps> = (rawProps) => {
 
       <Animated.ScrollView
         onScroll={scrollHandler}
-        scrollEventThrottle={16}
+        scrollEventThrottle={scrollEventThrottle}
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <Box
