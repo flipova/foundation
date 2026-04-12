@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+### Minor Changes
+
+- 8922e28: Add comprehensive documentation including Getting Started, Theming, Components, Layouts, Design Tokens, and Studio guides. Complete user documentation with examples, best practices, and API references.
+
 ## 1.2.0
 
 ### Minor Changes
