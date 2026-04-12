@@ -16,7 +16,7 @@ npm install @flipova/foundation
 
 ### Peer Dependencies
 
-Install the peer dependencies you need:
+Install the ones you need:
 
 ```bash
 npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
@@ -63,31 +63,15 @@ function MyScreen() {
 
 ## Custom Configuration
 
-Create a `flipova.config.ts` at your project root to customize tokens and themes:
+Create a `flipova.config.ts` at your project root:
 
 ```ts
 import { defineConfig } from "@flipova/foundation/config";
 
 export default defineConfig({
   tokens: {
-    spacing: { 
-      0: 0, 
-      1: 2, 
-      2: 4, 
-      3: 8, 
-      4: 12, 
-      5: 16, 
-      6: 20, 
-      8: 32 
-    },
-    radii: { 
-      none: 0, 
-      sm: 4, 
-      md: 8, 
-      lg: 16, 
-      xl: 24, 
-      full: 9999 
-    },
+    spacing: { 0: 0, 1: 2, 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 8: 32 },
+    radii: { none: 0, sm: 4, md: 8, lg: 16, xl: 24, full: 9999 },
   },
   themes: {
     brand: {
@@ -109,7 +93,7 @@ Flipova Foundation is organized into several modules that you can import individ
 
 | Import path | Content |
 |---|---|
-| `@flipova/foundation` | Everything (recommended for most projects) |
+| `@flipova/foundation` | Everything |
 | `@flipova/foundation/tokens` | Design tokens only |
 | `@flipova/foundation/theme` | Theme system only |
 | `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry |
@@ -195,11 +179,11 @@ import { FlexLayout, BentoLayout } from "@flipova/foundation";
 
 ## Next Steps
 
-- Learn about [Theming](/docs/theming) to customize the appearance
-- Explore [Components](/docs/components) for available UI components
-- Discover [Layouts](/docs/layouts) for layout primitives
-- Understand [Design Tokens](/docs/tokens) for design system fundamentals
-- Try the [Studio](/docs/studio) visual builder
+- Learn about [Theming](/docs/guides/theming) to customize the appearance
+- Explore [Components](/docs/guides/components) for available UI components
+- Discover [Layouts](/docs/guides/layouts) for layout primitives
+- Understand [Design Tokens](/docs/guides/tokens) for design system fundamentals
+- Try the [Studio](/docs/guides/studio) visual builder
 
 ## TypeScript Support
 

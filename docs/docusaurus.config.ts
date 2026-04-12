@@ -46,21 +46,6 @@ const config: Config = {
           editUrl:
             'https://github.com/flipova/foundation/tree/main/docs/',
         },
-        blog: {
-          showReadingTime: true,
-          feedOptions: {
-            type: ['rss', 'atom'],
-            xslt: true,
-          },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/flipova/foundation/tree/main/docs/',
-          // Useful options to enforce blogging best practices
-          onInlineTags: 'warn',
-          onInlineAuthors: 'warn',
-          onUntruncatedBlogPosts: 'warn',
-        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -74,6 +59,10 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
     },
+    customCss: [
+      './src/css/custom.css',
+      './src/css/theme.css',
+    ],
     navbar: {
       title: 'Flipova Foundation',
       logo: {
@@ -93,7 +82,6 @@ const config: Config = {
           position: 'left',
           label: 'API Reference',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
         {
           href: 'https://github.com/flipova/foundation',
           label: 'GitHub',
@@ -114,7 +102,7 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/intro',
+              to: '/docs/guides/getting-started',
             },
             {
               label: 'API Reference',
@@ -138,10 +126,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
             {
               label: 'npm Package',
               href: 'https://npm.pkg.github.com/@flipova/foundation',
