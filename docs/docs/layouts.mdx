@@ -1,0 +1,623 @@
+---
+sidebar_position: 5
+---
+
+# Layouts
+
+Flipova Foundation provides 23 pre-built layout components that help you create complex UI structures quickly and consistently.
+
+## Layout Categories
+
+Layouts are organized into several categories:
+
+- **Basic Layouts** - RootLayout, AuthLayout, DashboardLayout, etc.
+- **Content Layouts** - ContentLayout, SplitLayout, StackLayout
+- **Grid Layouts** - GridLayout, BentoLayout, MasonryLayout
+- **Card Layouts** - DeckLayout, SwiperLayout, ParallaxLayout
+- **Navigation Layouts** - TabLayout, SidebarLayout, CrossTabLayout
+- **Scroll Layouts** - ScrollLayout, PullToRefreshLayout
+
+## Using Layouts
+
+### Importing Layouts
+
+```tsx
+import { RootLayout, AuthLayout, DashboardLayout } from "@flipova/foundation/layout";
+
+// Or import specific layout
+import { RootLayout } from "@flipova/foundation/layout/ui/layouts";
+```
+
+### Basic Usage
+
+```tsx
+import { RootLayout } from "@flipova/foundation";
+
+function App() {
+  return (
+    <RootLayout>
+      <YourAppContent />
+    </RootLayout>
+  );
+}
+```
+
+## Basic Layouts
+
+### RootLayout
+
+The fundamental layout wrapper for your entire application.
+
+```tsx
+import { RootLayout } from "@flipova/foundation";
+
+<RootLayout>
+  <Header />
+  <MainContent />
+  <Footer />
+</RootLayout>
+```
+
+**Features:**
+- Safe area handling
+- Theme context
+- Platform-specific styling
+
+### AuthLayout
+
+Layout for authentication screens (login, register, etc.).
+
+```tsx
+import { AuthLayout } from "@flipova/foundation";
+
+<AuthLayout
+  title="Welcome Back"
+  subtitle="Sign in to your account"
+>
+  <LoginForm />
+</AuthLayout>
+```
+
+**Props:**
+- `title` - Page title
+- `subtitle` - Page subtitle
+- `logo` - Logo component
+- `footer` - Footer content
+
+### DashboardLayout
+
+Layout for dashboard and admin interfaces.
+
+```tsx
+import { DashboardLayout } from "@flipova/foundation";
+
+<DashboardLayout
+  sidebar={<Sidebar />}
+  header={<Header />}
+>
+  <DashboardContent />
+</DashboardLayout>
+```
+
+**Features:**
+- Collapsible sidebar
+- Responsive header
+- Content area with scroll
+
+## Content Layouts
+
+### ContentLayout
+
+Simple content layout with header and body.
+
+```tsx
+import { ContentLayout } from "@flipova/foundation";
+
+<ContentLayout
+  title="Page Title"
+  actions={<Button>Action</Button>}
+>
+  <Content />
+</ContentLayout>
+```
+
+### SplitLayout
+
+Split screen layout with two panels.
+
+```tsx
+import { SplitLayout } from "@flipova/foundation";
+
+<SplitLayout
+  left={<LeftPanel />}
+  right={<RightPanel />}
+  ratio={0.3}
+/>
+```
+
+**Props:**
+- `left` - Left panel content
+- `right` - Right panel content
+- `ratio` - Split ratio (0-1)
+- `minWidth` - Minimum panel width
+
+### StackLayout
+
+Vertical stack layout with configurable spacing.
+
+```tsx
+import { StackLayout } from "@flipova/foundation";
+
+<StackLayout gap={4}>
+  <Section />
+  <Section />
+  <Section />
+</StackLayout>
+```
+
+## Grid Layouts
+
+### GridLayout
+
+Responsive grid layout with configurable columns.
+
+```tsx
+import { GridLayout } from "@flipova/foundation";
+
+<GridLayout columns={3} gap={4}>
+  <GridItem>Item 1</GridItem>
+  <GridItem>Item 2</GridItem>
+  <GridItem>Item 3</GridItem>
+  <GridItem>Item 4</GridItem>
+  <GridItem>Item 5</GridItem>
+  <GridItem>Item 6</GridItem>
+</GridLayout>
+```
+
+**Props:**
+- `columns` - Number of columns
+- `gap` - Gap between items
+- `responsive` - Responsive breakpoints
+
+### BentoLayout
+
+Bento grid layout for dashboard-style interfaces.
+
+```tsx
+import { BentoLayout } from "@flipova/foundation";
+
+<BentoLayout>
+  <BentoItem colSpan={2} rowSpan={1}>
+    Large Card
+  </BentoItem>
+  <BentoItem colSpan={1} rowSpan={1}>
+    Small Card
+  </BentoItem>
+  <BentoItem colSpan={1} rowSpan={2}>
+    Tall Card
+  </BentoItem>
+</BentoLayout>
+```
+
+**Features:**
+- Flexible grid system
+- Variable span sizes
+- Responsive behavior
+
+### MasonryLayout
+
+Masonry grid layout for variable-height items.
+
+```tsx
+import { MasonryLayout } from "@flipova/foundation";
+
+<MasonryLayout columns={2} gap={4}>
+  <MasonryItem height={200}>Content</MasonryItem>
+  <MasonryItem height={300}>Content</MasonryItem>
+  <MasonryItem height={250}>Content</MasonryItem>
+</MasonryLayout>
+```
+
+## Card Layouts
+
+### DeckLayout
+
+Stacked card layout for swipeable cards.
+
+```tsx
+import { DeckLayout } from "@flipova/foundation";
+
+<DeckLayout>
+  <Card>Card 1</Card>
+  <Card>Card 2</Card>
+  <Card>Card 3</Card>
+</DeckLayout>
+```
+
+**Features:**
+- Swipe gestures
+- Card stacking effect
+- Smooth animations
+
+### SwiperLayout
+
+Horizontal swipeable layout for cards.
+
+```tsx
+import { SwiperLayout } from "@flipova/foundation";
+
+<SwiperLayout>
+  <SwiperSlide>Slide 1</SwiperSlide>
+  <SwiperSlide>Slide 2</SwiperSlide>
+  <SwiperSlide>Slide 3</SwiperSlide>
+</SwiperLayout>
+```
+
+**Props:**
+- `autoplay` - Auto-scroll
+- `interval` - Scroll interval
+- `loop` - Loop slides
+
+### ParallaxLayout
+
+Parallax scrolling layout for immersive experiences.
+
+```tsx
+import { ParallaxLayout } from "@flipova/foundation";
+
+<ParallaxLayout>
+  <ParallaxSection speed={0.5}>
+    <HeroContent />
+  </ParallaxSection>
+  <ParallaxSection speed={0.2}>
+    <Content />
+  </ParallaxSection>
+</ParallaxLayout>
+```
+
+## Navigation Layouts
+
+### TabLayout
+
+Tab-based navigation layout.
+
+```tsx
+import { TabLayout } from "@flipova/foundation";
+
+<TabLayout
+  tabs={[
+    { id: "home", label: "Home", content: <HomeScreen /> },
+    { id: "profile", label: "Profile", content: <ProfileScreen /> },
+    { id: "settings", label: "Settings", content: <SettingsScreen /> },
+  ]}
+/>
+```
+
+### SidebarLayout
+
+Sidebar navigation layout.
+
+```tsx
+import { SidebarLayout } from "@flipova/foundation";
+
+<SidebarLayout
+  sidebar={<Sidebar />}
+  content={<MainContent />}
+  collapsible
+/>
+```
+
+**Features:**
+- Collapsible sidebar
+- Responsive behavior
+- Smooth transitions
+
+### CrossTabLayout
+
+Cross-tab navigation for complex apps.
+
+```tsx
+import { CrossTabLayout } from "@flipova/foundation";
+
+<CrossTabLayout
+  tabs={["Overview", "Details", "History"]}
+  content={<Content />}
+/>
+```
+
+## Scroll Layouts
+
+### ScrollLayout
+
+Enhanced scroll layout with pull-to-refresh and infinite scroll.
+
+```tsx
+import { ScrollLayout } from "@flipova/foundation";
+
+<ScrollLayout
+  onRefresh={handleRefresh}
+  onEndReached={loadMore}
+>
+  <Content />
+</ScrollLayout>
+```
+
+**Props:**
+- `onRefresh` - Pull-to-refresh handler
+- `onEndReached` - Infinite scroll handler
+- `refreshing` - Refresh state
+
+### PullToRefreshLayout
+
+Dedicated pull-to-refresh layout.
+
+```tsx
+import { PullToRefreshLayout } from "@flipova/foundation";
+
+<PullToRefreshLayout onRefresh={handleRefresh}>
+  <Content />
+</PullToRefreshLayout>
+```
+
+## Layout Patterns
+
+### Responsive Dashboard
+
+```tsx
+import { DashboardLayout, GridLayout, BentoLayout } from "@flipova/foundation";
+
+function Dashboard() {
+  return (
+    <DashboardLayout
+      sidebar={<Sidebar />}
+      header={<Header />}
+    >
+      <BentoLayout>
+        <BentoItem colSpan={2}>
+          <Chart />
+        </BentoItem>
+        <BentoItem>
+          <Stats />
+        </BentoItem>
+        <BentoItem colSpan={2}>
+          <Table />
+        </BentoItem>
+      </BentoLayout>
+    </DashboardLayout>
+  );
+}
+```
+
+### E-commerce Product Grid
+
+```tsx
+import { ContentLayout, GridLayout } from "@flipova/foundation";
+
+function ProductList() {
+  return (
+    <ContentLayout title="Products">
+      <GridLayout columns={2} gap={4}>
+        {products.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </GridLayout>
+    </ContentLayout>
+  );
+}
+```
+
+### Social Feed
+
+```tsx
+import { StackLayout, MasonryLayout } from "@flipova/foundation";
+
+function SocialFeed() {
+  return (
+    <StackLayout gap={4}>
+      <MasonryLayout columns={2} gap={4}>
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} />
+        ))}
+      </MasonryLayout>
+    </StackLayout>
+  );
+}
+```
+
+## Layout Hooks
+
+### useBreakpoint
+
+Hook for responsive breakpoints.
+
+```tsx
+import { useBreakpoint } from "@flipova/foundation/layout/hooks";
+
+function ResponsiveComponent() {
+  const breakpoint = useBreakpoint();
+  
+  return (
+    <Box>
+      {breakpoint === "sm" && <MobileView />}
+      {breakpoint === "md" && <TableView />}
+      {breakpoint === "lg" && <DesktopView />}
+    </Box>
+  );
+}
+```
+
+**Breakpoints:**
+- `sm` - Mobile (0-640px)
+- `md` - Tablet (641-1024px)
+- `lg` - Desktop (1025px+)
+
+### useResponsiveValue
+
+Hook for responsive values.
+
+```tsx
+import { useResponsiveValue } from "@flipova/foundation/layout/hooks";
+
+function ResponsivePadding() {
+  const padding = useResponsiveValue({
+    sm: 2,
+    md: 4,
+    lg: 6,
+  });
+  
+  return <Box p={padding}>Content</Box>;
+}
+```
+
+### usePlatformInfo
+
+Hook for platform information.
+
+```tsx
+import { usePlatformInfo } from "@flipova/foundation/layout/hooks";
+
+function PlatformComponent() {
+  const { platform, os } = usePlatformInfo();
+  
+  return <Text>Platform: {platform}, OS: {os}</Text>;
+}
+```
+
+## Best Practices
+
+### 1. Choose the Right Layout
+
+Select layouts based on your content structure:
+
+```tsx
+// Simple content → ContentLayout
+<ContentLayout title="About">
+  <AboutContent />
+</ContentLayout>
+
+// Dashboard → DashboardLayout
+<DashboardLayout sidebar={<Sidebar />}>
+  <DashboardContent />
+</DashboardLayout>
+
+// Grid content → GridLayout
+<GridLayout columns={3}>
+  <Item />
+</GridLayout>
+```
+
+### 2. Use Responsive Breakpoints
+
+Make layouts responsive using breakpoints:
+
+```tsx
+const columns = useResponsiveValue({
+  sm: 1,
+  md: 2,
+  lg: 3,
+});
+
+<GridLayout columns={columns}>
+  {items}
+</GridLayout>
+```
+
+### 3. Compose Layouts
+
+Combine layouts for complex interfaces:
+
+```tsx
+<DashboardLayout sidebar={<Sidebar />}>
+  <ContentLayout title="Analytics">
+    <BentoLayout>
+      {widgets}
+    </BentoLayout>
+  </ContentLayout>
+</DashboardLayout>
+```
+
+### 4. Optimize Performance
+
+Use memoization for layout children:
+
+```tsx
+const MemoizedSidebar = memo(Sidebar);
+
+<DashboardLayout sidebar={<MemoizedSidebar />}>
+  <Content />
+</DashboardLayout>
+```
+
+## Custom Layouts
+
+### Creating Custom Layouts
+
+Follow the pattern from CONTRIBUTING.md to add new layouts:
+
+1. Define in registry (`foundation/layout/registry/layouts.ts`)
+2. Implement the component (`foundation/layout/ui/layouts/`)
+3. Export from barrel
+4. Map in Studio
+5. Build & test
+
+See [Contributing Guide](/docs/contributing) for detailed instructions.
+
+### Layout Configuration
+
+Configure layout behavior in your config:
+
+```ts
+import { defineConfig } from "@flipova/foundation/config";
+
+export default defineConfig({
+  layouts: {
+    breakpoints: {
+      sm: 640,
+      md: 1024,
+      lg: 1280,
+    },
+    spacing: {
+      default: 4,
+    },
+  },
+});
+```
+
+## Layout Utilities
+
+### resolveLayoutPadding
+
+Utility for resolving layout padding.
+
+```tsx
+import { resolveLayoutPadding } from "@flipova/foundation/layout/utils";
+
+const padding = resolveLayoutPadding("md", theme);
+```
+
+### resolveBackground
+
+Utility for resolving background colors.
+
+```tsx
+import { resolveBackground } from "@flipova/foundation/layout/utils";
+
+const bg = resolveBackground("card", theme);
+```
+
+## Accessibility
+
+All layouts follow accessibility best practices:
+
+- **Semantic HTML** - Proper semantic structure
+- **Keyboard navigation** - Full keyboard support
+- **Screen reader** - Proper ARIA labels
+- **Focus management** - Logical focus order
+- **Touch targets** - Minimum 44px touch targets
+
+## Resources
+
+- [Components Guide](/docs/components) - UI components
+- [Theming Guide](/docs/theming) - Theme customization
+- [API Reference](/docs/api/intro) - Complete API documentation
+- [Contributing Guide](/docs/contributing) - How to add new layouts

@@ -1,0 +1,414 @@
+---
+sidebar_position: 7
+---
+
+# Studio
+
+Flipova Studio is a visual app builder for React Native. It allows you to drag & drop layouts, components, and blocks from the foundation registry, configure props visually, and generate clean React Native code.
+
+## Quick Start
+
+### Starting the Studio
+
+```bash
+npx flipova-studio
+```
+
+This single command:
+1. Builds the web UI if not already built
+2. Starts the Express server on port 4200
+3. Opens the builder at http://localhost:4200
+
+### Custom Port
+
+```bash
+npx flipova-studio --port 3000
+```
+
+### Development Mode
+
+For working on the studio UI itself:
+
+```bash
+npx flipova-studio --dev
+```
+
+This starts:
+- Express API server on http://localhost:4200
+- Vite dev server on http://localhost:5173 (with hot reload and API proxy)
+
+Open http://localhost:5173 for the dev experience with instant updates.
+
+### Code Generation
+
+Generate code from the saved project:
+
+```bash
+npx flipova-studio generate
+```
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│  React Web UI (Vite + React + TypeScript)        │
+│  studio/app/src/                                 │
+│  Built to studio/app/dist/ → served by Express   │
+└──────────────────────┬──────────────────────────┘
+                       │ fetch /api/* + WebSocket /ws
+┌──────────────────────▼──────────────────────────┐
+│  Express Server (studio/server/)                 │
+│  ├── /api/registry     → foundation registries   │
+│  ├── /api/project      → project CRUD            │
+│  ├── /api/pages/:id    → page tree CRUD          │
+│  └── /api/generate     → code generation         │
+└──────────────────────┬──────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────┐
+│  .flipova-studio/project.json                    │
+└──────────────────────┬──────────────────────────┘
+                       │ generate
+┌──────────────────────▼──────────────────────────┐
+│  ./generated/                                    │
+│  ├── App.tsx                                     │
+│  ├── screens/*.tsx                               │
+│  ├── navigation/index.tsx                        │
+│  ├── theme/index.ts                              │
+│  └── services/*.ts                               │
+└─────────────────────────────────────────────────┘
+```
+
+## REST API
+
+### Registry (read-only)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/registry` | All registries (layouts, components, blocks) |
+| GET | `/api/registry/layouts` | Layout registry only |
+| GET | `/api/registry/components` | Component registry only |
+| GET | `/api/registry/blocks` | Block registry only |
+
+### Project
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/project` | Load the current project |
+| PUT | `/api/project` | Save the entire project |
+| PUT | `/api/project/theme` | Change the active theme |
+| PUT | `/api/project/navigation` | Update navigation config |
+| POST | `/api/project/services` | Add a service |
+
+### Pages
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/pages` | Create a new page |
+| PUT | `/api/pages/:id` | Update a page (tree, name, route) |
+| DELETE | `/api/pages/:id` | Delete a page |
+
+### Code Generation
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/generate` | Generate full project to `./generated/` |
+| POST | `/api/generate/preview/:pageId` | Preview generated code for one page |
+
+## WebSocket
+
+Connect to `ws://localhost:4200/ws` for live updates.
+
+| Event | Payload | When |
+|-------|---------|------|
+| `page:created` | PageDocument | New page created |
+| `page:updated` | PageDocument | Page tree modified |
+| `page:deleted` | `{ id }` | Page removed |
+| `theme:changed` | `{ theme }` | Theme switched |
+
+## Studio UI Components
+
+### Library Panel
+
+The Library Panel displays all available layouts, components, and blocks from the foundation registry.
+
+- **Layouts Tab** - Browse 23 layout components
+- **Components Tab** - Browse UI components
+- **Blocks Tab** - Browse pre-built blocks
+- **Search** - Filter items by name
+- **Drag & Drop** - Drag items to the canvas
+
+### Canvas
+
+The Canvas is the main visual editing area where you build your UI.
+
+- **Visual Editor** - See your design in real-time
+- **Device Preview** - Switch between device sizes
+- **Tree View** - Hierarchical view of your component tree
+- **Drag & Drop** - Reorder components visually
+
+### Properties Panel
+
+The Properties Panel allows you to configure component props.
+
+- **Props Editor** - Edit component properties
+- **Smart Input** - Link to data sources (state, queries, etc.)
+- **Style Editor** - Visual style configuration
+- **Variant Selector** - Choose component variants
+
+### Layers Panel
+
+The Layers Panel shows the component hierarchy.
+
+- **Tree View** - See parent-child relationships
+- **Selection** - Click to select components
+- **Reorder** - Drag to reorder components
+- **Visibility** - Toggle component visibility
+
+### Code Panel
+
+The Code Panel shows the generated React Native code.
+
+- **Live Preview** - See code as you build
+- **Syntax Highlighting** - Color-coded code
+- **Copy Code** - Copy generated code
+- **Full Generate** - Generate entire project
+
+## Working with the Studio
+
+### Creating a New Page
+
+1. Click "New Page" in the Pages panel
+2. Enter page name and route
+3. Start adding components from the Library
+
+### Adding Components
+
+1. Open the Library Panel
+2. Browse or search for components
+3. Drag component to the Canvas
+4. Configure props in the Properties Panel
+
+### Configuring Props
+
+1. Select a component in the Canvas or Layers
+2. Open the Properties Panel
+3. Edit props using the form fields
+4. Use Smart Input for data linking
+
+### Linking Data
+
+The Smart Input linker allows you to link props to data sources:
+
+- **$ Tokens** - Design tokens
+- **T Theme** - Theme values
+- **S State** - Component state
+- **G Global** - Global state
+- **Q Queries** - API queries
+- **N Nav** - Navigation
+- **C Config** - App config
+- **D Device** - Device info
+- **@ Vars** - Variables
+- **# Nodes** - Tree nodes
+
+### Adding Interactions
+
+Add actions and triggers to components:
+
+1. Select a component
+2. Open the Logic Panel
+3. Add triggers (onPress, onChange, etc.)
+4. Add actions (navigate, setState, callApi, etc.)
+
+### Previewing Code
+
+1. Open the Code Panel
+2. See live generated code
+3. Copy code or generate full project
+
+## Code Generation
+
+### Generated Structure
+
+The code generator creates a complete React Native project:
+
+```
+generated/
+├── App.tsx                    # Main app component
+├── screens/                   # Screen components
+│   ├── HomeScreen.tsx
+│   ├── ProfileScreen.tsx
+│   └── ...
+├── navigation/                # Navigation configuration
+│   └── index.tsx
+├── theme/                     # Theme configuration
+│   └── index.ts
+├── services/                  # API services
+│   ├── api.ts
+│   └── ...
+├── hooks/                     # Custom hooks
+│   └── ...
+└── package.json               # Generated package.json
+```
+
+### Code Quality
+
+Generated code follows best practices:
+
+- **TypeScript** - Full type safety
+- **Clean Components** - Functional components with hooks
+- **Optimized** - Memoization where appropriate
+- **Accessible** - Proper accessibility attributes
+- **Styled** - Consistent styling with theme
+
+### Customizing Generation
+
+You can customize code generation in the project settings:
+
+1. Open Project Settings
+2. Navigate to Code Generation
+3. Configure output paths
+4. Set naming conventions
+5. Add custom templates
+
+## Project Structure
+
+```
+studio/
+├── cli/index.ts           CLI entry point (npx flipova-studio)
+├── server/
+│   ├── index.ts           Express + WebSocket server
+│   └── api.ts             REST API routes (imports foundation registries)
+├── engine/
+│   ├── tree/
+│   │   ├── types.ts       TreeNode, PageDocument, ProjectDocument
+│   │   └── operations.ts  Immutable tree operations
+│   └── codegen/
+│       ├── generator.ts   Page → .tsx code
+│       └── project.ts     Project → full app scaffold
+└── app/                   React app (Vite + TypeScript)
+    ├── src/               React components
+    ├── dist/              Built statics (served by Express)
+    └── package.json       Separate deps (react, react-dom, vite)
+```
+
+## Best Practices
+
+### 1. Start Simple
+
+Begin with basic layouts and components:
+
+- Use pre-built layouts (RootLayout, ContentLayout)
+- Add components incrementally
+- Test as you build
+
+### 2. Use Smart Input
+
+Link props to data sources instead of hardcoding:
+
+```tsx
+// ❌ Bad - hardcoded
+<Text>Hello World</Text>
+
+// ✅ Good - linked to state
+<Text>{state.greeting}</Text>
+```
+
+### 3. Organize Your Pages
+
+Keep pages focused and modular:
+
+- One screen per page
+- Use blocks for reusable sections
+- Keep component trees shallow when possible
+
+### 4. Preview Frequently
+
+Check the generated code often:
+
+- Open Code Panel to see output
+- Generate full project to test
+- Verify TypeScript types
+
+### 5. Save Your Work
+
+Save your project regularly:
+
+- Project saves to `.flipova-studio/project.json`
+- Commit this file to version control
+- Share with team members
+
+## Troubleshooting
+
+### Studio Won't Start
+
+If the studio doesn't start:
+
+```bash
+# Check if port is in use
+npx flipova-studio --port 3000
+
+# Clear cache and rebuild
+rm -rf studio/app/dist
+npx flipova-studio
+```
+
+### Components Not Appearing
+
+If components don't appear in the Library:
+
+1. Check that foundation is built: `npm run build`
+2. Verify registry files exist
+3. Restart the studio
+
+### Code Generation Errors
+
+If code generation fails:
+
+1. Check the console for error messages
+2. Verify component tree is valid
+3. Ensure all props are properly configured
+
+### WebSocket Connection Issues
+
+If WebSocket won't connect:
+
+1. Check that the server is running
+2. Verify the port is correct
+3. Check browser console for errors
+
+## Development
+
+### Building the Studio UI
+
+```bash
+cd studio/app
+npm install
+npm run build
+```
+
+### Running in Dev Mode
+
+```bash
+npx flipova-studio --dev
+```
+
+This starts both the API server and Vite dev server with hot reload.
+
+### Adding New Components to Registry
+
+To add new components to the Studio registry:
+
+1. Add component to foundation registry
+2. Rebuild foundation: `npm run build`
+3. Restart studio
+4. Component appears in Library Panel
+
+See [Contributing Guide](/docs/contributing) for detailed instructions.
+
+## Resources
+
+- [Getting Started](/docs/getting-started) - Foundation basics
+- [Components Guide](/docs/components) - Available components
+- [Layouts Guide](/docs/layouts) - Available layouts
+- [API Reference](/docs/api/intro) - Complete API documentation
+- [Contributing Guide](/docs/contributing) - How to contribute
