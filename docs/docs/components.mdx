@@ -1,0 +1,515 @@
+---
+sidebar_position: 4
+---
+
+# Components
+
+Flipova Foundation provides a comprehensive set of pre-built, theme-aware UI components that you can use in your React Native applications.
+
+## Component Categories
+
+Components are organized into several categories:
+
+- **Primitives** - Basic layout components (Box, Stack, Inline, Center, Scroll, Divider)
+- **Display** - Content display components (Avatar, Badge, Card, Image, Video)
+- **Input** - User input components (Button, TextInput, Checkbox, Switch, Slider)
+- **Feedback** - User feedback components (Alert, Progress, Spinner, Toast)
+- **Navigation** - Navigation components (TabBar, Breadcrumb, Pagination)
+- **Media** - Media components (Image, Video, Audio)
+
+## Using Components
+
+### Importing Components
+
+```tsx
+// Import from the main package
+import { Button, Card, TextInput } from "@flipova/foundation";
+
+// Or import from specific modules
+import { Button } from "@flipova/foundation/layout/ui/components";
+```
+
+### Basic Usage
+
+```tsx
+import { Button, Card, Box, Text } from "@flipova/foundation";
+
+function MyScreen() {
+  return (
+    <Box p={4}>
+      <Card>
+        <Text variant="h2">Welcome</Text>
+        <Button variant="primary" onPress={() => {}}>
+          Get Started
+        </Button>
+      </Card>
+    </Box>
+  );
+}
+```
+
+## Primitives
+
+### Box
+
+The Box component is the fundamental building block for layout. It's a styled View with theme support.
+
+```tsx
+import { Box } from "@flipova/foundation";
+
+<Box p={4} m={2} bg="card" borderRadius="lg">
+  Content
+</Box>
+```
+
+**Props:**
+- `p` - Padding (uses spacing tokens)
+- `m` - Margin (uses spacing tokens)
+- `bg` - Background color (uses theme colors)
+- `borderRadius` - Border radius (uses radius tokens)
+- `border` - Border color (uses theme colors)
+- `width` - Width
+- `height` - Height
+- `flex` - Flex value
+- `alignItems` - Flex alignItems
+- `justifyContent` - Flex justifyContent
+
+### Stack
+
+Stack components for vertical and horizontal layouts.
+
+```tsx
+import { Stack } from "@flipova/foundation";
+
+<Stack gap={4}>
+  <Box>Item 1</Box>
+  <Box>Item 2</Box>
+  <Box>Item 3</Box>
+</Stack>
+```
+
+### Inline
+
+Inline layout for horizontal arrangement.
+
+```tsx
+import { Inline } from "@flipova/foundation";
+
+<Inline gap={4} alignItems="center">
+  <Avatar src="..." />
+  <Text>John Doe</Text>
+</Inline>
+```
+
+### Center
+
+Center content both horizontally and vertically.
+
+```tsx
+import { Center } from "@flipova/foundation";
+
+<Center h={200} bg="muted">
+  <Text>Centered Content</Text>
+</Center>
+```
+
+## Display Components
+
+### Button
+
+A versatile button component with multiple variants and sizes.
+
+```tsx
+import { Button } from "@flipova/foundation";
+
+<Button variant="primary" size="md" onPress={() => {}}>
+  Click Me
+</Button>
+```
+
+**Variants:**
+- `primary` - Primary action button
+- `secondary` - Secondary action button
+- `ghost` - Ghost button (no background)
+- `destructive` - Destructive action button
+
+**Sizes:**
+- `sm` - Small button
+- `md` - Medium button (default)
+- `lg` - Large button
+
+**Props:**
+- `variant` - Button variant
+- `size` - Button size
+- `disabled` - Disable the button
+- `onPress` - Press handler
+- `children` - Button content
+
+### Card
+
+A card container component for grouping related content.
+
+```tsx
+import { Card } from "@flipova/foundation";
+
+<Card p={4} borderRadius="lg">
+  <Text variant="h2">Card Title</Text>
+  <Text>Card content goes here</Text>
+</Card>
+```
+
+### Avatar
+
+User avatar component with support for images and initials.
+
+```tsx
+import { Avatar } from "@flipova/foundation";
+
+<Avatar src="https://example.com/avatar.jpg" size="md" />
+<Avatar initials="JD" size="lg" />
+```
+
+**Sizes:**
+- `sm` - 32px
+- `md` - 40px (default)
+- `lg` - 48px
+- `xl` - 64px
+
+### Badge
+
+Small badge component for status indicators.
+
+```tsx
+import { Badge } from "@flipova/foundation";
+
+<Badge variant="success">Active</Badge>
+<Badge variant="warning">Pending</Badge>
+<Badge variant="error">Error</Badge>
+```
+
+**Variants:**
+- `default` - Default badge
+- `success` - Success badge (green)
+- `warning` - Warning badge (yellow)
+- `error` - Error badge (red)
+
+## Input Components
+
+### TextInput
+
+Text input component with theme support.
+
+```tsx
+import { TextInput } from "@flipova/foundation";
+
+<TextInput
+  placeholder="Enter your name"
+  value={value}
+  onChangeText={setValue}
+/>
+```
+
+**Props:**
+- `placeholder` - Placeholder text
+- `value` - Input value
+- `onChangeText` - Change handler
+- `secureTextEntry` - Password field
+- `disabled` - Disable input
+- `error` - Error state
+
+### Checkbox
+
+Checkbox component for boolean selections.
+
+```tsx
+import { Checkbox } from "@flipova/foundation";
+
+<Checkbox
+  checked={isChecked}
+  onChange={setChecked}
+  label="Accept terms"
+/>
+```
+
+### Switch
+
+Toggle switch component.
+
+```tsx
+import { Switch } from "@flipova/foundation";
+
+<Switch
+  value={isEnabled}
+  onValueChange={setEnabled}
+/>
+```
+
+## Feedback Components
+
+### Alert
+
+Alert component for important messages.
+
+```tsx
+import { Alert } from "@flipova/foundation";
+
+<Alert variant="info" title="Info">
+  This is an informational message
+</Alert>
+
+<Alert variant="error" title="Error">
+  Something went wrong
+</Alert>
+```
+
+**Variants:**
+- `info` - Informational alert
+- `success` - Success alert
+- `warning` - Warning alert
+- `error` - Error alert
+
+### Progress
+
+Progress indicator component.
+
+```tsx
+import { Progress } from "@flipova/foundation";
+
+<Progress value={50} max={100} />
+```
+
+### Spinner
+
+Loading spinner component.
+
+```tsx
+import { Spinner } from "@flipova/foundation";
+
+<Spinner size="md" />
+```
+
+## Component Patterns
+
+### Form with Validation
+
+```tsx
+import { TextInput, Button, Card } from "@flipova/foundation";
+
+function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  const handleSubmit = () => {
+    // Validate and submit
+  };
+  
+  return (
+    <Card p={4}>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      <Button variant="primary" onPress={handleSubmit}>
+        Login
+      </Button>
+    </Card>
+  );
+}
+```
+
+### Card Grid
+
+```tsx
+import { Card, Box, Stack } from "@flipova/foundation";
+
+function CardGrid() {
+  return (
+    <Stack gap={4}>
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i} p={4} borderRadius="lg">
+          <Text>Card {i}</Text>
+        </Card>
+      ))}
+    </Stack>
+  );
+}
+```
+
+### Action Buttons
+
+```tsx
+import { Button, Inline } from "@flipova/foundation";
+
+function ActionButtons() {
+  return (
+    <Inline gap={2}>
+      <Button variant="ghost" onPress={() => {}}>
+        Cancel
+      </Button>
+      <Button variant="primary" onPress={() => {}}>
+        Confirm
+      </Button>
+    </Inline>
+  );
+}
+```
+
+## Best Practices
+
+### 1. Use Semantic Components
+
+Choose components that match their semantic purpose:
+
+```tsx
+// ❌ Bad - using Box for button
+<Box onPress={() => {}}>Click</Box>
+
+// ✅ Good - using Button component
+<Button onPress={() => {}}>Click</Button>
+```
+
+### 2. Leverage Theme Support
+
+Use theme colors and spacing tokens:
+
+```tsx
+// ❌ Bad - hardcoded values
+<Box style={{ padding: 16, backgroundColor: "#FFFFFF" }}>
+
+// ✅ Good - theme-aware
+<Box p={4} bg="card">
+```
+
+### 3. Use Proper Variants
+
+Use the appropriate variant for the context:
+
+```tsx
+// Primary action
+<Button variant="primary">Submit</Button>
+
+// Secondary action
+<Button variant="secondary">Cancel</Button>
+
+// Destructive action
+<Button variant="destructive">Delete</Button>
+```
+
+### 4. Provide Feedback
+
+Use feedback components for user interactions:
+
+```tsx
+function DeleteButton() {
+  const [showAlert, setShowAlert] = useState(false);
+  
+  return (
+    <>
+      <Button variant="destructive" onPress={() => setShowAlert(true)}>
+        Delete
+      </Button>
+      {showAlert && (
+        <Alert variant="error" title="Confirm deletion">
+          Are you sure you want to delete this item?
+        </Alert>
+      )}
+    </>
+  );
+}
+```
+
+## Accessibility
+
+All components follow accessibility best practices:
+
+- **Keyboard navigation** - All interactive components are keyboard accessible
+- **Screen reader support** - Proper labels and roles for screen readers
+- **Focus management** - Proper focus states and management
+- **Color contrast** - Meet WCAG AA contrast requirements
+
+## Customization
+
+### Styling Components
+
+Components accept style props for customization:
+
+```tsx
+<Box style={{ customStyle: "value" }}>
+  Content
+</Box>
+```
+
+### Component Variants
+
+Extend component variants in your configuration:
+
+```ts
+import { defineConfig } from "@flipova/foundation/config";
+
+export default defineConfig({
+  components: {
+    Button: {
+      variants: {
+        custom: {
+          // Custom variant styles
+        },
+      },
+    },
+  },
+});
+```
+
+## Creating Custom Components
+
+Follow the pattern from CONTRIBUTING.md to add new components:
+
+1. Define in registry
+2. Implement the component
+3. Export from barrel
+4. Map in Studio
+5. Build & test
+
+See [Contributing Guide](/docs/contributing) for detailed instructions.
+
+## Performance Tips
+
+### 1. Memoize Components
+
+```tsx
+import { memo } from "react";
+
+const ExpensiveComponent = memo(function ExpensiveComponent({ data }) {
+  // Component logic
+});
+```
+
+### 2. Use useCallback for Handlers
+
+```tsx
+const handlePress = useCallback(() => {
+  // Handler logic
+}, [dependencies]);
+```
+
+### 3. Optimize Re-renders
+
+```tsx
+// Use keys in lists
+{items.map((item) => (
+  <Card key={item.id}>{item.name}</Card>
+))}
+```
+
+## Resources
+
+- [Theming Guide](/docs/theming) - Learn about theming components
+- [Layouts Guide](/docs/layouts) - Layout components
+- [API Reference](/docs/api/intro) - Complete API documentation
+- [Contributing Guide](/docs/contributing) - How to add new components

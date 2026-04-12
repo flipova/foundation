@@ -1,0 +1,537 @@
+---
+sidebar_position: 6
+---
+
+# Design Tokens
+
+Design tokens are the foundational building blocks of Flipova Foundation. They provide a consistent set of values for colors, spacing, typography, and more that ensure visual consistency across your application.
+
+## What Are Design Tokens?
+
+Design tokens are named entities that store visual design values. They serve as a single source of truth for design decisions, making it easy to maintain consistency and make updates across your entire application.
+
+### Benefits of Design Tokens
+
+- **Consistency** - Ensure visual consistency across all components
+- **Maintainability** - Update values in one place, see changes everywhere
+- **Scalability** - Easy to extend with new tokens
+- **Collaboration** - Designers and developers speak the same language
+- **Theme Support** - Enable theming through token overrides
+
+## Token Categories
+
+Flipova Foundation organizes tokens into several categories:
+
+```
+tokens/
+├── spacing/     - Space and layout tokens
+├── colors/      - Color palette and semantic colors
+├── radii/       - Border radius tokens
+├── typography/  - Font sizes, weights, line heights
+├── shadows/     - Shadow depth tokens
+└── motion/      - Animation and transition tokens
+```
+
+## Spacing Tokens
+
+Spacing tokens define the scale for margins, padding, and gaps throughout your application.
+
+### Default Spacing Scale
+
+```ts
+{
+  0: 0,      // No spacing
+  1: 2,      // 2px
+  2: 4,      // 4px
+  3: 8,      // 8px
+  4: 12,     // 12px
+  5: 16,     // 16px
+  6: 20,     // 20px
+  8: 32,     // 32px
+  10: 40,    // 40px
+  12: 48,    // 48px
+  16: 64,    // 64px
+  20: 80,    // 80px
+  24: 96,    // 96px
+}
+```
+
+### Using Spacing Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Box style={{ padding: tokens.spacing.md }}>
+
+// With components
+<Box p={4} m={2}>
+
+// With hooks
+const { spacing } = useTheme();
+<Box style={{ padding: spacing.md }}>
+```
+
+### Semantic Spacing
+
+Use semantic spacing names for better readability:
+
+```tsx
+<Box p="xs">Extra small padding</Box>
+<Box p="sm">Small padding</Box>
+<Box p="md">Medium padding</Box>
+<Box p="lg">Large padding</Box>
+<Box p="xl">Extra large padding</Box>
+```
+
+## Color Tokens
+
+Color tokens define the color palette for your application.
+
+### Semantic Colors
+
+```ts
+{
+  primary: "#FF6B00",              // Primary brand color
+  primaryForeground: "#FFFFFF",     // Text on primary
+  background: "#FAFAFA",           // Main background
+  foreground: "#1A1A2E",           // Main text
+  card: "#FFFFFF",                 // Card background
+  cardForeground: "#1A1A2E",       // Text on cards
+  muted: "#F3F4F6",                // Muted background
+  mutedForeground: "#6B7280",      // Muted text
+  accent: "#FF6B00",               // Accent color
+  accentForeground: "#FFFFFF",     // Text on accent
+  destructive: "#EF4444",          // Destructive action
+  destructiveForeground: "#FFFFFF",// Text on destructive
+  border: "#E5E7EB",               // Border color
+  input: "#E5E7EB",                // Input background
+  ring: "#FF6B00",                // Focus ring
+}
+```
+
+### Using Color Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Box style={{ backgroundColor: tokens.colors.primary }}>
+
+// With components
+<Box bg="primary">
+
+// With hooks
+const { colors } = useTheme();
+<Box style={{ backgroundColor: colors.primary }}>
+```
+
+### Color Variants
+
+Some components support color variants:
+
+```tsx
+<Button variant="primary">Primary Button</Button>
+<Button variant="secondary">Secondary Button</Button>
+<Button variant="destructive">Destructive Button</Button>
+
+<Badge variant="success">Success</Badge>
+<Badge variant="warning">Warning</Badge>
+<Badge variant="error">Error</Badge>
+```
+
+## Border Radius Tokens
+
+Border radius tokens define the rounding of corners throughout your application.
+
+### Default Radius Scale
+
+```ts
+{
+  none: 0,      // No radius
+  sm: 4,       // Small radius
+  md: 8,       // Medium radius
+  lg: 16,      // Large radius
+  xl: 24,      // Extra large radius
+  full: 9999,  // Full circle
+}
+```
+
+### Using Radius Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Box style={{ borderRadius: tokens.radii.lg }}>
+
+// With components
+<Box borderRadius="lg">
+
+// With hooks
+const { radii } = useTheme();
+<Box style={{ borderRadius: radii.lg }}>
+```
+
+### Semantic Radius Names
+
+```tsx
+<Box borderRadius="none">No radius</Box>
+<Box borderRadius="sm">Small radius</Box>
+<Box borderRadius="md">Medium radius</Box>
+<Box borderRadius="lg">Large radius</Box>
+<Box borderRadius="xl">Extra large radius</Box>
+<Box borderRadius="full">Full circle</Box>
+```
+
+## Typography Tokens
+
+Typography tokens define the scale for font sizes, weights, and line heights.
+
+### Font Families
+
+```ts
+{
+  fontFamily: {
+    sans: "System",      // Sans-serif font
+    mono: "Monospace",   // Monospace font
+  }
+}
+```
+
+### Font Sizes
+
+```ts
+{
+  fontSize: {
+    xs: "12px",    // Extra small
+    sm: "14px",    // Small
+    base: "16px",  // Base
+    lg: "18px",    // Large
+    xl: "20px",    // Extra large
+    "2xl": "24px", // 2x large
+    "3xl": "30px", // 3x large
+    "4xl": "36px", // 4x large
+  }
+}
+```
+
+### Font Weights
+
+```ts
+{
+  fontWeight: {
+    normal: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  }
+}
+```
+
+### Line Heights
+
+```ts
+{
+  lineHeight: {
+    tight: 1.25,
+    normal: 1.5,
+    relaxed: 1.75,
+  }
+}
+```
+
+### Using Typography Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Text style={{ fontSize: tokens.fontSize.lg }}>
+
+// With components
+<Text variant="h1">Heading</Text>
+
+// With hooks
+const { typography } = useTheme();
+<Text style={{ fontSize: typography.fontSize.lg }}>
+```
+
+### Text Variants
+
+The Text component supports semantic variants:
+
+```tsx
+<Text variant="h1">Heading 1</Text>
+<Text variant="h2">Heading 2</Text>
+<Text variant="h3">Heading 3</Text>
+<Text variant="body">Body text</Text>
+<Text variant="caption">Caption</Text>
+```
+
+## Shadow Tokens
+
+Shadow tokens define the depth and elevation of elements.
+
+### Shadow Scale
+
+```ts
+{
+  shadows: {
+    sm: "0 1px 2px rgba(0,0,0,0.05)",      // Small shadow
+    md: "0 4px 6px rgba(0,0,0,0.1)",       // Medium shadow
+    lg: "0 10px 15px rgba(0,0,0,0.1)",     // Large shadow
+    xl: "0 20px 25px rgba(0,0,0,0.15)",    // Extra large shadow
+  }
+}
+```
+
+### Using Shadow Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Box style={{ boxShadow: tokens.shadows.md }}>
+
+// With components
+<Box shadow="md">
+
+// With hooks
+const { shadows } = useTheme();
+<Box style={{ boxShadow: shadows.md }}>
+```
+
+## Motion Tokens
+
+Motion tokens define animation durations and easing functions.
+
+### Durations
+
+```ts
+{
+  duration: {
+    fast: 150,      // Fast animation
+    normal: 300,    // Normal animation
+    slow: 500,      // Slow animation
+  }
+}
+```
+
+### Easing
+
+```ts
+{
+  easing: {
+    ease: "ease",
+    easeIn: "ease-in",
+    easeOut: "ease-out",
+    easeInOut: "ease-in-out",
+  }
+}
+```
+
+### Using Motion Tokens
+
+```tsx
+import { tokens } from "@flipova/foundation";
+
+// Direct usage
+<Animated.View 
+  style={{
+    transitionDuration: tokens.duration.normal,
+    transitionTimingFunction: tokens.easing.easeInOut,
+  }}
+>
+
+// With hooks
+const { motion } = useTheme();
+<Animated.View 
+  style={{
+    transitionDuration: motion.duration.normal,
+  }}
+>
+```
+
+## Customizing Tokens
+
+### Override Default Tokens
+
+Override default tokens in your configuration:
+
+```ts
+import { defineConfig } from "@flipova/foundation/config";
+
+export default defineConfig({
+  tokens: {
+    spacing: {
+      // Override specific spacing values
+      4: 16,  // Change default 12 to 16
+      5: 24,  // Change default 16 to 24
+    },
+    colors: {
+      // Override specific colors
+      primary: "#3B82F6",  // Change primary color
+    },
+    radii: {
+      // Override radius values
+      md: 12,  // Change default 8 to 12
+    },
+  },
+});
+```
+
+### Add Custom Tokens
+
+Add custom tokens to extend the system:
+
+```ts
+import { defineConfig } from "@flipova/foundation/config";
+
+export default defineConfig({
+  tokens: {
+    spacing: {
+      // Add custom spacing values
+      7: 28,
+      9: 36,
+      11: 44,
+    },
+    colors: {
+      // Add custom colors
+      brandLight: "#60A5FA",
+      brandDark: "#2563EB",
+    },
+  },
+});
+```
+
+### Token Naming Conventions
+
+Follow these conventions when adding custom tokens:
+
+- **Use lowercase** - `primaryColor` not `PrimaryColor`
+- **Use camelCase** - `borderRadius` not `border_radius`
+- **Be descriptive** - `spacingLarge` not `spLg`
+- **Group related tokens** - Use prefixes for related tokens
+
+## Token Best Practices
+
+### 1. Use Tokens, Not Hardcoded Values
+
+```tsx
+// ❌ Bad - hardcoded values
+<Box style={{ padding: 16, borderRadius: 8 }}>
+
+// ✅ Good - using tokens
+<Box style={{ padding: tokens.spacing.md, borderRadius: tokens.radii.md }}>
+```
+
+### 2. Use Semantic Names
+
+```tsx
+// ❌ Bad - numeric values
+<Box p={4}>
+
+// ✅ Good - semantic names
+<Box p="md">
+```
+
+### 3. Maintain Consistency
+
+Use the same tokens for similar elements:
+
+```tsx
+// ✅ Good - consistent padding
+<Card p={4}>
+<Button p={4}>
+<Box p={4}>
+```
+
+### 4. Document Custom Tokens
+
+Document any custom tokens you add:
+
+```ts
+// Custom spacing values for brand consistency
+spacing: {
+  7: 28,  // Brand-specific medium-large spacing
+  9: 36,  // Brand-specific large spacing
+}
+```
+
+## Token Migration
+
+### Migrating from Hardcoded Values
+
+When migrating existing code to use tokens:
+
+1. **Identify common values** - Look for repeated numbers
+2. **Map to tokens** - Find matching token values
+3. **Replace systematically** - Replace all occurrences
+4. **Test thoroughly** - Ensure visual consistency
+
+```tsx
+// Before
+<Box style={{ padding: 16, margin: 8, borderRadius: 4 }}>
+
+// After
+<Box style={{ padding: tokens.spacing.md, margin: tokens.spacing.sm, borderRadius: tokens.radii.sm }}>
+```
+
+## Token Performance
+
+### Token Caching
+
+Tokens are cached for performance. The first access loads the tokens, subsequent accesses use the cached value.
+
+### Token Resolution
+
+Token resolution happens at build time for static tokens and at runtime for dynamic tokens:
+
+```tsx
+// Static - resolved at build time
+<Box p={4}>
+
+// Dynamic - resolved at runtime
+<Box p={dynamicValue}>
+```
+
+## Token Accessibility
+
+### Color Contrast
+
+Ensure your color tokens meet WCAG AA contrast requirements:
+
+- **Normal text** - 4.5:1 contrast ratio
+- **Large text** - 3:1 contrast ratio
+- **UI components** - 3:1 contrast ratio
+
+### Spacing for Touch Targets
+
+Ensure touch targets meet minimum size requirements:
+
+- **Minimum touch target** - 44x44px
+- **Recommended** - 48x48px
+
+```tsx
+// Ensure buttons have adequate spacing
+<Button p={4} style={{ minHeight: 44 }}>
+  Click Me
+</Button>
+```
+
+## Token Versioning
+
+Tokens are versioned with the package. When you change tokens:
+
+1. **Consider impact** - Will this break existing designs?
+2. **Document changes** - Update CHANGELOG.md
+3. **Use changeset** - Add a changeset for the change
+4. **Test thoroughly** - Ensure visual consistency
+
+## Resources
+
+- [Theming Guide](/docs/theming) - Theme customization
+- [Components Guide](/docs/components) - Theme-aware components
+- [API Reference](/docs/api/intro) - Complete token API
+- [Contributing Guide](/docs/contributing) - How to add new tokens
