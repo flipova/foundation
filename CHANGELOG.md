@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+### Minor Changes
+
+- 751d13e: Added Dockerfile
+
 ## 1.3.2
 
 ### Patch Changes
