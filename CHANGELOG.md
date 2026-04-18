@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.4.1
+
+### Patch Changes
+
+- 8ae1798: Create new branch for multi-format releases
+
+  Design Docker image build workflow
+
+  Design additional release formats (e.g., standalone binaries, archives)
+
+  Create GitHub workflow for Docker releases
+
+  Create GitHub workflow for other release formats
+
+  Update documentation for new release formats
+
+  Add changeset for multi-format releases
+
 ## 1.4.0
 
 ### Minor Changes
