@@ -1,0 +1,57 @@
+name: CLI Binary Release
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  cli:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            ext: ''
+          - os: macos-latest
+            platform: macos
+            ext: ''
+          - os: windows-latest
+            platform: windows
+            ext: '.exe'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Install pkg
+        run: npm install -g pkg
+
+      - name: Build CLI binary
+        run: |
+          pkg dist/studio/cli/index.js \
+            --targets node22-${{ matrix.platform }}-x64 \
+            --output flipova-studio-${{ matrix.platform }}-x64${{ matrix.ext }}
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: flipova-studio-${{ matrix.platform }}-x64${{ matrix.ext }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
