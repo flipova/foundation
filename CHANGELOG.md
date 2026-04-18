@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2
+
+### Patch Changes
+
+- 0e0f75f: Restyling of documentation interface
+
 ## 1.3.1
 
 ### Patch Changes
