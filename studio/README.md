@@ -4,6 +4,8 @@ Visual app builder for React Native. Drag & drop layouts, components, and blocks
 
 ## Quick start
 
+### Using npm (Recommended for development)
+
 ```bash
 npx flipova-studio
 ```
@@ -12,6 +14,22 @@ This single command:
 1. Builds the web UI if not already built
 2. Starts the Express server on port 4200
 3. Opens the builder at http://localhost:4200
+
+### Using Docker (Recommended for production)
+
+```bash
+docker-compose up -d
+```
+
+This will:
+- Build the Docker image with Foundation and Studio
+- Start the Studio server on port 4200
+- Persist project data in a Docker volume
+- Mount generated code to a volume for easy access
+
+Access the Studio at http://localhost:4200
+
+See the main [README.md](../README.md) for detailed Docker setup instructions.
 
 ## Commands
 
