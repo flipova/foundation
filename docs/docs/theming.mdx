@@ -90,7 +90,7 @@ function MyComponent() {
 
 ### Creating a Custom Theme
 
-You can create custom themes by extending the base theme configuration:
+You can create custom themes by extending the base theme configuration using `defineConfig`:
 
 ```ts
 import { defineConfig } from "@flipova/foundation/config";
@@ -120,6 +120,8 @@ export default defineConfig({
   defaultTheme: "brand",
 });
 ```
+
+**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to define custom themes and override design tokens, but it is not a design token management system. Design tokens are defined statically in the `tokens/` module.
 
 ### Theme Color Structure
 

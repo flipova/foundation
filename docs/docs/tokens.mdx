@@ -357,7 +357,7 @@ const { motion } = useTheme();
 
 ### Override Default Tokens
 
-Override default tokens in your configuration:
+You can override the default design tokens at the app level using `defineConfig`. Design tokens are defined statically in the `tokens/` module, but you can override them in your app configuration:
 
 ```ts
 import { defineConfig } from "@flipova/foundation/config";
@@ -381,9 +381,11 @@ export default defineConfig({
 });
 ```
 
+**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to override the static design tokens defined in the `tokens/` module, but it is not a design token management system itself. Design tokens are static values defined in the `tokens/` module.
+
 ### Add Custom Tokens
 
-Add custom tokens to extend the system:
+Add custom tokens to extend the system at the app level:
 
 ```ts
 import { defineConfig } from "@flipova/foundation/config";
@@ -404,6 +406,8 @@ export default defineConfig({
   },
 });
 ```
+
+**Note**: This adds custom tokens at the app level. The base design tokens are defined statically in the `tokens/` module.
 
 ### Token Naming Conventions
 
