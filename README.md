@@ -4,6 +4,8 @@ Design tokens, theming, layout primitives, and UI components for React Native (i
 
 ## Install
 
+### npm Package
+
 ```bash
 npm install @flipova/foundation
 ```
@@ -15,6 +17,14 @@ Install the ones you need:
 ```bash
 npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
 ```
+
+### Other Installation Methods
+
+Flipova Foundation is available in multiple formats for different use cases:
+
+- **Docker Image**: `docker pull ghcr.io/flipova/foundation:latest` or `docker pull flipova/foundation:latest`
+- **Standalone CLI Binary**: Download from GitHub Releases for Linux, macOS, or Windows
+- **Archive**: Download tar.gz archive from GitHub Releases for offline installation
 
 ## Quick start
 
@@ -147,6 +157,26 @@ docker run -d \
   flipova-studio
 ```
 
+### Using Pre-built Docker Images
+
+Pre-built Docker images are available from GitHub Container Registry and Docker Hub:
+
+```bash
+# From GitHub Container Registry
+docker pull ghcr.io/flipova/foundation:latest
+
+# From Docker Hub
+docker pull flipova/foundation:latest
+
+# Run with pre-built image
+docker run -d \
+  -p 4200:4200 \
+  -v studio-data:/app/.flipova-studio \
+  -v generated-code:/app/generated \
+  --name flipova-studio \
+  ghcr.io/flipova/foundation:latest
+```
+
 ### Docker Volumes
 
 - `studio-data`: Persists your Studio project data (layouts, pages, components)
@@ -166,6 +196,69 @@ Or mount the volume directly to a host directory by modifying docker-compose.yml
 ```yaml
 volumes:
   - ./generated:/app/generated
+```
+
+## Release Formats
+
+Flipova Foundation is distributed in multiple formats for different use cases:
+
+### npm Package
+
+For use in React Native projects via npm:
+
+```bash
+npm install @flipova/foundation
+```
+
+Published to: https://npm.pkg.github.com/@flipova/foundation
+
+### Docker Image
+
+For containerized deployment of Flipova Studio:
+
+```bash
+docker pull ghcr.io/flipova/foundation:latest
+# or
+docker pull flipova/foundation:latest
+```
+
+Published to:
+- GitHub Container Registry: https://github.com/flipova/foundation/pkgs/container/foundation
+- Docker Hub: https://hub.docker.com/r/flipova/foundation
+
+### Standalone CLI Binary
+
+For running Flipova Studio without npm:
+
+Download from GitHub Releases:
+- Linux: `flipova-studio-linux-x64`
+- macOS: `flipova-studio-macos-x64`
+- Windows: `flipova-studio-windows-x64.exe`
+
+```bash
+# Make executable (Linux/macOS)
+chmod +x flipova-studio-linux-x64
+
+# Run
+./flipova-studio-linux-x64
+```
+
+### Archive
+
+For offline installation or custom deployment:
+
+Download `flipova-foundation-VERSION.tar.gz` from GitHub Releases.
+
+```bash
+# Extract
+tar -xzf flipova-foundation-VERSION.tar.gz
+
+# The archive contains:
+# - dist/ (built foundation library)
+# - studio/app/dist/ (built studio web UI)
+# - studio/server/ (Express server)
+# - studio/engine/ (tree operations and codegen)
+# - studio/cli/ (CLI entry point)
 ```
 
 ## License

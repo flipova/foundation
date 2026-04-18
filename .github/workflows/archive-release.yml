@@ -1,0 +1,48 @@
+name: Archive Release
+
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Create archive
+        run: |
+          mkdir -p release
+          tar -czf release/flipova-foundation-${{ github.ref_name }}.tar.gz \
+            dist/ \
+            studio/app/dist/ \
+            studio/server/ \
+            studio/engine/ \
+            studio/cli/ \
+            README.md \
+            LICENSE \
+            CHANGELOG.md
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/flipova-foundation-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
