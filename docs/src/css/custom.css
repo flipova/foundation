@@ -4,27 +4,48 @@
  * work well for content-centric websites.
  */
 
+/* Import Lexend font */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  /* Flipova brand colors */
+  --ifm-color-primary: #000091;
+  --ifm-color-primary-dark: #000078;
+  --ifm-color-primary-darker: #00006f;
+  --ifm-color-primary-darkest: #000056;
+  --ifm-color-primary-light: #0000aa;
+  --ifm-color-primary-lighter: #0000b3;
+  --ifm-color-primary-lightest: #0000cc;
+  
+  /* Black and white only */
+  --ifm-color-content: #000000;
+  --ifm-color-content-secondary: #333333;
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #ffffff;
+  
+  /* Typography */
+  --ifm-font-family-base: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 145, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Flipova brand colors in dark mode */
+  --ifm-color-primary: #0000cc;
+  --ifm-color-primary-dark: #0000b3;
+  --ifm-color-primary-darker: #0000aa;
+  --ifm-color-primary-darkest: #000091;
+  --ifm-color-primary-light: #0000e5;
+  --ifm-color-primary-lighter: #0000ee;
+  --ifm-color-primary-lightest: #0000ff;
+  
+  /* Black and white only */
+  --ifm-color-content: #ffffff;
+  --ifm-color-content-secondary: #cccccc;
+  --ifm-background-color: #000000;
+  --ifm-background-surface-color: #000000;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 145, 0.3);
 }
