@@ -114,6 +114,60 @@ Starts the builder at http://localhost:4200. This single command auto-builds the
 
 See [studio/README.md](studio/README.md) for the full API documentation.
 
+## Docker
+
+You can run Flipova Studio using Docker for an isolated environment with automatic builds and persistence.
+
+### Using Docker Compose (Recommended)
+
+```bash
+docker-compose up -d
+```
+
+This will:
+- Build the Docker image with Foundation and Studio
+- Start the Studio server on port 4200
+- Persist project data in a Docker volume
+- Mount generated code to a volume for easy access
+
+Access the Studio at http://localhost:4200
+
+### Using Docker directly
+
+```bash
+# Build the image
+docker build -t flipova-studio .
+
+# Run the container
+docker run -d \
+  -p 4200:4200 \
+  -v studio-data:/app/.flipova-studio \
+  -v generated-code:/app/generated \
+  --name flipova-studio \
+  flipova-studio
+```
+
+### Docker Volumes
+
+- `studio-data`: Persists your Studio project data (layouts, pages, components)
+- `generated-code`: Contains the generated React Native code
+
+### Accessing Generated Code
+
+The generated code is available in the `generated-code` volume. To access it:
+
+```bash
+# Copy generated code to host
+docker cp flipova-studio:/app/generated ./generated
+```
+
+Or mount the volume directly to a host directory by modifying docker-compose.yml:
+
+```yaml
+volumes:
+  - ./generated:/app/generated
+```
+
 ## License
 
 MIT
