@@ -4,19 +4,60 @@ sidebar_position: 1
 
 # Introduction
 
-Welcome to **Flipova Foundation** - a comprehensive design system, theming library, and layout primitives for React Native applications.
+Welcome to **Flipova Foundation** - a complete toolkit for building React Native applications that combines a powerful design system library with an integrated visual app builder.
 
 ## What is Flipova Foundation?
 
-Flipova Foundation provides:
+Flipova Foundation is a **2-in-1 solution** for React Native development:
 
-- **Design Tokens**: A consistent set of design tokens for colors, spacing, typography, and more
-- **Theming System**: A powerful theming system with built-in support for light/dark modes
-- **Layout Primitives**: Pre-built layout components that work across iOS, Android, and Web
-- **TypeScript Support**: Full TypeScript support with comprehensive type definitions
-- **Cross-Platform**: Works seamlessly on iOS, Android, and Web platforms
+### 1. Design System Library (@flipova/foundation)
+
+A comprehensive npm package that provides everything you need to build beautiful, consistent React Native applications:
+
+- **Design Tokens**: Pre-defined values for colors, spacing, typography, shadows, and motion that ensure visual consistency across your app
+- **Theming System**: A flexible theming engine with 9 built-in themes (light, dark, neon, autumn, spring, summer, winter, halloween, christmas) and support for custom themes
+- **Layout Primitives**: 23 pre-built layout components (RootLayout, DashboardLayout, GridLayout, BentoLayout, etc.) for common UI patterns
+- **UI Components**: A library of theme-aware components (Button, Card, TextInput, Avatar, Badge, etc.) that work seamlessly with the theming system
+- **Component Registry**: A declarative registry system that defines component metadata for use in the visual builder
+- **TypeScript Support**: Full TypeScript support with comprehensive type definitions for better developer experience
+
+### 2. Flipova Studio (Visual App Builder)
+
+An integrated visual app builder that lets you create React Native applications without writing code manually:
+
+- **Drag & Drop Interface**: Visually build your UI by dragging layouts, components, and blocks from the library
+- **Real-time Preview**: See your design in real-time with device simulation (iOS, Android, Web)
+- **Smart Properties Panel**: Configure component props visually with type-safe inputs
+- **Logic Builder**: Add interactions, state management, and API calls visually
+- **Code Generation**: Automatically generate clean, production-ready React Native code from your visual design
+- **Live Sync**: WebSocket-based real-time updates between the visual builder and generated code
+
+## How It Works Together
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Flipova Foundation                    │
+├─────────────────────────────────────────────────────────┤
+│                                                           │
+│  ┌──────────────────┐         ┌──────────────────┐      │
+│  │  Design System   │         │  Visual Builder  │      │
+│  │  (npm package)   │◄────────┤  (Flipova Studio) │      │
+│  │                  │  uses   │                  │      │
+│  │  • Tokens        │         │  • Drag & Drop   │      │
+│  │  • Themes        │         │  • Visual Editor │      │
+│  │  • Components    │         │  • Code Gen      │      │
+│  │  • Layouts       │         │  • Logic Builder │      │
+│  │  • Registry      │         │                  │      │
+│  └──────────────────┘         └──────────────────┘      │
+│                                                           │
+└─────────────────────────────────────────────────────────┘
+```
+
+The design system library provides the **building blocks** (tokens, themes, components, layouts) that Flipova Studio uses in its visual interface. When you design an app in Studio, it generates code that imports from the foundation library, ensuring consistency and type safety.
 
 ## Installation
+
+### Install the npm package
 
 ```bash
 npm install @flipova/foundation
@@ -28,68 +69,138 @@ Or using GitHub Packages:
 npm install @flipova/foundation --registry=https://npm.pkg.github.com
 ```
 
+### Install peer dependencies (optional)
+
+Install the peer dependencies you need for your project:
+
+```bash
+npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
+```
+
 ## Quick Start
 
+### Using the Design System Library
+
 ```tsx
-import { ThemeProvider, Button, Card } from '@flipova/foundation';
+import { FoundationProvider, defineConfig } from '@flipova/foundation/config';
+import { Button, Card, Box, Text } from '@flipova/foundation';
+
+const config = defineConfig({
+  defaultTheme: 'light',
+});
 
 function App() {
   return (
-    <ThemeProvider>
-      <Card>
-        <Button variant="primary">Click me</Button>
-      </Card>
-    </ThemeProvider>
+    <FoundationProvider config={config}>
+      <Box p={4}>
+        <Card>
+          <Text variant="h1">Welcome to Flipova Foundation</Text>
+          <Button variant="primary" onPress={() => {}}>
+            Get Started
+          </Button>
+        </Card>
+      </Box>
+    </FoundationProvider>
   );
 }
 ```
 
+### Using Flipova Studio
+
+```bash
+npx flipova-studio
+```
+
+This single command:
+1. Builds the web UI if not already built
+2. Starts the Express server on port 4200
+3. Opens the visual builder at http://localhost:4200
+
+You can then drag and drop components, configure props visually, and generate clean React Native code.
+
 ## Key Features
 
 ### Design Tokens
-Access design tokens directly in your code:
+
+Access design tokens directly in your code for consistent styling:
 
 ```tsx
-import { tokens } from '@flipova/foundation';
+import { tokens } from '@flipova/foundation/tokens';
 
 const styles = {
   backgroundColor: tokens.colors.primary,
   padding: tokens.spacing.md,
+  borderRadius: tokens.radii.lg,
 };
 ```
 
+**Note**: Design tokens are defined in the `tokens/` module and are static values. The `config/` module allows you to override these tokens via `defineConfig`, but it is not a token management system itself.
+
 ### Theming
+
 Switch between themes effortlessly:
 
 ```tsx
-import { useTheme } from '@flipova/foundation';
+import { useTheme } from '@flipova/foundation/theme';
 
-function MyComponent() {
-  const { theme, toggleTheme } = useTheme();
-  return <button onClick={toggleTheme}>Toggle Theme</button>;
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <Button onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Switch to {theme === 'light' ? 'Dark' : 'Light'} Mode
+    </Button>
+  );
 }
 ```
 
 ### Layout Components
-Use pre-built layout components:
+
+Use pre-built layout components for common UI patterns:
 
 ```tsx
-import { FlexLayout, BentoLayout } from '@flipova/foundation';
+import { DashboardLayout, BentoLayout } from '@flipova/foundation/layout';
 
-<FlexLayout direction="row" gap={16}>
-  <div>Item 1</div>
-  <div>Item 2</div>
-</FlexLayout>
+<DashboardLayout sidebar={<Sidebar />} header={<Header />}>
+  <BentoLayout>
+    <BentoItem colSpan={2}>
+      <Chart />
+    </BentoItem>
+    <BentoItem>
+      <Stats />
+    </BentoItem>
+  </BentoLayout>
+</DashboardLayout>
 ```
+
+## Module Structure
+
+Flipova Foundation is organized into several modules that you can import individually:
+
+| Import path | Content |
+|---|---|
+| `@flipova/foundation` | Everything (recommended for most projects) |
+| `@flipova/foundation/tokens` | Design tokens only (spacing, colors, radii, typography, shadows, motion) |
+| `@flipova/foundation/theme` | Theme system only (ThemeProvider, useTheme, built-in themes) |
+| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, and registry |
+| `@flipova/foundation/config` | defineConfig, FoundationProvider (for app-level configuration) |
+| `@flipova/foundation/studio` | Studio engine (tree types, code generation, server) |
+
+**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to override tokens and define custom themes, but it is not a design token management system. Design tokens are defined statically in the `tokens/` module.
 
 ## Documentation Structure
 
-- **Guides**: Learn how to use Flipova Foundation in your projects
-- **API Reference**: Detailed API documentation for all components and utilities
-- **Contributing**: Guidelines for contributing to the project
+- **[Getting Started](/docs/guides/getting-started)** - Set up your first project with the design system
+- **[Theming](/docs/guides/theming)** - Learn about the theming system and custom themes
+- **[Design Tokens](/docs/guides/tokens)** - Understand design tokens and how to use them
+- **[Components](/docs/guides/components)** - Explore available UI components
+- **[Layouts](/docs/guides/layouts)** - Learn about layout primitives
+- **[Studio](/docs/guides/studio)** - Master the visual app builder
+- **[Contributing](/docs/contributing)** - Guidelines for contributing to the project
 
 ## Next Steps
 
-- Read the [Getting Started](#) guide to set up your first project
-- Explore the [API Reference](/docs/api/intro) for detailed component documentation
-- Check out the [Contributing](/docs/contributing) guide if you want to contribute
+- Read the [Getting Started](/docs/guides/getting-started) guide to set up your first project
+- Try Flipova Studio by running `npx flipova-studio`
+- Explore the [Components](/docs/guides/components) guide for available UI components
+- Check out the [Studio](/docs/guides/studio) guide to learn the visual builder
+- Read the [Contributing](/docs/contributing) guide if you want to contribute

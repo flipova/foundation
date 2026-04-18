@@ -4,27 +4,42 @@ sidebar_position: 2
 
 # Getting Started
 
-This guide will help you get started with Flipova Foundation - a comprehensive design system, theming library, and layout primitives for React Native applications.
+This guide will help you get started with Flipova Foundation - a complete toolkit for building React Native applications that combines a design system library with an integrated visual app builder.
 
-## Installation
+## Choosing Your Approach
 
-### Basic Installation
+Flipova Foundation offers two ways to build applications:
+
+1. **Code-First Approach**: Use the design system library directly in your React Native code
+2. **Visual Approach**: Use Flipova Studio to visually design your app and generate code
+
+You can use either approach, or combine both - start visually in Studio, then customize the generated code with the library.
+
+## Approach 1: Using the Design System Library
+
+### Step 1: Install the Package
 
 ```bash
 npm install @flipova/foundation
 ```
 
-### Peer Dependencies
+Or using GitHub Packages:
 
-Install the ones you need:
+```bash
+npm install @flipova/foundation --registry=https://npm.pkg.github.com
+```
+
+### Step 2: Install Peer Dependencies (Optional)
+
+Install the peer dependencies you need for your project. These are optional because Flipova Foundation works without them, but some components require specific packages:
 
 ```bash
 npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
 ```
 
-## Quick Start
+### Step 3: Wrap Your App with FoundationProvider
 
-### 1. Wrap Your App with FoundationProvider
+The `FoundationProvider` is required to make the theme system and design tokens available throughout your app.
 
 ```tsx
 import { FoundationProvider, defineConfig } from "@flipova/foundation/config";
@@ -42,7 +57,19 @@ export default function App() {
 }
 ```
 
-### 2. Use Components
+**What is `defineConfig`?**
+
+`defineConfig` is a function that creates your app-level configuration. It allows you to:
+- Set the default theme
+- Override design tokens (spacing, colors, radii, etc.)
+- Define custom themes
+- Configure layout behavior
+
+**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to override the static design tokens defined in the `tokens/` module, but it is not a design token management system itself.
+
+### Step 4: Use Components
+
+Now you can use any component from the library:
 
 ```tsx
 import { Button, Card, Box, Text } from "@flipova/foundation";
@@ -61,18 +88,90 @@ function MyScreen() {
 }
 ```
 
+## Approach 2: Using Flipova Studio
+
+### Step 1: Install the Package
+
+```bash
+npm install @flipova/foundation
+```
+
+### Step 2: Start Flipova Studio
+
+```bash
+npx flipova-studio
+```
+
+This single command:
+1. Builds the web UI if not already built
+2. Starts the Express server on port 4200
+3. Opens the visual builder at http://localhost:4200
+
+### Step 3: Design Your App Visually
+
+In Flipova Studio, you can:
+- **Drag & Drop**: Drag layouts, components, and blocks from the Library Panel to the Canvas
+- **Configure Props**: Use the Properties Panel to configure component properties visually
+- **Add Logic**: Use the Logic Panel to add interactions, state management, and API calls
+- **Preview**: See your design in real-time with device simulation
+
+### Step 4: Generate Code
+
+When you're happy with your design, generate the React Native code:
+
+```bash
+npx flipova-studio generate
+```
+
+This creates a complete React Native project in the `./generated/` directory with:
+- App.tsx and screen components
+- Navigation configuration
+- Theme setup
+- Service clients
+- Type definitions
+
 ## Custom Configuration
 
-Create a `flipova.config.ts` at your project root:
+### Overriding Design Tokens
+
+You can override the default design tokens in your app configuration. Design tokens are defined statically in the `tokens/` module, but you can override them at the app level:
 
 ```ts
 import { defineConfig } from "@flipova/foundation/config";
 
 export default defineConfig({
   tokens: {
-    spacing: { 0: 0, 1: 2, 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 8: 32 },
-    radii: { none: 0, sm: 4, md: 8, lg: 16, xl: 24, full: 9999 },
+    spacing: { 
+      0: 0, 
+      1: 2, 
+      2: 4, 
+      3: 8, 
+      4: 12, 
+      5: 16, 
+      6: 20, 
+      8: 32 
+    },
+    radii: { 
+      none: 0, 
+      sm: 4, 
+      md: 8, 
+      lg: 16, 
+      xl: 24, 
+      full: 9999 
+    },
   },
+  defaultTheme: "light",
+});
+```
+
+### Creating Custom Themes
+
+Define your own themes by extending the base theme structure:
+
+```ts
+import { defineConfig } from "@flipova/foundation/config";
+
+export default defineConfig({
   themes: {
     brand: {
       colors: {
@@ -80,6 +179,17 @@ export default defineConfig({
         primaryForeground: "#FFFFFF",
         background: "#FAFAFA",
         foreground: "#1A1A2E",
+        card: "#FFFFFF",
+        cardForeground: "#1A1A2E",
+        muted: "#F3F4F6",
+        mutedForeground: "#6B7280",
+        accent: "#FF6B00",
+        accentForeground: "#FFFFFF",
+        destructive: "#EF4444",
+        destructiveForeground: "#FFFFFF",
+        border: "#E5E7EB",
+        input: "#E5E7EB",
+        ring: "#FF6B00",
       },
     },
   },
@@ -93,12 +203,14 @@ Flipova Foundation is organized into several modules that you can import individ
 
 | Import path | Content |
 |---|---|
-| `@flipova/foundation` | Everything |
-| `@flipova/foundation/tokens` | Design tokens only |
-| `@flipova/foundation/theme` | Theme system only |
-| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry |
-| `@flipova/foundation/config` | defineConfig, FoundationProvider |
-| `@flipova/foundation/studio` | Studio engine (tree, codegen, server) |
+| `@flipova/foundation` | Everything (recommended for most projects) |
+| `@flipova/foundation/tokens` | Design tokens only (spacing, colors, radii, typography, shadows, motion) |
+| `@flipova/foundation/theme` | Theme system only (ThemeProvider, useTheme, built-in themes) |
+| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, and registry |
+| `@flipova/foundation/config` | defineConfig, FoundationProvider (for app-level configuration) |
+| `@flipova/foundation/studio` | Studio engine (tree types, code generation, server) |
+
+**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to override tokens and define custom themes, but it is not a design token management system. Design tokens are defined statically in the `tokens/` module.
 
 ## Architecture Overview
 
@@ -117,6 +229,13 @@ foundation/
           ├── [layouts]     23 layout components
           ├── components/   Button, TextInput
           └── blocks/       AuthFormBlock, HeaderBlock
+
+studio/
+├── cli/           CLI entry point (npx flipova-studio)
+├── server/        Express + WebSocket server with REST API
+└── engine/
+     ├── tree/      Document tree (types + immutable operations)
+     └── codegen/   Code generation (page → .tsx, project → full app)
 ```
 
 ## Built-in Themes
@@ -138,7 +257,7 @@ Flipova Foundation includes 9 built-in themes:
 Access design tokens directly in your code:
 
 ```tsx
-import { tokens } from "@flipova/foundation";
+import { tokens } from "@flipova/foundation/tokens";
 
 const styles = {
   backgroundColor: tokens.colors.primary,
@@ -147,12 +266,14 @@ const styles = {
 };
 ```
 
+Design tokens are static values defined in the `tokens/` module. You can override them at the app level using `defineConfig`, but the tokens themselves are not managed by the config system.
+
 ## Theming
 
 Switch between themes effortlessly:
 
 ```tsx
-import { useTheme } from "@flipova/foundation";
+import { useTheme } from "@flipova/foundation/theme";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -169,7 +290,7 @@ function ThemeToggle() {
 Use pre-built layout components for common UI patterns:
 
 ```tsx
-import { FlexLayout, BentoLayout } from "@flipova/foundation";
+import { FlexLayout, BentoLayout } from "@flipova/foundation/layout";
 
 <FlexLayout direction="row" gap={16}>
   <Box>Item 1</Box>
