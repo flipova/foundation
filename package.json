@@ -1,6 +1,6 @@
 {
   "name": "@flipova/foundation",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "description": "Design tokens, theming system, and layout primitives for React Native (iOS, Android, Web)",
   "author": "Flipova",
   "license": "MIT",
