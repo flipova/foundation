@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0
+
+### Minor Changes
+
+- 30fce61: Reorganize GitHub workflows with structured pipeline, concurrency handling, and workflow_run triggers. Remove duplicate npm publish from publish workflow (handled by release workflow)
+
 ## 1.4.1
 
 ### Patch Changes
