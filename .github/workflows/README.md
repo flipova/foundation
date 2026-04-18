@@ -49,20 +49,20 @@ This document describes the structured CI/CD pipeline for Flipova Foundation.
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Publish Workflow                              │
+│              Publish Additional Formats Workflow                  │
 │                                                                 │
 │  Triggered by Release workflow completion                         │
 │         │                                                       │
 │         ▼                                                       │
 │  ┌──────────────┐                                               │
-│  │ npm publish  │  (to GitHub Packages)                        │
+│  │ Docker build │  (ghcr.io & Docker Hub)                      │
 │  └──────────────┘                                               │
-│         │                                                       │
-│         ├─► Docker build (ghcr.io & Docker Hub)                  │
 │         │                                                       │
 │         ├─► Archive creation (tar.gz)                            │
 │         │                                                       │
 │         └─► CLI binaries (Linux, macOS, Windows)                 │
+│                                                                 │
+│  Note: npm publish is handled by Release workflow               │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -103,14 +103,14 @@ This document describes the structured CI/CD pipeline for Flipova Foundation.
   - If no changesets: Skips
   - When version PR merged: Triggers publish workflow
 
-### Publish (`publish.yml`)
+### Publish Additional Formats (`publish.yml`)
 - **Triggers**: When Release workflow completes successfully
-- **Purpose**: Publish to multiple formats
+- **Purpose**: Publish to additional formats (Docker, archive, CLI binaries)
+- **Note**: npm publish is handled by Release workflow
 - **Jobs**:
-  1. **npm**: Publish to GitHub Packages
-  2. **docker**: Build and push Docker images (depends on npm)
-  3. **archive**: Create tar.gz archive (depends on npm)
-  4. **cli**: Build CLI binaries for all platforms (depends on npm)
+  1. **docker**: Build and push Docker images (ghcr.io & Docker Hub)
+  2. **archive**: Create tar.gz archive
+  3. **cli**: Build CLI binaries for Linux, macOS, Windows
 - **Concurrency**: Does not cancel (important for publishing)
 
 ### Docs (`docs.yml`)

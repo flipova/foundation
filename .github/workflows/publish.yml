@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: Publish Additional Formats
 
 on:
   workflow_run:
@@ -18,31 +18,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm run build
-
-      - name: Write .npmrc and publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-        run: |
-          echo "@flipova:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> .npmrc
-          npm publish || echo "Version already published, skipping"
-
   docker:
     runs-on: ubuntu-latest
-    needs: publish
     steps:
       - uses: actions/checkout@v4
 
@@ -87,7 +64,6 @@ jobs:
 
   archive:
     runs-on: ubuntu-latest
-    needs: publish
     steps:
       - uses: actions/checkout@v4
 
@@ -121,7 +97,6 @@ jobs:
 
   cli:
     runs-on: ${{ matrix.os }}
-    needs: publish
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
