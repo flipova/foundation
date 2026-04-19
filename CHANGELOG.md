@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0
+
+### Minor Changes
+
+- 3b33f1c: Unified release workflow in release.yml with clear steps for npm, Docker, archive, and CLI releases. Removed publish.yml
+
 ## 1.5.0
 
 ### Minor Changes
