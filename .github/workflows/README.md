@@ -90,7 +90,7 @@ This document describes the structured CI/CD pipeline for Flipova Foundation.
 - **Concurrency**: Does not cancel (important for release process)
 - **Jobs**:
   1. **release**: Handle changesets - create version PR or publish npm package
-  2. **docker**: Build and push Docker images (ghcr.io & Docker Hub) - runs only if published
+  2. **docker**: Build and push Docker images (ghcr.io) for linux/amd64 and linux/arm64 - runs only if published
   3. **archive**: Create tar.gz archive - runs only if published
   4. **cli**: Build CLI binaries for Linux, macOS, Windows - runs only if published
 - **Behavior**:
