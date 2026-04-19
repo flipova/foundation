@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.7.0
+
+### Minor Changes
+
+- 9771d1d: Add multi-platform Docker support (linux/amd64, linux/arm64) to release workflow
+
 ## 1.6.0
 
 ### Minor Changes
