@@ -53,6 +53,7 @@ jobs:
         run: |
           # Switch registry to GitHub Packages for a second publish
           node -e "const fs=require('fs');let p=JSON.parse(fs.readFileSync('package.json','utf8'));delete p.publishConfig;fs.writeFileSync('package.json',JSON.stringify(p,null,2));"
+          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           npm publish --registry https://npm.pkg.github.com --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

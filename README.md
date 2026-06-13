@@ -1,37 +1,74 @@
 # @flipova/foundation
 
-Design tokens, theming, layout primitives, and UI components for **React Native** (iOS, Android) and **React web** apps — from a single shared codebase.
+[![npm version](https://img.shields.io/npm/v/@flipova/foundation.svg)](https://www.npmjs.com/package/@flipova/foundation)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Install
+A unified, platform-agnostic design system and UI foundation for building identical experiences across **React Native** (iOS, Android) and **React Web**. 
+
+Flipova Foundation provides design tokens, a declarative theming engine, layout primitives, and beautifully crafted UI components from a single shared codebase. By abstracting the platform dependencies, Flipova ensures that web and mobile projects can seamlessly share 100% of their UI layer.
+
+---
+
+## Features
+
+- **Write Once, Run Anywhere**: Isomorphic components that map to native primitives on mobile (`View`, `Text`, `ScrollView`) and highly-optimized HTML semantics on the web.
+- **Zero-Config Web Support**: The web entry point (`@flipova/foundation/web`) is completely free of heavy native dependencies, enabling rapid bundling for SSR and SSG environments like Next.js and Vite.
+- **Declarative Layouts**: Build complex UI using intuitive layout primitives (`Box`, `Stack`, `Inline`, `Center`).
+- **Dynamic Theming**: First-class support for dark/light modes, dynamic color schemes, and custom design tokens.
+- **Built-in Studio Builder**: Comes with a powerful visual UI builder (`flipova-studio`) to drag, drop, and construct layouts visually, outputting production-ready React code.
+
+---
+
+## Installation
+
+Flipova Foundation is published on both the **npm public registry** and **GitHub Packages**. It is designed to adapt its dependency graph depending on your target environment.
+
+### For React Web Projects
+
+The web version is extremely lightweight. It installs only what is necessary for DOM-based environments, completely bypassing React Native abstractions.
 
 ```bash
 npm install @flipova/foundation
 ```
 
-One install — no extra deps needed. Works out of the box for **React web** projects.
+### For React Native / Expo Projects
 
-For **React Native / Expo** projects, install the optional native peer dependencies you use:
+For native environments, Flipova leverages your existing Expo and React Native ecosystem. Install the package alongside its optional native peer dependencies:
 
 ```bash
-npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
+npm install @flipova/foundation
+
+# Install required native peer dependencies
+npx expo install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated expo-linear-gradient expo-haptics @expo/vector-icons lucide-react-native
 ```
 
-### Other Installation Methods
+---
 
-FlipovaFoundation is available in multiple formats for different use cases:
+## Architecture & Modules
 
-- **npm (public)**: `npm install @flipova/foundation` ← default
-- **GitHub Packages**: `npm install @flipova/foundation --registry https://npm.pkg.github.com`
-- **Docker Image**: `docker pull ghcr.io/flipova/foundation:latest` or `docker pull flipova/foundation:latest`
-- **Standalone CLI Binary**: Download from GitHub Releases for Linux, macOS, or Windows
-- **Archive**: Download tar.gz archive from GitHub Releases for offline installation
+The package is deeply modularized so you only import what you need. Importing from specific sub-modules guarantees that bundlers will tree-shake platform-incompatible code.
 
-## Quick start
+| Module Entry Point | Description | Supported Platforms |
+| :--- | :--- | :--- |
+| **`@flipova/foundation`** | Core UI components, interactive controls, and layout blocks. | Native |
+| **`@flipova/foundation/web`** | DOM-based implementations of primitives, components, and layouts. | Web |
+| **`@flipova/foundation/layout`**| Layout hooks (`useBreakpoint`, `useSafeArea`), and declarative registries. | Native |
+| **`@flipova/foundation/tokens`**| Core design tokens (spacing, radii, colors, typography). | Native & Web |
+| **`@flipova/foundation/theme`** | Theme system, ThemeProvider context, and ColorScheme utilities. | Native & Web |
+| **`@flipova/foundation/config`**| Configuration engine (`defineConfig`, `FoundationProvider`). | Native & Web |
 
-### React Native / Expo
+---
 
+## Core Concepts & Usage
+
+### 1. Initialization and Theming
+
+Whether you are on the Web or Native, initializing the design system requires a Provider.
+
+**React Native (App.tsx):**
 ```tsx
 import { FoundationProvider, defineConfig } from "@flipova/foundation/config";
+import { Box, Button } from "@flipova/foundation";
 
 const config = defineConfig({
   defaultTheme: "light",
@@ -40,229 +77,132 @@ const config = defineConfig({
 export default function App() {
   return (
     <FoundationProvider config={config}>
-      <MyApp />
+      <Box padding="xl" backgroundColor="background">
+        <Button label="Welcome to Flipova" variant="primary" />
+      </Box>
     </FoundationProvider>
   );
 }
 ```
 
-### React Web
-
+**React Web (App.tsx):**
 ```tsx
 import { ThemeProvider } from "@flipova/foundation/theme";
-import { DashboardLayout, Button, TextInput } from "@flipova/foundation/web";
+import { Box } from "@flipova/foundation/web";
 
 export default function App() {
   return (
     <ThemeProvider defaultTheme="light">
-      <DashboardLayout
-        header={<nav>My App</nav>}
-        sidebar={<aside>Navigation</aside>}
-      >
-        <Button label="Get started" variant="primary" />
-        <TextInput label="Email" placeholder="you@example.com" />
-      </DashboardLayout>
+      <Box padding="xl" backgroundColor="background">
+        <h1>Web Experience</h1>
+      </Box>
     </ThemeProvider>
   );
 }
 ```
 
-## Architecture
+### 2. Layout Primitives
 
+Flipova strongly discourages inline styling. Instead, all structural layouts should be composed using foundational primitives. This guarantees identical spacing and alignment across web and mobile.
+
+- **`Box`**: The lowest-level building block. Supports padding, margins, borders, and background tokens.
+- **`Stack`**: A vertical flex container with configurable `gap` spacing.
+- **`Inline`**: A horizontal flex container with configurable `gap` spacing and wrapping capabilities.
+- **`Center`**: Utility primitive to vertically and horizontally align its children.
+
+**Example: Building a User Card**
+```tsx
+import { Box, Inline, Stack } from "@flipova/foundation/web";
+import { Avatar, Text, Button } from "@flipova/foundation/web";
+
+export function UserCard() {
+  return (
+    <Box padding="lg" borderRadius="md" backgroundColor="surface">
+      <Inline gap="md" align="center">
+        <Avatar src="https://example.com/avatar.png" size="lg" />
+        <Stack gap="xs" flex={1}>
+          <Text variant="heading">John Doe</Text>
+          <Text variant="body" color="muted">Software Engineer</Text>
+        </Stack>
+        <Button label="Follow" variant="secondary" />
+      </Inline>
+    </Box>
+  );
+}
 ```
-foundation/
-├── tokens/       Static design tokens (spacing, colors, radii, shadows, typography, motion)
-├── theme/        Theme system (ColorScheme, ThemeProvider, 9 built-in themes)
-├── config/       Configuration (defineConfig, FoundationProvider, token overrides)
-├── web/          ← NEW: React web components (no React Native dependency)
-│    ├── primitives/   Box, Stack, Inline, Center, Scroll, Divider
-│    ├── components/   Button, TextInput, Badge, Avatar, Icon, Select, Tabs…
-│    └── layouts/      RootLayout, DashboardLayout, AuthLayout, SidebarLayout…
-└── layout/
-     ├── types/       Shared types (LayoutMeta, ComponentMeta, BlockMeta)
-     ├── registry/    Declarative registries (layouts, components, blocks) — platform-agnostic
-     ├── hooks/       useBreakpoint, useAdaptiveValue, usePlatformInfo, useSafeArea
-     ├── utils/       resolveLayoutPadding, resolveBackground, responsive
-     └── ui/
-          ├── primitives/   Box, Stack, Inline, Center, Scroll, Divider (React Native)
-          ├── [layouts]     23 layout components (React Native)
-          ├── components/   Button, TextInput… (React Native)
-          └── blocks/       AuthFormBlock, HeaderBlock (React Native)
 
-studio/
-├── cli/           CLI entry point (npx flipova-studio)
-├── server/        Express + WebSocket server with REST API
-└── engine/
-     ├── tree/      Document tree (types + immutable operations)
-     └── codegen/   Code generation (page → .tsx, project → full app)
-```
+---
 
-## Modules
+## Flipova Studio (Visual Builder)
 
-| Import path | Content | Platform |
-|---|---|---|
-| `@flipova/foundation` | Everything (RN) | React Native |
-| `@flipova/foundation/web` | Web primitives, components & layouts | React Web |
-| `@flipova/foundation/tokens` | Design tokens only | Both |
-| `@flipova/foundation/theme` | Theme system only | Both |
-| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry | React Native |
-| `@flipova/foundation/config` | defineConfig, FoundationProvider | Both |
-| `@flipova/foundation/studio` | Studio engine (tree, codegen, server) | Node.js |
+The foundation library comes bundled with **Flipova Studio**, a local visual builder designed to accelerate UI development. It allows you to drag, drop, and configure Foundation components in a web interface, and instantly outputs clean React Native or React Web code.
 
-## Studio (visual builder)
+To start the studio, run:
 
 ```bash
 npx flipova-studio
 ```
+*This starts the builder locally at http://localhost:4200.*
 
-Starts the builder at http://localhost:4200. This single command auto-builds the web UI if needed, starts the server, and serves the React app.
+### Studio CLI Commands
 
 | Command | Description |
-|---------|-------------|
-| `npx flipova-studio` | Start the builder |
-| `npx flipova-studio --port 3000` | Custom port |
-| `npx flipova-studio --dev` | Dev mode with Vite HMR |
-| `npx flipova-studio generate` | Generate React Native code |
+| :--- | :--- |
+| `npx flipova-studio` | Start the studio server and visual interface. |
+| `npx flipova-studio --port 3000` | Start the studio on a custom port. |
+| `npx flipova-studio --dev` | Start the studio in development mode with Vite HMR enabled. |
+| `npx flipova-studio generate` | Execute the code generator engine against your saved project tree without starting the UI. |
 
-See [studio/README.md](studio/README.md) for the full API documentation.
+---
 
-## Docker
+## Docker Support
 
-You can run Flipova Studio using Docker for an isolated environment with automatic builds and persistence.
+For continuous integration, isolated environments, or team collaboration, Flipova Studio can be run via Docker. It supports data persistence and exposes your generated code to your host machine via volume mapping.
 
 ### Using Docker Compose (Recommended)
 
+Create a `docker-compose.yml` file:
+
+```yaml
+version: '3.8'
+services:
+  flipova-studio:
+    image: ghcr.io/flipova/foundation:latest
+    ports:
+      - "4200:4200"
+    volumes:
+      - studio-data:/app/.flipova-studio
+      - ./generated:/app/generated
+volumes:
+  studio-data:
+```
+
+Then run:
 ```bash
 docker-compose up -d
 ```
 
-This will:
-- Build the Docker image with Foundation and Studio
-- Start the Studio server on port 4200
-- Persist project data in a Docker volume
-- Mount generated code to a volume for easy access
-
-Access the Studio at http://localhost:4200
-
-### Using Docker directly
+### Using Pre-built Images via Docker CLI
 
 ```bash
-# Build the image
-docker build -t flipova-studio .
-
-# Run the container
-docker run -d \
-  -p 4200:4200 \
-  -v studio-data:/app/.flipova-studio \
-  -v generated-code:/app/generated \
-  --name flipova-studio \
-  flipova-studio
-```
-
-### Using Pre-built Docker Images
-
-Pre-built Docker images are available from GitHub Container Registry and Docker Hub:
-
-```bash
-# From GitHub Container Registry
+# Pull from GitHub Container Registry
 docker pull ghcr.io/flipova/foundation:latest
 
-# From Docker Hub
-docker pull flipova/foundation:latest
-
-# Run with pre-built image
+# Run the container with volume mapping
 docker run -d \
   -p 4200:4200 \
   -v studio-data:/app/.flipova-studio \
-  -v generated-code:/app/generated \
+  -v ./generated:/app/generated \
   --name flipova-studio \
   ghcr.io/flipova/foundation:latest
 ```
 
-### Docker Volumes
+---
 
-- `studio-data`: Persists your Studio project data (layouts, pages, components)
-- `generated-code`: Contains the generated React Native code
+## Contributing
 
-### Accessing Generated Code
-
-The generated code is available in the `generated-code` volume. To access it:
-
-```bash
-# Copy generated code to host
-docker cp flipova-studio:/app/generated ./generated
-```
-
-Or mount the volume directly to a host directory by modifying docker-compose.yml:
-
-```yaml
-volumes:
-  - ./generated:/app/generated
-```
-
-## Release Formats
-
-Flipova Foundation is distributed in multiple formats for different use cases:
-
-### npm Package
-
-For use in React Native projects via npm:
-
-```bash
-npm install @flipova/foundation
-```
-
-Published to: https://npm.pkg.github.com/@flipova/foundation
-
-### Docker Image
-
-For containerized deployment of Flipova Studio:
-
-```bash
-docker pull ghcr.io/flipova/foundation:latest
-# or
-docker pull flipova/foundation:latest
-```
-
-Published to:
-- GitHub Container Registry: https://github.com/flipova/foundation/pkgs/container/foundation
-- Docker Hub: https://hub.docker.com/r/flipova/foundation
-
-### Standalone CLI Binary
-
-For running Flipova Studio without npm:
-
-Download from GitHub Releases:
-- Linux: `flipova-studio-linux-x64`
-- macOS: `flipova-studio-macos-x64`
-- Windows: `flipova-studio-windows-x64.exe`
-
-```bash
-# Make executable (Linux/macOS)
-chmod +x flipova-studio-linux-x64
-
-# Run
-./flipova-studio-linux-x64
-```
-
-### Archive
-
-For offline installation or custom deployment:
-
-Download `flipova-foundation-VERSION.tar.gz` from GitHub Releases.
-
-```bash
-# Extract
-tar -xzf flipova-foundation-VERSION.tar.gz
-
-# The archive contains:
-# - dist/ (built foundation library)
-# - studio/app/dist/ (built studio web UI)
-# - studio/server/ (Express server)
-# - studio/engine/ (tree operations and codegen)
-# - studio/cli/ (CLI entry point)
-```
+We welcome contributions to the Flipova Foundation! Please refer to the `CONTRIBUTING.md` file in the root of the repository for detailed instructions on the development workflow, branching strategies, and instructions for adding new components.
 
 ## License
 
-MIT
+MIT © Flipova
