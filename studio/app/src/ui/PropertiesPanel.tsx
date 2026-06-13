@@ -1,12 +1,13 @@
 /** PropertiesPanel — Right sidebar: Properties / Design / Logic / Code tabs. */
 import React, { useState, useCallback } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useStudio, TreeNode, RegItem } from '../store/StudioProvider';
 import SmartInput from './shared/SmartInput';
 import DesignPanel from './DesignPanel';
 import LogicPanel from './logic/LogicPanel';
 import SnackPanel from './SnackPanel';
+import { Box, Inline, Center, Text } from '@flipova/foundation/web';
 
 const C = {
   bg: '#07090f', surface: '#0d1220', surface2: '#131a2e',
@@ -32,16 +33,18 @@ const Section: React.FC<{ title: string; group: string; children: React.ReactNod
   const [open, setOpen] = useState(true);
   const gi = GROUP_ICONS[group] || { icon: 'circle' as const, color: C.muted };
   return (
-    <View style={s.section}>
-      <Pressable style={s.sectionHeader} onPress={() => setOpen(!open)}>
-        <View style={[s.sectionIconBadge, { backgroundColor: gi.color + '20' }]}>
+    <Box style={{ borderBottomWidth: 1, borderBottomColor: C.border }}>
+      <Pressable style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 9, backgroundColor: C.bg }} onPress={() => setOpen(!open)}>
+        <Center style={{ width: 20, height: 20, borderRadius: 5, backgroundColor: gi.color + '20', marginRight: 6 }}>
           <Feather name={gi.icon} size={11} color={gi.color} />
-        </View>
-        <Text style={s.sectionTitle}>{title}</Text>
+        </Center>
+        <Box flex={1}>
+          <Text fontSize={11} fontWeight="600" color={C.text} style={{ letterSpacing: -0.1 }}>{title}</Text>
+        </Box>
         <Feather name={open ? 'chevron-down' : 'chevron-right'} size={12} color={C.muted} />
       </Pressable>
-      {open && <View style={s.sectionBody}>{children}</View>}
-    </View>
+      {open && <Box bg={C.surface} px={3} style={{ paddingBottom: 12, paddingTop: 6 }}>{children}</Box>}
+    </Box>
   );
 };
 
@@ -78,19 +81,19 @@ const CodeView: React.FC<{ sel: TreeNode }> = ({ sel }) => {
   }, [sel]);
 
   return (
-    <View style={{ padding: 10, gap: 6 }}>
-      <View style={{ flexDirection: 'row', gap: 4, marginBottom: 4 }}>
+    <Box style={{ padding: 10, gap: 6 }}>
+      <Inline style={{ marginBottom: 4 }} spacing={1}>
         {(['jsx', 'props', 'styles'] as const).map(t => (
-          <Pressable key={t} style={[s.codeTab, tab === t && s.codeTabOn]} onPress={() => setTab(t)}>
-            <Text style={[s.codeTabText, tab === t && s.codeTabTextOn]}>{t.toUpperCase()}</Text>
+          <Pressable key={t} style={{ ...s.codeTab as any, ...(tab === t ? s.codeTabOn : {}) }} onPress={() => setTab(t)}>
+            <Text fontSize={9} fontWeight="600" color={tab === t ? '#fff' : C.muted}>{t.toUpperCase()}</Text>
           </Pressable>
         ))}
-      </View>
-      {tab === 'jsx' && <Text style={s.codeBlock} selectable>{jsxPreview}</Text>}
+      </Inline>
+      {tab === 'jsx' && <Text style={{ ...s.codeBlock as any, userSelect: 'text' }}>{jsxPreview}</Text>}
       {tab === 'props' && <TextInput style={s.codeBlock} value={editingProps} onChangeText={setEditingProps} multiline numberOfLines={10} onBlur={applyProps} />}
       {tab === 'styles' && <TextInput style={s.codeBlock} value={editingStyles} onChangeText={setEditingStyles} multiline numberOfLines={10} onBlur={applyStyles} />}
-      <Text style={s.codeId}>ID: {sel.id} · {sel.kind}</Text>
-    </View>
+      <Text fontSize={8} color={C.muted} style={{ opacity: 0.5 }}>ID: {sel.id} · {sel.kind}</Text>
+    </Box>
   );
 };
 
@@ -138,19 +141,19 @@ const PropEditor: React.FC<{
   };
 
   return (
-    <View style={pe.row}>
+    <Box style={pe.row}>
       {isBound && (
-        <View style={pe.boundIndicator}>
+        <Inline align="center" spacing={1} style={pe.boundIndicator}>
           <Feather name="link" size={8} color="#a78bfa" />
-          <Text style={pe.boundLabel}>linked</Text>
+          <Text fontSize={8} fontWeight="600" color="#a78bfa" style={{ flex: 1 }}>linked</Text>
           <Pressable onPress={() => onClearBinding(prop.name)} hitSlop={6} style={pe.clearBtn}>
             <Feather name="x" size={8} color={C.muted} />
           </Pressable>
-        </View>
+        </Inline>
       )}
-      <Text style={pe.propLabel}>{prop.label || prop.name}</Text>
-      <View style={pe.inputRow}>
-        <View style={{ flex: 1 }}>
+      <Text fontSize={10} fontWeight="600" color={C.muted} style={{ marginBottom: 4 }}>{prop.label || prop.name}</Text>
+      <Inline align="flex-end" spacing={1}>
+        <Box flex={1}>
           <SmartInput
             label=""
             value={displayValue}
@@ -159,14 +162,14 @@ const PropEditor: React.FC<{
             options={Array.isArray(prop.options) ? prop.options : undefined}
             isExpression={isBound}
           />
-        </View>
+        </Box>
         {!isBound && canBeAuto && isOverridden && (
           <Pressable
             onPress={() => onChangeProp(prop.name, undefined)}
             hitSlop={8}
             style={pe.autoBtn}
           >
-            <Text style={pe.autoBtnText}>auto</Text>
+            <Text fontSize={8} fontWeight="700" color="#3b82f6">auto</Text>
           </Pressable>
         )}
         {!isBound && canReset && (
@@ -178,13 +181,13 @@ const PropEditor: React.FC<{
             <Feather name="rotate-ccw" size={9} color={C.muted} />
           </Pressable>
         )}
-      </View>
+      </Inline>
       {isBound && staticVal !== undefined && staticVal !== null && staticVal !== '' && (
-        <Text style={pe.fallbackHint}>
-          Fallback: <Text style={pe.fallbackVal}>{String(staticVal)}</Text>
+        <Text fontSize={8} color={C.muted} style={{ fontStyle: 'italic', marginTop: 2 }}>
+          Fallback: <Text fontSize={8} color="#22c55e" style={{ fontFamily: 'monospace' as any }}>{String(staticVal)}</Text>
         </Text>
       )}
-    </View>
+    </Box>
   );
 };
 
@@ -208,12 +211,12 @@ const PropertiesPanel: React.FC = () => {
   }, [selId, updateBindings]);
 
   if (!sel) return (
-    <View style={s.root}>
-      <View style={s.empty}>
+    <Box style={s.root}>
+      <Center style={s.empty}>
         <Feather name="target" size={32} color={C.muted} />
-        <Text style={s.emptyText}>Select an element</Text>
-      </View>
-    </View>
+        <Text fontSize={12} color={C.muted}>Select an element</Text>
+      </Center>
+    </Box>
   );
 
   const grouped: Record<string, any[]> = {};
@@ -223,39 +226,39 @@ const PropertiesPanel: React.FC = () => {
   });
 
   return (
-    <View style={s.root}>
+    <Box style={s.root}>
       {/* Node header */}
-      <View style={s.header}>
-        <View style={s.headerRow}>
-          <View style={s.kindBadge}>
+      <Box px={3} py={2} style={{ borderBottomWidth: 1, borderBottomColor: C.border, backgroundColor: C.bg }}>
+        <Inline align="center" spacing={2}>
+          <Center style={s.kindBadge}>
             <Feather name={KIND_ICON_MAP[sel.kind] || 'circle'} size={12} color={C.primary} />
-          </View>
-          <Text style={s.headerName} numberOfLines={1}>{sel.registryId}</Text>
-          <Text style={s.headerKind}>{sel.kind}</Text>
-        </View>
+          </Center>
+          <Text fontSize={13} fontWeight="700" color={C.text} style={{ letterSpacing: -0.2, flex: 1 }} numberOfLines={1}>{sel.registryId}</Text>
+          <Text fontSize={9} fontWeight="600" color={C.muted} style={{ textTransform: 'uppercase' as any, letterSpacing: 0.8 }}>{sel.kind}</Text>
+        </Inline>
         {m?.variants && m.variants.length > 0 && (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.variantRow}>
             {m.variants.map((v: any) => (
-              <Pressable key={v.name} style={[s.variantBtn, sel.variant === v.name && s.variantBtnOn]}
+              <Pressable key={v.name} style={{ ...s.variantBtn as any, ...(sel.variant === v.name ? s.variantBtnOn : {}) }}
                 onPress={() => { if (selId) updateProp(selId, '__variant__', v.name); }}>
-                <Text style={[s.variantText, sel.variant === v.name && s.variantTextOn]}>{v.label || v.name}</Text>
+                <Text fontSize={9} fontWeight="500" color={sel.variant === v.name ? '#fff' : C.muted}>{v.label || v.name}</Text>
               </Pressable>
             ))}
           </ScrollView>
         )}
-      </View>
+      </Box>
 
       {/* Tabs */}
-      <View style={s.tabs}>
+      <Box style={s.tabs}>
         {(['properties', 'design', 'config', 'code'] as const).map(t => (
           <Pressable key={t} style={s.tab} onPress={() => setRightTab(t)}>
-            <Text style={[s.tabText, rightTab === t && s.tabTextActive]}>
+            <Text fontSize={11} fontWeight={rightTab === t ? "600" : "500"} color={rightTab === t ? C.primary : C.muted}>
               {t === 'code' ? '</>' : t === 'config' ? 'Logic' : t.charAt(0).toUpperCase() + t.slice(1)}
             </Text>
-            {rightTab === t && <View style={s.tabIndicator} />}
+            {rightTab === t && <Box style={s.tabIndicator} />}
           </Pressable>
         ))}
-      </View>
+      </Box>
 
       {/* Tab content */}
       <ScrollView style={s.body}>
@@ -275,13 +278,13 @@ const PropertiesPanel: React.FC = () => {
                   ))}
                 </Section>
               ))
-            : <View style={s.emptyProps}><Text style={s.emptyPropsText}>No configurable props</Text></View>
+            : <Center style={s.emptyProps}><Text fontSize={11} color={C.muted} style={{ fontStyle: 'italic' }}>No configurable props</Text></Center>
         )}
         {rightTab === 'design' && <DesignPanel />}
         {rightTab === 'config' && <LogicPanel />}
         {rightTab === 'code' && <CodeView sel={sel} />}
       </ScrollView>
-    </View>
+    </Box>
   );
 };
 

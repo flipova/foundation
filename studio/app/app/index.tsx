@@ -18,6 +18,7 @@ import { usePanelWidth } from '../src/ui/shared/usePanelWidth';
 import { useWindowSize } from '../src/ui/shared/useWindowSize';
 import { useStudio } from '../src/store/StudioProvider';
 import { LAYOUT_RESPONSIVE, Z_INDEX } from '../src/ui/layoutResponsive';
+import { Box, Inline } from '@flipova/foundation/web';
 
 export default function StudioScreen() {
   const [showTheme, setShowTheme] = useState(false);
@@ -62,7 +63,7 @@ export default function StudioScreen() {
   }, [selId, setSel, removeNode, undo, redo, copyNode, pasteNode, duplicateNode, page]);
 
   return (
-    <View style={s.root}>
+    <Box flex={1} bg="background">
       <Topbar
         onOpenTheme={() => setShowTheme(true)}
         onOpenSettings={() => setShowSettings(true)}
@@ -74,28 +75,28 @@ export default function StudioScreen() {
         onOpenSnack={() => setShowSnack(true)}
       />
 
-      <View style={s.body}>
-        <View style={[s.leftPanel, { width: effectiveLeftWidth }]}>
+      <Inline flex={1} overflow="hidden">
+        <Box style={{ width: effectiveLeftWidth, borderRightWidth: 1, borderRightColor: '#1a2240', zIndex: Z_INDEX.PANEL }} bg="surface">
           <LibraryPanel />
           <LayersPanel />
-        </View>
+        </Box>
         <ResizeHandle side="left" onResize={left.onResize} currentSize={effectiveLeftWidth} />
-        <View style={s.center}>
+        <Box flex={1} overflow="hidden" zIndex={Z_INDEX.PANEL}>
           <DeviceCanvas />
-        </View>
+        </Box>
         <ResizeHandle side="right" onResize={right.onResize} currentSize={effectiveRightWidth} />
-        <View style={{ width: effectiveRightWidth }}>
+        <Box style={{ width: effectiveRightWidth }} zIndex={Z_INDEX.PANEL}>
           <PropertiesPanel />
-        </View>
-      </View>
+        </Box>
+      </Inline>
 
       <Statusbar />
 
       {/* Code IDE — full-screen modal */}
       <Modal visible={showCode} animationType="fade" transparent={false} onRequestClose={() => setShowCode(false)}>
-        <View style={s.codeModal}>
+        <Box flex={1} bg="background" style={{ position: 'relative', overflow: 'hidden', zIndex: Z_INDEX.MODAL }}>
           <CodePanel onClose={() => setShowCode(false)} />
-        </View>
+        </Box>
       </Modal>
 
       {showTheme    && <ThemeEditorModal    onClose={() => setShowTheme(false)} />}
@@ -104,14 +105,6 @@ export default function StudioScreen() {
       {showQueries  && <DataQueryModal       onClose={() => setShowQueries(false)} />}
       {showCustomFn && <CustomFunctionModal  onClose={() => setShowCustomFn(false)} />}
       {showSnack    && <SnackModal visible={showSnack} onClose={() => setShowSnack(false)} />}
-    </View>
+    </Box>
   );
 }
-
-const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#080c18' },
-  body: { flex: 1, flexDirection: 'row', overflow: 'hidden' as any },
-  leftPanel: { borderRightWidth: 1, borderRightColor: '#1a2240', zIndex: Z_INDEX.PANEL },
-  center: { flex: 1, overflow: 'hidden' as any, zIndex: Z_INDEX.PANEL },
-  codeModal: { flex: 1, backgroundColor: '#080c18', zIndex: Z_INDEX.MODAL },
-});

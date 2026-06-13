@@ -19,7 +19,7 @@ export default defineConfig({
     preset: "recommended",
     moduleSideEffects: false,
   },
-  splitting: false,
+  splitting: true,
   minify: false,
   external: [
     "react",

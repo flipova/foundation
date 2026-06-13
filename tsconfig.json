@@ -16,7 +16,9 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./foundation/*"]
+      "@/*": ["./foundation/*"],
+      "@flipova/foundation": ["./foundation/index.ts"],
+      "@flipova/foundation/*": ["./foundation/*"]
     }
   },
   "include": ["foundation", "studio"],

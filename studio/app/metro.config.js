@@ -17,6 +17,7 @@ config.resolver.nodeModulesPaths = [
 
 config.resolver.extraNodeModules = {
   '@foundation': path.resolve(monorepoRoot, 'foundation'),
+  '@flipova/foundation': path.resolve(monorepoRoot),
   stream: path.resolve(monorepoRoot, 'node_modules/readable-stream'),
   buffer: path.resolve(monorepoRoot, 'node_modules/@craftzdog/react-native-buffer'),
 };

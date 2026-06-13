@@ -1,7 +1,8 @@
 /** Topbar — modern 48px header with logo, device selector, zoom, actions, generate. */
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, StyleSheet, Modal, FlatList, ScrollView, Animated } from 'react-native';
+import { Pressable, StyleSheet, Modal, FlatList, ScrollView, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { Box, Inline, Center, Text } from '@flipova/foundation/web';
 import { useStudio } from '../store/StudioProvider';
 import Tooltip from './shared/Tooltip';
 import ConfirmModal from './shared/ConfirmModal';
@@ -43,7 +44,7 @@ const Spinner: React.FC<{ size?: number; color?: string }> = ({ size = 12, color
 };
 
 // ─── Divider ─────────────────────────────────────────────────────────────────
-const Div: React.FC = () => <View style={s.divider} />;
+const Div: React.FC = () => <Box style={s.divider} bg="border" />;
 
 // ─── Icon button ─────────────────────────────────────────────────────────────
 const IconBtn: React.FC<{
@@ -113,7 +114,7 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
   };
 
   return (
-    <View style={s.bar}>
+    <Inline align="center" px={3} spacing={2} bg={C.bg} style={{ height: 48, borderBottomWidth: 1, borderBottomColor: C.border }}>
       <ConfirmModal
         visible={showResetConfirm}
         title="Réinitialiser le projet"
@@ -126,17 +127,17 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
       />
 
       {/* ── Logo ── */}
-      <View style={s.left}>
-        <View style={s.logoRow}>
-          <View style={s.logoIcon}>
+      <Box style={s.left}>
+        <Inline align="center" spacing={2}>
+          <Center style={s.logoIcon}>
             <Feather name="zap" size={13} color="#fff" />
-          </View>
-          {!minimal && <Text style={s.logo}>Flipova</Text>}
-        </View>
-      </View>
+          </Center>
+          {!minimal && <Text fontSize={13} fontWeight="700" color={C.text} style={{ letterSpacing: -0.3 }}>Flipova</Text>}
+        </Inline>
+      </Box>
 
       {/* ── Device selector ── */}
-      <View style={s.center}>
+      <Center flex={1}>
         <Pressable style={s.deviceBtn} onPress={() => setShowDevices(true)}>
           <Feather name={DEVICE_ICONS[device] || 'smartphone'} size={13} color={C.muted} />
           <Text style={s.deviceText} numberOfLines={1}>{device}</Text>
@@ -144,24 +145,24 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
         </Pressable>
         <Modal visible={showDevices} transparent animationType="fade" onRequestClose={() => setShowDevices(false)}>
           <Pressable style={s.overlay} onPress={() => setShowDevices(false)}>
-            <View style={s.dropdown}>
+            <Box style={{ ...s.dropdown as any, borderColor: C.border }} bg={C.surface}>
               <FlatList data={DEVICES} keyExtractor={i => i} renderItem={({ item }) => (
                 <Pressable style={[s.dropItem, item === device && s.dropItemActive]} onPress={() => { setDevice(item); setShowDevices(false); }}>
                   <Feather name={DEVICE_ICONS[item] || 'smartphone'} size={12} color={item === device ? C.primary : C.muted} />
-                  <Text style={[s.dropText, item === device && s.dropTextActive]}>{item}</Text>
+                  <Text style={{ ...s.dropText as any, ...(item === device ? s.dropTextActive : {}) }}>{item}</Text>
                 </Pressable>
               )} />
-            </View>
+            </Box>
           </Pressable>
         </Modal>
-      </View>
+      </Center>
 
       {/* ── Right actions ── */}
-      <View style={s.rightWrapper}>
+      <Box style={s.rightWrapper}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.rightContent} style={s.rightScroll}>
 
           {/* Zoom */}
-          <View style={s.zoomRow}>
+          <Inline align="center" style={s.zoomRow}>
             <Pressable style={s.zoomBtn} onPress={() => setZoom(Math.max(25, zoom - 10))}>
               <Feather name="minus" size={11} color={C.muted} />
             </Pressable>
@@ -169,7 +170,7 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
             <Pressable style={s.zoomBtn} onPress={() => setZoom(Math.min(200, zoom + 10))}>
               <Feather name="plus" size={11} color={C.muted} />
             </Pressable>
-          </View>
+          </Inline>
 
           <Div />
 
@@ -205,18 +206,18 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
               </Pressable>
               <Modal visible={showMoreMenu} transparent animationType="fade" onRequestClose={() => setShowMoreMenu(false)}>
                 <Pressable style={s.overlay} onPress={() => setShowMoreMenu(false)}>
-                  <View style={s.moreDropdown}>
+                  <Box style={{ ...s.moreDropdown as any, borderColor: C.border }} bg={C.surface}>
                     <Pressable style={s.moreItem} onPress={() => { onImport(); setShowMoreMenu(false); }}>
                       <Feather name="upload-cloud" size={13} color={C.text} /><Text style={s.moreItemText}>Importer</Text>
                     </Pressable>
                     <Pressable style={s.moreItem} onPress={() => { onExport(); setShowMoreMenu(false); }}>
                       <Feather name="download-cloud" size={13} color={C.text} /><Text style={s.moreItemText}>Exporter</Text>
                     </Pressable>
-                    <View style={s.moreDivider} />
+                    <Box style={s.moreDivider} bg={C.border} />
                     <Pressable style={s.moreItem} onPress={() => { setShowResetConfirm(true); setShowMoreMenu(false); }}>
-                      <Feather name="trash-2" size={13} color={C.error} /><Text style={[s.moreItemText, { color: C.error }]}>Réinitialiser</Text>
+                      <Feather name="trash-2" size={13} color={C.error} /><Text style={{ ...s.moreItemText as any, color: C.error }}>Réinitialiser</Text>
                     </Pressable>
-                  </View>
+                  </Box>
                 </Pressable>
               </Modal>
             </>
@@ -234,18 +235,21 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
           {/* Generate */}
           <Pressable style={[s.genBtn, generating && { opacity: 0.75 }]} onPress={onGenerate} disabled={generating}>
             {generating ? (
-              <View style={s.genInner}><Spinner size={12} color="#fff" /><Text style={s.genText}>Génération…</Text></View>
+              <Inline align="center" spacing={2}>
+                <Spinner size={12} color="#fff" />
+                <Text fontSize={12} fontWeight="700" color="#fff">Génération…</Text>
+              </Inline>
             ) : (
-              <View style={s.genInner}>
+              <Inline align="center" spacing={2}>
                 <Feather name="zap" size={13} color="#fff" />
-                <Text style={s.genText}>Generate</Text>
-              </View>
+                <Text fontSize={12} fontWeight="700" color="#fff">Generate</Text>
+              </Inline>
             )}
           </Pressable>
 
         </ScrollView>
-      </View>
-    </View>
+      </Box>
+    </Inline>
   );
 };
 

@@ -7,6 +7,9 @@
       "bundler": "metro",
       "output": "single"
     },
-    "scheme": "flipova-studio"
+    "scheme": "flipova-studio",
+    "experiments": {
+      "tsconfigPaths": true
+    }
   }
 }
