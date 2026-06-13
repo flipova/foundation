@@ -13,7 +13,7 @@ One install — no extra deps needed. Works out of the box for **React web** pro
 For **React Native / Expo** projects, install the optional native peer dependencies you use:
 
 ```bash
-npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
+npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens @expo/vector-icons lucide-react-native
 ```
 
 ### Other Installation Methods
@@ -206,13 +206,15 @@ Flipova Foundation is distributed in multiple formats for different use cases:
 
 ### npm Package
 
-For use in React Native projects via npm:
+For use in React Web or React Native projects via npm:
 
 ```bash
 npm install @flipova/foundation
 ```
 
-Published to: https://npm.pkg.github.com/@flipova/foundation
+**Published to both registries (Dual Publishing):**
+- **npm (public):** https://www.npmjs.com/package/@flipova/foundation
+- **GitHub Packages:** https://npm.pkg.github.com/@flipova/foundation
 
 ### Docker Image
 
