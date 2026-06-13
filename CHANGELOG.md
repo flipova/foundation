@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.0
+
+### Minor Changes
+
+- 909f5aa: Add isomorphic React Web support directly via the `@flipova/foundation/web` entry point without requiring native dependencies. Added GitHub Packages dual-publishing support.
+
 ## 1.7.0
 
 ### Minor Changes
