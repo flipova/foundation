@@ -63,7 +63,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:studio && npm run build:foundation",
+    "build": "npm run build:foundation && npm run build:studio",
     "build:foundation": "tsup",
     "build:studio": "cd studio/app && npx expo export --platform web --output-dir dist",
     "dev": "tsup --watch",
