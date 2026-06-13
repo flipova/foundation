@@ -62,7 +62,7 @@ const s = StyleSheet.create({
   label: { fontSize: 12, fontWeight: "500" },
   grid: { flexDirection: "row", flexWrap: "wrap" },
   item: { overflow: "hidden", position: "relative" },
-  videoOverlay: { ...StyleSheet.absoluteFillObject, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.3)" },
+  videoOverlay: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center", backgroundColor: "rgba(0,0,0,0.3)" },
   removeBtn: { position: "absolute", top: 4, right: 4, width: 18, height: 18, borderRadius: 9, alignItems: "center", justifyContent: "center" },
   addBtn: { alignItems: "center", justifyContent: "center", borderWidth: 1.5, borderStyle: "dashed", gap: 4 },
   addText: { fontSize: 10, fontWeight: "600" },

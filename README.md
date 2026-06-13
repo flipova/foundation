@@ -1,18 +1,16 @@
 # @flipova/foundation
 
-Design tokens, theming, layout primitives, and UI components for React Native (iOS, Android, Web).
+Design tokens, theming, layout primitives, and UI components for **React Native** (iOS, Android) and **React web** apps — from a single shared codebase.
 
 ## Install
-
-### npm Package
 
 ```bash
 npm install @flipova/foundation
 ```
 
-### Peer dependencies
+One install — no extra deps needed. Works out of the box for **React web** projects.
 
-Install the ones you need:
+For **React Native / Expo** projects, install the optional native peer dependencies you use:
 
 ```bash
 npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler react-native-reanimated react-native-safe-area-context lucide-react-native
@@ -20,13 +18,17 @@ npx expo install expo-linear-gradient expo-haptics react-native-gesture-handler 
 
 ### Other Installation Methods
 
-Flipova Foundation is available in multiple formats for different use cases:
+FlipovaFoundation is available in multiple formats for different use cases:
 
+- **npm (public)**: `npm install @flipova/foundation` ← default
+- **GitHub Packages**: `npm install @flipova/foundation --registry https://npm.pkg.github.com`
 - **Docker Image**: `docker pull ghcr.io/flipova/foundation:latest` or `docker pull flipova/foundation:latest`
 - **Standalone CLI Binary**: Download from GitHub Releases for Linux, macOS, or Windows
 - **Archive**: Download tar.gz archive from GitHub Releases for offline installation
 
 ## Quick start
+
+### React Native / Expo
 
 ```tsx
 import { FoundationProvider, defineConfig } from "@flipova/foundation/config";
@@ -44,30 +46,25 @@ export default function App() {
 }
 ```
 
-## Custom tokens and themes
+### React Web
 
-Create a `flipova.config.ts` at your project root:
+```tsx
+import { ThemeProvider } from "@flipova/foundation/theme";
+import { DashboardLayout, Button, TextInput } from "@flipova/foundation/web";
 
-```ts
-import { defineConfig } from "@flipova/foundation/config";
-
-export default defineConfig({
-  tokens: {
-    spacing: { 0: 0, 1: 2, 2: 4, 3: 8, 4: 12, 5: 16, 6: 20, 8: 32 },
-    radii: { none: 0, sm: 4, md: 8, lg: 16, xl: 24, full: 9999 },
-  },
-  themes: {
-    brand: {
-      colors: {
-        primary: "#FF6B00",
-        primaryForeground: "#FFFFFF",
-        background: "#FAFAFA",
-        foreground: "#1A1A2E",
-      },
-    },
-  },
-  defaultTheme: "brand",
-});
+export default function App() {
+  return (
+    <ThemeProvider defaultTheme="light">
+      <DashboardLayout
+        header={<nav>My App</nav>}
+        sidebar={<aside>Navigation</aside>}
+      >
+        <Button label="Get started" variant="primary" />
+        <TextInput label="Email" placeholder="you@example.com" />
+      </DashboardLayout>
+    </ThemeProvider>
+  );
+}
 ```
 
 ## Architecture
@@ -77,16 +74,20 @@ foundation/
 ├── tokens/       Static design tokens (spacing, colors, radii, shadows, typography, motion)
 ├── theme/        Theme system (ColorScheme, ThemeProvider, 9 built-in themes)
 ├── config/       Configuration (defineConfig, FoundationProvider, token overrides)
+├── web/          ← NEW: React web components (no React Native dependency)
+│    ├── primitives/   Box, Stack, Inline, Center, Scroll, Divider
+│    ├── components/   Button, TextInput, Badge, Avatar, Icon, Select, Tabs…
+│    └── layouts/      RootLayout, DashboardLayout, AuthLayout, SidebarLayout…
 └── layout/
      ├── types/       Shared types (LayoutMeta, ComponentMeta, BlockMeta)
-     ├── registry/    Declarative registries (layouts, components, blocks)
+     ├── registry/    Declarative registries (layouts, components, blocks) — platform-agnostic
      ├── hooks/       useBreakpoint, useAdaptiveValue, usePlatformInfo, useSafeArea
      ├── utils/       resolveLayoutPadding, resolveBackground, responsive
      └── ui/
-          ├── primitives/   Box, Stack, Inline, Center, Scroll, Divider
-          ├── [layouts]     23 layout components
-          ├── components/   Button, TextInput
-          └── blocks/       AuthFormBlock, HeaderBlock
+          ├── primitives/   Box, Stack, Inline, Center, Scroll, Divider (React Native)
+          ├── [layouts]     23 layout components (React Native)
+          ├── components/   Button, TextInput… (React Native)
+          └── blocks/       AuthFormBlock, HeaderBlock (React Native)
 
 studio/
 ├── cli/           CLI entry point (npx flipova-studio)
@@ -98,14 +99,15 @@ studio/
 
 ## Modules
 
-| Import path | Content |
-|---|---|
-| `@flipova/foundation` | Everything |
-| `@flipova/foundation/tokens` | Design tokens only |
-| `@flipova/foundation/theme` | Theme system only |
-| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry |
-| `@flipova/foundation/config` | defineConfig, FoundationProvider |
-| `@flipova/foundation/studio` | Studio engine (tree, codegen, server) |
+| Import path | Content | Platform |
+|---|---|---|
+| `@flipova/foundation` | Everything (RN) | React Native |
+| `@flipova/foundation/web` | Web primitives, components & layouts | React Web |
+| `@flipova/foundation/tokens` | Design tokens only | Both |
+| `@flipova/foundation/theme` | Theme system only | Both |
+| `@flipova/foundation/layout` | Layouts, components, blocks, hooks, registry | React Native |
+| `@flipova/foundation/config` | defineConfig, FoundationProvider | Both |
+| `@flipova/foundation/studio` | Studio engine (tree, codegen, server) | Node.js |
 
 ## Studio (visual builder)
 

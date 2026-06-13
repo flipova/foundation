@@ -122,12 +122,23 @@ export interface LayoutMeta extends BaseMeta {
   dependencies?: string[];
   /** Number of placeholder items to show in Studio when the slot is empty (default: 3) */
   previewItemCount?: number;
+  /**
+   * Platforms this layout is available on.
+   * Omit to indicate support for all platforms.
+   * @example ["native", "web"]
+   */
+  platforms?: ("native" | "web")[];
 }
 
 export interface ComponentMeta extends BaseMeta {
   category: ComponentCategory;
   variants: VariantDescriptor[];
   sizes?: string[];
+  /**
+   * Platforms this component is available on.
+   * Omit to indicate support for all platforms.
+   */
+  platforms?: ("native" | "web")[];
 }
 
 export interface BlockMeta extends BaseMeta {
