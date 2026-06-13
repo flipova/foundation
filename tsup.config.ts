@@ -9,6 +9,7 @@ export default defineConfig({
     "config/index": "foundation/config/index.ts",
     "studio/index": "studio/index.ts",
     "studio/cli/index": "studio/cli/index.ts",
+    "web/index": "foundation/web/index.ts",
   },
   format: ["cjs", "esm"],
   dts: true,
@@ -22,7 +23,9 @@ export default defineConfig({
   minify: false,
   external: [
     "react",
+    "react-dom",
     "react-native",
+    "@expo/vector-icons",
     "expo-linear-gradient",
     "expo-haptics",
     "expo-status-bar",

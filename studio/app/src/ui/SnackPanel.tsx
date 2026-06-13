@@ -52,7 +52,8 @@ export const SnackPanel: React.FC = () => {
   // Re-attach state listener when panel mounts and snack already exists
   useEffect(() => {
     if (_snack) {
-      const unsub = _snack.addStateListener((state) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const unsub = _snack.addStateListener((state: any) => {
         setConnectedClients(Object.keys(state.connectedClients || {}).length);
         if (state.url) { _snackUrl = state.url; setSnackUrl(state.url); }
 
@@ -142,7 +143,8 @@ export const SnackPanel: React.FC = () => {
         codeChangesDelay: 500,
       });
 
-      snack.addStateListener((state) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      snack.addStateListener((state: any) => {
         setConnectedClients(Object.keys(state.connectedClients || {}).length);
         if (state.url) { _snackUrl = state.url; setSnackUrl(state.url); }
 
