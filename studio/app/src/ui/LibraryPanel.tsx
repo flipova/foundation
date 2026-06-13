@@ -2,13 +2,13 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { TextInput, Pressable, FlatList, ScrollView, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Box, Stack, Inline, Center, Text } from '@flipova/foundation/web';
+import { Box, Stack, Inline, Center, Text, useTheme } from '@flipova/foundation/web';
 import { useStudio } from '../store/StudioProvider';
-
-const C = { bg: '#080c18', border: '#1a2240', text: '#d0d8f0', muted: '#6a7494', success: '#22c55e', primary: '#3b82f6', surface: '#131a2e' };
 import Tooltip from './shared/Tooltip';
 import { usePanelWidth } from './shared/usePanelWidth';
 import { LIBRARY_RESPONSIVE } from './libraryResponsive';
+
+const FALLBACK = { bg: '#0e1015', border: '#272a31', text: '#e2e4e9', muted: '#8b949e', success: '#238636', primary: '#3b82f6', surface: '#15171e', surfaceHover: '#1c1f28' };
 
 // ---------------------------------------------------------------------------
 // Constants — exported for unit tests
@@ -27,6 +27,19 @@ const KIND_ICONS: Record<string, React.ComponentProps<typeof Feather>['name']> =
 
 const LibraryPanel: React.FC = () => {
   const { reg, libTab, setLibTab, selId, addNode, page, templates, addFromTemplate } = useStudio();
+  const { theme } = useTheme();
+  
+  const C = {
+    bg: theme.background || FALLBACK.bg,
+    border: theme.border || FALLBACK.border,
+    text: theme.foreground || FALLBACK.text,
+    muted: theme.mutedForeground || FALLBACK.muted,
+    success: theme.success || FALLBACK.success,
+    primary: theme.primary || FALLBACK.primary,
+    surface: theme.card || FALLBACK.surface,
+    surfaceHover: FALLBACK.surfaceHover,
+  };
+
   const [search, setSearch] = useState('');
   const [mainTab, setMainTab] = useState<'library' | 'custom'>('library');
   const { width } = usePanelWidth(240, LIBRARY_RESPONSIVE.MIN_WIDTH, LIBRARY_RESPONSIVE.MAX_WIDTH);
@@ -82,10 +95,10 @@ const LibraryPanel: React.FC = () => {
 
   return (
     <Box flex={1} bg={C.surface}>
-      <TextInput style={s.search} placeholder={LIBRARY_TEXTS.searchPlaceholder} placeholderTextColor="#6a7494" value={search} onChangeText={setSearch} />
+      <TextInput style={[s.search, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]} placeholder={LIBRARY_TEXTS.searchPlaceholder} placeholderTextColor={C.muted} value={search} onChangeText={setSearch} />
       <Inline style={{ borderBottomWidth: 1, borderBottomColor: C.border }}>
         {(['library', 'custom'] as const).map(t => (
-          <Pressable key={t} style={[s.mainTab, mainTab === t && s.mainTabActive]} onPress={() => setMainTab(t)}>
+          <Pressable key={t} style={[s.mainTab, mainTab === t && { borderBottomWidth: 2, borderBottomColor: C.primary }]} onPress={() => setMainTab(t)}>
             <Text fontSize={11} color={mainTab === t ? C.primary : C.muted} fontWeight="600" style={{ letterSpacing: 0.5 }}>{t.toUpperCase()}</Text>
           </Pressable>
         ))}
@@ -96,7 +109,7 @@ const LibraryPanel: React.FC = () => {
       {mainTab === 'library' && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 30, flexGrow: 0 }} contentContainerStyle={s.subTabs}>
           {(['layouts', 'components', 'blocks', 'primitives'] as const).map(t => (
-            <Pressable key={t} style={[s.subTab, libTab === t && s.subTabActive]} onPress={() => setLibTab(t)}>
+            <Pressable key={t} style={[s.subTab, { backgroundColor: libTab === t ? C.primary : C.surface }]} onPress={() => setLibTab(t)}>
               <Text fontSize={11} color={libTab === t ? C.bg : C.muted} fontWeight="600">{t.charAt(0).toUpperCase() + t.slice(1)}</Text>
             </Pressable>
           ))}
@@ -142,13 +155,11 @@ const LibraryPanel: React.FC = () => {
 export default LibraryPanel;
 
 const s = StyleSheet.create({
-  search: { height: 32, backgroundColor: '#131a2e', borderRadius: 6, borderWidth: 1, borderColor: '#1a2240', marginHorizontal: 8, marginTop: 8, marginBottom: 6, paddingHorizontal: 10, color: '#d0d8f0', fontSize: 12 },
+  search: { height: 32, borderRadius: 6, borderWidth: 1, marginHorizontal: 8, marginTop: 8, marginBottom: 6, paddingHorizontal: 10, fontSize: 12 },
   mainTab: { flex: 1, alignItems: 'center', paddingVertical: 6 },
-  mainTabActive: { borderBottomWidth: 2, borderBottomColor: '#3b82f6' },
   tabDescription: { paddingHorizontal: 10, paddingVertical: 6, lineHeight: 14 },
   subTabs: { flexDirection: 'row', paddingHorizontal: 8, paddingVertical: 4, gap: 3 },
-  subTab: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4, backgroundColor: '#131a2e' },
-  subTabActive: { backgroundColor: '#3b82f6' },
+  subTab: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 },
   list: { flex: 1 },
   sectionHeader: { fontSize: 9, letterSpacing: 1, paddingHorizontal: 12, paddingTop: 10, paddingBottom: 4, textTransform: 'uppercase' },
   itemIconWrap: { width: 24 },

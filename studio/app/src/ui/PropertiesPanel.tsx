@@ -7,13 +7,14 @@ import SmartInput from './shared/SmartInput';
 import DesignPanel from './DesignPanel';
 import LogicPanel from './logic/LogicPanel';
 import SnackPanel from './SnackPanel';
-import { Box, Inline, Center, Text } from '@flipova/foundation/web';
+import { Box, Inline, Center, Text, useTheme } from '@flipova/foundation/web';
 
-const C = {
-  bg: '#07090f', surface: '#0d1220', surface2: '#131a2e',
-  border: '#1a2240', text: '#d0d8f0', muted: '#4a5470',
-  primary: '#3b82f6', success: '#22c55e', error: '#ef4444',
+const FALLBACK = {
+  bg: '#0e1015', surface: '#15171e', surface2: '#1b1d24',
+  border: '#272a31', text: '#e2e4e9', muted: '#8b949e',
+  primary: '#3b82f6', success: '#238636', error: '#f85149',
 };
+const C = FALLBACK;
 
 const GROUP_ICONS: Record<string, { icon: React.ComponentProps<typeof Feather>['name']; color: string }> = {
   style:    { icon: 'droplet', color: '#a78bfa' },
@@ -30,6 +31,8 @@ const KIND_ICON_MAP: Record<string, React.ComponentProps<typeof Feather>['name']
 // Section wrapper (for Properties tab)
 // ---------------------------------------------------------------------------
 const Section: React.FC<{ title: string; group: string; children: React.ReactNode }> = ({ title, group, children }) => {
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary, success: theme.success || FALLBACK.success, error: theme.error || FALLBACK.error };
   const [open, setOpen] = useState(true);
   const gi = GROUP_ICONS[group] || { icon: 'circle' as const, color: C.muted };
   return (
@@ -52,6 +55,8 @@ const Section: React.FC<{ title: string; group: string; children: React.ReactNod
 // Code view tab
 // ---------------------------------------------------------------------------
 const CodeView: React.FC<{ sel: TreeNode }> = ({ sel }) => {
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary, success: theme.success || FALLBACK.success, error: theme.error || FALLBACK.error };
   const { updateProp, updateStyles } = useStudio();
   const [tab, setTab] = useState<'jsx' | 'props' | 'styles'>('jsx');
   const [editingProps, setEditingProps] = useState(() => JSON.stringify(sel.props, null, 2));
@@ -84,14 +89,14 @@ const CodeView: React.FC<{ sel: TreeNode }> = ({ sel }) => {
     <Box style={{ padding: 10, gap: 6 }}>
       <Inline style={{ marginBottom: 4 }} spacing={1}>
         {(['jsx', 'props', 'styles'] as const).map(t => (
-          <Pressable key={t} style={{ ...s.codeTab as any, ...(tab === t ? s.codeTabOn : {}) }} onPress={() => setTab(t)}>
+          <Pressable key={t} style={{ ...s.codeTab as any, backgroundColor: C.surface2, borderColor: C.border, ...(tab === t ? { backgroundColor: C.primary, borderColor: C.primary } : {}) }} onPress={() => setTab(t)}>
             <Text fontSize={9} fontWeight="600" color={tab === t ? '#fff' : C.muted}>{t.toUpperCase()}</Text>
           </Pressable>
         ))}
       </Inline>
-      {tab === 'jsx' && <Text style={{ ...s.codeBlock as any, userSelect: 'text' }}>{jsxPreview}</Text>}
-      {tab === 'props' && <TextInput style={s.codeBlock} value={editingProps} onChangeText={setEditingProps} multiline numberOfLines={10} onBlur={applyProps} />}
-      {tab === 'styles' && <TextInput style={s.codeBlock} value={editingStyles} onChangeText={setEditingStyles} multiline numberOfLines={10} onBlur={applyStyles} />}
+      {tab === 'jsx' && <Text style={{ ...s.codeBlock as any, backgroundColor: C.bg, borderColor: C.border, userSelect: 'text' }}>{jsxPreview}</Text>}
+      {tab === 'props' && <TextInput style={[s.codeBlock, { backgroundColor: C.bg, borderColor: C.border }]} value={editingProps} onChangeText={setEditingProps} multiline numberOfLines={10} onBlur={applyProps} />}
+      {tab === 'styles' && <TextInput style={[s.codeBlock, { backgroundColor: C.bg, borderColor: C.border }]} value={editingStyles} onChangeText={setEditingStyles} multiline numberOfLines={10} onBlur={applyStyles} />}
       <Text fontSize={8} color={C.muted} style={{ opacity: 0.5 }}>ID: {sel.id} · {sel.kind}</Text>
     </Box>
   );
@@ -118,6 +123,8 @@ const PropEditor: React.FC<{
   onChangeBinding: (k: string, v: string) => void;
   onClearBinding: (k: string) => void;
 }> = ({ prop, sel, onChangeProp, onChangeBinding, onClearBinding }) => {
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary, success: theme.success || FALLBACK.success, error: theme.error || FALLBACK.error };
   const binding = sel.bindings?.[prop.name];
   const staticVal = sel.props[prop.name];
   const isBound = !!binding;
@@ -141,7 +148,7 @@ const PropEditor: React.FC<{
   };
 
   return (
-    <Box style={pe.row}>
+    <Box style={[pe.row, { backgroundColor: C.surface }]}>
       {isBound && (
         <Inline align="center" spacing={1} style={pe.boundIndicator}>
           <Feather name="link" size={8} color="#a78bfa" />
@@ -195,6 +202,8 @@ const PropEditor: React.FC<{
 // ---------------------------------------------------------------------------
 const PropertiesPanel: React.FC = () => {
   const { selId, node, meta, rightTab, setRightTab, updateProp, updateBindings } = useStudio();
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary, success: theme.success || FALLBACK.success, error: theme.error || FALLBACK.error };
   const sel: TreeNode | null = selId ? node(selId) : null;
   const m: RegItem | undefined = sel ? meta(sel.kind, sel.registryId) : undefined;
 
@@ -316,20 +325,20 @@ const s = StyleSheet.create({
   empty: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8, padding: 32 },
   emptyText: { color: C.muted, fontSize: 12 },
   emptyProps: { padding: 20, alignItems: 'center' },
-  emptyPropsText: { color: C.muted, fontSize: 11, fontStyle: 'italic' },
+  emptyPropsText: { fontSize: 11, fontStyle: 'italic' },
   // Code view
-  codeTab: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, backgroundColor: C.surface2, borderWidth: 1, borderColor: C.border },
-  codeTabOn: { backgroundColor: C.primary, borderColor: C.primary },
-  codeTabText: { color: C.muted, fontSize: 9, fontWeight: '600' },
+  codeTab: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4, borderWidth: 1 },
+  codeTabOn: { },
+  codeTabText: { fontSize: 9, fontWeight: '600' },
   codeTabTextOn: { color: '#fff' },
-  codeBlock: { backgroundColor: C.bg, borderRadius: 8, borderWidth: 1, borderColor: C.border, color: '#22c55e', fontSize: 10, fontFamily: 'monospace' as any, padding: 10, minHeight: 100, textAlignVertical: 'top' },
-  codeId: { color: C.muted, fontSize: 8, opacity: 0.5 },
+  codeBlock: { borderRadius: 8, borderWidth: 1, color: '#22c55e', fontSize: 10, fontFamily: 'monospace' as any, padding: 10, minHeight: 100, textAlignVertical: 'top' },
+  codeId: { fontSize: 8, opacity: 0.5 },
 });
 
 // PropEditor styles
 const pe = StyleSheet.create({
-  row: { backgroundColor: C.surface, borderRadius: 6, padding: 8, marginBottom: 4 },
-  propLabel: { fontSize: 10, fontWeight: '600', color: C.muted, marginBottom: 4 },
+  row: { borderRadius: 6, padding: 8, marginBottom: 4 },
+  propLabel: { fontSize: 10, fontWeight: '600', marginBottom: 4 },
   inputRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 4 },
   boundIndicator: {
     flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 2,
@@ -347,7 +356,7 @@ const pe = StyleSheet.create({
     width: 22, height: 22, borderRadius: 5, alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(106,116,148,0.1)', borderWidth: 1, borderColor: 'rgba(106,116,148,0.2)',
   },
-  fallbackHint: { color: C.muted, fontSize: 8, fontStyle: 'italic', marginTop: 2 },
+  fallbackHint: { fontSize: 8, fontStyle: 'italic', marginTop: 2 },
   fallbackVal: { color: '#22c55e', fontFamily: 'monospace' as any },
 });
 

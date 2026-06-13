@@ -18,9 +18,10 @@ import { usePanelWidth } from '../src/ui/shared/usePanelWidth';
 import { useWindowSize } from '../src/ui/shared/useWindowSize';
 import { useStudio } from '../src/store/StudioProvider';
 import { LAYOUT_RESPONSIVE, Z_INDEX } from '../src/ui/layoutResponsive';
-import { Box, Inline } from '@flipova/foundation/web';
+import { Box, Inline, useTheme } from '@flipova/foundation/web';
 
 export default function StudioScreen() {
+  const { theme } = useTheme();
   const [showTheme, setShowTheme] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showServices, setShowServices] = useState(false);
@@ -76,7 +77,7 @@ export default function StudioScreen() {
       />
 
       <Inline flex={1} overflow="hidden">
-        <Box style={{ width: effectiveLeftWidth, borderRightWidth: 1, borderRightColor: '#1a2240', zIndex: Z_INDEX.PANEL }} bg="surface">
+        <Box style={{ width: effectiveLeftWidth, borderRightWidth: 1, borderRightColor: theme.border || '#272a31', zIndex: Z_INDEX.PANEL }} bg="surface">
           <LibraryPanel />
           <LayersPanel />
         </Box>

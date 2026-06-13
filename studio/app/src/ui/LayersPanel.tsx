@@ -4,7 +4,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, TextInput, Pressable, ScrollView, StyleSheet, Modal } from 'react-native';
-import { Box, Inline, Center, Text } from '@flipova/foundation/web';
+import { Box, Inline, Center, Text, useTheme } from '@flipova/foundation/web';
 import { useStudio, TreeNode } from '../store/StudioProvider';
 import { Feather } from '@expo/vector-icons';
 import { deriveSlotConfig } from '../renderer/slotConfig';
@@ -32,7 +32,8 @@ export const LAYERS_TEXTS = {
   tooltipBinding: 'Binding de données actif',
 } as const;
 
-const C = { bg: '#080c18', surface: '#0d1220', surface2: '#131a2e', border: '#1a2240', text: '#d0d8f0', muted: '#6a7494', primary: '#3b82f6' };
+const FALLBACK = { bg: '#0e1015', surface: '#15171e', surface2: '#1b1d24', border: '#272a31', text: '#e2e4e9', muted: '#8b949e', primary: '#3b82f6' };
+const C = FALLBACK;
 
 function kindIcon(kind: string): string {
   switch (kind) { case 'layout': return 'layout'; case 'component': return 'box'; case 'block': return 'package'; case 'primitive': return 'grid'; default: return 'circle'; }
@@ -57,6 +58,8 @@ const SlotModeBadge: React.FC<{ mode: 'static' | 'template' | 'data' }> = ({ mod
 
 const LayerRow: React.FC<{ node: TreeNode; depth: number; parentId?: string; index?: number; panelHeight?: number }> = ({ node, depth, parentId, index = 0, panelHeight = 220 }) => {
   const { selId, setSel, removeNode, movingId, startMove, cancelMove, dropInto, moveUp, moveDown, meta, selectSlot, targetSlot, saveAsTemplate } = useStudio();
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary };
   const [collapsed, setCollapsed] = useState(false);
   const [showSaveInput, setShowSaveInput] = useState(false);
   const [tplName, setTplName] = useState('');
@@ -279,6 +282,8 @@ const LayerRow: React.FC<{ node: TreeNode; depth: number; parentId?: string; ind
 /** Single screen row with inline rename and generated file name hint */
 const ScreenRow: React.FC<{ page: any; names: ReturnType<typeof deriveScreenNames>; isActive: boolean; groupId?: string }> = ({ page, names, isActive, groupId }) => {
   const { setPageId, deletePage, renamePage, updateProject, project } = useStudio();
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary };
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(page.name);
   const [showMoveModal, setShowMoveModal] = useState(false);
@@ -417,6 +422,8 @@ const ScreenRow: React.FC<{ page: any; names: ReturnType<typeof deriveScreenName
 /** Group row with inline rename */
 const GroupRow: React.FC<{ group: any }> = ({ group }) => {
   const { project, setPageId, pageId, updateScreenGroup, removeScreenGroup, updateProject } = useStudio();
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary };
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(group.name);
   const [expanded, setExpanded] = useState(true);
@@ -533,6 +540,8 @@ const GroupRow: React.FC<{ group: any }> = ({ group }) => {
 
 const LayersPanel: React.FC = () => {
   const { bottomTab, setBottomTab, page, project, setPageId, pageId, addPage, deletePage, movingId, cancelMove, addScreenGroup, removeScreenGroup, updateScreenGroup } = useStudio();
+  const { theme } = useTheme();
+  const C = { bg: theme.background || FALLBACK.bg, surface: theme.card || FALLBACK.surface, surface2: FALLBACK.surface2, border: theme.border || FALLBACK.border, text: theme.foreground || FALLBACK.text, muted: theme.mutedForeground || FALLBACK.muted, primary: theme.primary || FALLBACK.primary };
   const pg = page();
   const [panelHeight, setPanelHeight] = useState(220);
 
@@ -622,18 +631,18 @@ const LayersPanel: React.FC = () => {
 export default LayersPanel;
 
 const s = StyleSheet.create({
-  root: { backgroundColor: C.surface, borderTopWidth: 1, borderTopColor: C.border },
-  tabs: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: C.border },
+  root: { borderTopWidth: 1 },
+  tabs: { flexDirection: 'row', borderBottomWidth: 1 },
   tab: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 6, gap: 4 },
-  tabOn: { borderBottomWidth: 2, borderBottomColor: C.primary },
-  tabText: { color: C.muted, fontSize: 9, fontWeight: '600', letterSpacing: 0.5 },
-  tabTextOn: { color: C.primary },
+  tabOn: { borderBottomWidth: 2 },
+  tabText: { fontSize: 9, fontWeight: '600', letterSpacing: 0.5 },
+  tabTextOn: { },
   scroll: { flex: 1 },
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 4, paddingRight: 6, gap: 4 },
   rowSel: { backgroundColor: 'rgba(59,130,246,0.08)' },
-  rowMoving: { backgroundColor: 'rgba(59,130,246,0.15)', borderLeftWidth: 2, borderLeftColor: C.primary },
-  name: { flex: 1, color: C.text, fontSize: 11, fontWeight: '500' },
-  slotBadge: { fontSize: 8, color: C.primary, backgroundColor: 'rgba(59,130,246,0.1)', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 },
+  rowMoving: { backgroundColor: 'rgba(59,130,246,0.15)', borderLeftWidth: 2 },
+  name: { flex: 1, fontSize: 11, fontWeight: '500' },
+  slotBadge: { fontSize: 8, backgroundColor: 'rgba(59,130,246,0.1)', paddingHorizontal: 4, paddingVertical: 1, borderRadius: 3 },
   indicatorIcon: { marginLeft: 1 },
   indicatorBadge: { fontSize: 8 },
   actions: { flexDirection: 'row', gap: 6, alignItems: 'center' },

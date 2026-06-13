@@ -2,13 +2,23 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Box, Inline, Center, Text } from '@flipova/foundation/web';
+import { Box, Inline, Center, Text, useTheme } from '@flipova/foundation/web';
 import { useStudio } from '../store/StudioProvider';
 
-const C = { bg: '#080c18', border: '#1a2240', text: '#d0d8f0', muted: '#6a7494', success: '#22c55e', primary: '#3b82f6' };
+const FALLBACK = { bg: '#0e1015', border: '#272a31', text: '#e2e4e9', muted: '#8b949e', success: '#238636', primary: '#3b82f6' };
 
 const Statusbar: React.FC = () => {
   const { project, reg, clipboard, selId, node } = useStudio();
+  const { theme } = useTheme();
+  
+  const C = { 
+    bg: theme.background || FALLBACK.bg, 
+    border: theme.border || FALLBACK.border, 
+    text: theme.foreground || FALLBACK.text, 
+    muted: theme.mutedForeground || FALLBACK.muted, 
+    success: theme.success || FALLBACK.success, 
+    primary: theme.primary || FALLBACK.primary 
+  };
   const pageCount = project?.pages.length ?? 0;
   const compCount = reg.components.length + reg.blocks.length;
   const svcCount = project?.services?.length ?? 0;

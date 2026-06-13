@@ -101,7 +101,38 @@ export default function App() {
 }
 ```
 
-### 2. Layout Primitives
+### 2. Advanced Theming
+
+The `ThemeProvider` allows you to customize the default tokens and color schemes. You can override specific variables or introduce completely new themes (e.g., "neon" or "high-contrast").
+
+```tsx
+import { ThemeProvider, ColorScheme } from "@flipova/foundation/theme";
+
+const customNeonTheme: ColorScheme = {
+  background: "#000000",
+  foreground: "#39ff14",
+  card: "#111111",
+  border: "#333333",
+  primary: "#ff00ff",
+  muted: "#555555",
+  success: "#00ff00",
+  error: "#ff0000",
+  // ... (other required tokens)
+};
+
+export default function App() {
+  return (
+    <ThemeProvider 
+      defaultTheme="neon"
+      customThemes={{ neon: customNeonTheme }}
+    >
+      {/* Your app */}
+    </ThemeProvider>
+  );
+}
+```
+
+### 3. Layout Primitives
 
 Flipova strongly discourages inline styling. Instead, all structural layouts should be composed using foundational primitives. This guarantees identical spacing and alignment across web and mobile.
 
@@ -152,6 +183,38 @@ npx flipova-studio
 | `npx flipova-studio --port 3000` | Start the studio on a custom port. |
 | `npx flipova-studio --dev` | Start the studio in development mode with Vite HMR enabled. |
 | `npx flipova-studio generate` | Execute the code generator engine against your saved project tree without starting the UI. |
+
+---
+
+## Working With Generated Code
+
+When you use the Flipova Studio, it saves your project definitions into a `.flipova-studio/project.json` file. Running the `generate` command translates this JSON into standard React/React Native files in your `generated/` directory.
+
+### Integration in Next.js or Vite
+
+For Web projects using bundlers like Webpack or Vite, simply import the generated screens directly into your routing layer.
+
+```tsx
+// pages/index.tsx (Next.js)
+import { HomeScreen } from '../generated/screens/HomeScreen';
+
+export default function Page() {
+  return <HomeScreen />;
+}
+```
+
+### Integration in Expo (React Native)
+
+If you are using Expo Router, you can map the generated screens to your `app/` routes directly. The generated code uses `@flipova/foundation` primitives, which seamlessly map to `<View>` and `<Text>` on native devices.
+
+```tsx
+// app/index.tsx (Expo Router)
+import { HomeScreen } from '../../generated/screens/HomeScreen';
+
+export default function Index() {
+  return <HomeScreen />;
+}
+```
 
 ---
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, Modal, FlatList, ScrollView, Animated } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Box, Inline, Center, Text } from '@flipova/foundation/web';
+import { Box, Inline, Center, Text, useTheme } from '@flipova/foundation/web';
 import { useStudio } from '../store/StudioProvider';
 import Tooltip from './shared/Tooltip';
 import ConfirmModal from './shared/ConfirmModal';
@@ -11,18 +11,19 @@ import { TOPBAR_RESPONSIVE } from './topbarResponsive';
 
 export { TOPBAR_RESPONSIVE };
 
-const C = {
-  bg: '#07090f',
-  surface: '#0d1220',
-  surface2: '#131a2e',
-  border: '#1a2240',
-  text: '#d0d8f0',
-  muted: '#4a5470',
+// Elegant fallback colors if theme lacks them
+const FALLBACK = {
+  bg: '#0e1015',
+  surface: '#15171e',
+  surface2: '#1b1d24',
+  border: '#272a31',
+  text: '#e2e4e9',
+  muted: '#8b949e',
   primary: '#3b82f6',
-  success: '#22c55e',
-  error: '#ef4444',
-  purple: '#a78bfa',
-  accent: '#06b6d4',
+  success: '#238636',
+  error: '#da3633',
+  purple: '#8957e5',
+  accent: '#2f81f7',
 };
 
 const DEVICES = ['iPhone 14 Pro', 'Pixel 7', 'iPhone SE', 'iPad Air', 'Desktop/Web'];
@@ -64,7 +65,7 @@ const IconBtn: React.FC<{
       onPress={onPress}
       disabled={disabled}
     >
-      <Feather name={icon} size={size} color={active ? '#fff' : (color || C.text)} />
+      <Feather name={icon} size={size} color={active ? '#fff' : (color || FALLBACK.text)} />
     </Pressable>
   </Tooltip>
 );
@@ -82,6 +83,22 @@ interface Props {
 
 const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, onOpenQueries, onToggleCode, showCode, onOpenCustomFn, onOpenSnack }) => {
   const { zoom, setZoom, device, setDevice, generate, resetProject, undo, redo, canUndo, canRedo, previewMode, setPreviewMode, project, updateProject } = useStudio();
+  const { theme } = useTheme();
+  
+  const C = {
+    bg: theme.background || FALLBACK.bg,
+    surface: theme.card || FALLBACK.surface,
+    surface2: FALLBACK.surface2,
+    border: theme.border || FALLBACK.border,
+    text: theme.foreground || FALLBACK.text,
+    muted: theme.mutedForeground || FALLBACK.muted,
+    primary: theme.primary || FALLBACK.primary,
+    success: theme.success || FALLBACK.success,
+    error: theme.error || FALLBACK.error,
+    purple: FALLBACK.purple,
+    accent: FALLBACK.accent,
+  };
+
   const [showDevices, setShowDevices] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -256,79 +273,64 @@ const Topbar: React.FC<Props> = ({ onOpenTheme, onOpenSettings, onOpenServices, 
 export default Topbar;
 
 const s = StyleSheet.create({
-  bar: {
-    height: 48,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: C.bg,
-    borderBottomWidth: 1,
-    borderBottomColor: C.border,
-    paddingHorizontal: 14,
-    gap: 8,
-  },
   // Logo
   left: { flexShrink: 0 },
   logoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoIcon: {
-    width: 26, height: 26, borderRadius: 7,
-    backgroundColor: C.primary,
+    width: 24, height: 24, borderRadius: 6,
     alignItems: 'center', justifyContent: 'center',
   },
-  logo: { color: C.text, fontSize: 14, fontWeight: '700', letterSpacing: -0.3 },
   // Device
-  center: { flex: 1, alignItems: 'center' },
   deviceBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: C.surface2, borderRadius: 8,
+    borderRadius: 6,
     paddingHorizontal: 10, paddingVertical: 5,
-    borderWidth: 1, borderColor: C.border,
+    borderWidth: 1,
   },
-  deviceText: { color: C.text, fontSize: 12, fontWeight: '500' },
+  deviceText: { fontSize: 12, fontWeight: '500' },
   overlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)' },
   dropdown: {
-    backgroundColor: C.surface, borderRadius: 10, borderWidth: 1, borderColor: C.border,
+    borderRadius: 8, borderWidth: 1,
     width: 220, maxHeight: 300, overflow: 'hidden',
     shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16,
   },
   dropItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 11 },
   dropItemActive: { backgroundColor: 'rgba(59,130,246,0.1)' },
-  dropText: { color: C.text, fontSize: 13 },
-  dropTextActive: { color: C.primary, fontWeight: '600' },
+  dropText: { fontSize: 13 },
+  dropTextActive: { fontWeight: '600' },
   // Right
   rightWrapper: { flexShrink: 0, maxWidth: '62%' },
   rightScroll: { flexGrow: 0 },
   rightContent: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  divider: { width: 1, height: 20, backgroundColor: C.border, marginHorizontal: 4 },
+  divider: { width: 1, height: 20, marginHorizontal: 4 },
   // Zoom
   zoomRow: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: C.surface2, borderRadius: 7,
-    borderWidth: 1, borderColor: C.border,
+    borderRadius: 6,
+    borderWidth: 1,
     overflow: 'hidden',
   },
   zoomBtn: { paddingHorizontal: 8, paddingVertical: 6 },
-  zoomText: { color: C.muted, fontSize: 11, minWidth: 34, textAlign: 'center', fontVariant: ['tabular-nums'] as any },
+  zoomText: { fontSize: 11, minWidth: 34, textAlign: 'center', fontVariant: ['tabular-nums'] as any },
   // Icon button
   iconBtn: {
-    width: 30, height: 30, borderRadius: 7,
+    width: 30, height: 30, borderRadius: 6,
     alignItems: 'center', justifyContent: 'center',
   },
   // Generate
   genBtn: {
-    backgroundColor: C.primary, borderRadius: 8,
-    paddingHorizontal: 14, paddingVertical: 7,
+    borderRadius: 6,
+    paddingHorizontal: 12, paddingVertical: 6,
     marginLeft: 2,
   },
-  genInner: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  genText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   // More dropdown
   moreDropdown: {
-    backgroundColor: C.surface, borderRadius: 10, borderWidth: 1, borderColor: C.border,
+    borderRadius: 8, borderWidth: 1,
     minWidth: 180, overflow: 'hidden',
     position: 'absolute', top: 48, right: 14,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.4, shadowRadius: 16,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12,
   },
   moreItem: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingVertical: 11 },
-  moreItemText: { color: C.text, fontSize: 13 },
-  moreDivider: { height: 1, backgroundColor: C.border, marginHorizontal: 10 },
+  moreItemText: { fontSize: 13 },
+  moreDivider: { height: 1, marginHorizontal: 10 },
 });

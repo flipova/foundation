@@ -225,18 +225,16 @@ const Box = React.forwardRef<HTMLDivElement, BoxProps>(({
       // Shadow
       boxShadow,
 
-      // Flex
-      display: flex != null || flexDirection || alignItems || justifyContent || flexGrow != null
-        ? "flex"
-        : undefined,
+      // Flex (RN View Defaults)
+      display: "flex",
+      flexDirection: flexDirection ?? "column",
+      alignItems: alignItems ?? "stretch",
+      justifyContent: justifyContent ?? "flex-start",
       flex,
       flexGrow,
       flexShrink,
       flexBasis,
-      flexDirection,
-      alignItems,
       alignSelf,
-      justifyContent,
       gap:       gap       != null ? spacing[gap]       : undefined,
       rowGap:    rowGap    != null ? spacing[rowGap]    : undefined,
       columnGap: columnGap != null ? spacing[columnGap] : undefined,
