@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0
+
+### Minor Changes
+
+- 6e5e021: Refactor Flipova Studio UI to use unified Foundation primitives for elegant, centralized design.
+
 ## 1.8.0
 
 ### Minor Changes
