@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, ScrollView, StyleSheet, LayoutChangeEvent } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { Box, Inline } from '@flipova/foundation/web';
 import { useStudio } from '../store/StudioProvider';
 import { THEME_REGISTRY } from '../store/tokens';
 import { ThemeProvider } from '../../../../foundation/theme/providers/ThemeProvider';
@@ -92,9 +93,9 @@ const DeviceCanvas: React.FC = () => {
   };
 
   return (
-    <View style={s.root} onLayout={handleLayout}>
+    <View style={{ flex: 1, backgroundColor: C.bg }} onLayout={handleLayout}>
       {/* pageTabs: horizontal scroll, no wrap — Requirement 14.3 */}
-      <View style={s.pageTabs}>
+      <Box bg={C.surface} style={{ ...s.pageTabs as any, borderBottomWidth: 1, borderBottomColor: C.border }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.pageTabsInner}>
           {project?.pages.map(p => (
             <Tooltip key={p.id} text={p.name}>
@@ -104,7 +105,7 @@ const DeviceCanvas: React.FC = () => {
             </Tooltip>
           ))}
         </ScrollView>
-      </View>
+      </Box>
       {/* viewport: vertical scroll when device height exceeds available space — Requirement 14.2 */}
       <ScrollView style={s.viewport} contentContainerStyle={s.viewportInner} scrollEnabled={true}>
         {previewMode && (
@@ -209,8 +210,7 @@ const DrawerHeader: React.FC<{ title: string; isAndroid: boolean }> = ({ title, 
 export default DeviceCanvas;
 
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: C.bg },
-  pageTabs: { height: 34, borderBottomWidth: 1, borderBottomColor: C.border, backgroundColor: C.surface },
+  pageTabs: { height: 34 },
   pageTabsInner: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, gap: 2 },
   pageTab: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4 },
   pageTabOn: { backgroundColor: 'rgba(59,130,246,0.15)' },
@@ -218,7 +218,7 @@ const s = StyleSheet.create({
   pageTabTextOn: { color: C.text },
   viewport: { flex: 1 },
   viewportInner: { alignItems: 'center', paddingVertical: 24, minHeight: '100%' },
-  deviceOuter: { overflow: 'hidden' },
+  deviceOuter: { overflow: 'visible', shadowColor: '#000', shadowOffset: { width: 0, height: 24 }, shadowOpacity: 0.15, shadowRadius: 48, elevation: 20 },
   device: { backgroundColor: '#fff', borderRadius: 44, overflow: 'hidden', borderWidth: 1, borderColor: '#ddd', transformOrigin: 'top left' },
   statusBar: { height: 54, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', paddingHorizontal: 24, paddingBottom: 6 },
   statusBarAndroid: { height: 28, paddingBottom: 4, paddingHorizontal: 16 },

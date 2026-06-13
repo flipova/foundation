@@ -4,6 +4,7 @@ import { Slot } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StudioProvider } from '../src/store/StudioProvider';
 import { ToastProvider } from '../src/ui/shared/Toast';
+import { ThemeProvider } from '@flipova/foundation/theme';
 
 // ─── Error Boundary ──────────────────────────────────────────────────────────
 interface EBState { error: Error | null; info: string }
@@ -48,13 +49,15 @@ const eb = StyleSheet.create({
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <ErrorBoundary>
-        <StudioProvider>
-          <ToastProvider>
-            <View style={s.root}><Slot /></View>
-          </ToastProvider>
-        </StudioProvider>
-      </ErrorBoundary>
+      <ThemeProvider defaultTheme="dark">
+        <ErrorBoundary>
+          <StudioProvider>
+            <ToastProvider>
+              <View style={s.root}><Slot /></View>
+            </ToastProvider>
+          </StudioProvider>
+        </ErrorBoundary>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

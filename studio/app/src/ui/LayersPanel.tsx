@@ -3,7 +3,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, StyleSheet, Modal } from 'react-native';
+import { View, TextInput, Pressable, ScrollView, StyleSheet, Modal } from 'react-native';
+import { Box, Inline, Center, Text } from '@flipova/foundation/web';
 import { useStudio, TreeNode } from '../store/StudioProvider';
 import { Feather } from '@expo/vector-icons';
 import { deriveSlotConfig } from '../renderer/slotConfig';
@@ -84,7 +85,7 @@ const LayerRow: React.FC<{ node: TreeNode; depth: number; parentId?: string; ind
         )}
         {!hasChildren && <View style={{ width: 12 }} />}
         <Feather name={kindIcon(node.kind) as any} size={11} color={isSel ? C.primary : C.muted} />
-        <Text style={[s.name, isSel && { color: C.primary }]} numberOfLines={1} ellipsizeMode="tail">{node.registryId}</Text>
+        <Text style={{ ...s.name as any, ...(isSel ? { color: C.primary } : {}) }} numberOfLines={1}>{node.registryId}</Text>
         {node.slotName && <Text style={s.slotBadge}>{node.slotName}</Text>}
         {node.conditionalRender && (
           <Tooltip text={LAYERS_TEXTS.tooltipCondition}>
@@ -351,7 +352,7 @@ const ScreenRow: React.FC<{ page: any; names: ReturnType<typeof deriveScreenName
                     <Feather name={typeIcon[g.type] || 'folder'} size={13} color={color} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={[s.moveGroupName, isCurrent && { color: C.muted }]}>{g.name}</Text>
+                    <Text style={{ ...s.moveGroupName as any, ...(isCurrent ? { color: C.muted } : {}) }}>{g.name}</Text>
                     <Text style={s.moveGroupType}>{g.type} · {(g.screenIds || []).length} screens</Text>
                   </View>
                   {isCurrent ? (
@@ -382,7 +383,7 @@ const ScreenRow: React.FC<{ page: any; names: ReturnType<typeof deriveScreenName
             />
           ) : (
             <>
-              <Text style={[s.screenName, isActive && { color: C.primary }]} numberOfLines={1}>{page.name}</Text>
+              <Text style={{ ...s.screenName as any, ...(isActive ? { color: C.primary } : {}) }} numberOfLines={1}>{page.name}</Text>
               <Text style={s.screenHint}>/{names.fileName}</Text>
             </>
           )}
@@ -474,7 +475,7 @@ const GroupRow: React.FC<{ group: any }> = ({ group }) => {
           <Text style={s.groupName} numberOfLines={1}>{group.name}</Text>
         )}
         <View style={[s.groupTypeBadge, { backgroundColor: (typeColor[group.type] || C.muted) + '20' }]}>
-          <Text style={[s.groupTypeText, { color: typeColor[group.type] || C.muted }]}>{group.type}</Text>
+          <Text style={{ ...s.groupTypeText as any, color: typeColor[group.type] || C.muted }}>{group.type}</Text>
         </View>
         {!editing && (
           <Pressable onPress={() => { setDraft(group.name); setEditing(true); }} hitSlop={4}>
@@ -540,16 +541,18 @@ const LayersPanel: React.FC = () => {
   }, []);
 
   return (
-    <View style={[s.root, { height: panelHeight }]}>
+    <Box style={{ ...s.root as any, height: panelHeight, borderTopWidth: 1, borderTopColor: C.border }} bg={C.surface}>
       <ResizeHandle side="right" onResize={onResize} vertical currentSize={panelHeight} />
-      <View style={s.tabs}>
+      <Inline style={{ borderBottomWidth: 1, borderBottomColor: C.border }}>
         {(['layers', 'screens'] as const).map(t => (
           <Pressable key={t} style={[s.tab, bottomTab === t && s.tabOn]} onPress={() => setBottomTab(t)}>
-            <Feather name={t === 'layers' ? 'layers' : 'monitor'} size={11} color={bottomTab === t ? C.primary : C.muted} />
-            <Text style={[s.tabText, bottomTab === t && s.tabTextOn]}>{t.toUpperCase()}</Text>
+            <Inline align="center" spacing={1}>
+              <Feather name={t === 'layers' ? 'layers' : 'monitor'} size={11} color={bottomTab === t ? '#3b82f6' : '#6a7494'} />
+              <Text fontSize={11} color={bottomTab === t ? C.primary : C.muted} fontWeight="600" style={{ letterSpacing: 0.5 }}>{t.toUpperCase()}</Text>
+            </Inline>
           </Pressable>
         ))}
-      </View>
+      </Inline>
       {bottomTab === 'layers' ? (
         <ScrollView style={s.scroll}>
           {movingId && (
@@ -582,7 +585,7 @@ const LayersPanel: React.FC = () => {
             })()}
             {(project as any)?.screenGroups?.length > 0 && (
               <>
-                <Text style={[s.groupSectionTitle, { marginTop: 8 }]}>GROUPS</Text>
+                <Text style={{ ...s.groupSectionTitle as any, marginTop: 8 }}>GROUPS</Text>
                 {((project as any).screenGroups || []).map((g: any) => (
                   <GroupRow key={g.id} group={g} />
                 ))}
@@ -612,7 +615,7 @@ const LayersPanel: React.FC = () => {
           </View>
         </View>
       )}
-    </View>
+    </Box>
   );
 };
 
