@@ -4,86 +4,322 @@ sidebar_position: 1
 
 # API Reference
 
-Welcome to the Flipova Foundation API reference documentation. This section provides detailed information about all components, utilities, and types available in the library.
+Complete reference for all exports from `@flipova/foundation`.
 
-## Core Modules
+---
 
-### Design Tokens
-Access the design system tokens for consistent styling across your application.
+## Entry points
 
-- **Colors** - Color palette and semantic color tokens
-- **Spacing** - Spacing scale and utilities
-- **Typography** - Typography scale and font utilities
-- **Borders** - Border radius and border width tokens
-- **Shadows** - Shadow depth tokens
+| Entry | Exported symbols |
+|---|---|
+| `@flipova/foundation` | RN primitives, components, layouts + tokens + theme + config |
+| `@flipova/foundation/web` | DOM primitives, components, layouts + tokens + theme + config |
+| `@flipova/foundation/tokens` | `spacing`, `colors`, `radii`, `shadows`, `fontSizes`, `fontWeights`, `lineHeights`, `letterSpacings`, `durations`, `easings`, `breakpoints`, `opacity`, `zIndices` |
+| `@flipova/foundation/theme` | `ThemeProvider`, `useTheme`, `useColorScheme`, `createTheme`, `lightTheme`, `darkTheme`, … |
+| `@flipova/foundation/config` | `defineConfig`, `FoundationProvider`, `resolveConfig`, `useFoundationConfig`, `useTokens` |
+| `@flipova/foundation/layout` | `layoutRegistry`, `componentRegistry`, `blockRegistry`, `primitiveRegistry`, `getLayoutMeta`, `getComponentMeta`, `useBreakpoint`, `usePlatformInfo`, layout UI components |
 
-### Components
-Pre-built React Native components ready to use in your application.
+---
 
-- **ThemeProvider** - Theme context provider
-- **Button** - Button component with variants
-- **Card** - Card container component
-- **FlexLayout** - Flexbox layout component
-- **BentoLayout** - Bento grid layout component
+## `@flipova/foundation/tokens`
 
-### Layout Primitives
-Advanced layout components for complex UI structures.
+### `spacing`
 
-- **GridLayout** - Grid-based layout
-- **DeckLayout** - Card deck layout
-- **SwiperLayout** - Swipeable card layout
-- **MasonryLayout** - Masonry grid layout
-- **ParallaxLayout** - Parallax scrolling layout
-- **CrossTabLayout** - Cross-tab navigation layout
-
-### Utilities
-Helper functions and utilities for common tasks.
-
-- **useTheme** - Hook for accessing theme context
-- **applyDefaults** - Apply default props to components
-- **createStyles** - Create styled components with theme support
-
-### Types
-TypeScript type definitions for type safety.
-
-- **Theme** - Theme interface definition
-- **DesignTokens** - Design tokens type definitions
-- **ComponentProps** - Component prop type definitions
-
-## Usage Example
-
-```tsx
-import { ThemeProvider, Button, Card, useTheme } from '@flipova/foundation';
-import { tokens } from '@flipova/foundation';
-
-function MyComponent() {
-  const { theme } = useTheme();
-  
-  return (
-    <ThemeProvider>
-      <Card style={{ padding: tokens.spacing.lg }}>
-        <Button variant="primary" onPress={() => {}}>
-          Click me
-        </Button>
-      </Card>
-    </ThemeProvider>
-  );
-}
+```ts
+const spacing: Record<
+  0|1|2|3|4|5|6|7|8|10|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64,
+  number
+>;
 ```
 
-## Type Safety
+Values in pixels: `{ 0:0, 1:4, 2:8, 3:12, 4:16, 5:20, 6:24, 7:28, 8:32, … }`
 
-All components and utilities are fully typed with TypeScript. You can leverage autocomplete and type checking in your IDE:
+### `radii`
 
-```tsx
-import type { ButtonProps, Theme } from '@flipova/foundation';
-
-const buttonProps: ButtonProps = {
-  variant: 'primary', // Type-safe: only 'primary' | 'secondary' | 'ghost'
-  size: 'medium',    // Type-safe: only 'small' | 'medium' | 'large'
+```ts
+const radii: {
+  none:0, xs:2, sm:4, base:6, md:8, lg:12, xl:16, '2xl':20, '3xl':24, full:9999
 };
 ```
 
-## Next Steps
+### `shadows`
 
-Detailed API documentation will be added in future updates. For now, refer to the TypeScript type definitions in the source code for detailed API information.
+RN-compatible shadow objects: `none | sm | base | md | lg | xl | 2xl`
+
+Each entry: `{ shadowColor, shadowOffset, shadowOpacity, shadowRadius, elevation }`
+
+### `colors`
+
+Static hex palette — gray50→900, primary50→900, secondary, success, warning, error, info, + seasonal sub-objects (neon, spring, summer, autumn, winter, halloween, christmas).
+
+### `fontSizes`
+
+```ts
+{ xs:12, sm:14, base:16, lg:18, xl:20, '2xl':24, '3xl':30, '4xl':36, '5xl':48, '6xl':60, '7xl':72 }
+```
+
+### `fontWeights`
+
+```ts
+{ thin:'100', extralight:'200', light:'300', normal:'400', medium:'500', semibold:'600', bold:'700', extrabold:'800', black:'900' }
+```
+
+### `lineHeights`
+
+```ts
+{ none:1, tight:1.25, snug:1.375, normal:1.5, relaxed:1.625, loose:2 }
+```
+
+### `letterSpacings`
+
+```ts
+{ tighter:-0.8, tight:-0.4, normal:0, wide:0.4, wider:0.8, widest:1.6 }
+```
+
+### `durations`
+
+```ts
+{ instant:0, fast:150, base:250, slow:350, slower:500 }
+```
+
+### `easings`
+
+```ts
+{ linear:'linear', easeIn:'ease-in', easeOut:'ease-out', easeInOut:'ease-in-out' }
+```
+
+### `breakpoints`
+
+```ts
+{ xs:0, sm:576, md:768, lg:992, xl:1200, '2xl':1440 }
+```
+
+### `opacity`
+
+```ts
+{ 0:0, 5:0.05, 10:0.1, 20:0.2, 25:0.25, 30:0.3, 40:0.4, 50:0.5, 60:0.6, 70:0.7, 75:0.75, 80:0.8, 90:0.9, 95:0.95, 100:1 }
+```
+
+### `zIndices`
+
+```ts
+{ base:0, dropdown:1000, sticky:1100, fixed:1200, backdrop:1300, modal:1400, popover:1500, toast:1600, tooltip:1700 }
+```
+
+---
+
+## `@flipova/foundation/theme`
+
+### `ThemeProvider`
+
+```tsx
+<ThemeProvider
+  defaultTheme="light"          // ThemeMode | string
+  customThemes={{ ocean: { colors: { … } } }}
+>
+  {children}
+</ThemeProvider>
+```
+
+### `useTheme(customTheme?)`
+
+```ts
+const {
+  theme,           // ColorScheme — active color tokens
+  mode,            // string — active theme key
+  setTheme,        // (key: string) => void
+  availableThemes, // ThemeRegistry — all registered themes
+} = useTheme();
+```
+
+### `useColorScheme(theme?)`
+
+Returns `'light' | 'dark'`.
+- React Native: wraps `useColorScheme` from `react-native`
+- Web (`/web`): wraps `window.matchMedia('(prefers-color-scheme: dark)')` with live listener
+
+### Built-in theme objects
+
+`lightTheme`, `darkTheme`, `neonTheme`, `springTheme`, `summerTheme`, `autumnTheme`, `winterTheme`, `halloweenTheme`, `christmasTheme`
+
+All conform to `ColorScheme`.
+
+### `createTheme(overrides)`
+
+Merge overrides into a base theme:
+
+```ts
+import { createTheme, lightTheme } from '@flipova/foundation/theme';
+
+const brandTheme = createTheme({ ...lightTheme, primary: '#FF6B00' });
+```
+
+---
+
+## `@flipova/foundation/config`
+
+### `defineConfig(config)`
+
+```ts
+defineConfig({
+  tokens?: {
+    spacing?:      Record<number, number>;
+    radii?:        Record<string, number>;
+    colors?:       Record<string, string | Record<string,string>>;
+    fontSizes?:    Record<string, number>;
+    fontWeights?:  Record<string, string>;
+    lineHeights?:  Record<string, number>;
+    shadows?:      Record<string, …>;
+    durations?:    Record<string, number>;
+    opacity?:      Record<number, number>;
+    zIndices?:     Record<string, number>;
+    breakpoints?:  Record<string, number>;
+  };
+  themes?:        Record<string, { colors: Partial<ColorScheme>; gradients?: … }>;
+  defaultTheme?:  string;
+}): FoundationConfig
+```
+
+### `FoundationProvider`
+
+```tsx
+import config from './flipova.config';
+
+<FoundationProvider config={config}>
+  {children}
+</FoundationProvider>
+```
+
+Wraps `ThemeProvider` internally. Use this instead of bare `ThemeProvider` when you have token overrides.
+
+### `resolveConfig(userConfig?)`
+
+```ts
+const { tokens, themes, defaultTheme } = resolveConfig(userConfig);
+```
+
+Merges user overrides into default tokens. Called once at startup.
+
+### `useFoundationConfig()`
+
+```ts
+const { tokens, themes, defaultTheme } = useFoundationConfig();
+```
+
+### `useTokens()`
+
+```ts
+const { spacing, radii, colors, … } = useTokens();
+```
+
+Returns the resolved (potentially overridden) token set.
+
+---
+
+## `@flipova/foundation/layout`
+
+### Registry helpers
+
+```ts
+getLayoutMeta(id: string): LayoutMeta | undefined
+getComponentMeta(id: string): ComponentMeta | undefined
+getBlockMeta(id: string): BlockMeta | undefined
+getPrimitiveMeta(id: string): AnyMeta | undefined
+
+layoutRegistry: LayoutMeta[]
+componentRegistry: ComponentMeta[]
+blockRegistry: BlockMeta[]
+primitiveRegistry: AnyMeta[]
+```
+
+### `applyDefaults(rawProps, meta, theme)`
+
+Merges `meta.props[].default` and `meta.props[].themeDefault` into raw props. Called inside every component.
+
+### `useBreakpoint()`
+
+```ts
+const bp: 'xs'|'sm'|'md'|'lg'|'xl'|'2xl' = useBreakpoint();
+```
+
+### `usePlatformInfo()`
+
+```ts
+const { platform, os, isWeb, isNative } = usePlatformInfo();
+```
+
+---
+
+## Type definitions
+
+### `ColorScheme`
+
+```ts
+type ColorScheme = {
+  background: string; foreground: string;
+  card: string; cardForeground: string;
+  primary: string; primaryForeground: string;
+  secondary: string; secondaryForeground: string;
+  muted: string; mutedForeground: string;
+  accent: string; accentForeground: string;
+  destructive: string; destructiveForeground: string;
+  border: string; input: string; ring: string;
+  success: string; warning: string; error: string; info: string;
+  transparent: string;
+  gradients: ThemeGradients;
+};
+```
+
+### `ThemeGradients`
+
+```ts
+type ThemeGradients = {
+  primary: string[]; secondary: string[]; success: string[];
+  warning: string[]; error: string[]; info: string[];
+  subtle: string[]; vibrant: string[];
+};
+```
+
+### `SpacingToken`
+
+```ts
+type SpacingToken = 0|1|2|3|4|5|6|7|8|10|12|14|16|20|24|28|32|36|40|44|48|52|56|60|64;
+```
+
+### `RadiusToken`
+
+```ts
+type RadiusToken = 'none'|'xs'|'sm'|'base'|'md'|'lg'|'xl'|'2xl'|'3xl'|'full';
+```
+
+### `ShadowToken`
+
+```ts
+type ShadowToken = 'none'|'sm'|'base'|'md'|'lg'|'xl'|'2xl';
+```
+
+### `ThemeMode`
+
+```ts
+type ThemeMode = 'light' | 'dark';
+type CustomThemeMode = string;
+```
+
+---
+
+## Component prop types
+
+All component prop types are exported from the web entry:
+
+```ts
+import type {
+  BoxProps, StackProps, InlineProps, CenterProps, ScrollProps, DividerProps,
+  ButtonProps, TextInputProps, TextAreaProps, AvatarProps, BadgeProps,
+  IconProps, IconButtonProps, SpinnerProps, TextProps, SeparatorProps,
+  CheckboxProps, SwitchProps, RadioGroupProps, SelectProps, SliderProps,
+  ProgressBarProps, ChipProps, FilePickerProps, TabsProps, AccordionProps,
+  RootLayoutProps, CenteredLayoutProps, AuthLayoutProps, DashboardLayoutProps,
+  SidebarLayoutProps, GridLayoutProps, FlexLayoutProps, SplitLayoutProps,
+  FooterLayoutProps, ResponsiveLayoutProps,
+} from '@flipova/foundation/web';
+```

@@ -1,546 +1,286 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 ---
 
 # Theming
 
-Flipova Foundation provides a powerful and flexible theming system that allows you to customize the appearance of your application with ease.
+Foundation's theme system is built around a **ColorScheme** — a flat object of semantic color tokens that is swapped at runtime. Every component reads its colors from the active scheme via `useTheme()`.
 
-## Theme System Overview
+## Built-in themes
 
-The theming system is built around three main concepts:
+| Key | Description |
+|---|---|
+| `light` | Clean, modern light theme (default) |
+| `dark` | Dark-mode theme |
+| `neon` | Purple/cyan futuristic theme |
+| `spring` | Pink/green fresh theme |
+| `summer` | Amber/orange warm theme |
+| `autumn` | Deep brown/rust warm theme |
+| `winter` | Slate/blue cool theme |
+| `halloween` | Violet/green dark theme |
+| `christmas` | Green/red festive theme |
 
-1. **Design Tokens** - Base values for colors, spacing, typography, etc.
-2. **Themes** - Collections of tokens that define a visual style
-3. **ThemeProvider** - React context provider that makes the theme available throughout your app
+---
 
-## Built-in Themes
+## Setup
 
-Flipova Foundation includes 9 pre-built themes:
+### React Native
 
-| Theme | Description | Use Case |
-|-------|-------------|----------|
-| `light` | Clean, modern light theme | Default for most apps |
-| `dark` | Dark mode theme | For dark mode support |
-| `neon` | Vibrant, futuristic theme | Gaming, entertainment apps |
-| `autumn` | Warm autumn colors | Seasonal apps, cozy vibes |
-| `spring` | Fresh spring colors | Nature, wellness apps |
-| `summer` | Bright summer colors | Outdoor, travel apps |
-| `winter` | Cool winter colors | Winter sports, seasonal apps |
-| `halloween` | Spooky Halloween theme | Holiday-specific apps |
-| `christmas` | Festive Christmas theme | Holiday-specific apps |
+```tsx title="App.tsx"
+import { FoundationProvider, defineConfig } from '@flipova/foundation/config';
 
-## Using Themes
-
-### Basic Theme Setup
-
-```tsx
-import { FoundationProvider, defineConfig } from "@flipova/foundation/config";
-
-const config = defineConfig({
-  defaultTheme: "light",
-});
+const config = defineConfig({ defaultTheme: 'dark' });
 
 export default function App() {
   return (
     <FoundationProvider config={config}>
-      <MyApp />
+      <YourApp />
     </FoundationProvider>
   );
 }
 ```
 
-### Switching Themes
+### React Web
 
-```tsx
-import { useTheme } from "@flipova/foundation";
+```tsx title="App.tsx"
+import { ThemeProvider } from '@flipova/foundation/web';
 
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  
+export default function App() {
   return (
-    <Button 
-      onPress={() => setTheme(theme === "light" ? "dark" : "light")}
-    >
-      Switch to {theme === "light" ? "Dark" : "Light"} Mode
-    </Button>
+    <ThemeProvider defaultTheme="dark">
+      <YourApp />
+    </ThemeProvider>
   );
 }
 ```
 
-### Accessing Theme Values
+---
+
+## Reading the active theme
 
 ```tsx
-import { useTheme } from "@flipova/foundation";
+import { useTheme } from '@flipova/foundation'; // or /web
 
-function MyComponent() {
-  const { theme, colors } = useTheme();
-  
+function Card() {
+  const { theme, mode, setTheme, availableThemes } = useTheme();
+
   return (
-    <Box style={{ backgroundColor: colors.card }}>
-      <Text style={{ color: colors.foreground }}>
-        Current theme: {theme}
-      </Text>
-    </Box>
+    <div style={{ background: theme.card, color: theme.foreground }}>
+      <p>Active theme: {mode}</p>
+    </div>
   );
 }
 ```
 
-## Custom Themes
+### `useTheme()` return value
 
-### Creating a Custom Theme
+| Property | Type | Description |
+|---|---|---|
+| `theme` | `ColorScheme` | Active color scheme object |
+| `mode` | `string` | Active theme key, e.g. `"dark"` |
+| `setTheme(key)` | `(key: string) => void` | Switch to another theme |
+| `availableThemes` | `ThemeRegistry` | All registered themes |
 
-You can create custom themes by extending the base theme configuration using `defineConfig`:
+---
+
+## ColorScheme keys
+
+Every theme must provide these semantic colors:
 
 ```ts
-import { defineConfig } from "@flipova/foundation/config";
+type ColorScheme = {
+  background:            string;  // main page background
+  foreground:            string;  // main text color
+  card:                  string;  // card/surface background
+  cardForeground:        string;  // text on cards
+  primary:               string;  // primary brand color
+  primaryForeground:     string;  // text on primary bg
+  secondary:             string;  // secondary color
+  secondaryForeground:   string;
+  muted:                 string;  // subtle background
+  mutedForeground:       string;  // subtle text
+  accent:                string;  // highlight color
+  accentForeground:      string;
+  destructive:           string;  // danger / error
+  destructiveForeground: string;
+  border:                string;  // dividers and outlines
+  input:                 string;  // input backgrounds
+  ring:                  string;  // focus ring
+  success:               string;
+  warning:               string;
+  error:                 string;
+  info:                  string;
+  transparent:           string;
+  gradients:             ThemeGradients;
+};
+```
+
+---
+
+## Creating a custom theme
+
+```ts title="flipova.config.ts"
+import { defineConfig } from '@flipova/foundation/config';
 
 export default defineConfig({
   themes: {
-    brand: {
+    ocean: {
       colors: {
-        primary: "#FF6B00",
-        primaryForeground: "#FFFFFF",
-        background: "#FAFAFA",
-        foreground: "#1A1A2E",
-        card: "#FFFFFF",
-        cardForeground: "#1A1A2E",
-        muted: "#6B7280",
-        mutedForeground: "#9CA3AF",
-        accent: "#FF6B00",
-        accentForeground: "#FFFFFF",
-        destructive: "#EF4444",
-        destructiveForeground: "#FFFFFF",
-        border: "#E5E7EB",
-        input: "#E5E7EB",
-        ring: "#FF6B00",
+        background:        '#0a192f',
+        foreground:        '#ccd6f6',
+        card:              '#112240',
+        cardForeground:    '#ccd6f6',
+        primary:           '#64ffda',
+        primaryForeground: '#0a192f',
+        secondary:         '#172a45',
+        secondaryForeground:'#8892b0',
+        muted:             '#172a45',
+        mutedForeground:   '#8892b0',
+        accent:            '#64ffda',
+        accentForeground:  '#0a192f',
+        destructive:       '#ff5555',
+        destructiveForeground:'#ffffff',
+        border:            '#1d3a5e',
+        input:             '#1d3a5e',
+        ring:              '#64ffda',
+        success:           '#22C55E',
+        warning:           '#F59E0B',
+        error:             '#ff5555',
+        info:              '#3B82F6',
+        transparent:       'transparent',
+        gradients: {
+          primary:   ['#64ffda', '#00b4d8'],
+          secondary: ['#172a45', '#1d3a5e'],
+          success:   ['#22C55E', '#16A34A'],
+          warning:   ['#F59E0B', '#D97706'],
+          error:     ['#ff5555', '#dc2626'],
+          info:      ['#3B82F6', '#2563EB'],
+          subtle:    ['#112240', '#172a45'],
+          vibrant:   ['#64ffda', '#00b4d8'],
+        },
       },
     },
   },
-  defaultTheme: "brand",
+  defaultTheme: 'ocean',
 });
 ```
 
-**Important**: The `config/` module is for app-level configuration via `FoundationProvider`. It allows you to define custom themes and override design tokens, but it is not a design token management system. Design tokens are defined statically in the `tokens/` module.
+---
 
-### Theme Color Structure
-
-Each theme follows a consistent color structure:
-
-```ts
-{
-  primary: string;              // Primary brand color
-  primaryForeground: string;     // Text color on primary
-  background: string;           // Main background
-  foreground: string;           // Main text color
-  card: string;                 // Card background
-  cardForeground: string;       // Text on cards
-  muted: string;                // Muted background
-  mutedForeground: string;      // Muted text
-  accent: string;               // Accent color
-  accentForeground: string;     // Text on accent
-  destructive: string;           // Destructive action color
-  destructiveForeground: string; // Text on destructive
-  border: string;               // Border color
-  input: string;                // Input background
-  ring: string;                 // Focus ring color
-}
-```
-
-## Design Tokens
-
-### Token Categories
-
-Design tokens are organized into several categories:
-
-#### Spacing
-
-```ts
-{
-  0: 0,
-  1: 2,
-  2: 4,
-  3: 8,
-  4: 12,
-  5: 16,
-  6: 20,
-  8: 32,
-  10: 40,
-  12: 48,
-  16: 64,
-  20: 80,
-  24: 96,
-}
-```
-
-#### Border Radius
-
-```ts
-{
-  none: 0,
-  sm: 4,
-  md: 8,
-  lg: 16,
-  xl: 24,
-  full: 9999,
-}
-```
-
-#### Typography
-
-```ts
-{
-  fontFamily: {
-    sans: string;
-    mono: string;
-  };
-  fontSize: {
-    xs: string;
-    sm: string;
-    base: string;
-    lg: string;
-    xl: string;
-    // ...
-  };
-  fontWeight: {
-    normal: number;
-    medium: number;
-    semibold: number;
-    bold: number;
-  };
-}
-```
-
-#### Shadows
-
-```ts
-{
-  sm: string;
-  md: string;
-  lg: string;
-  xl: string;
-}
-```
-
-### Customizing Tokens
-
-Override default tokens in your configuration:
-
-```ts
-import { defineConfig } from "@flipova/foundation/config";
-
-export default defineConfig({
-  tokens: {
-    spacing: {
-      0: 0,
-      1: 2,
-      2: 4,
-      3: 8,
-      4: 12,
-      5: 16,
-      6: 20,
-      8: 32,
-      // Custom spacing values
-      7: 28,
-      9: 36,
-    },
-    radii: {
-      none: 0,
-      sm: 2,  // Override default
-      md: 6,  // Override default
-      lg: 12, // Override default
-      xl: 20, // Override default
-      full: 9999,
-    },
-  },
-});
-```
-
-## Using Tokens in Components
-
-### Accessing Tokens Directly
+## Switching themes at runtime
 
 ```tsx
-import { tokens } from "@flipova/foundation";
+import { useTheme } from '@flipova/foundation/web';
 
-function MyComponent() {
+function ThemeSelector() {
+  const { mode, setTheme, availableThemes } = useTheme();
+  const keys = Object.keys(availableThemes);
+
   return (
-    <Box 
-      style={{ 
-        padding: tokens.spacing.md,
-        borderRadius: tokens.radii.lg,
-      }}
-    >
-      Content
-    </Box>
+    <div style={{ display: 'flex', gap: 8 }}>
+      {keys.map((key) => (
+        <button
+          key={key}
+          onClick={() => setTheme(key)}
+          style={{
+            fontWeight: mode === key ? 700 : 400,
+            textDecoration: mode === key ? 'underline' : 'none',
+          }}
+        >
+          {key}
+        </button>
+      ))}
+    </div>
   );
 }
 ```
 
-### Using Theme-Aware Tokens
+---
+
+## System color scheme
+
+`useColorScheme()` detects the system preference and updates live:
+
+- **React Native**: uses `useColorScheme` from `react-native`
+- **Web** (`/web` entry): uses `window.matchMedia('(prefers-color-scheme: dark)')` with a live listener
 
 ```tsx
-import { useTheme } from "@flipova/foundation";
+import { useColorScheme } from '@flipova/foundation/theme';
 
-function MyComponent() {
-  const { colors, spacing, radii } = useTheme();
-  
-  return (
-    <Box 
-      style={{ 
-        padding: spacing.md,
-        borderRadius: radii.lg,
-        backgroundColor: colors.card,
-      }}
-    >
-      Content
-    </Box>
-  );
+function SystemAware() {
+  const scheme = useColorScheme(); // 'light' | 'dark'
+  return <p>System prefers: {scheme}</p>;
 }
 ```
 
-## Responsive Theming
-
-### Platform-Specific Themes
-
-```ts
-import { defineConfig } from "@flipova/foundation/config";
-
-export default defineConfig({
-  themes: {
-    light: {
-      colors: {
-        // Light theme colors
-      },
-    },
-    dark: {
-      colors: {
-        // Dark theme colors
-      },
-    },
-  },
-  defaultTheme: "light",
-});
-```
-
-### Adaptive Theme Switching
+To follow the system automatically, set `defaultTheme` to the result of `useColorScheme()`:
 
 ```tsx
-import { usePlatformInfo } from "@flipova/foundation";
-import { useTheme } from "@flipova/foundation";
+import { useColorScheme } from '@flipova/foundation/theme';
+import { FoundationProvider, defineConfig } from '@flipova/foundation/config';
 
-function AdaptiveTheme() {
-  const { platform } = usePlatformInfo();
-  const { setTheme } = useTheme();
-  
-  React.useEffect(() => {
-    // Set dark theme on iOS, light on Android
-    setTheme(platform === "ios" ? "dark" : "light");
-  }, [platform, setTheme]);
-  
-  return null;
+function App() {
+  const scheme = useColorScheme();
+  const config = defineConfig({ defaultTheme: scheme });
+  return <FoundationProvider config={config}><YourApp /></FoundationProvider>;
 }
 ```
 
-## Theme Persistence
+---
 
-### Saving User Theme Preference
+## Persisting the user's theme
 
 ```tsx
-import { useEffect } from "react";
-import { useTheme } from "@flipova/foundation";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from '@flipova/foundation/web';
+import { useEffect } from 'react';
 
 function ThemePersistence() {
-  const { theme, setTheme } = useTheme();
-  
+  const { mode, setTheme } = useTheme();
+
+  // Load on mount
   useEffect(() => {
-    // Load saved theme
-    AsyncStorage.getItem("theme").then((savedTheme) => {
-      if (savedTheme) {
-        setTheme(savedTheme);
-      }
-    });
-  }, [setTheme]);
-  
+    const saved = localStorage.getItem('flipova-theme');
+    if (saved) setTheme(saved);
+  }, []);
+
+  // Save on change
   useEffect(() => {
-    // Save theme when it changes
-    AsyncStorage.setItem("theme", theme);
-  }, [theme]);
-  
+    localStorage.setItem('flipova-theme', mode);
+  }, [mode]);
+
   return null;
 }
 ```
 
-## Best Practices
+---
 
-### 1. Use Semantic Color Names
-
-Instead of hardcoding colors, use semantic names from the theme:
+## Importing built-in themes directly
 
 ```tsx
-// ❌ Bad
-<Box style={{ backgroundColor: "#FF6B00" }}>
+import {
+  lightTheme,
+  darkTheme,
+  neonTheme,
+  springTheme,
+  summerTheme,
+  autumnTheme,
+  winterTheme,
+  halloweenTheme,
+  christmasTheme,
+} from '@flipova/foundation/theme';
 
-// ✅ Good
-<Box style={{ backgroundColor: colors.primary }}>
-```
-
-### 2. Use Token Values for Consistency
-
-```tsx
-// ❌ Bad
-<Box style={{ padding: 16, borderRadius: 8 }}>
-
-// ✅ Good
-<Box style={{ padding: spacing.md, borderRadius: radii.md }}>
-```
-
-### 3. Provide Theme Switching
-
-Always provide a way for users to switch themes, especially for dark mode:
-
-```tsx
-function SettingsScreen() {
-  const { theme, setTheme } = useTheme();
-  
-  return (
-    <Card>
-      <Text>Appearance</Text>
-      <Button 
-        variant={theme === "light" ? "primary" : "ghost"}
-        onPress={() => setTheme("light")}
-      >
-        Light
-      </Button>
-      <Button 
-        variant={theme === "dark" ? "primary" : "ghost"}
-        onPress={() => setTheme("dark")}
-      >
-        Dark
-      </Button>
-    </Card>
-  );
-}
-```
-
-### 4. Test Across All Themes
-
-Ensure your app looks good in all available themes:
-
-```tsx
-function ThemePreview() {
-  const { setTheme } = useTheme();
-  const themes = ["light", "dark", "neon", "autumn", "spring"];
-  
-  return (
-    <Stack gap={8}>
-      {themes.map((t) => (
-        <Button 
-          key={t}
-          variant="ghost"
-          onPress={() => setTheme(t)}
-        >
-          {t}
-        </Button>
-      ))}
-    </Stack>
-  );
-}
-```
-
-## Advanced Theming
-
-### Dynamic Theme Generation
-
-Generate themes dynamically based on user input:
-
-```tsx
-function generateCustomTheme(baseColor: string) {
-  return {
-    colors: {
-      primary: baseColor,
-      primaryForeground: "#FFFFFF",
-      background: "#FAFAFA",
-      foreground: "#1A1A2E",
-      // ... other colors derived from baseColor
-    },
-  };
-}
-```
-
-### Theme Composition
-
-Compose multiple themes together:
-
-```tsx
-const composedTheme = {
-  ...baseThemes.light,
-  colors: {
-    ...baseThemes.light.colors,
-    primary: customColors.primary,
-  },
+// Use as a starting point for a custom theme
+const myTheme = {
+  ...darkTheme,
+  colors: { ...darkTheme, primary: '#ff4488' },
 };
 ```
 
-## Migration Guide
+---
 
-### Migrating from Custom Styles
+## Best practices
 
-If you're migrating from custom styling:
-
-1. **Identify common patterns** - Look for repeated colors, spacing values
-2. **Map to tokens** - Replace hardcoded values with tokens
-3. **Create theme** - Define your custom theme
-4. **Test thoroughly** - Ensure visual consistency
-
-```tsx
-// Before
-<Box style={{ padding: 16, backgroundColor: "#FAFAFA" }}>
-
-// After
-<Box style={{ padding: spacing.md, backgroundColor: colors.background }}>
-```
-
-## Troubleshooting
-
-### Theme Not Applying
-
-Ensure your app is wrapped in `FoundationProvider`:
-
-```tsx
-<FoundationProvider config={config}>
-  <MyApp />
-</FoundationProvider>
-```
-
-### Custom Colors Not Working
-
-Make sure your custom theme follows the color structure:
-
-```ts
-{
-  colors: {
-    primary: string;
-    // ... all required color keys
-  }
-}
-```
-
-### TypeScript Errors
-
-Import types from the theme module:
-
-```tsx
-import type { Theme } from "@flipova/foundation/theme";
-
-const myTheme: Theme = {
-  // ... theme definition
-};
-```
-
-## Resources
-
-- [Design Tokens Guide](/docs/guides/tokens) - Learn about design tokens in detail
-- [Components Guide](/docs/guides/components) - Theme-aware components
-- [API Reference](/docs/api/intro) - Complete API documentation
+- **Never hardcode hex values** in component styles — use `theme.primary`, `theme.card`, etc.
+- **Provide a theme toggle** so users can choose dark/light mode.
+- **Test all 9 built-in themes** before shipping custom components.
+- **Use semantic names** (`theme.muted`) rather than descriptive ones (`theme.gray200`).
