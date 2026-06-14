@@ -1,9 +1,14 @@
 {
   "name": "@flipova/foundation",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "description": "Design tokens, theming system, and layout primitives for React Native (iOS, Android, Web)",
   "author": "Flipova",
   "license": "MIT",
+  "workspaces": [
+    ".",
+    "studio-v2/packages/*",
+    "studio-v2/apps/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/flipova/foundation.git"
@@ -43,9 +48,7 @@
       "require": "./dist/config/index.js"
     },
     "./studio": {
-      "types": "./dist/studio/index.d.ts",
-      "import": "./dist/studio/index.mjs",
-      "require": "./dist/studio/index.js"
+      "require": "./dist/studio-v2/cli/index.js"
     }
   },
   "publishConfig": {
@@ -53,21 +56,23 @@
     "registry": "https://registry.npmjs.org/"
   },
   "bin": {
-    "flipova-studio": "./dist/studio/cli/index.js"
+    "flipova-studio": "./dist/studio-v2/cli/index.js"
   },
   "files": [
     "dist",
-    "studio/app/dist",
+    "studio-v2/apps/web/dist",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run build:foundation && npm run build:studio",
+    "build": "npm run build:foundation && npm run build:studio-v2",
     "build:foundation": "tsup",
     "build:studio": "cd studio/app && npx expo export --platform web --output-dir dist",
+    "build:studio-v2": "cd studio-v2/apps/web && npx expo export --platform web --output-dir dist",
     "dev": "tsup --watch",
     "dev:studio": "cd studio/app && npx expo start --web --port 4201",
+    "dev:studio-v2": "cd studio-v2/apps/web && npx expo start --web --port 4202",
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
     "version": "changeset version",
@@ -186,11 +191,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "express": "^5.2.1",
+    "immer": "^10.1.1",
     "lucide-react": "^1.18.0",
     "motion": "^12.40.0",
     "qrcode": "^1.5.4",
     "react": ">=18.0.0",
     "tailwind-merge": "^3.6.0",
-    "ws": "^8.20.0"
+    "ws": "^8.20.0",
+    "zustand": "^5.0.5"
   }
 }

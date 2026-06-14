@@ -1,0 +1,206 @@
+---
+sidebar_position: 6
+---
+
+# Web Usage
+
+Foundation's `/web` sub-entry provides **pure DOM implementations** of every primitive and component. It has zero React Native dependencies and works out-of-the-box with Vite, Next.js, Remix, and any other browser bundler.
+
+## Why a separate web entry?
+
+The main `@flipova/foundation` entry targets React Native. It imports `react-native` for primitives like `View`, `Text`, `StyleSheet`, and `Animated`. Bundlers like Vite (rolldown) cannot parse the Flow-typed RN source, so importing the main entry in a web project causes build failures.
+
+The `/web` entry is built with `platform: "browser"` in tsup, which means:
+
+- esbuild resolves `*.web.ts` files before `*.ts` — so `useColorScheme.web.ts` wins over the RN version
+- All primitives use `div`, `span`, `input`, `button` — no `View` or `Text` from RN
+- `react-native` is never referenced
+
+## Installation
+
+```bash
+npm install @flipova/foundation
+# no extra packages needed
+```
+
+## Setup with Vite
+
+```tsx title="src/main.tsx"
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { ThemeProvider } from '@flipova/foundation/web';
+import App from './App';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ThemeProvider defaultTheme="light">
+      <App />
+    </ThemeProvider>
+  </StrictMode>
+);
+```
+
+## Setup with Next.js
+
+```tsx title="app/providers.tsx"
+'use client';
+import { ThemeProvider } from '@flipova/foundation/web';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider defaultTheme="light">
+      {children}
+    </ThemeProvider>
+  );
+}
+```
+
+```tsx title="app/layout.tsx"
+import { Providers } from './providers';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+## All available exports
+
+Everything exported from `@flipova/foundation/web`:
+
+### Layout primitives
+`Box`, `Stack`, `Inline`, `Center`, `Scroll`, `Divider`
+
+### Components
+`Button`, `TextInput`, `TextArea`, `Badge`, `Avatar`, `Icon`, `IconButton`, `Spinner`, `Text`, `Separator`, `Checkbox`, `Switch`, `RadioGroup`, `Select`, `Slider`, `ProgressBar`, `Chip`, `FilePicker`, `Tabs`, `Accordion`
+
+### Layouts
+`RootLayout`, `CenteredLayout`, `AuthLayout`, `DashboardLayout`, `SidebarLayout`, `GridLayout`, `FlexLayout`, `SplitLayout`, `FooterLayout`, `ResponsiveLayout`
+
+### Theme
+`ThemeProvider`, `useTheme`, `useColorScheme`, `createTheme`, `lightTheme`, `darkTheme`, `neonTheme`, `springTheme`, `summerTheme`, `autumnTheme`, `winterTheme`, `halloweenTheme`, `christmasTheme`
+
+### Config
+`FoundationProvider`, `defineConfig`, `resolveConfig`, `useFoundationConfig`, `useTokens`
+
+### Tokens
+All tokens from `@flipova/foundation/tokens` — `spacing`, `colors`, `radii`, `shadows`, `fontSizes`, `fontWeights`, etc.
+
+### Registry
+`layoutRegistry`, `componentRegistry`, `blockRegistry`, `primitiveRegistry` and helpers
+
+---
+
+## Styling approach
+
+Web components use **inline styles** computed from theme tokens — no CSS classes, no stylesheet injection, no CSS-in-JS runtime. This means:
+
+- Works in SSR without hydration issues
+- No specificity conflicts with your existing CSS
+- Style overrides via the `style` prop or `className` (when available)
+
+```tsx
+<Box
+  p={4}
+  borderRadius="lg"
+  style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}   // extra CSS
+  className="my-custom-class"                              // Tailwind, CSS Modules…
+>
+  Content
+</Box>
+```
+
+---
+
+## Using with Tailwind
+
+Foundation web components accept `className` so you can combine Tailwind utility classes:
+
+```tsx
+<Button
+  variant="primary"
+  className="w-full mt-4 tracking-wide"
+>
+  Sign in
+</Button>
+```
+
+---
+
+## Dark mode
+
+Use `useTheme()` to read the active scheme, and `setTheme()` to toggle:
+
+```tsx
+import { useTheme } from '@flipova/foundation/web';
+
+function DarkModeToggle() {
+  const { mode, setTheme } = useTheme();
+
+  return (
+    <button onClick={() => setTheme(mode === 'light' ? 'dark' : 'light')}>
+      {mode === 'light' ? '🌙 Dark' : '☀️ Light'}
+    </button>
+  );
+}
+```
+
+To follow the OS preference automatically:
+
+```tsx
+import { useColorScheme, ThemeProvider } from '@flipova/foundation/web';
+
+function Root({ children }: { children: React.ReactNode }) {
+  const scheme = useColorScheme(); // listens to prefers-color-scheme
+  return <ThemeProvider defaultTheme={scheme}>{children}</ThemeProvider>;
+}
+```
+
+---
+
+## TypeScript
+
+All types from the web entry are fully typed. Import them directly:
+
+```tsx
+import type {
+  ButtonProps,
+  AvatarProps,
+  BoxProps,
+  StackProps,
+  ThemeMode,
+  ColorScheme,
+} from '@flipova/foundation/web';
+```
+
+---
+
+## Troubleshooting
+
+### `Cannot resolve "react-native"`
+
+You're importing from `@flipova/foundation` (main RN entry) instead of `@flipova/foundation/web`. Change your imports:
+
+```diff
+- import { Button } from '@flipova/foundation';
++ import { Button } from '@flipova/foundation/web';
+```
+
+### `useTheme must be used within ThemeProvider`
+
+Wrap your app (or the component subtree) with `<ThemeProvider>`:
+
+```tsx
+<ThemeProvider defaultTheme="light">
+  <App />
+</ThemeProvider>
+```
+
+### Components look unstyled
+
+The web components compute styles from the active theme. Without a `ThemeProvider`, `useTheme()` throws. Make sure the provider is an ancestor of every component that uses Foundation.

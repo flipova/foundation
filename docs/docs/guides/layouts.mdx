@@ -2,622 +2,397 @@
 sidebar_position: 5
 ---
 
-# Layouts
+# Layouts & Primitives
 
-Flipova Foundation provides 23 pre-built layout components that help you create complex UI structures quickly and consistently.
+Foundation provides two levels of layout abstraction:
 
-## Layout Categories
+1. **Primitives** — low-level building blocks (`Box`, `Stack`, `Inline`, `Center`, `Scroll`, `Divider`)
+2. **Layout components** — higher-level containers for common app patterns (`DashboardLayout`, `AuthLayout`, etc.)
 
-Layouts are organized into several categories:
+---
 
-- **Basic Layouts** - RootLayout, AuthLayout, DashboardLayout, etc.
-- **Content Layouts** - ContentLayout, SplitLayout, StackLayout
-- **Grid Layouts** - GridLayout, BentoLayout, MasonryLayout
-- **Card Layouts** - DeckLayout, SwiperLayout, ParallaxLayout
-- **Navigation Layouts** - TabLayout, SidebarLayout, CrossTabLayout
-- **Scroll Layouts** - ScrollLayout, PullToRefreshLayout
+## Primitives
 
-## Using Layouts
+### Box
 
-### Importing Layouts
+The single lowest-level primitive. Everything is a `Box`.
 
 ```tsx
-import { RootLayout, AuthLayout, DashboardLayout } from "@flipova/foundation/layout";
+import { Box } from '@flipova/foundation/web';
 
-// Or import specific layout
-import { RootLayout } from "@flipova/foundation/layout/ui/layouts";
+<Box
+  p={4}
+  m={2}
+  bg="card"
+  borderRadius="lg"
+  shadow="base"
+  flexDirection="row"
+  alignItems="center"
+  gap={3}
+  width="100%"
+>
+  children
+</Box>
 ```
 
-### Basic Usage
+#### Spacing props
+
+All spacing props accept a `SpacingToken` (numeric key: 0, 1, 2, 3, 4…).
+
+| Prop | CSS equivalent |
+|---|---|
+| `p` | padding |
+| `pt / pr / pb / pl` | padding-top / right / bottom / left |
+| `px` | padding-left + right |
+| `py` | padding-top + bottom |
+| `m` | margin |
+| `mt / mr / mb / ml` | margin-top / right / bottom / left |
+| `mx` | margin-left + right |
+| `my` | margin-top + bottom |
+| `gap` | gap |
+| `rowGap / columnGap` | row-gap / column-gap |
+
+#### Style props
+
+| Prop | Type |
+|---|---|
+| `bg` | string (any CSS color or theme key) |
+| `gradient` | theme gradient key or `[color1, color2, ...]` |
+| `gradientDirection` | `'toTop' \| 'toBottom' \| 'toLeft' \| 'toRight' \| …` |
+| `borderRadius` | `RadiusToken` |
+| `shadow` | `ShadowToken` |
+| `flex` | number |
+| `flexDirection` | `'row' \| 'row-reverse' \| 'column' \| 'column-reverse'` |
+| `alignItems` | `'stretch' \| 'flex-start' \| 'flex-end' \| 'center' \| 'baseline'` |
+| `justifyContent` | `'flex-start' \| 'flex-end' \| 'center' \| 'space-between' \| …` |
+| `width / height` | CSS size string or number |
+| `minWidth / maxWidth / minHeight / maxHeight` | CSS size |
+| `position` | CSS position |
+| `top / right / bottom / left` | CSS offset |
+| `zIndex` | number |
+| `overflow` | CSS overflow |
+| `opacity` | 0–1 |
+| `as` | HTML tag for polymorphism (web only) |
+| `theme` | override the local theme mode |
+
+---
+
+### Stack
+
+Vertical flex column with uniform spacing.
 
 ```tsx
-import { RootLayout } from "@flipova/foundation";
+import { Stack } from '@flipova/foundation/web';
 
-function App() {
-  return (
-    <RootLayout>
-      <YourAppContent />
-    </RootLayout>
-  );
-}
+<Stack spacing={4} align="center" distribute>
+  <Header />
+  <Content />
+  <Footer />
+</Stack>
 ```
 
-## Basic Layouts
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `spacing` | `SpacingToken` | `0` | Gap between children |
+| `align` | `alignItems value` | `'stretch'` | Cross-axis alignment |
+| `justify` | `justifyContent value` | `'flex-start'` | Main-axis alignment |
+| `reverse` | `boolean` | `false` | `column-reverse` |
+| `distribute` | `boolean` | `false` | `space-between` |
+| `fillHeight` | `boolean` | `false` | `flex: 1` |
+
+---
+
+### Inline
+
+Horizontal flex row with uniform spacing.
+
+```tsx
+import { Inline } from '@flipova/foundation/web';
+
+<Inline spacing={3} align="center" wrap>
+  <Avatar />
+  <Badge label="Admin" />
+  <Text>John Doe</Text>
+</Inline>
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `spacing` | `SpacingToken` | `0` | Gap between children |
+| `align` | `alignItems value` | `'center'` | Vertical alignment |
+| `justify` | `justifyContent value` | `'flex-start'` | Horizontal alignment |
+| `wrap` | `boolean` | `false` | Allow wrapping |
+| `reverse` | `boolean` | `false` | `row-reverse` |
+
+---
+
+### Center
+
+Centers content horizontally and/or vertically.
+
+```tsx
+import { Center } from '@flipova/foundation/web';
+
+<Center style={{ height: 200 }}>
+  <Spinner />
+</Center>
+
+<Center horizontal>     {/* horizontal only */}
+<Center vertical>       {/* vertical only (needs height) */}
+```
+
+---
+
+### Scroll
+
+Scrollable container.
+
+```tsx
+import { Scroll } from '@flipova/foundation/web';
+
+<Scroll direction="vertical" style={{ maxHeight: 400 }}>
+  {items.map(i => <Row key={i.id} item={i} />)}
+</Scroll>
+```
+
+| Prop | Type | Default |
+|---|---|---|
+| `direction` | `'vertical' \| 'horizontal' \| 'both'` | `'vertical'` |
+| `hideScrollbar` | `boolean` | `false` |
+
+---
+
+### Divider
+
+Thin separator line.
+
+```tsx
+import { Divider } from '@flipova/foundation/web';
+
+<Divider />
+<Divider orientation="vertical" style={{ height: 24 }} />
+```
+
+---
+
+## Layout components
+
+Higher-level containers for common app patterns. Available from both `@flipova/foundation` and `@flipova/foundation/web`.
+
+---
 
 ### RootLayout
 
-The fundamental layout wrapper for your entire application.
+Full-screen root wrapper. Sets background, safe-area padding, and scroll.
 
 ```tsx
-import { RootLayout } from "@flipova/foundation";
-
-<RootLayout>
-  <Header />
-  <MainContent />
-  <Footer />
+<RootLayout background={theme.background} scrollable padding={4}>
+  <AppContent />
 </RootLayout>
 ```
 
-**Features:**
-- Safe area handling
-- Theme context
-- Platform-specific styling
+---
+
+### CenteredLayout
+
+Centers a constrained content block, optionally inside a card.
+
+```tsx
+<CenteredLayout maxWidth={480} padding={5} shadowed borderRadius="xl">
+  <LoginForm />
+</CenteredLayout>
+```
+
+---
 
 ### AuthLayout
 
-Layout for authentication screens (login, register, etc.).
+Split-panel auth screen: branding panel (desktop) + form panel.
 
 ```tsx
-import { AuthLayout } from "@flipova/foundation";
-
 <AuthLayout
-  title="Welcome Back"
-  subtitle="Sign in to your account"
+  branding={<BrandPanel />}
+  brandingBackground={theme.primary}
+  brandingRatio={0.45}
+  formMaxWidth={420}
 >
   <LoginForm />
 </AuthLayout>
 ```
 
-**Props:**
-- `title` - Page title
-- `subtitle` - Page subtitle
-- `logo` - Logo component
-- `footer` - Footer content
+---
 
 ### DashboardLayout
 
-Layout for dashboard and admin interfaces.
+Classic admin layout: fixed header, collapsible sidebar, scrollable content, optional footer.
 
 ```tsx
-import { DashboardLayout } from "@flipova/foundation";
-
 <DashboardLayout
+  header={<Topbar />}
   sidebar={<Sidebar />}
-  header={<Header />}
+  footer={<StatusBar />}
+  sidebarWidth={256}
+  defaultSidebarCollapsed={false}
+  disableContentScroll={false}
 >
-  <DashboardContent />
+  <PageContent />
 </DashboardLayout>
 ```
 
-**Features:**
-- Collapsible sidebar
-- Responsive header
-- Content area with scroll
-
-## Content Layouts
-
-### ContentLayout
-
-Simple content layout with header and body.
-
-```tsx
-import { ContentLayout } from "@flipova/foundation";
-
-<ContentLayout
-  title="Page Title"
-  actions={<Button>Action</Button>}
->
-  <Content />
-</ContentLayout>
-```
-
-### SplitLayout
-
-Split screen layout with two panels.
-
-```tsx
-import { SplitLayout } from "@flipova/foundation";
-
-<SplitLayout
-  left={<LeftPanel />}
-  right={<RightPanel />}
-  ratio={0.3}
-/>
-```
-
-**Props:**
-- `left` - Left panel content
-- `right` - Right panel content
-- `ratio` - Split ratio (0-1)
-- `minWidth` - Minimum panel width
-
-### StackLayout
-
-Vertical stack layout with configurable spacing.
-
-```tsx
-import { StackLayout } from "@flipova/foundation";
-
-<StackLayout gap={4}>
-  <Section />
-  <Section />
-  <Section />
-</StackLayout>
-```
-
-## Grid Layouts
-
-### GridLayout
-
-Responsive grid layout with configurable columns.
-
-```tsx
-import { GridLayout } from "@flipova/foundation";
-
-<GridLayout columns={3} gap={4}>
-  <GridItem>Item 1</GridItem>
-  <GridItem>Item 2</GridItem>
-  <GridItem>Item 3</GridItem>
-  <GridItem>Item 4</GridItem>
-  <GridItem>Item 5</GridItem>
-  <GridItem>Item 6</GridItem>
-</GridLayout>
-```
-
-**Props:**
-- `columns` - Number of columns
-- `gap` - Gap between items
-- `responsive` - Responsive breakpoints
-
-### BentoLayout
-
-Bento grid layout for dashboard-style interfaces.
-
-```tsx
-import { BentoLayout } from "@flipova/foundation";
-
-<BentoLayout>
-  <BentoItem colSpan={2} rowSpan={1}>
-    Large Card
-  </BentoItem>
-  <BentoItem colSpan={1} rowSpan={1}>
-    Small Card
-  </BentoItem>
-  <BentoItem colSpan={1} rowSpan={2}>
-    Tall Card
-  </BentoItem>
-</BentoLayout>
-```
-
-**Features:**
-- Flexible grid system
-- Variable span sizes
-- Responsive behavior
-
-### MasonryLayout
-
-Masonry grid layout for variable-height items.
-
-```tsx
-import { MasonryLayout } from "@flipova/foundation";
-
-<MasonryLayout columns={2} gap={4}>
-  <MasonryItem height={200}>Content</MasonryItem>
-  <MasonryItem height={300}>Content</MasonryItem>
-  <MasonryItem height={250}>Content</MasonryItem>
-</MasonryLayout>
-```
-
-## Card Layouts
-
-### DeckLayout
-
-Stacked card layout for swipeable cards.
-
-```tsx
-import { DeckLayout } from "@flipova/foundation";
-
-<DeckLayout>
-  <Card>Card 1</Card>
-  <Card>Card 2</Card>
-  <Card>Card 3</Card>
-</DeckLayout>
-```
-
-**Features:**
-- Swipe gestures
-- Card stacking effect
-- Smooth animations
-
-### SwiperLayout
-
-Horizontal swipeable layout for cards.
-
-```tsx
-import { SwiperLayout } from "@flipova/foundation";
-
-<SwiperLayout>
-  <SwiperSlide>Slide 1</SwiperSlide>
-  <SwiperSlide>Slide 2</SwiperSlide>
-  <SwiperSlide>Slide 3</SwiperSlide>
-</SwiperLayout>
-```
-
-**Props:**
-- `autoplay` - Auto-scroll
-- `interval` - Scroll interval
-- `loop` - Loop slides
-
-### ParallaxLayout
-
-Parallax scrolling layout for immersive experiences.
-
-```tsx
-import { ParallaxLayout } from "@flipova/foundation";
-
-<ParallaxLayout>
-  <ParallaxSection speed={0.5}>
-    <HeroContent />
-  </ParallaxSection>
-  <ParallaxSection speed={0.2}>
-    <Content />
-  </ParallaxSection>
-</ParallaxLayout>
-```
-
-## Navigation Layouts
-
-### TabLayout
-
-Tab-based navigation layout.
-
-```tsx
-import { TabLayout } from "@flipova/foundation";
-
-<TabLayout
-  tabs={[
-    { id: "home", label: "Home", content: <HomeScreen /> },
-    { id: "profile", label: "Profile", content: <ProfileScreen /> },
-    { id: "settings", label: "Settings", content: <SettingsScreen /> },
-  ]}
-/>
-```
+---
 
 ### SidebarLayout
 
-Sidebar navigation layout.
+Simpler layout: content with a side panel, collapsible on mobile.
 
 ```tsx
-import { SidebarLayout } from "@flipova/foundation";
-
 <SidebarLayout
-  sidebar={<Sidebar />}
-  content={<MainContent />}
+  sidebar={<FilterPanel />}
+  sidebarWidth={280}
+  position="left"
   collapsible
+>
+  <ResultsList />
+</SidebarLayout>
+```
+
+---
+
+### SplitLayout
+
+Two-pane layout with a separator — email client style.
+
+```tsx
+<SplitLayout
+  left={<MessageList />}
+  right={<MessageDetail />}
+  leftWidth={320}
+  orientation="horizontal"
+  hideLeftOnMobile
 />
 ```
 
-**Features:**
-- Collapsible sidebar
-- Responsive behavior
-- Smooth transitions
+---
 
-### CrossTabLayout
+### GridLayout
 
-Cross-tab navigation for complex apps.
+Responsive CSS grid with configurable columns, gap, and optional item background.
 
 ```tsx
-import { CrossTabLayout } from "@flipova/foundation";
-
-<CrossTabLayout
-  tabs={["Overview", "Details", "History"]}
-  content={<Content />}
-/>
+<GridLayout columns={3} spacing={4} maxWidth={1200}>
+  {products.map(p => <ProductCard key={p.id} product={p} />)}
+</GridLayout>
 ```
 
-## Scroll Layouts
+---
 
-### ScrollLayout
+### FlexLayout
 
-Enhanced scroll layout with pull-to-refresh and infinite scroll.
+Flex container with direction, wrap, alignment, and optional max-width.
 
 ```tsx
-import { ScrollLayout } from "@flipova/foundation";
+<FlexLayout direction="row" wrap spacing={3} justify="space-between">
+  <Chip label="React Native" />
+  <Chip label="TypeScript" />
+  <Chip label="Expo" />
+</FlexLayout>
+```
 
-<ScrollLayout
-  onRefresh={handleRefresh}
-  onEndReached={loadMore}
+---
+
+### FooterLayout
+
+Keeps footer pinned at the bottom of the viewport.
+
+```tsx
+<FooterLayout
+  footer={<BottomNav />}
+  footerHeight={64}
+  sticky
 >
   <Content />
-</ScrollLayout>
+</FooterLayout>
 ```
 
-**Props:**
-- `onRefresh` - Pull-to-refresh handler
-- `onEndReached` - Infinite scroll handler
-- `refreshing` - Refresh state
+---
 
-### PullToRefreshLayout
+### ResponsiveLayout
 
-Dedicated pull-to-refresh layout.
+Adaptive layout with three modes: `basic`, `sidebar`, `full` (header + sidebar + content + footer).
 
 ```tsx
-import { PullToRefreshLayout } from "@flipova/foundation";
-
-<PullToRefreshLayout onRefresh={handleRefresh}>
-  <Content />
-</PullToRefreshLayout>
+<ResponsiveLayout
+  adaptiveMode="full"
+  header={<AppHeader />}
+  sidebar={<AppSidebar />}
+  content={<AppContent />}
+  footer={<AppFooter />}
+  sidebarWidth={240}
+  headerHeight={60}
+/>
 ```
 
-## Layout Patterns
+---
 
-### Responsive Dashboard
+## Pattern — App shell
 
 ```tsx
-import { DashboardLayout, GridLayout, BentoLayout } from "@flipova/foundation";
+import {
+  DashboardLayout,
+  Stack,
+  Inline,
+  Box,
+  Button,
+  Avatar,
+  Text,
+} from '@flipova/foundation/web';
 
-function Dashboard() {
+function Topbar() {
   return (
-    <DashboardLayout
-      sidebar={<Sidebar />}
-      header={<Header />}
-    >
-      <BentoLayout>
-        <BentoItem colSpan={2}>
-          <Chart />
-        </BentoItem>
-        <BentoItem>
-          <Stats />
-        </BentoItem>
-        <BentoItem colSpan={2}>
-          <Table />
-        </BentoItem>
-      </BentoLayout>
+    <Inline spacing={3} alignItems="center" justify="space-between" style={{ padding: '0 24px', height: 60 }}>
+      <Text fontSize={18} fontWeight="700">MyApp</Text>
+      <Inline spacing={2}>
+        <Button variant="ghost" size="sm">Settings</Button>
+        <Avatar initials="JD" size="sm" />
+      </Inline>
+    </Inline>
+  );
+}
+
+function Sidebar() {
+  return (
+    <Stack spacing={1} p={2}>
+      <Button variant="ghost" fullWidth>Dashboard</Button>
+      <Button variant="ghost" fullWidth>Users</Button>
+      <Button variant="ghost" fullWidth>Analytics</Button>
+    </Stack>
+  );
+}
+
+export default function App() {
+  return (
+    <DashboardLayout header={<Topbar />} sidebar={<Sidebar />} sidebarWidth={220}>
+      <Box p={5}>
+        <Text fontSize={24} fontWeight="700">Dashboard</Text>
+      </Box>
     </DashboardLayout>
   );
 }
 ```
 
-### E-commerce Product Grid
+---
+
+## useBreakpoint
+
+Responds to the active breakpoint:
 
 ```tsx
-import { ContentLayout, GridLayout } from "@flipova/foundation";
+import { useBreakpoint } from '@flipova/foundation/layout';
 
-function ProductList() {
-  return (
-    <ContentLayout title="Products">
-      <GridLayout columns={2} gap={4}>
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </GridLayout>
-    </ContentLayout>
-  );
+function Responsive() {
+  const bp = useBreakpoint(); // 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+
+  if (bp === 'xs' || bp === 'sm') return <MobileView />;
+  return <DesktopView />;
 }
 ```
-
-### Social Feed
-
-```tsx
-import { StackLayout, MasonryLayout } from "@flipova/foundation";
-
-function SocialFeed() {
-  return (
-    <StackLayout gap={4}>
-      <MasonryLayout columns={2} gap={4}>
-        {posts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </MasonryLayout>
-    </StackLayout>
-  );
-}
-```
-
-## Layout Hooks
-
-### useBreakpoint
-
-Hook for responsive breakpoints.
-
-```tsx
-import { useBreakpoint } from "@flipova/foundation/layout/hooks";
-
-function ResponsiveComponent() {
-  const breakpoint = useBreakpoint();
-  
-  return (
-    <Box>
-      {breakpoint === "sm" && <MobileView />}
-      {breakpoint === "md" && <TableView />}
-      {breakpoint === "lg" && <DesktopView />}
-    </Box>
-  );
-}
-```
-
-**Breakpoints:**
-- `sm` - Mobile (0-640px)
-- `md` - Tablet (641-1024px)
-- `lg` - Desktop (1025px+)
-
-### useResponsiveValue
-
-Hook for responsive values.
-
-```tsx
-import { useResponsiveValue } from "@flipova/foundation/layout/hooks";
-
-function ResponsivePadding() {
-  const padding = useResponsiveValue({
-    sm: 2,
-    md: 4,
-    lg: 6,
-  });
-  
-  return <Box p={padding}>Content</Box>;
-}
-```
-
-### usePlatformInfo
-
-Hook for platform information.
-
-```tsx
-import { usePlatformInfo } from "@flipova/foundation/layout/hooks";
-
-function PlatformComponent() {
-  const { platform, os } = usePlatformInfo();
-  
-  return <Text>Platform: {platform}, OS: {os}</Text>;
-}
-```
-
-## Best Practices
-
-### 1. Choose the Right Layout
-
-Select layouts based on your content structure:
-
-```tsx
-// Simple content → ContentLayout
-<ContentLayout title="About">
-  <AboutContent />
-</ContentLayout>
-
-// Dashboard → DashboardLayout
-<DashboardLayout sidebar={<Sidebar />}>
-  <DashboardContent />
-</DashboardLayout>
-
-// Grid content → GridLayout
-<GridLayout columns={3}>
-  <Item />
-</GridLayout>
-```
-
-### 2. Use Responsive Breakpoints
-
-Make layouts responsive using breakpoints:
-
-```tsx
-const columns = useResponsiveValue({
-  sm: 1,
-  md: 2,
-  lg: 3,
-});
-
-<GridLayout columns={columns}>
-  {items}
-</GridLayout>
-```
-
-### 3. Compose Layouts
-
-Combine layouts for complex interfaces:
-
-```tsx
-<DashboardLayout sidebar={<Sidebar />}>
-  <ContentLayout title="Analytics">
-    <BentoLayout>
-      {widgets}
-    </BentoLayout>
-  </ContentLayout>
-</DashboardLayout>
-```
-
-### 4. Optimize Performance
-
-Use memoization for layout children:
-
-```tsx
-const MemoizedSidebar = memo(Sidebar);
-
-<DashboardLayout sidebar={<MemoizedSidebar />}>
-  <Content />
-</DashboardLayout>
-```
-
-## Custom Layouts
-
-### Creating Custom Layouts
-
-Follow the pattern from CONTRIBUTING.md to add new layouts:
-
-1. Define in registry (`foundation/layout/registry/layouts.ts`)
-2. Implement the component (`foundation/layout/ui/layouts/`)
-3. Export from barrel
-4. Map in Studio
-5. Build & test
-
-See [Contributing Guide](/docs/contributing) for detailed instructions.
-
-### Layout Configuration
-
-Configure layout behavior in your config:
-
-```ts
-import { defineConfig } from "@flipova/foundation/config";
-
-export default defineConfig({
-  layouts: {
-    breakpoints: {
-      sm: 640,
-      md: 1024,
-      lg: 1280,
-    },
-    spacing: {
-      default: 4,
-    },
-  },
-});
-```
-
-## Layout Utilities
-
-### resolveLayoutPadding
-
-Utility for resolving layout padding.
-
-```tsx
-import { resolveLayoutPadding } from "@flipova/foundation/layout/utils";
-
-const padding = resolveLayoutPadding("md", theme);
-```
-
-### resolveBackground
-
-Utility for resolving background colors.
-
-```tsx
-import { resolveBackground } from "@flipova/foundation/layout/utils";
-
-const bg = resolveBackground("card", theme);
-```
-
-## Accessibility
-
-All layouts follow accessibility best practices:
-
-- **Semantic HTML** - Proper semantic structure
-- **Keyboard navigation** - Full keyboard support
-- **Screen reader** - Proper ARIA labels
-- **Focus management** - Logical focus order
-- **Touch targets** - Minimum 44px touch targets
-
-## Resources
-
-- [Components Guide](/docs/guides/components) - UI components
-- [Theming Guide](/docs/guides/theming) - Theme customization
-- [API Reference](/docs/api/intro) - Complete API documentation
-- [Contributing Guide](/docs/contributing) - How to add new layouts
