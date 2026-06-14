@@ -6,6 +6,8 @@ export default defineConfig({
     include: [
       "studio/**/*.test.ts",
       "studio/**/*.test.tsx",
+      "studio-v2/**/*.test.ts",
+      "studio-v2/**/*.test.tsx",
       "foundation/**/*.test.ts",
       "foundation/**/*.test.tsx",
     ],

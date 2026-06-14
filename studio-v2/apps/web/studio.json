@@ -1,0 +1,197 @@
+{
+  "id": "029bcc37-a51a-41d0-9efa-7346fe7c8ff7",
+  "name": "My App",
+  "slug": "my-app",
+  "version": "1.0.0",
+  "theme": "dark",
+  "pages": [
+    {
+      "id": "page_home",
+      "name": "Home",
+      "route": "home",
+      "root": {
+        "id": "root_home",
+        "kind": "layout",
+        "registryId": "RootLayout",
+        "props": {
+          "scrollable": true
+        },
+        "styles": {
+          "flex": 1,
+          "height": 20
+        },
+        "children": [
+          {
+            "id": "us0sdq6",
+            "kind": "layout",
+            "registryId": "AuthLayout",
+            "props": {
+              "borderRadius": "none",
+              "spacing": 0,
+              "brandingRatio": 0.5,
+              "padding": 5,
+              "shadowed": true,
+              "formMaxWidth": 520,
+              "formScrollPaddingY": 8,
+              "formScrollPaddingX": 4
+            },
+            "styles": {
+              "flex": 1
+            },
+            "children": [
+              {
+                "id": "jejlj5d",
+                "kind": "block",
+                "registryId": "AuthFormBlock",
+                "props": {
+                  "mode": "login",
+                  "showRemember": true,
+                  "showForgot": true,
+                  "spacing": 4,
+                  "borderRadius": "xl",
+                  "padding": 5,
+                  "buttonVariant": "primary",
+                  "inputVariant": "outlined",
+                  "submitLabel": "Sign In",
+                  "forgotLabel": "Forgot password?"
+                },
+                "styles": {
+                  "flex": 1
+                },
+                "children": []
+              }
+            ]
+          }
+        ],
+        "events": {
+          "onAppLoad": []
+        }
+      },
+      "createdAt": "2026-06-13T19:00:58.228Z",
+      "updatedAt": "2026-06-14T12:04:56.276Z"
+    },
+    {
+      "id": "page_9klh8t6",
+      "name": "Explorer",
+      "route": "explorer",
+      "root": {
+        "id": "root_lb2b7lz",
+        "kind": "layout",
+        "registryId": "RootLayout",
+        "props": {
+          "scrollable": true
+        },
+        "styles": {
+          "flex": 1
+        },
+        "children": [
+          {
+            "id": "p6sxml9",
+            "kind": "component",
+            "registryId": "Button",
+            "props": {
+              "label": "Button",
+              "variant": "primary",
+              "size": "md",
+              "disabled": false,
+              "loading": false,
+              "fullWidth": false,
+              "borderRadius": "md",
+              "iconPosition": "left"
+            },
+            "styles": {
+              "flex": 1
+            },
+            "children": [],
+            "variant": "primary"
+          }
+        ],
+        "events": {
+          "onAppLoad": [],
+          "onScreenFocus": [
+            {
+              "type": "consoleLog",
+              "payload": {
+                "message": "hey"
+              }
+            }
+          ]
+        }
+      },
+      "createdAt": "2026-06-13T22:06:56.002Z",
+      "updatedAt": "2026-06-14T13:29:57.844Z"
+    }
+  ],
+  "services": [
+    {
+      "id": "jsonplaceholder",
+      "type": "rest",
+      "name": "JSONPlaceholder (Demo)",
+      "config": {
+        "baseUrl": "https://jsonplaceholder.typicode.com"
+      }
+    }
+  ],
+  "navigation": {
+    "type": "stack",
+    "screens": [
+      {
+        "pageId": "page_home",
+        "name": "Home",
+        "route": "home",
+        "icon": "home",
+        "options": {
+          "headerShown": false
+        }
+      },
+      {
+        "name": "Explorer",
+        "pageId": "page_9klh8t6",
+        "route": "explorer",
+        "icon": "search",
+        "options": {
+          "headerShown": false
+        }
+      }
+    ]
+  },
+  "screenGroups": [
+    {
+      "id": "grp_1781388178977",
+      "name": "(tabs)",
+      "type": "tabs",
+      "screenIds": [
+        "page_home",
+        "page_9klh8t6"
+      ],
+      "requireAuth": true,
+      "redirectTo": "page_home"
+    }
+  ],
+  "statusBar": {
+    "style": "auto",
+    "hidden": false,
+    "translucent": false,
+    "backgroundColor": "$color.black"
+  },
+  "auth": {
+    "enabled": false,
+    "provider": "supabase"
+  },
+  "tabBarConfig": {
+    "showLabels": true,
+    "backgroundColor": "$theme.background"
+  },
+  "queries": [
+    {
+      "id": "q_1781391677541",
+      "name": "getusers",
+      "serviceId": "jsonplaceholder",
+      "method": "GET",
+      "path": "/users",
+      "autoFetch": true,
+      "alias": "getusers"
+    }
+  ],
+  "globalState": []
+}

@@ -18,9 +18,13 @@
     "paths": {
       "@/*": ["./foundation/*"],
       "@flipova/foundation": ["./foundation/index.ts"],
-      "@flipova/foundation/*": ["./foundation/*"]
+      "@flipova/foundation/*": ["./foundation/*"],
+      "@flipova/studio-core": ["./studio-v2/packages/core/src/index.ts"],
+      "@flipova/studio-core/*": ["./studio-v2/packages/core/src/*"],
+      "@flipova/studio-engine": ["./studio-v2/packages/engine/src/index.ts"],
+      "@flipova/studio-engine/*": ["./studio-v2/packages/engine/src/*"]
     }
   },
-  "include": ["foundation", "studio"],
+  "include": ["foundation", "studio", "studio-v2/cli", "studio-v2/packages/*/src"],
   "exclude": ["node_modules", "dist", "studio/web", "**/*.example.ts"]
 }

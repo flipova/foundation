@@ -1,0 +1,11 @@
+{
+  "name": "@flipova/studio-v2",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Flipova Studio V2 — Visual App Builder (monorepo sub-project of foundation)",
+  "scripts": {
+    "dev": "cd apps/web && npx expo start --web --port 4202",
+    "build": "npm run build:packages && cd apps/web && npx expo export --platform web --output-dir dist",
+    "build:packages": "cd packages/core && npx tsup && cd ../engine && npx tsup"
+  }
+}

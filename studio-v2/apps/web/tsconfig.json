@@ -1,0 +1,56 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/assets/*": [
+        "./assets/*"
+      ],
+      "@flipova/foundation": [
+        "../../../foundation"
+      ],
+      "@flipova/foundation/*": [
+        "../../../foundation/*"
+      ],
+      "@flipova/studio-core": [
+        "../../packages/core/src/index.ts"
+      ],
+      "@flipova/studio-core/*": [
+        "../../packages/core/src/*"
+      ],
+      "@flipova/studio-engine": [
+        "../../packages/engine/src/index.ts"
+      ],
+      "@flipova/studio-engine/*": [
+        "../../packages/engine/src/*"
+      ],
+      "zustand": [
+        "../../../node_modules/zustand"
+      ],
+      "zustand/*": [
+        "../../../node_modules/zustand/*"
+      ],
+      "immer": [
+        "../../../node_modules/immer"
+      ],
+      "immer/*": [
+        "../../../node_modules/immer/*"
+      ]
+    }
+  },
+  "include": [
+    "App.tsx",
+    "src",
+    "expo-env.d.ts",
+    ".expo/types/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/__tests__/*",
+    "src/components/app-tabs.web.tsx"
+  ]
+}
