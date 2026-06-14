@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Flipova - Foundation Studio 2",
+    "slug": "flipova-studio-v2",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "web": {
+      "output": "static",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

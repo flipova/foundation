@@ -1,0 +1,30 @@
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "main": "App.tsx",
+  "repository": "https://github.com/flipova/foundation",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~53.0.0",
+    "react": "^19.0.0",
+    "react-native": "~0.79.0",
+    "@react-navigation/native": "^7.0.0",
+    "@react-navigation/stack": "^7.0.0",
+    "react-native-safe-area-context": "~5.4.0",
+    "react-native-screens": "~4.0.0",
+    "react-native-gesture-handler": "~2.20.0",
+    "expo-linear-gradient": "~14.0.0",
+    "expo-haptics": "~14.0.0",
+    "expo-router": "~4.0.0",
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "~2.1.0",
+    "@flipova/foundation": "latest",
+    "expo-constants": "~17.0.0",
+    "@react-navigation/bottom-tabs": "^7.0.0"
+  }
+}

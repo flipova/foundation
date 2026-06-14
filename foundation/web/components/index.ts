@@ -7,9 +7,13 @@ export type { ButtonProps } from "./Button";
 
 export { default as TextInput } from "./TextInput";
 export type { TextInputProps } from "./TextInput";
+export { default as Input } from "./TextInput"; // Alias for flipova.site
 
 export { default as TextArea } from "./TextArea";
 export type { TextAreaProps } from "./TextArea";
+export { default as Textarea } from "./TextArea"; // Alias for flipova.site
+
+export { default as Label } from "./Text"; // Alias for flipova.site
 
 export { default as Badge } from "./Badge";
 export type { BadgeProps } from "./Badge";

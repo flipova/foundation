@@ -31,6 +31,8 @@ export * from "./layouts";
 export * from "../tokens";
 
 // Theme (platform-agnostic — React context)
+// NOTE: With platform:"browser" in tsup, esbuild auto-resolves useColorScheme.web.ts
+// instead of useColorScheme.ts, so react-native never leaks into the web bundle.
 export * from "../theme";
 
 // Config (platform-agnostic)
