@@ -5,6 +5,7 @@
   "author": "Flipova",
   "license": "MIT",
   "workspaces": [
+    ".",
     "studio-v2/packages/*",
     "studio-v2/apps/*"
   ],
