@@ -1,51 +1,249 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Flipova Foundation — Docusaurus custom styles
+ * Brand: #000091 (primary blue)
+ * Typography: Lexend
  */
 
-/* Import Lexend font */
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap');
 
-/* You can override the default Infima variables here. */
+/* ── Variables ─────────────────────────────────────────────────────────────── */
 :root {
-  /* Flipova brand colors */
-  --ifm-color-primary: #000091;
-  --ifm-color-primary-dark: #000078;
-  --ifm-color-primary-darker: #00006f;
-  --ifm-color-primary-darkest: #000056;
-  --ifm-color-primary-light: #0000aa;
-  --ifm-color-primary-lighter: #0000b3;
+  /* Brand */
+  --ifm-color-primary:          #000091;
+  --ifm-color-primary-dark:     #000082;
+  --ifm-color-primary-darker:   #00007a;
+  --ifm-color-primary-darkest:  #000064;
+  --ifm-color-primary-light:    #0000a6;
+  --ifm-color-primary-lighter:  #0000b3;
   --ifm-color-primary-lightest: #0000cc;
-  
-  /* Black and white only */
-  --ifm-color-content: #000000;
-  --ifm-color-content-secondary: #333333;
-  --ifm-background-color: #ffffff;
-  --ifm-background-surface-color: #ffffff;
-  
+
+  /* Surfaces */
+  --ifm-background-color:         #ffffff;
+  --ifm-background-surface-color: #f8f8fc;
+  --ifm-color-content:            #111827;
+  --ifm-color-content-secondary:  #4b5563;
+
   /* Typography */
-  --ifm-font-family-base: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 145, 0.1);
+  --ifm-font-family-base:   'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-size-base:     16px;
+  --ifm-line-height-base:   1.65;
+  --ifm-code-font-size:     90%;
+
+  /* Borders */
+  --ifm-global-radius:      8px;
+  --ifm-card-border-radius: 12px;
+
+  /* Navbar */
+  --ifm-navbar-height:          60px;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-navbar-shadow:           0 1px 0 0 #e5e7eb;
+
+  /* Sidebar */
+  --doc-sidebar-width:        272px;
+  --ifm-sidebar-background:   #f8f8fc;
+
+  /* Code highlight */
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 145, 0.07);
+
+  /* Custom */
+  --flipova-gradient: linear-gradient(135deg, #000091 0%, #4040cc 100%);
+  --flipova-glow:     0 0 40px rgba(0, 0, 145, 0.15);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  /* Flipova brand colors in dark mode */
-  --ifm-color-primary: #0000cc;
-  --ifm-color-primary-dark: #0000b3;
-  --ifm-color-primary-darker: #0000aa;
-  --ifm-color-primary-darkest: #000091;
-  --ifm-color-primary-light: #0000e5;
-  --ifm-color-primary-lighter: #0000ee;
-  --ifm-color-primary-lightest: #0000ff;
-  
-  /* Black and white only */
-  --ifm-color-content: #ffffff;
-  --ifm-color-content-secondary: #cccccc;
-  --ifm-background-color: #000000;
-  --ifm-background-surface-color: #000000;
-  
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 145, 0.3);
+  --ifm-color-primary:          #5555ff;
+  --ifm-color-primary-dark:     #4444ee;
+  --ifm-color-primary-darker:   #3333dd;
+  --ifm-color-primary-darkest:  #2222bb;
+  --ifm-color-primary-light:    #7777ff;
+  --ifm-color-primary-lighter:  #8888ff;
+  --ifm-color-primary-lightest: #aaaaff;
+
+  --ifm-background-color:         #0d0d1a;
+  --ifm-background-surface-color: #13131f;
+  --ifm-color-content:            #f0f0ff;
+  --ifm-color-content-secondary:  #a0a0c0;
+
+  --ifm-navbar-background-color:  #0d0d1a;
+  --ifm-navbar-shadow:            0 1px 0 0 #1e1e3a;
+  --ifm-sidebar-background:       #0d0d1a;
+
+  --docusaurus-highlighted-code-line-bg: rgba(85, 85, 255, 0.15);
+  --flipova-gradient: linear-gradient(135deg, #3333cc 0%, #6666ff 100%);
+  --flipova-glow:     0 0 60px rgba(85, 85, 255, 0.2);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+
+body {
+  font-feature-settings: 'kern', 'liga', 'clig', 'calt';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Navbar ────────────────────────────────────────────────────────────────── */
+
+.navbar {
+  border-bottom: 1px solid var(--ifm-navbar-shadow);
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.navbar__brand {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.navbar__logo {
+  height: 28px;
+  margin-right: 8px;
+}
+
+/* ── Sidebar ───────────────────────────────────────────────────────────────── */
+
+.theme-doc-sidebar-container {
+  background: var(--ifm-sidebar-background);
+  border-right: 1px solid var(--ifm-toc-border-color);
+}
+
+.menu__link {
+  font-size: 0.875rem;
+  font-weight: 400;
+  border-radius: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.menu__link--active {
+  font-weight: 600;
+}
+
+/* ── TOC ───────────────────────────────────────────────────────────────────── */
+
+.table-of-contents__link {
+  font-size: 0.8125rem;
+}
+
+.table-of-contents__link--active {
+  color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+/* ── Code blocks ───────────────────────────────────────────────────────────── */
+
+.prism-code {
+  font-size: 0.875rem;
+  border-radius: 10px;
+}
+
+code {
+  border-radius: 4px;
+  font-size: 0.875em;
+  padding: 2px 6px;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* ── Admonitions (callouts) ────────────────────────────────────────────────── */
+
+.admonition {
+  border-radius: 10px;
+  border-left-width: 4px;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────────── */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+table th {
+  background: var(--ifm-background-surface-color);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 10px 14px;
+}
+
+table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────────── */
+
+h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ifm-toc-border-color);
+}
+
+h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 1rem;
+}
+
+h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+/* ── Pagination ────────────────────────────────────────────────────────────── */
+
+.pagination-nav__link {
+  border-radius: 10px;
+  border: 1px solid var(--ifm-toc-border-color);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: var(--flipova-glow);
+}
+
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+
+.footer {
+  border-top: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+}
+
+.footer--dark {
+  background: #07071a;
+}
+
+/* ── Badges / tags ─────────────────────────────────────────────────────────── */
+
+.badge--primary {
+  background: var(--ifm-color-primary);
+  color: white;
+}
+
+/* ── Doc article ────────────────────────────────────────────────────────────── */
+
+article .markdown {
+  max-width: 760px;
 }

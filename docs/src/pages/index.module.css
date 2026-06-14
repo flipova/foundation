@@ -1,118 +1,371 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
+/* ── Hero ────────────────────────────────────────────────────────────────── */
 
 .hero {
-  background: linear-gradient(135deg, #f9fafb 0%, #e6e6ff 100%);
-  padding: 6rem 0;
+  padding: 7rem 0 5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
+  background: #fff;
+}
+
+[data-theme='dark'] .hero {
+  background: #0d0d1a;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,0,145,0.08) 0%, transparent 70%);
+}
+
+[data-theme='dark'] .heroBg {
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(85,85,255,0.12) 0%, transparent 70%);
 }
 
 .heroContent {
+  position: relative;
   max-width: 800px;
   margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,145,0.08);
+  color: #000091;
+  border: 1px solid rgba(0,0,145,0.15);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+[data-theme='dark'] .heroEyebrow {
+  background: rgba(85,85,255,0.12);
+  color: #8888ff;
+  border-color: rgba(85,85,255,0.2);
 }
 
 .heroTitle {
-  font-size: 3.5rem;
+  font-size: 3.75rem;
   font-weight: 800;
-  margin-bottom: 1.5rem;
   line-height: 1.1;
-  color: #1a1a2e;
+  letter-spacing: -0.04em;
+  color: #111827;
+  margin: 0 0 1.25rem;
+}
+
+[data-theme='dark'] .heroTitle {
+  color: #f0f0ff;
 }
 
 .gradientText {
-  background: linear-gradient(135deg, #000091 0%, #4040ff 100%);
+  background: linear-gradient(135deg, #000091 0%, #4040cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-theme='dark'] .gradientText {
+  background: linear-gradient(135deg, #7777ff 0%, #aaaaff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .heroSubtitle {
-  font-size: 1.25rem;
-  color: #6b7280;
-  margin-bottom: 2.5rem;
-  line-height: 1.7;
+  font-size: 1.1875rem;
+  color: #4b5563;
+  line-height: 1.75;
+  margin: 0 0 2.5rem;
+}
+
+[data-theme='dark'] .heroSubtitle {
+  color: #a0a0c0;
 }
 
 .heroButtons {
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  gap: 0.75rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
+.heroButtons :global(.button--primary) {
+  background: #000091;
+  border-color: #000091;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+.heroButtons :global(.button--primary):hover {
+  background: #000082;
+  border-color: #000082;
+}
+
+.heroButtons :global(.button--secondary) {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+.heroInstall {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.heroInstallCode {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.875rem;
+  color: #111827;
+  letter-spacing: 0;
+}
+
+[data-theme='dark'] .heroInstallCode {
+  background: #1a1a2e;
+  border-color: #2a2a45;
+  color: #f0f0ff;
+}
+
+/* ── Features ────────────────────────────────────────────────────────────── */
+
 .features {
   padding: 5rem 0;
-  background: #ffffff;
+  background: #f8f8fc;
 }
 
-.featuresGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+[data-theme='dark'] .features {
+  background: #0d0d1a;
 }
 
-.feature {
-  padding: 2rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
-  transition: all 0.3s;
-}
-
-.feature:hover {
-  border-color: #000091;
-  box-shadow: 0 4px 12px rgba(0, 0, 145, 0.1);
-  transform: translateY(-4px);
-}
-
-.featureTitle {
-  font-size: 1.5rem;
+.sectionLabel {
+  text-align: center;
+  font-size: 0.8125rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: #000091;
   margin-bottom: 0.75rem;
 }
 
+[data-theme='dark'] .sectionLabel {
+  color: #7777ff;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+[data-theme='dark'] .sectionTitle {
+  color: #f0f0ff;
+}
+
+.sectionSubtitle {
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.0625rem;
+  max-width: 520px;
+  margin: 0 auto 3rem;
+  line-height: 1.65;
+}
+
+[data-theme='dark'] .sectionSubtitle {
+  color: #a0a0c0;
+}
+
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.feature {
+  padding: 1.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+[data-theme='dark'] .feature {
+  background: #13131f;
+  border-color: #1e1e3a;
+}
+
+.feature:hover {
+  border-color: rgba(0,0,145,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,145,0.08);
+  transform: translateY(-3px);
+}
+
+[data-theme='dark'] .feature:hover {
+  border-color: rgba(85,85,255,0.3);
+  box-shadow: 0 4px 24px rgba(85,85,255,0.12);
+}
+
+.featureIcon {
+  font-size: 1.75rem;
+  margin-bottom: 0.875rem;
+  display: block;
+  line-height: 1;
+}
+
+.featureTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.5rem;
+}
+
+[data-theme='dark'] .featureTitle {
+  color: #f0f0ff;
+}
+
 .featureDescription {
   color: #6b7280;
+  font-size: 0.9rem;
   line-height: 1.6;
   margin: 0;
 }
 
-@media screen and (max-width: 996px) {
-  .hero {
-    padding: 4rem 0;
-  }
-
-  .heroTitle {
-    font-size: 2.5rem;
-  }
-
-  .heroSubtitle {
-    font-size: 1.1rem;
-  }
-
-  .featuresGrid {
-    grid-template-columns: 1fr;
-  }
+[data-theme='dark'] .featureDescription {
+  color: #a0a0c0;
 }
 
-@media screen and (max-width: 480px) {
-  .heroTitle {
-    font-size: 2rem;
-  }
+/* ── Modules ─────────────────────────────────────────────────────────────── */
 
-  .heroButtons {
-    flex-direction: column;
-  }
+.modules {
+  padding: 5rem 0;
+  background: #fff;
+}
 
-  .feature {
-    padding: 1.5rem;
-  }
+[data-theme='dark'] .modules {
+  background: #0d0d1a;
+}
+
+.modulesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.moduleCard {
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8f8fc;
+}
+
+[data-theme='dark'] .moduleCard {
+  background: #13131f;
+  border-color: #1e1e3a;
+}
+
+.moduleImport {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #000091;
+  background: rgba(0,0,145,0.06);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+[data-theme='dark'] .moduleImport {
+  color: #8888ff;
+  background: rgba(85,85,255,0.1);
+}
+
+.moduleTitle {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0.5rem 0 0.375rem;
+}
+
+[data-theme='dark'] .moduleTitle {
+  color: #f0f0ff;
+}
+
+.moduleDesc {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+[data-theme='dark'] .moduleDesc {
+  color: #a0a0c0;
+}
+
+/* ── CTA ─────────────────────────────────────────────────────────────────── */
+
+.cta {
+  padding: 5rem 0;
+  background: #000091;
+  text-align: center;
+}
+
+.ctaTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 1rem;
+  letter-spacing: -0.03em;
+}
+
+.ctaSubtitle {
+  color: rgba(255,255,255,0.75);
+  font-size: 1.0625rem;
+  margin: 0 0 2rem;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ctaButtons :global(.button) {
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 996px) {
+  .heroTitle { font-size: 2.75rem; }
+  .heroSubtitle { font-size: 1rem; }
+  .features { padding: 3.5rem 0; }
+}
+
+@media (max-width: 600px) {
+  .heroTitle { font-size: 2.125rem; }
+  .hero { padding: 4rem 0 3rem; }
+  .heroButtons { flex-direction: column; align-items: center; }
+  .ctaButtons { flex-direction: column; align-items: center; }
 }
