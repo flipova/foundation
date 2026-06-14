@@ -14,5 +14,9 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@flipova/studio-core": "*",
+    "@flipova/foundation": "*"
   }
 }
