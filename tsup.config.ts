@@ -1,50 +1,49 @@
 import { defineConfig } from "tsup";
 
+// Shared external deps for all builds
+const sharedExternal = [
+  "react",
+  "react-dom",
+  "react-native",
+  "@expo/vector-icons",
+  "expo-linear-gradient",
+  "expo-haptics",
+  "expo-status-bar",
+  "expo-navigation-bar",
+  "expo-camera",
+  "react-native-gesture-handler",
+  "react-native-reanimated",
+  "react-native-safe-area-context",
+  "lucide-react-native",
+  "express",
+  "ws",
+];
+
 export default defineConfig([
-  // ── Foundation library — platform-agnostic entries ─────────────────────────
+  // ── Platform-agnostic entries (React Native + shared) ──────────────────────
   {
     entry: {
-      index: "foundation/index.ts",
-      "tokens/index": "foundation/tokens/index.ts",
-      "theme/index": "foundation/theme/index.ts",
-      "layout/index": "foundation/layout/index.ts",
-      "config/index": "foundation/config/index.ts",
+      index:           "foundation/index.ts",
+      "tokens/index":  "foundation/tokens/index.ts",
+      "theme/index":   "foundation/theme/index.ts",
+      "layout/index":  "foundation/layout/index.ts",
+      "config/index":  "foundation/config/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
     sourcemap: true,
     clean: true,
-    treeshake: {
-      preset: "recommended",
-      moduleSideEffects: false,
-    },
+    treeshake: { preset: "recommended", moduleSideEffects: false },
     splitting: true,
     minify: false,
-    external: [
-      "react",
-      "react-dom",
-      "react-native",
-      "@expo/vector-icons",
-      "expo-linear-gradient",
-      "expo-haptics",
-      "expo-status-bar",
-      "expo-navigation-bar",
-      "expo-camera",
-      "react-native-gesture-handler",
-      "react-native-reanimated",
-      "react-native-safe-area-context",
-      "lucide-react-native",
-      "express",
-      "ws",
-    ],
+    external: sharedExternal,
     outDir: "dist",
   },
 
-  // ── Foundation library — web entry (browser platform, no react-native) ──────
+  // ── Web entry — platform:"browser" so esbuild resolves *.web.ts first ──────
   //
-  // Building web/index.ts with platform:"browser" causes esbuild to resolve
-  // *.web.ts files before *.ts, so useColorScheme.web.ts wins over the RN version
-  // and react-native is never referenced in the web bundle.
+  // With platform:"browser", esbuild resolves useColorScheme.web.ts before
+  // useColorScheme.ts, so react-native is never imported in the web bundle.
   {
     entry: {
       "web/index": "foundation/web/index.ts",
@@ -53,35 +52,16 @@ export default defineConfig([
     dts: true,
     sourcemap: true,
     clean: false,
-    treeshake: {
-      preset: "recommended",
-      moduleSideEffects: false,
-    },
+    treeshake: { preset: "recommended", moduleSideEffects: false },
     splitting: true,
     minify: false,
     platform: "browser",
-    external: [
-      "react",
-      "react-dom",
-      // react-native is intentionally NOT listed here — it should not be imported
-      // at all in the web bundle. If it leaks through, the build will fail loudly.
-      "@expo/vector-icons",
-      "expo-linear-gradient",
-      "expo-haptics",
-      "expo-status-bar",
-      "expo-navigation-bar",
-      "expo-camera",
-      "react-native-gesture-handler",
-      "react-native-reanimated",
-      "react-native-safe-area-context",
-      "lucide-react-native",
-      "express",
-      "ws",
-    ],
+    // react-native intentionally absent — if it leaks through, the build fails loudly
+    external: sharedExternal.filter((e) => e !== "react-native"),
     outDir: "dist",
   },
 
-  // ── Studio V2 CLI (bin: flipova-studio) ────────────────────────────────────
+  // ── Studio CLI ─────────────────────────────────────────────────────────────
   {
     entry: {
       "studio-v2/cli/index": "studio-v2/cli/index.ts",
