@@ -37,6 +37,11 @@
       "import": "./dist/web/index.mjs",
       "require": "./dist/web/index.js"
     },
+    "./sso": {
+      "types": "./dist/sso/index.d.ts",
+      "import": "./dist/sso/index.mjs",
+      "require": "./dist/sso/index.js"
+    },
     "./layout": {
       "types": "./dist/layout/index.d.ts",
       "import": "./dist/layout/index.mjs",
@@ -68,10 +73,8 @@
   "scripts": {
     "build": "npm run build:foundation && npm run build:studio-v2",
     "build:foundation": "tsup",
-    "build:studio": "cd studio/app && npx expo export --platform web --output-dir dist",
     "build:studio-v2": "cd studio-v2/apps/web && npx expo export --platform web --output-dir dist",
     "dev": "tsup --watch",
-    "dev:studio": "cd studio/app && npx expo start --web --port 4201",
     "dev:studio-v2": "cd studio-v2/apps/web && npx expo start --web --port 4202",
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
