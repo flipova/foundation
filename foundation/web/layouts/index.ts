@@ -14,6 +14,9 @@ export type { AuthLayoutProps } from "./AuthLayout";
 export { default as DashboardLayout } from "./DashboardLayout";
 export type { DashboardLayoutProps } from "./DashboardLayout";
 
+export { default as BentoLayout } from "../../layout/ui/BentoLayout";
+export type { BentoLayoutProps, BentoCellConfig } from "../../layout/ui/BentoLayout";
+
 export { default as SidebarLayout } from "./SidebarLayout";
 export type { SidebarLayoutProps } from "./SidebarLayout";
 
