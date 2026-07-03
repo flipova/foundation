@@ -125,3 +125,10 @@ export const primitiveRegistry: PrimitiveMeta[] = [
     ],
   },
 ];
+
+export type FlexDirection = "row" | "column" | "row-reverse" | "column-reverse";
+export type FlexAlignItems = "stretch" | "flex-start" | "flex-end" | "center" | "baseline";
+export type FlexJustifyContent = "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly";
+export type GradientDirection = "toTop" | "toBottom" | "toLeft" | "toRight" | "toTopLeft" | "toTopRight" | "toBottomLeft" | "toBottomRight";
+export type ScrollDirection = "vertical" | "horizontal" | "both";
+export type DividerOrientation = "horizontal" | "vertical";

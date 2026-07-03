@@ -812,3 +812,6 @@ export const layoutRegistry = [
     ],
   },
 ] as const satisfies readonly LayoutMeta[];
+
+export type SidebarPosition = "left" | "right";
+

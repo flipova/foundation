@@ -712,3 +712,7 @@ export const componentRegistry = [
     ],
   },
 ] as const satisfies readonly ComponentMeta[];
+
+export type IconPosition = "left" | "right";
+export type AccordionType = "single" | "multiple";
+
