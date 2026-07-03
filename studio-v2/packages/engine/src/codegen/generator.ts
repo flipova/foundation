@@ -14,7 +14,7 @@
  */
 
 import { type TreeNode, type PageDocument, type ActionDef, type PageState, type AnimationConfig, type DataQuery, deriveSlotConfig, type SlotConfig, resolveForCodegen, resolveForResponse } from "@flipova/studio-core";
-import { getLayoutMeta, getBlockMeta } from "@flipova/foundation/layout";
+import { getLayoutMeta, getBlockMeta } from "@flipova/foundation";
 import { deriveScreenNames, capitalize, normalizeQueryName } from "./naming";
 
 // ---------------------------------------------------------------------------

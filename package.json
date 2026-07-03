@@ -32,20 +32,20 @@
       "import": "./dist/theme/index.mjs",
       "require": "./dist/theme/index.js"
     },
-    "./web": {
-      "types": "./dist/web/index.d.ts",
-      "import": "./dist/web/index.mjs",
-      "require": "./dist/web/index.js"
+    "./registry": {
+      "types": "./dist/registry/index.d.ts",
+      "import": "./dist/registry/index.mjs",
+      "require": "./dist/registry/index.js"
     },
-    "./sso": {
-      "types": "./dist/sso/index.d.ts",
-      "import": "./dist/sso/index.mjs",
-      "require": "./dist/sso/index.js"
+    "./ui": {
+      "types": "./dist/ui/index.d.ts",
+      "import": "./dist/ui/index.mjs",
+      "require": "./dist/ui/index.js"
     },
-    "./layout": {
-      "types": "./dist/layout/index.d.ts",
-      "import": "./dist/layout/index.mjs",
-      "require": "./dist/layout/index.js"
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.mjs",
+      "require": "./dist/types/index.js"
     },
     "./config": {
       "types": "./dist/config/index.d.ts",
