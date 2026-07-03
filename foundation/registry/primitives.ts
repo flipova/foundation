@@ -13,13 +13,14 @@ export interface PrimitiveMeta {
   tags: string[];
   props: { name: string; label: string; type: string; group: string; default?: any; options?: string[]; description?: string }[];
   slots?: { name: string; label: string; required: boolean }[];
+  enumMap?: Record<string, readonly string[]>;
 }
 
 export function getPrimitiveMeta(id: string): PrimitiveMeta | undefined {
   return primitiveRegistry.find(m => m.id === id);
 }
 
-export const primitiveRegistry: PrimitiveMeta[] = [
+export const primitiveRegistry = [
   {
     id: "Box",
     label: "Box",
@@ -27,6 +28,12 @@ export const primitiveRegistry: PrimitiveMeta[] = [
     category: "primitive",
     tags: ["box", "container", "view", "div"],
     slots: [{ name: "children", label: "Content", required: false }],
+    enumMap: {
+      FlexDirection: ["row", "column", "row-reverse", "column-reverse"],
+      FlexAlignItems: ["stretch", "flex-start", "flex-end", "center", "baseline"],
+      FlexJustifyContent: ["flex-start", "flex-end", "center", "space-between", "space-around", "space-evenly"],
+      GradientDirection: ["toTop", "toBottom", "toLeft", "toRight", "toTopLeft", "toTopRight", "toBottomLeft", "toBottomRight"],
+    },
     props: [
       { name: "flex",           label: "Flex",           type: "number",  group: "layout" },
       { name: "bg",             label: "Background",     type: "color",   group: "style" },
@@ -102,6 +109,9 @@ export const primitiveRegistry: PrimitiveMeta[] = [
     description: "Scrollable container.",
     category: "primitive",
     tags: ["scroll", "scrollview", "overflow"],
+    enumMap: {
+      ScrollDirection: ["vertical", "horizontal", "both"],
+    },
     slots: [{ name: "children", label: "Content", required: false }],
     props: [
       { name: "horizontal",          label: "Horizontal",          type: "boolean", group: "layout", default: false },
@@ -117,6 +127,9 @@ export const primitiveRegistry: PrimitiveMeta[] = [
     description: "Horizontal or vertical divider line.",
     category: "primitive",
     tags: ["divider", "separator", "line", "hr"],
+    enumMap: {
+      DividerOrientation: ["horizontal", "vertical"],
+    },
     props: [
       { name: "vertical",  label: "Vertical",  type: "boolean", group: "layout", default: false },
       { name: "color",     label: "Color",     type: "color",   group: "style" },
@@ -124,11 +137,5 @@ export const primitiveRegistry: PrimitiveMeta[] = [
       { name: "spacing",   label: "Spacing",   type: "spacing", group: "layout" },
     ],
   },
-];
+] as const satisfies readonly PrimitiveMeta[];
 
-export type FlexDirection = "row" | "column" | "row-reverse" | "column-reverse";
-export type FlexAlignItems = "stretch" | "flex-start" | "flex-end" | "center" | "baseline";
-export type FlexJustifyContent = "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly";
-export type GradientDirection = "toTop" | "toBottom" | "toLeft" | "toRight" | "toTopLeft" | "toTopRight" | "toBottomLeft" | "toBottomRight";
-export type ScrollDirection = "vertical" | "horizontal" | "both";
-export type DividerOrientation = "horizontal" | "vertical";

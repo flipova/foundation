@@ -54,6 +54,9 @@ export const componentRegistry = [
         overrides: { bg: undefined, color: undefined, borderWidth: 0 },
       },
     ],
+    enumMap: {
+      IconPosition: ["left", "right"],
+    },
     props: [
       { name: "label",         label: "Label",         type: "string",  group: "content",  default: "Button" },
       { name: "variant",      label: "Variant",       type: "enum",    group: "style",    default: "primary", options: ["primary", "secondary", "outline", "ghost", "destructive"] },
@@ -651,6 +654,9 @@ export const componentRegistry = [
     category: "display",
     tags: ["accordion", "collapse", "expand", "faq"],
     themeMapping: { bg: "card", text: "foreground", border: "border" },
+    enumMap: {
+      AccordionType: ["single", "multiple"],
+    },
     sizes: [],
     variants: [],
     props: [
@@ -712,7 +718,3 @@ export const componentRegistry = [
     ],
   },
 ] as const satisfies readonly ComponentMeta[];
-
-export type IconPosition = "left" | "right";
-export type AccordionType = "single" | "multiple";
-

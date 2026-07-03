@@ -6,8 +6,19 @@
  */
 
 export { applyDefaults, applyVariant, extractDefaults, getConstants, resolveThemeDefaults } from "./core/defaults";
-export { layoutRegistry, getLayoutMeta, type SidebarPosition } from "./layouts";
-export { componentRegistry, getComponentMeta, type IconPosition, type AccordionType } from "./components";
+export { layoutRegistry, getLayoutMeta } from "./layouts";
+export { componentRegistry, getComponentMeta } from "./components";
 export { blockRegistry, getBlockMeta } from "./blocks";
-export { primitiveRegistry, getPrimitiveMeta, type FlexDirection, type FlexAlignItems, type FlexJustifyContent, type GradientDirection, type ScrollDirection, type DividerOrientation } from "./primitives";
+export { primitiveRegistry, getPrimitiveMeta } from "./primitives";
 export * from "./core/typeHelpers";
+
+import type { ExtractRegistryEnum } from "./core/typeHelpers";
+export type FlexDirection = ExtractRegistryEnum<"FlexDirection">;
+export type FlexAlignItems = ExtractRegistryEnum<"FlexAlignItems">;
+export type FlexJustifyContent = ExtractRegistryEnum<"FlexJustifyContent">;
+export type GradientDirection = ExtractRegistryEnum<"GradientDirection">;
+export type ScrollDirection = ExtractRegistryEnum<"ScrollDirection">;
+export type DividerOrientation = ExtractRegistryEnum<"DividerOrientation">;
+export type SidebarPosition = ExtractRegistryEnum<"SidebarPosition">;
+export type IconPosition = ExtractRegistryEnum<"IconPosition">;
+export type AccordionType = ExtractRegistryEnum<"AccordionType">;

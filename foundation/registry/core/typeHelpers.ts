@@ -1,8 +1,15 @@
 import { componentRegistry } from "../components";
 import { layoutRegistry } from "../layouts";
+import { primitiveRegistry } from "../primitives";
 import type { PropType, PropDescriptor } from "../../types";
 import type { SpacingToken } from "../../tokens/spacing";
 import type { RadiusToken } from "../../tokens/radii";
+
+type AllMeta = typeof componentRegistry[number] | typeof layoutRegistry[number] | typeof primitiveRegistry[number];
+
+export type ExtractRegistryEnum<K extends string, M = AllMeta> = 
+  M extends { enumMap: Record<K, readonly (infer U)[]> } ? U : never;
+
 
 type ResolvePropType<T extends PropType, Opts extends readonly string[] | undefined> =
   T extends "string" ? string :

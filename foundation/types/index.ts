@@ -100,6 +100,7 @@ interface BaseMeta {
   readonly props: readonly PropDescriptor<any>[];
   readonly themeMapping?: Record<string, ThemeColorRole>;
   readonly tags: readonly string[];
+  readonly enumMap?: Record<string, readonly string[]>;
 }
 
 export interface LayoutMeta extends BaseMeta {

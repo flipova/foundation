@@ -390,7 +390,10 @@ export const layoutRegistry = [
     ],
     responsive: true,
     animated: false,
-    tags: ["sidebar", "navigation", "menu", "resizable"],
+    tags: ["sidebar", "navigation", "drawer", "layout"],
+    enumMap: {
+      SidebarPosition: ["left", "right"],
+    },
     props: [
       { name: "sidebarWidth",        label: "Largeur sidebar",   type: "number",  group: "layout",   default: 280 },
       { name: "position",            label: "Position sidebar",  type: "enum",    group: "layout",   default: "left", options: ["left", "right"] },
@@ -812,6 +815,3 @@ export const layoutRegistry = [
     ],
   },
 ] as const satisfies readonly LayoutMeta[];
-
-export type SidebarPosition = "left" | "right";
-
