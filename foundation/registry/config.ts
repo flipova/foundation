@@ -33,6 +33,12 @@ export const TextInputSizeMap = {
   lg: { height: 48, px: 5, fontSize: 17, labelSize: 14 },
 } as const;
 
+export const DatePickerSizeMap = {
+  sm: { height: 32, fontSize: 13 },
+  md: { height: 40, fontSize: 15 },
+  lg: { height: 48, fontSize: 17 },
+} as const;
+
 export const TextAreaSizeMap = {
   sm: { height: 80, px: 3, py: 2, fontSize: 13, labelSize: 11 },
   md: { height: 120, px: 4, py: 3, fontSize: 15, labelSize: 13 },

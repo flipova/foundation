@@ -5,12 +5,11 @@ import React from "react";
 import { Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta } from "../../registry";
+import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Inline from "../primitives/Inline";
 
 const META = getComponentMeta("Chip")!;
-
-import type { ExtractComponentProps } from "../../registry";
 
 export interface ChipProps extends ExtractComponentProps<"Chip"> {
   children?: React.ReactNode;
@@ -41,4 +40,3 @@ const Chip: React.FC<ChipProps> = (rawProps) => {
 };
 
 export default Chip;
-

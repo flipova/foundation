@@ -11,9 +11,9 @@ import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing as spacingTokens } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
 import { TextInputSizeMap } from "../../registry";
+import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
-import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("TextInput")!;
 

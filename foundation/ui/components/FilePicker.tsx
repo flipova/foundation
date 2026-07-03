@@ -5,20 +5,27 @@ import React from "react";
 import { Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta } from "../../registry";
+import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Center from "../primitives/Center";
-import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("FilePicker")!;
 
+/** Height maps — centralized, consistent with registry size tokens */
+const FilePickerButtonH = { sm: 32, md: 40, lg: 48 } as const;
+const FilePickerDropzoneH = { sm: 80, md: 120, lg: 160 } as const;
+
 export interface FilePickerProps extends ExtractComponentProps<"FilePicker"> {
-  onPick?: () => void; children?: React.ReactNode;
+  onPick?: () => void;
+  children?: React.ReactNode;
 }
 
 const FilePicker: React.FC<FilePickerProps> = (rawProps) => {
   const { theme } = useTheme();
   const { variant, size, label, disabled, borderRadius, onPick } = applyDefaults(rawProps, META, theme) as Required<FilePickerProps>;
-  const h = variant === "dropzone" ? ({ sm: 80, md: 120, lg: 160 }[size] || 120) : ({ sm: 32, md: 40, lg: 48 }[size] || 40);
+  const h = variant === "dropzone"
+    ? (FilePickerDropzoneH[size as keyof typeof FilePickerDropzoneH] ?? 120)
+    : (FilePickerButtonH[size as keyof typeof FilePickerButtonH] ?? 40);
 
   if (variant === "dropzone") {
     return (
@@ -46,4 +53,3 @@ const FilePicker: React.FC<FilePickerProps> = (rawProps) => {
 };
 
 export default FilePicker;
-

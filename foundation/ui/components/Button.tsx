@@ -4,22 +4,17 @@
  * Pressable button with variant, size, loading, and icon support.
  * All defaults and variants come from the component registry.
  */
-
 import React, { useMemo } from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing as spacingTokens } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
 import { ButtonSizeMap } from "../../registry";
-import type { IconPosition } from "../../registry";
+import type { ExtractComponentProps, IconPosition } from "../../registry";
 import Box from "../primitives/Box";
 import Inline from "../primitives/Inline";
 
 const META = getComponentMeta("Button")!;
-
-
-
-import type { ExtractComponentProps } from "../../registry";
 
 export interface ButtonProps extends ExtractComponentProps<"Button"> {
   children?: React.ReactNode;
@@ -92,4 +87,3 @@ const Button: React.FC<ButtonProps> = (rawProps) => {
 };
 
 export default Button;
-

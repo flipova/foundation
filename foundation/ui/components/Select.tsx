@@ -5,9 +5,9 @@ import React, { useState } from "react";
 import { Pressable, Text, Modal, FlatList, View } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta, SelectSizeMap } from "../../registry";
+import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
-import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Select")!;
 

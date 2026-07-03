@@ -5,9 +5,9 @@ import React, { useState } from "react";
 import { TextInput as RNTextInput, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta, TextAreaSizeMap } from "../../registry";
+import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
-import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("TextArea")!;
 

@@ -10,7 +10,7 @@ import type { ExtractComponentProps } from "../../registry";
 const META = getComponentMeta("Spinner")!;
 
 export interface SpinnerProps extends ExtractComponentProps<"Spinner"> {
-  children?: React.ReactNode; 
+  children?: React.ReactNode;
 }
 
 const Spinner: React.FC<SpinnerProps> = (rawProps) => {
@@ -21,4 +21,3 @@ const Spinner: React.FC<SpinnerProps> = (rawProps) => {
 };
 
 export default Spinner;
-
