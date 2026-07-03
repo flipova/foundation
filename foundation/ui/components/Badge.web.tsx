@@ -8,7 +8,6 @@ import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { radii, RadiusToken } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { BadgeColorMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Badge")!;
@@ -35,8 +34,8 @@ const Badge: React.FC<BadgeProps> = (rawProps) => {
   const resolveColor = (c: string) =>
     c in (theme as object) ? ((theme as unknown as Record<string, string>)[c]) : c;
 
-  const colorDef = BadgeColorMap[color] ?? BadgeColorMap.primary;
-  const radius = radii[borderRadius];
+  const colorDef = (META.colorMap?.[color] ?? META.colorMap?.["primary"]) as any;
+  const radius = radii[borderRadius as keyof typeof radii];
 
   const bgColor = variant === "solid"
     ? resolveColor(colorDef.solid[0])

@@ -8,7 +8,6 @@ import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { radii, RadiusToken } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { IconButtonSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("IconButton")!;
@@ -25,7 +24,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((rawProp
     icon, variant, size, borderRadius, color, disabled, onPress, onClick, style, ...rest
   } = props as any;
 
-  const px = IconButtonSizeMap[size as keyof typeof IconButtonSizeMap] ?? IconButtonSizeMap.md;
+  const px = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as number;
   const radius = radii[borderRadius as RadiusToken] || radii.full;
 
   const bg = variant === "filled"

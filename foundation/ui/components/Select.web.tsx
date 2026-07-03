@@ -8,7 +8,6 @@ import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { radii, RadiusToken, spacing } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { SelectSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Select")!;
@@ -25,7 +24,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>((rawProps, ref) 
     disabled, style, children, ...rest
   } = applyDefaults(rawProps, META, theme) as Required<SelectProps>;
 
-  const sizeConfig = SelectSizeMap[size as keyof typeof SelectSizeMap] ?? SelectSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const radius = borderRadius ? radii[borderRadius as RadiusToken] : radii.md;
 
   const selectStyle: CSSProperties = {

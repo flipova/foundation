@@ -4,7 +4,7 @@
 import React from "react";
 import { Switch as RNSwitch, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getComponentMeta, SwitchSizeMap } from "../../registry";
+import { applyDefaults, getComponentMeta } from "../../registry";
 import Inline from "../primitives/Inline";
 import type { ExtractComponentProps } from "../../registry";
 
@@ -19,7 +19,7 @@ export interface SwitchProps extends ExtractComponentProps<"Switch"> {
 const SwitchComponent: React.FC<SwitchProps> = (rawProps) => {
   const { theme } = useTheme();
   const { value, onChange, size, disabled, label, activeColor, trackColor } = applyDefaults(rawProps, META, theme) as Required<SwitchProps>;
-  const sizeConfig = SwitchSizeMap[size as keyof typeof SwitchSizeMap] || SwitchSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const scale = sizeConfig.scale;
 
   return (

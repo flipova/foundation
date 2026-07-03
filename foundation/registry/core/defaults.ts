@@ -3,8 +3,8 @@
  * Works with LayoutMeta, ComponentMeta, and BlockMeta.
  */
 
-import type { ColorScheme } from "../theme/types";
-import type { AnyMeta, LayoutConstants, LayoutMeta, VariantDescriptor } from "../types";
+import type { ColorScheme } from "../../theme/types";
+import type { AnyMeta, LayoutConstants, LayoutMeta, VariantDescriptor } from "../../types";
 
 export function extractDefaults(meta: AnyMeta): Record<string, unknown> {
   const defaults: Record<string, unknown> = {};

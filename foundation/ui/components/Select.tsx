@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 import { Pressable, Text, Modal, FlatList, View } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getComponentMeta, SelectSizeMap } from "../../registry";
+import { applyDefaults, getComponentMeta } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
@@ -22,7 +22,7 @@ const Select: React.FC<SelectProps> = (rawProps) => {
   const { theme } = useTheme();
   const { value, options, onChange, variant, size, label, placeholder, error, disabled, borderRadius, background } = applyDefaults(rawProps, META, theme) as Required<SelectProps>;
   const [open, setOpen] = useState(false);
-  const sizeConfig = SelectSizeMap[size as keyof typeof SelectSizeMap] || SelectSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const bg = variant === "outlined" ? "transparent" : (background || theme.input);
   const bc = error ? theme.error : theme.border;
   const selected = (options || []).find((o: any) => o.value === value);

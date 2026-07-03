@@ -1,8 +1,8 @@
-import { componentRegistry } from "./components";
-import { layoutRegistry } from "./layouts";
-import type { PropType, PropDescriptor } from "../types";
-import type { SpacingToken } from "../tokens/spacing";
-import type { RadiusToken } from "../tokens/radii";
+import { componentRegistry } from "../components";
+import { layoutRegistry } from "../layouts";
+import type { PropType, PropDescriptor } from "../../types";
+import type { SpacingToken } from "../../tokens/spacing";
+import type { RadiusToken } from "../../tokens/radii";
 
 type ResolvePropType<T extends PropType, Opts extends readonly string[] | undefined> =
   T extends "string" ? string :
@@ -13,7 +13,7 @@ type ResolvePropType<T extends PropType, Opts extends readonly string[] | undefi
   T extends "shadow" ? string :
   T extends "color" ? string :
   T extends "background" ? string | string[] :
-  T extends "padding" ? import("../types").LayoutPadding :
+  T extends "padding" ? import("../../types").LayoutPadding :
   T extends "enum" ? (Opts extends readonly string[] ? Opts[number] : string) :
   T extends "ratio" ? number :
   T extends "json" ? any :

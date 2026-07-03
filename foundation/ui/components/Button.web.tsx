@@ -9,7 +9,6 @@ import React, { CSSProperties, useMemo } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { ButtonSizeMap } from "../../registry";
 import type { IconPosition } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
@@ -30,8 +29,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((rawProps, ref) 
     style, ...rest
   } = applyDefaults(rawProps, META, theme) as Required<ButtonProps> & typeof rawProps;
 
-  const sizeConfig = ButtonSizeMap[size as keyof typeof ButtonSizeMap] ?? ButtonSizeMap.md;
-  const radius = borderRadius ? radii[borderRadius] : radii.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
+  const radius = borderRadius ? radii[borderRadius as keyof typeof radii] : radii.md;
 
   const colors = useMemo(() => {
     switch (variant) {

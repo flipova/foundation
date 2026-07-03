@@ -22,6 +22,11 @@ export const componentRegistry = [
     tags: ["button", "cta", "action", "pressable"],
     themeMapping: { bg: "primary", text: "primaryForeground" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: { height: 32, px: 3, fontSize: 13 },
+      md: { height: 40, px: 4, fontSize: 15 },
+      lg: { height: 48, px: 5, fontSize: 17 },
+    },
     variants: [
       {
         name: "primary",
@@ -69,6 +74,11 @@ export const componentRegistry = [
     tags: ["input", "text", "field", "form"],
     themeMapping: { bg: "input", text: "foreground", border: "border", placeholder: "mutedForeground" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: { height: 32, px: 3, fontSize: 13, labelSize: 11 },
+      md: { height: 40, px: 4, fontSize: 15, labelSize: 13 },
+      lg: { height: 48, px: 5, fontSize: 17, labelSize: 14 },
+    },
     variants: [
       { name: "outlined", label: "Outlined", overrides: { borderWidth: 1, bg: "transparent" } },
       { name: "filled",   label: "Filled",   overrides: { borderWidth: 0 } },
@@ -96,6 +106,11 @@ export const componentRegistry = [
     tags: ["textarea", "multiline", "input", "form"],
     themeMapping: { bg: "input", text: "foreground", border: "border" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: { height: 80, px: 3, py: 2, fontSize: 13, labelSize: 11 },
+      md: { height: 120, px: 4, py: 3, fontSize: 15, labelSize: 13 },
+      lg: { height: 180, px: 5, py: 4, fontSize: 17, labelSize: 14 },
+    },
     variants: [
       { name: "outlined", label: "Outlined", overrides: { borderWidth: 1, bg: "transparent" } },
       { name: "filled",   label: "Filled",   overrides: { borderWidth: 0 } },
@@ -143,6 +158,10 @@ export const componentRegistry = [
     tags: ["switch", "toggle", "boolean"],
     themeMapping: { active: "primary", track: "muted" },
     sizes: ["sm", "md"],
+    sizeMap: {
+      sm: { scale: 0.8, labelSize: 13, width: 36, height: 20 },
+      md: { scale: 1, labelSize: 15, width: 44, height: 24 },
+    },
     variants: [],
     props: [
       { name: "size",         label: "Size",          type: "enum",    group: "style",    default: "md", options: ["sm", "md"] },
@@ -161,6 +180,14 @@ export const componentRegistry = [
     tags: ["badge", "tag", "label", "status"],
     themeMapping: { bg: "primary", text: "primaryForeground" },
     sizes: ["sm", "md"],
+    colorMap: {
+      primary:   { solid: ["primary", "primaryForeground"],   subtle: ["primary", "primaryForeground"] },
+      secondary: { solid: ["secondary", "secondaryForeground"], subtle: ["secondary", "secondaryForeground"] },
+      success:   { solid: ["success", "#fff"],   subtle: ["#dcfce7", "#166534"] },
+      warning:   { solid: ["warning", "#fff"],   subtle: ["#fef3c7", "#92400e"] },
+      error:     { solid: ["error", "#fff"],     subtle: ["#fee2e2", "#991b1b"] },
+      info:      { solid: ["info", "#fff"],      subtle: ["#e0f2fe", "#0369a1"] },
+    },
     variants: [
       { name: "solid",   label: "Solid",   overrides: {} },
       { name: "outline", label: "Outline", overrides: { bg: "transparent", borderWidth: 1 } },
@@ -183,6 +210,13 @@ export const componentRegistry = [
     tags: ["avatar", "user", "profile", "image"],
     themeMapping: { bg: "muted", text: "mutedForeground" },
     sizes: ["xs", "sm", "md", "lg", "xl"],
+    sizeMap: {
+      xs: 24,
+      sm: 32,
+      md: 40,
+      lg: 56,
+      xl: 72,
+    },
     variants: [
       { name: "circle", label: "Circle", overrides: { borderRadius: "full" } },
       { name: "square", label: "Square", overrides: { borderRadius: "md" } },
@@ -204,6 +238,11 @@ export const componentRegistry = [
     tags: ["icon", "button", "action"],
     themeMapping: { bg: "muted", icon: "foreground" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: 32,
+      md: 40,
+      lg: 48,
+    },
     variants: [
       { name: "filled", label: "Filled", overrides: {} },
       { name: "ghost",  label: "Ghost",  overrides: { bg: "transparent" } },
@@ -264,6 +303,11 @@ export const componentRegistry = [
     tags: ["select", "dropdown", "picker", "form"],
     themeMapping: { bg: "input", text: "foreground", border: "border" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: { height: 32, px: 3, fontSize: 13, labelSize: 11 },
+      md: { height: 40, px: 4, fontSize: 15, labelSize: 13 },
+      lg: { height: 48, px: 5, fontSize: 17, labelSize: 14 },
+    },
     variants: [
       { name: "outlined", label: "Outlined", overrides: { borderWidth: 1 } },
       { name: "filled",   label: "Filled",   overrides: { borderWidth: 0 } },
@@ -307,6 +351,11 @@ export const componentRegistry = [
     tags: ["date", "time", "picker", "calendar", "form"],
     themeMapping: { bg: "input", text: "foreground", border: "border", accent: "primary" },
     sizes: ["sm", "md", "lg"],
+    sizeMap: {
+      sm: { height: 32, fontSize: 13 },
+      md: { height: 40, fontSize: 15 },
+      lg: { height: 48, fontSize: 17 },
+    },
     variants: [],
     props: [
       { name: "size",          label: "Size",          type: "enum",    group: "style",    default: "md", options: ["sm", "md", "lg"] },
@@ -350,6 +399,10 @@ export const componentRegistry = [
     tags: ["slider", "range", "input", "form"],
     themeMapping: { active: "primary", track: "muted" },
     sizes: ["sm", "md"],
+    sizeMap: {
+      sm: { trackHeight: 4, thumbSize: 16, labelSize: 11, valueSize: 12 },
+      md: { trackHeight: 6, thumbSize: 20, labelSize: 13, valueSize: 14 },
+    },
     variants: [],
     props: [
       { name: "size",          label: "Size",          type: "enum",    group: "style",    default: "md", options: ["sm", "md"] },

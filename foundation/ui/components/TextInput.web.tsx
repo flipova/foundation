@@ -9,7 +9,6 @@ import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { TextInputSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("TextInput")!;
@@ -27,7 +26,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>((rawProps, 
     secureEntry, disabled, placeholder, style, ...rest
   } = merged;
 
-  const sizeConfig = TextInputSizeMap[size as keyof typeof TextInputSizeMap] ?? TextInputSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const radius = borderRadius ? radii[borderRadius as RadiusToken] : radii.md;
 
   const getBorderStyle = (): CSSProperties => {

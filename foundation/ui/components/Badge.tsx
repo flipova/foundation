@@ -6,7 +6,6 @@ import { Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import Box from "../primitives/Box";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { BadgeColorMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Badge")!;
@@ -18,7 +17,7 @@ export interface BadgeProps extends ExtractComponentProps<"Badge"> {
 const Badge: React.FC<BadgeProps> = (rawProps) => {
   const { theme } = useTheme();
   const { children, label, variant, size, color, borderRadius } = applyDefaults(rawProps, META, theme) as Required<BadgeProps>;
-  const c = BadgeColorMap[color] || BadgeColorMap.primary;
+  const c = (META.colorMap?.[color] ?? META.colorMap?.["primary"]) as any;
   const solid = c.solid;
   const subtle = c.subtle;
 

@@ -67,7 +67,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = (rawProps) => {
     width: "100%",
     maxWidth: formMaxWidth ?? 520,
     backgroundColor: theme.card,
-    borderRadius: borderRadius ? radii[borderRadius] : "none",
+    borderRadius: borderRadius ? radii[borderRadius as keyof typeof radii] : "none",
     padding: pad,
     boxShadow: shadowed ? "0 4px 24px rgba(0,0,0,0.1)" : "none",
     boxSizing: "border-box",

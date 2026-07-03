@@ -10,7 +10,6 @@ import { TextInput as RNTextInput, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing as spacingTokens } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { TextInputSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
@@ -31,7 +30,7 @@ const TextInputComponent: React.FC<TextInputProps> = (rawProps) => {
   } = applyDefaults(rawProps, META, theme) as Required<TextInputProps>;
 
   const [focused, setFocused] = useState(false);
-  const sizeConfig = TextInputSizeMap[size] || TextInputSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
 
   const resolvedBg = variant === "outlined" ? "transparent" : (background || theme.input);
   const resolvedBorder = error ? theme.error : focused ? theme.ring : (borderColor || theme.border);

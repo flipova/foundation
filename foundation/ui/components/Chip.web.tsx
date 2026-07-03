@@ -34,7 +34,7 @@ const Chip: React.FC<ChipProps> = (rawProps) => {
     children,
     ...rest
   } = applyDefaults(rawProps, META, theme) as Required<ChipProps> & typeof rawProps;
-  const radius = radii[borderRadius];
+  const radius = radii[borderRadius as keyof typeof radii];
   const px = size === "sm" ? 8 : 12;
   const py = size === "sm" ? 3 : 5;
   const fontSize = size === "sm" ? 12 : 13;

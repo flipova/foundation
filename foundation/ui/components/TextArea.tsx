@@ -4,7 +4,7 @@
 import React, { useState } from "react";
 import { TextInput as RNTextInput, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getComponentMeta, TextAreaSizeMap } from "../../registry";
+import { applyDefaults, getComponentMeta } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
@@ -21,7 +21,7 @@ const TextArea: React.FC<TextAreaProps> = (rawProps) => {
   const { theme } = useTheme();
   const { value, onChangeText, variant, size, placeholder, label, error, disabled, numberOfLines, borderRadius, background } = applyDefaults(rawProps, META, theme) as Required<TextAreaProps>;
   const [focused, setFocused] = useState(false);
-  const sizeConfig = TextAreaSizeMap[size as keyof typeof TextAreaSizeMap] || TextAreaSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const bg = variant === "outlined" ? "transparent" : (background || theme.input);
   const bc = error ? theme.error : focused ? theme.ring : theme.border;
 

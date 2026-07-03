@@ -5,7 +5,6 @@ import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { SliderSizeMap } from "../../registry";
 import Stack from "../primitives/Stack";
 import type { ExtractComponentProps } from "../../registry";
 
@@ -21,7 +20,7 @@ const Slider: React.FC<SliderProps> = (rawProps) => {
   const { theme } = useTheme();
   const { value, onChange, size, min, max, step, label, showValue, disabled, activeColor } = applyDefaults(rawProps, META, theme) as Required<SliderProps>;
   const pct = Math.max(0, Math.min(100, ((Number(value) || 0) - min) / (max - min) * 100));
-  const sizeConfig = SliderSizeMap[size as keyof typeof SliderSizeMap] || SliderSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const h = sizeConfig.trackHeight;
   const ts = sizeConfig.thumbSize;
   const color = activeColor || theme.primary;

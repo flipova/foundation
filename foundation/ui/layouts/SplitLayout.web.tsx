@@ -38,7 +38,7 @@ const SplitLayout: React.FC<SplitLayoutProps> = (rawProps) => {
     height: isVertical ? "100%" : undefined,
     minHeight: isVertical ? undefined : "100%",
     backgroundColor: background ?? undefined,
-    borderRadius: borderRadius ? radii[borderRadius] : undefined,
+    borderRadius: borderRadius ? radii[borderRadius as keyof typeof radii] : undefined,
     boxSizing: "border-box",
     ...style,
   };

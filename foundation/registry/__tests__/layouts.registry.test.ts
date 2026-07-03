@@ -6,7 +6,7 @@
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { layoutRegistry, getLayoutMeta } from "../layouts";
-import { applyDefaults } from "../defaults";
+import { applyDefaults, getConstants, resolveThemeDefaults } from "../core/defaults";
 import { useStudioItems } from "../../ui/hooks/useStudioItems";
 import type { PropType } from "../../types";
 

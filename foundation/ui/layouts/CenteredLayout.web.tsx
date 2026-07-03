@@ -40,7 +40,7 @@ const CenteredLayout: React.FC<CenteredLayoutProps> = (rawProps) => {
     maxWidth: maxWidth ?? 500,
     padding: paddingToken != null ? spacing[paddingToken] : spacing[4],
     backgroundColor: cardBackground ?? theme.card,
-    borderRadius: borderRadius ? radii[borderRadius] : radii["3xl"],
+    borderRadius: borderRadius ? radii[borderRadius as keyof typeof radii] : radii["3xl"],
     boxShadow: shadowed ? `0 4px 32px rgba(0,0,0,0.12)` : "none",
     boxSizing: "border-box",
   };

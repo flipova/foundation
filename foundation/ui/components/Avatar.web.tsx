@@ -8,7 +8,6 @@ import React, { CSSProperties, useState } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { radii } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { AvatarSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Avatar")!;
@@ -27,7 +26,7 @@ const Avatar: React.FC<AvatarProps> = (rawProps) => {
     ...rest
   } = applyDefaults(rawProps, META, theme) as Required<AvatarProps> & typeof rawProps;
   const [imgError, setImgError] = useState(false);
-  const px = AvatarSizeMap[size as keyof typeof AvatarSizeMap] ?? AvatarSizeMap.md;
+  const px = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as number;
   const bg = background ?? theme.muted;
   const radius = variant === "circle" ? "50%" : radii.md;
 

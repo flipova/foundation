@@ -6,7 +6,7 @@
 
 import React, { CSSProperties, useId } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getComponentMeta, SwitchSizeMap } from "../../registry";
+import { applyDefaults, getComponentMeta } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Switch")!;
@@ -32,7 +32,7 @@ const Switch = React.forwardRef<HTMLInputElement, SwitchProps>((rawProps, ref) =
     ...rest
   } = merged;
 
-  const sizeConfig = SwitchSizeMap[size as keyof typeof SwitchSizeMap] || SwitchSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const w = sizeConfig.width;
   const h = sizeConfig.height;
   const color = activeColor ?? theme.primary;

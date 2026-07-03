@@ -6,7 +6,7 @@
 
 import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
-import { applyDefaults, getComponentMeta, SliderSizeMap } from "../../registry";
+import { applyDefaults, getComponentMeta } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("Slider")!;
@@ -35,7 +35,7 @@ const Slider = React.forwardRef<HTMLInputElement, SliderProps>((rawProps, ref) =
   } = applyDefaults(rawProps, META, theme) as Required<SliderProps>;
 
   const color = activeColor ?? theme.primary;
-  const sizeConfig = SliderSizeMap[size as keyof typeof SliderSizeMap] || SliderSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const h = sizeConfig.trackHeight;
 
   const sliderStyle: CSSProperties = {

@@ -9,7 +9,6 @@ import { ActivityIndicator, Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing as spacingTokens } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { ButtonSizeMap } from "../../registry";
 import type { ExtractComponentProps, IconPosition } from "../../registry";
 import Box from "../primitives/Box";
 import Inline from "../primitives/Inline";
@@ -30,7 +29,7 @@ const Button: React.FC<ButtonProps> = (rawProps) => {
     fullWidth, borderRadius, iconPosition, onPress, children,
   } = applyDefaults(rawProps, META, theme) as Required<ButtonProps>;
 
-  const sizeConfig = ButtonSizeMap[size as keyof typeof ButtonSizeMap] || ButtonSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
 
   const colors = useMemo(() => {
     switch (variant) {

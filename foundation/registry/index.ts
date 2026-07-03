@@ -5,10 +5,10 @@
  * Provides helpers to query, apply defaults, and resolve variants.
  */
 
-export { applyDefaults, applyVariant, extractDefaults, getConstants, resolveThemeDefaults } from "./defaults";
+export { applyDefaults, applyVariant, extractDefaults, getConstants, resolveThemeDefaults } from "./core/defaults";
 export { layoutRegistry, getLayoutMeta } from "./layouts";
 export { componentRegistry, getComponentMeta } from "./components";
 export { blockRegistry, getBlockMeta } from "./blocks";
 export { primitiveRegistry, getPrimitiveMeta } from "./primitives";
-export * from "./typeHelpers";
-export * from "./config";
+export * from "./core/typeHelpers";
+export * from "./core/enums";

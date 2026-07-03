@@ -5,7 +5,6 @@ import React from "react";
 import { Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { DatePickerSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Stack from "../primitives/Stack";
@@ -21,7 +20,7 @@ export interface DatePickerProps extends ExtractComponentProps<"DatePicker"> {
 const DatePicker: React.FC<DatePickerProps> = (rawProps) => {
   const { theme } = useTheme();
   const { value, mode, size, label, placeholder, error, disabled, borderRadius } = applyDefaults(rawProps, META, theme) as Required<DatePickerProps>;
-  const sizeConfig = DatePickerSizeMap[size as keyof typeof DatePickerSizeMap] ?? DatePickerSizeMap.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
   const icon = mode === "time" ? "🕐" : "📅";
 
   return (

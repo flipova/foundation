@@ -117,6 +117,8 @@ export interface ComponentMeta extends BaseMeta {
   readonly category: ComponentCategory;
   readonly variants: readonly VariantDescriptor[];
   readonly sizes?: readonly string[];
+  readonly sizeMap?: Record<string, any>;
+  readonly colorMap?: Record<string, any>;
   readonly platforms?: readonly ("native" | "web")[];
 }
 

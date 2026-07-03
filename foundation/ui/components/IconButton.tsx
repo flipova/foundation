@@ -5,7 +5,6 @@ import React from "react";
 import { Pressable, Text } from "react-native";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { IconButtonSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 import Box from "../primitives/Box";
 import Center from "../primitives/Center";
@@ -21,7 +20,7 @@ export interface IconButtonProps extends ExtractComponentProps<"IconButton"> {
 const IconButton: React.FC<IconButtonProps> = (rawProps) => {
   const { theme } = useTheme();
   const { children, icon, variant, size, disabled, borderRadius, color, onPress } = applyDefaults(rawProps, META, theme) as Required<IconButtonProps>;
-  const dim = IconButtonSizeMap[size as keyof typeof IconButtonSizeMap] || IconButtonSizeMap.md;
+  const dim = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as number;
   const bg = variant === "filled" ? theme.muted : "transparent";
   const bc = variant === "outline" ? theme.border : undefined;
 

@@ -8,7 +8,6 @@ import React, { CSSProperties } from "react";
 import { useTheme } from "../../theme/providers/ThemeProvider";
 import { RadiusToken, radii, spacing } from "../../tokens";
 import { applyDefaults, getComponentMeta } from "../../registry";
-import { TextAreaSizeMap } from "../../registry";
 import type { ExtractComponentProps } from "../../registry";
 
 const META = getComponentMeta("TextArea")!;
@@ -24,8 +23,8 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>((rawProps,
     disabled, placeholder, style, ...rest
   } = applyDefaults(rawProps, META, theme) as Required<TextAreaProps> & typeof rawProps;
 
-  const sizeConfig = TextAreaSizeMap[size as keyof typeof TextAreaSizeMap] ?? TextAreaSizeMap.md;
-  const radius = borderRadius ? radii[borderRadius] : radii.md;
+  const sizeConfig = (META.sizeMap?.[size] ?? META.sizeMap?.["md"]) as any;
+  const radius = borderRadius ? radii[borderRadius as keyof typeof radii] : radii.md;
 
   const textareaStyle: CSSProperties = {
     padding: typeof sizeConfig.px === "number" ? (sizeConfig.px < 10 ? spacing[sizeConfig.px as keyof typeof spacing] : sizeConfig.px) : 12,
