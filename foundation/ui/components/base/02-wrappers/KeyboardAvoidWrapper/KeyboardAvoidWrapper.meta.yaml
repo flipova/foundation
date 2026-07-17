@@ -1,0 +1,7 @@
+name: KeyboardAvoidWrapper
+description: Automatically handles keyboard layout shifting for its wrapped children.
+props:
+  - name: offset
+    type: number
+    description: Extra offset above keyboard
+    default: 20

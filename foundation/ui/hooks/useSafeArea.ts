@@ -1,8 +1,9 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
- * Hook pour accéder aux dimensions des zones sécurisées
- * @returns Objet contenant les dimensions des zones sécurisées
+ * Hook pour accéder aux dimensions des zones sécurisées (safe area) de l'appareil.
+ *
+ * @returns Objet contenant les dimensions des zones sécurisées (haut, bas, gauche, droite, et totaux).
  */
 export const useSafeArea = () => {
   const insets = useSafeAreaInsets();

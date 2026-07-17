@@ -1,0 +1,54 @@
+type: component
+id: Image
+label: Image
+description: Image component with source, resize mode, and placeholder.
+category: display
+tags:
+  - image
+  - photo
+  - picture
+  - media
+themeMapping:
+  bg: muted
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: source
+    label: Source URL
+    type: string
+    group: content
+  - name: alt
+    label: Alt text
+    type: string
+    group: content
+  - name: resizeMode
+    label: Resize mode
+    type: enum
+    group: style
+    default: cover
+    options:
+      - cover
+      - contain
+      - stretch
+      - center
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 200
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Placeholder bg
+    type: color
+    group: style
+    themeDefault: muted

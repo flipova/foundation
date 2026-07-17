@@ -1,0 +1,16 @@
+name: SortableGridLayout
+description: A drag-and-drop reorderable grid layout for rendering interactive lists or grids.
+tags: [layout, grid, drag-and-drop, interactive, reorderable]
+props:
+  data:
+    type: array
+    description: The list of data items to render.
+    required: true
+  columns:
+    type: number
+    description: Number of columns in the grid.
+    default: 3
+  spacing:
+    type: number
+    description: Spacing between items.
+    default: 8

@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { Breakpoint, breakpoints } from "../../tokens/breakpoints";
+import { Breakpoint, breakpoints } from '../../tokens';
 
 /**
  * Sur web : génère des classes CSS avec media queries pour afficher/cacher
@@ -22,6 +22,9 @@ const orderedBreakpoints: Breakpoint[] = ["xs", "sm", "md", "lg", "xl", "2xl"];
  *
  * // Visible uniquement sur desktop
  * <Box style={showOnly(["md", "lg", "xl", "2xl"])} />
+ * 
+ * @param visibleAt - Tableau des breakpoints où l'élément doit être affiché.
+ * @returns Un style applicable à un composant pour gérer sa visibilité.
  */
 export const showOnly = (visibleAt: Breakpoint[]): any => {
   if (Platform.OS !== "web") return {};
@@ -51,6 +54,9 @@ export const showOnly = (visibleAt: Breakpoint[]): any => {
 
 /**
  * Inverse de showOnly : cache l'élément aux breakpoints fournis.
+ * 
+ * @param hiddenAt - Tableau des breakpoints où l'élément doit être caché.
+ * @returns Un style applicable à un composant pour gérer sa visibilité.
  */
 export const hideAt = (hiddenAt: Breakpoint[]): any => {
   const allBp = orderedBreakpoints.filter((bp) => !hiddenAt.includes(bp));

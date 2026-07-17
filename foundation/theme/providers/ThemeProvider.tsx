@@ -1,17 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  autumnTheme,
-  christmasTheme,
-  darkTheme,
-  halloweenTheme,
-  lightTheme,
-  neonTheme,
-  springTheme,
-  summerTheme,
-  winterTheme
-} from '../config';
+import { themes as generatedThemes, type ThemeName } from '../generated';
 import { useColorScheme } from '../hooks/useColorScheme';
-import type { ColorScheme, CustomThemeMode, ThemeMode, ThemeRegistry } from '../types';
+import type { ColorScheme, CustomThemeMode, ThemeRegistry, ThemeMode } from '../types';
 
 /**
  * Defines the shape of the theme context value.
@@ -31,18 +21,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 /**
- * Hook for accessing the theme context.
+ * Hook pour accéder au contexte du thème.
  * 
- * @param customTheme - Optional custom theme mode to use instead of the current context theme
- * @returns The theme context value with current theme, mode, setter, and available themes
- * @throws Error if used outside of a ThemeProvider
+ * @param customTheme - (Optionnel) Mode de thème personnalisé à utiliser au lieu du thème du contexte actuel.
+ * @returns La valeur du contexte du thème avec le thème actuel, le mode, la fonction pour le modifier et les thèmes disponibles.
+ * @throws Erreur s'il est utilisé en dehors d'un ThemeProvider.
  * 
  * @example
  * ```tsx
- * // Basic usage
+ * // Utilisation de base
  * const { theme, mode, setTheme } = useTheme();
  * 
- * // With custom theme
+ * // Avec un thème personnalisé
  * const { theme } = useTheme('neon');
  * ```
  */
@@ -66,34 +56,34 @@ export const useTheme = (customTheme?: ThemeMode | CustomThemeMode) => {
 };
 
 /**
- * Props for the ThemeProvider component.
+ * Propriétés (props) pour le composant ThemeProvider.
  */
 interface ThemeProviderProps {
-  /** Child components that will have access to the theme context */
+  /** Composants enfants qui auront accès au contexte du thème */
   children: React.ReactNode;
-  /** Default theme to use when no theme is stored in state */
+  /** Thème par défaut à utiliser lorsqu'aucun thème n'est stocké dans l'état */
   defaultTheme?: ThemeMode | CustomThemeMode;
-  /** Additional custom themes to merge with built-in themes */
+  /** Thèmes personnalisés supplémentaires à fusionner avec les thèmes intégrés */
   customThemes?: Partial<ThemeRegistry>;
 }
 
 /**
- * Provides theme context to child components.
+ * Fournit le contexte du thème aux composants enfants.
  * 
- * Manages the current theme state and provides access to theme switching functionality.
- * Supports built-in themes (light, dark, neon) and custom themes.
+ * Gère l'état du thème actuel et permet d'accéder à la fonctionnalité de changement de thème.
+ * Prend en charge les thèmes intégrés (clair, sombre, néon) et les thèmes personnalisés.
  * 
- * @param props - The theme provider props
- * @returns A context provider component
+ * @param props - Les propriétés du fournisseur de thème.
+ * @returns Un composant fournisseur de contexte.
  * 
  * @example
  * ```tsx
- * // Basic usage
+ * // Utilisation de base
  * <ThemeProvider>
  *   <App />
  * </ThemeProvider>
  * 
- * // With default theme and custom themes
+ * // Avec un thème par défaut et des thèmes personnalisés
  * <ThemeProvider defaultTheme="dark" customThemes={{ myTheme: customThemeConfig }}>
  *   <App />
  * </ThemeProvider>
@@ -112,15 +102,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   
   // Build theme registry with built-in and custom themes
   const themeRegistry: ThemeRegistry = {
-    light: lightTheme,
-    dark: darkTheme,
-    neon: neonTheme,
-    spring: springTheme,
-    summer: summerTheme,
-    autumn: autumnTheme,
-    winter: winterTheme,
-    halloween: halloweenTheme,
-    christmas: christmasTheme,
+    ...generatedThemes,
     ...customThemes,
   };
 
@@ -155,7 +137,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     }
   };
   
-  const activeTheme = themeRegistry[currentTheme] || lightTheme;
+  const activeTheme = themeRegistry[currentTheme] || generatedThemes.light;
   
   const value: ThemeContextType = {
     theme: activeTheme,

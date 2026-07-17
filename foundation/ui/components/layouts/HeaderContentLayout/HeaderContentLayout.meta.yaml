@@ -1,0 +1,93 @@
+type: layout
+id: HeaderContentLayout
+label: Collapsible Header
+description: Header that shrinks on scroll with main content.
+category: scroll
+tags:
+  - header
+  - collapsible
+  - scroll
+  - parallax
+architecture:
+  dependencies:
+    - react-native-reanimated
+themeMapping:
+  root: background
+  header: card
+  content: card
+slots:
+  - name: header
+    label: Header
+    required: true
+    kind: named
+  - name: content
+    label: Content
+    required: true
+    kind: named
+responsive: false
+animated: true
+props:
+  - name: headerHeight
+    label: Header Height
+    type: number
+    group: layout
+    default: 150
+  - name: headerCollapsedHeight
+    label: Collapsed Header Height
+    type: number
+    group: layout
+    default: 60
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: headerBackground
+    label: Header Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: headerBorderRadius
+    label: Header Radius
+    type: radius
+    group: style
+    default: none
+  - name: contentBackground
+    label: Content Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: contentBorderRadius
+    label: Content Radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Content Padding
+    type: spacing
+    group: layout
+    default: 5
+  - name: headerPadding
+    label: Header Padding
+    type: spacing
+    group: layout
+    default: 5
+  - name: scrollEventThrottle
+    label: Scroll Throttle event
+    type: number
+    group: behavior
+    default: 16

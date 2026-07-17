@@ -1,0 +1,30 @@
+type: primitive
+id: Divider
+label: Divider
+description: Horizontal or vertical divider line.
+category: primitive
+tags:
+  - divider
+  - separator
+  - line
+  - hr
+slots: []
+props:
+  - name: vertical
+    label: Vertical
+    type: boolean
+    group: layout
+    default: false
+  - name: color
+    label: Color
+    type: color
+    group: style
+  - name: thickness
+    label: Thickness
+    type: number
+    group: style
+    default: 1
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout

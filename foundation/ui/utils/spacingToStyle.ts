@@ -1,8 +1,14 @@
 import { ViewStyle } from "react-native";
-import { spacing, SpacingToken } from "../../tokens/spacing";
+import { spacing, SpacingToken } from '../../tokens';
 
 type SpacingShorthand = SpacingToken | number;
 
+/**
+ * Convertit des raccourcis d'espacement (spacing) en propriétés de style de padding React Native.
+ *
+ * @param value - La valeur ou le tableau de valeurs d'espacement (nombres ou tokens).
+ * @returns Un objet partiel ViewStyle avec les marges intérieures (padding) appliquées.
+ */
 export const spacingToStyle = (
   value:
     | SpacingShorthand

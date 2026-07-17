@@ -1,0 +1,62 @@
+type: primitive
+id: Inline
+label: Inline
+description: Horizontal row with spacing and alignment.
+category: primitive
+tags:
+  - inline
+  - horizontal
+  - row
+  - hstack
+slots:
+  - name: children
+    label: Content
+    required: false
+props:
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 2
+  - name: align
+    label: Align
+    type: enum
+    group: layout
+    options:
+      - stretch
+      - flex-start
+      - center
+      - flex-end
+      - baseline
+  - name: justify
+    label: Justify
+    type: enum
+    group: layout
+    options:
+      - flex-start
+      - center
+      - flex-end
+      - space-between
+      - space-around
+  - name: wrap
+    label: Wrap
+    type: boolean
+    group: layout
+    default: false
+  - name: bg
+    label: Background
+    type: color
+    group: style
+  - name: p
+    label: Padding
+    type: spacing
+    group: layout
+  - name: flex
+    label: Flex
+    type: number
+    group: layout
+  - name: fillWidth
+    label: Fill Width
+    type: boolean
+    group: layout
+    default: false

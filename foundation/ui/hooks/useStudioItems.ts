@@ -53,9 +53,13 @@ function isInsertZone(el: React.ReactNode): boolean {
 }
 
 /**
- * @param items         The actual items array from props
- * @param count         Number of placeholder items to show when empty (from registry previewItemCount)
- * @param placeholder   Factory for a single placeholder node given its index
+ * Hook utilitaire pour les mises en page (layouts) à éléments multiples dans le studio.
+ * Retourne des éléments de substitution (placeholders) lorsque la liste d'éléments est vide.
+ *
+ * @param items - Le tableau d'éléments réels provenant des propriétés.
+ * @param count - Le nombre d'éléments de substitution à afficher.
+ * @param placeholder - Une fonction de fabrication pour générer un élément de substitution en fonction de son index.
+ * @returns Le tableau d'éléments résolu ou des éléments de substitution.
  */
 export function useStudioItems(
   items: React.ReactNode[],

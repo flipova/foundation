@@ -1,0 +1,108 @@
+type: component
+id: TextInput
+label: Text Input
+description: Single-line text input with label, error state, and icon support.
+category: input
+tags:
+  - input
+  - text
+  - field
+  - form
+themeMapping:
+  bg: input
+  text: foreground
+  border: border
+  placeholder: mutedForeground
+variants:
+  - name: outlined
+    label: Outlined
+    overrides:
+      borderWidth: 1
+      bg: transparent
+  - name: filled
+    label: Filled
+    overrides:
+      borderWidth: 0
+  - name: underline
+    label: Underline
+    overrides:
+      borderWidth: 0
+      borderBottomWidth: 1
+      borderRadius: none
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap:
+  sm:
+    height: 32
+    px: 3
+    fontSize: 13
+    labelSize: 11
+  md:
+    height: 40
+    px: 4
+    fontSize: 15
+    labelSize: 13
+  lg:
+    height: 48
+    px: 5
+    fontSize: 17
+    labelSize: 14
+colorMap: {}
+props:
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: outlined
+    options:
+      - outlined
+      - filled
+      - underline
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: placeholder
+    label: Placeholder
+    type: string
+    group: content
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: error
+    label: Error message
+    type: string
+    group: content
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: secureEntry
+    label: Password
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: md
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: input
+  - name: borderColor
+    label: Border color
+    type: color
+    group: style
+    themeDefault: border

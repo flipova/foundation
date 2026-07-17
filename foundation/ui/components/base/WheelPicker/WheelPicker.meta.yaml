@@ -1,0 +1,22 @@
+name: WheelPicker
+description: A scrollable barrel wheel picker. If items exceed maxItemsInWheel, a "More..." option opens a submenu modal.
+props:
+  - name: items
+    type: array
+    description: Array of items to pick from { label, value }
+    required: true
+  - name: value
+    type: string
+    description: Currently selected value
+  - name: itemHeight
+    type: number
+    description: Height of a single item in pixels
+    default: 40
+  - name: maxItemsInWheel
+    type: number
+    description: Maximum number of items to show in the wheel before moving the rest to a submenu
+    default: 5
+  - name: moreLabel
+    type: string
+    description: Label for the "More..." option
+    default: Plus...

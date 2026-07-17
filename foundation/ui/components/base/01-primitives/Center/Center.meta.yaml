@@ -1,0 +1,38 @@
+type: primitive
+id: Center
+label: Center
+description: Centers content both horizontally and vertically.
+category: primitive
+tags:
+  - center
+  - align
+  - middle
+slots:
+  - name: children
+    label: Content
+    required: false
+props:
+  - name: flex
+    label: Flex
+    type: number
+    group: layout
+  - name: bg
+    label: Background
+    type: color
+    group: style
+  - name: p
+    label: Padding
+    type: spacing
+    group: layout
+  - name: py
+    label: Padding Y
+    type: spacing
+    group: layout
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout

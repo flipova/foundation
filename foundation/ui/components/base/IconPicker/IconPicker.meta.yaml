@@ -1,0 +1,4 @@
+name: IconPicker
+description: A searchable grid of icons.
+tags: [base, input, picker, icon]
+props: []

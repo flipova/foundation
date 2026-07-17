@@ -1,33 +1,32 @@
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 /**
- * Hook for managing theme color scheme in the application.
+ * Hook pour gérer le schéma de couleurs du thème dans l'application.
  * 
- * This hook provides a unified way to handle theme selection by:
- * - Using the explicitly provided theme mode if specified
- * - Falling back to the device's native color scheme (light/dark) when no theme is provided
- * - Defaulting to 'light' theme when the native scheme is unavailable
+ * Ce hook fournit une manière unifiée de gérer la sélection du thème :
+ * - Utilisation du mode de thème fourni explicitement s'il est spécifié.
+ * - Utilisation du schéma de couleurs natif de l'appareil (clair/sombre) par défaut.
+ * - Utilisation du thème clair par défaut si le schéma natif n'est pas disponible.
  * 
- * @param theme - Optional explicit theme mode to use instead of device preference
- * @returns The resolved theme mode ('light' | 'dark')
+ * @param theme - (Optionnel) Mode de thème explicite à utiliser au lieu de la préférence de l'appareil.
+ * @returns Le mode de thème résolu ('light' ou 'dark').
  * 
  * @example
  * ```typescript
- * // Use device's native color scheme
+ * // Utiliser le schéma de couleurs natif de l'appareil
  * const theme = useColorScheme();
  * 
- * // Force light theme regardless of device preference
+ * // Forcer le thème clair indépendamment de la préférence de l'appareil
  * const lightTheme = useColorScheme('light');
  * 
- * // Force dark theme regardless of device preference  
+ * // Forcer le thème sombre indépendamment de la préférence de l'appareil
  * const darkTheme = useColorScheme('dark');
  * ```
  * 
  * @remarks
- * - The hook leverages React Native's built-in `useColorScheme` hook
- * - On platforms where color scheme detection is not available, defaults to 'light'
- * - This is typically used in conjunction with the ThemeProvider to ensure
- *   consistent theming across the entire application
+ * - Le hook exploite le hook `useColorScheme` intégré de React Native.
+ * - Sur les plateformes où la détection du schéma de couleurs n'est pas disponible, il utilise 'light' par défaut.
+ * - Ceci est généralement utilisé avec le ThemeProvider pour garantir une thématisation cohérente dans toute l'application.
  */
 export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
   const nativeScheme = useRNColorScheme();

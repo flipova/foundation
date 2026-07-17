@@ -1,0 +1,72 @@
+type: component
+id: Slider
+label: Slider
+description: Range slider input.
+category: input
+tags:
+  - slider
+  - range
+  - input
+  - form
+themeMapping:
+  active: primary
+  track: muted
+variants: []
+sizes:
+  - sm
+  - md
+sizeMap:
+  sm:
+    trackHeight: 4
+    thumbSize: 16
+    labelSize: 11
+    valueSize: 12
+  md:
+    trackHeight: 6
+    thumbSize: 20
+    labelSize: 13
+    valueSize: 14
+colorMap: {}
+props:
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: min
+    label: Min
+    type: number
+    group: behavior
+    default: 0
+  - name: max
+    label: Max
+    type: number
+    group: behavior
+    default: 100
+  - name: step
+    label: Step
+    type: number
+    group: behavior
+    default: 1
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: showValue
+    label: Show value
+    type: boolean
+    group: behavior
+    default: true
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: activeColor
+    label: Active color
+    type: color
+    group: style
+    themeDefault: primary

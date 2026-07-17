@@ -1,0 +1,57 @@
+type: layout
+id: SystemLayout
+label: System UI
+description: System wrapper managing StatusBar, SafeAreaView, and NavigationBar.
+category: special
+tags:
+  - system
+  - statusbar
+  - navigation-bar
+  - safe-area
+architecture:
+  dependencies:
+    - expo-status-bar
+    - react-native-safe-area-context
+slots:
+  - name: children
+    label: Content
+    required: true
+    kind: children
+responsive: false
+animated: false
+props:
+  - name: rootBackgroundColor
+    label: Root Background Color
+    type: color
+    group: style
+    default: '#0c3ddbff'
+  - name: statusBarContentStyle
+    label: Status Bar Style
+    type: enum
+    group: behavior
+    default: auto
+    options:
+      - light
+      - dark
+      - auto
+  - name: edges
+    label: Safe Area Edges
+    type: json
+    group: behavior
+    default:
+      - top
+      - bottom
+      - left
+      - right
+  - name: navigationBarContentStyle
+    label: Nav Bar Style
+    type: enum
+    group: behavior
+    options:
+      - light
+      - dark
+  - name: navigationBarReferenceColor
+    label: Nav Bar Ref Color
+    type: color
+    group: style
+    themeDefault: card

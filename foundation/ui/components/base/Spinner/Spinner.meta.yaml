@@ -1,0 +1,33 @@
+type: component
+id: Spinner
+label: Spinner
+description: Loading indicator.
+category: feedback
+tags:
+  - spinner
+  - loading
+  - indicator
+themeMapping:
+  color: primary
+variants: []
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap: {}
+colorMap: {}
+props:
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: color
+    label: Color
+    type: color
+    group: style
+    themeDefault: primary

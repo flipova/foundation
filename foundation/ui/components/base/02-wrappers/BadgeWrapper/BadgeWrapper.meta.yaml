@@ -1,0 +1,15 @@
+name: BadgeWrapper
+description: Wraps an element and places a customizable notification badge in the top right corner.
+props:
+  - name: count
+    type: number
+    description: Number to display in badge. If 0, no badge is shown unless showZero is true.
+    default: 0
+  - name: showZero
+    type: boolean
+    description: Show badge even if count is 0
+    default: false
+  - name: color
+    type: string
+    description: Badge background color
+    default: #FF3B30

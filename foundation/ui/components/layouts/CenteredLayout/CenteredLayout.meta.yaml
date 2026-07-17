@@ -1,0 +1,61 @@
+type: layout
+id: CenteredLayout
+label: Centered
+description: Centered content with optional card and maxWidth.
+category: page
+tags:
+  - centered
+  - form
+  - onboarding
+  - modal
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: children
+    label: Content
+    required: true
+    kind: children
+responsive: true
+animated: false
+props:
+  - name: maxWidth
+    label: Card Max Width
+    type: number
+    group: layout
+    default: 500
+  - name: padding
+    label: Card Padding
+    type: spacing
+    group: layout
+    default: 4
+  - name: background
+    label: Page Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: cardBackground
+    label: Card Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: 3xl
+  - name: shadowed
+    label: Card Shadow
+    type: boolean
+    group: style
+    default: false
+  - name: mobilePadding
+    label: Mobile Padding
+    type: spacing
+    group: layout
+    default: 4
+  - name: desktopPadding
+    label: Desktop Padding
+    type: spacing
+    group: layout
+    default: 6

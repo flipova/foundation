@@ -17,12 +17,15 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Dimensions, Platform } from "react-native";
-import { Breakpoint } from "../../tokens/breakpoints";
+import { Breakpoint } from '../../tokens';
 import { getBreakpoint } from "../utils/responsive";
 import { usePlatformOverride } from "./PlatformOverride";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+/**
+ * Informations sur le point d'arrêt (breakpoint) actuel et les états d'écran dérivés.
+ */
 export interface BreakpointInfo {
   /** Breakpoint brut (xs, sm, md, lg, xl, 2xl). Null en SSR avant hydratation. */
   breakpoint: Breakpoint | null;
@@ -65,6 +68,12 @@ const deriveInfo = (bp: Breakpoint | null): BreakpointInfo => ({
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Hook permettant d'obtenir des informations sur le point d'arrêt (breakpoint) courant.
+ * Écoute les changements de dimension d'écran pour mettre à jour ces valeurs.
+ *
+ * @returns Un objet contenant les informations de breakpoint (ex: isMobile, isTablet).
+ */
 export const useBreakpoint = (): BreakpointInfo => {
   const override = usePlatformOverride();
   const [bp, setBp] = useState<Breakpoint | null>(getInitialBreakpoint);

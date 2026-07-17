@@ -1,0 +1,78 @@
+type: layout
+id: TutoLayout
+lname: TutoLayout
+description: A guided tutorial overlay layout that traces children elements and renders an interactive tour.
+category: special
+tags:
+  - layout
+  - tutorial
+  - guide
+  - onboarding
+architecture:
+  dependencies:
+    - react-native-reanimated
+themeMapping:
+  root: background
+  accent: primary
+  text: foreground
+slots:
+  - name: children
+    label: Content to Annotate
+    required: true
+    kind: children
+constants:
+  swipeThreshold: 40
+responsive: false
+animated: true
+props:
+  - name: overlayOpacity
+    label: Overlay Opacity
+    type: ratio
+    group: style
+    default: 0.78
+    min: 0
+    max: 1
+  - name: overlayColor
+    label: Overlay Color
+    type: color
+    group: style
+  - name: showSkip
+    label: Skip Button
+    type: boolean
+    group: behavior
+    default: true
+  - name: nextLabel
+    label: Next Label
+    type: string
+    group: content
+    default: Next
+  - name: finishLabel
+    label: Finish Label
+    type: string
+    group: content
+    default: Finish
+  - name: accentColor
+    label: Accent Color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: textBackground
+    label: Text Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: textColor
+    label: Text Color
+    type: color
+    group: style
+    themeDefault: foreground
+  - name: mutedTextColor
+    label: Secondary Text
+    type: color
+    group: style
+    themeDefault: mutedForeground
+  - name: steps
+    label: Steps
+    type: json
+    group: content
+    default: []

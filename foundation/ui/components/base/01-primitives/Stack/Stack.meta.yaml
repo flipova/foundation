@@ -1,0 +1,41 @@
+type: primitive
+id: Stack
+label: Stack
+description: Vertical stack with consistent spacing between children.
+category: primitive
+tags:
+  - stack
+  - vertical
+  - column
+  - vstack
+slots:
+  - name: children
+    label: Content
+    required: false
+props:
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 2
+  - name: align
+    label: Align
+    type: enum
+    group: layout
+    options:
+      - stretch
+      - flex-start
+      - center
+      - flex-end
+  - name: bg
+    label: Background
+    type: color
+    group: style
+  - name: p
+    label: Padding
+    type: spacing
+    group: layout
+  - name: flex
+    label: Flex
+    type: number
+    group: layout

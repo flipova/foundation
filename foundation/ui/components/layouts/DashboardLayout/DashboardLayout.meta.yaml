@@ -1,0 +1,111 @@
+type: layout
+id: DashboardLayout
+label: Dashboard
+description: Fixed header, collapsible sidebar, scrollable content, optional footer.
+category: page
+tags:
+  - dashboard
+  - admin
+  - sidebar
+  - header
+architecture:
+  dependencies:
+    - react-native-reanimated
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: header
+    label: Header
+    required: true
+    kind: named
+  - name: content
+    label: Content
+    required: true
+    kind: named
+  - name: sidebar
+    label: Sidebar
+    required: false
+    kind: named
+  - name: footer
+    label: Footer
+    required: false
+    kind: named
+responsive: true
+animated: true
+props:
+  - name: sidebarWidth
+    label: Sidebar Width
+    type: number
+    group: layout
+    default: 260
+  - name: sidebarCollapsedWidth
+    label: Collapsed Sidebar Width
+    type: number
+    group: layout
+    default: 70
+  - name: headerHeight
+    label: Header Height
+    type: number
+    group: layout
+    default: 70
+  - name: footerHeight
+    label: Footer Height
+    type: number
+    group: layout
+    default: 60
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: disableContentScroll
+    label: Disable Content Scroll
+    type: boolean
+    group: behavior
+    default: false
+  - name: headerBackground
+    label: Header Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: sidebarBackground
+    label: Sidebar Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: contentBackground
+    label: Content Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: footerBackground
+    label: Footer Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: headerPaddingX
+    label: Header X Padding
+    type: spacing
+    group: layout
+    default: 4
+  - name: mobileHeaderMinHeight
+    label: Min Mobile Header Height
+    type: number
+    group: layout
+    default: 60
+  - name: defaultSidebarCollapsed
+    label: Sidebar Collapsed by Default
+    type: boolean
+    group: behavior
+    default: false

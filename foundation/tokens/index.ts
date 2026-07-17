@@ -1,10 +1,6 @@
-export * from './breakpoints';
-export * from './colors';
-export * from './motion';
-export * from './opacity';
-export * from './radii';
-export * from './shadows';
-export * from './spacing';
-export * from './typography';
-export * from './z-index';
+/**
+ * @fileoverview Unified design tokens for Flipova Foundation.
+ * Tokens are generated from tokens.yaml.
+ */
 
+export * from './generated';

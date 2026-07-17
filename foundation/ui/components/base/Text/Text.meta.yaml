@@ -1,0 +1,58 @@
+type: component
+id: Text
+label: Text
+description: Text display component with typography control.
+category: display
+tags:
+  - text
+  - label
+  - paragraph
+  - heading
+  - typography
+themeMapping:
+  color: foreground
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: text
+    label: Text
+    type: string
+    group: content
+    default: Text
+  - name: fontSize
+    label: Font size
+    type: number
+    group: style
+    default: 14
+  - name: fontWeight
+    label: Font weight
+    type: enum
+    group: style
+    default: '400'
+    options:
+      - '300'
+      - '400'
+      - '500'
+      - '600'
+      - '700'
+      - '800'
+  - name: color
+    label: Color
+    type: color
+    group: style
+    themeDefault: foreground
+  - name: textAlign
+    label: Align
+    type: enum
+    group: style
+    default: left
+    options:
+      - left
+      - center
+      - right
+  - name: numberOfLines
+    label: Max lines
+    type: number
+    group: behavior

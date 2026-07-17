@@ -1,0 +1,26 @@
+type: component
+id: Pressable
+label: Pressable
+description: Generic pressable wrapper with feedback.
+category: action
+tags:
+  - pressable
+  - touchable
+  - tap
+  - click
+themeMapping: {}
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: opacity
+    label: Press opacity
+    type: number
+    group: style
+    default: 0.7

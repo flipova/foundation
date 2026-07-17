@@ -1,0 +1,41 @@
+type: primitive
+id: Scroll
+label: Scroll
+description: Scrollable container.
+category: primitive
+tags:
+  - scroll
+  - scrollview
+  - overflow
+slots:
+  - name: children
+    label: Content
+    required: false
+props:
+  - name: horizontal
+    label: Horizontal
+    type: boolean
+    group: layout
+    default: false
+  - name: showsScrollIndicator
+    label: Show Indicator
+    type: boolean
+    group: behavior
+    default: true
+  - name: scrollEnabled
+    label: Scroll Enabled
+    type: boolean
+    group: behavior
+    default: true
+  - name: bg
+    label: Background
+    type: color
+    group: style
+  - name: p
+    label: Padding
+    type: spacing
+    group: layout
+  - name: flex
+    label: Flex
+    type: number
+    group: layout

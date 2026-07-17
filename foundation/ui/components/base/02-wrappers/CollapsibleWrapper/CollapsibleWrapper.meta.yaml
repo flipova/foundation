@@ -1,0 +1,7 @@
+name: CollapsibleWrapper
+description: A container that smoothly expands or collapses its children height.
+props:
+  - name: isExpanded
+    type: boolean
+    description: Whether the container is expanded
+    default: false

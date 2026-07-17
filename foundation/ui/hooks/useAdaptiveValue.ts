@@ -11,12 +11,22 @@
 import { useMemo } from "react";
 import { useBreakpoint } from "./useBreakpoint";
 
+/**
+ * Configuration pour une valeur qui s'adapte en fonction du breakpoint.
+ */
 export interface AdaptiveConfig<T> {
   mobile?: T;
   tablet?: T;
   desktop?: T;
 }
 
+/**
+ * Hook permettant de sélectionner dynamiquement une valeur selon le breakpoint courant.
+ *
+ * @param adaptive - Objet de configuration par breakpoint (mobile, tablette, bureau).
+ * @param fallback - Valeur de repli si la configuration n'est pas définie.
+ * @returns La valeur adaptée au breakpoint courant.
+ */
 export function useAdaptiveValue<T>(
   adaptive: AdaptiveConfig<T> | undefined,
   fallback: T,

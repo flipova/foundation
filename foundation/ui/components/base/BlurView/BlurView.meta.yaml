@@ -1,0 +1,39 @@
+type: component
+id: BlurView
+label: Blur View
+description: Blurred background overlay container.
+category: display
+tags:
+  - blur
+  - glass
+  - frosted
+  - overlay
+themeMapping: {}
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: intensity
+    label: Intensity
+    type: number
+    group: style
+    default: 50
+  - name: tint
+    label: Tint
+    type: enum
+    group: style
+    default: default
+    options:
+      - default
+      - light
+      - dark
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Padding
+    type: spacing
+    group: layout

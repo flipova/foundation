@@ -1,0 +1,83 @@
+type: component
+id: Avatar
+label: Avatar
+description: User avatar with image, initials, or icon fallback.
+category: display
+tags:
+  - avatar
+  - user
+  - profile
+  - image
+themeMapping:
+  bg: muted
+  text: mutedForeground
+variants:
+  - name: circle
+    label: Circle
+    overrides:
+      borderRadius: full
+  - name: square
+    label: Square
+    overrides:
+      borderRadius: md
+sizes:
+  - xs
+  - sm
+  - md
+  - lg
+  - xl
+sizeMap:
+  xs:
+    height: 24
+    width: 24
+    fontSize: 10
+  sm:
+    height: 32
+    width: 32
+    fontSize: 12
+  md:
+    height: 40
+    width: 40
+    fontSize: 14
+  lg:
+    height: 56
+    width: 56
+    fontSize: 18
+  xl:
+    height: 72
+    width: 72
+    fontSize: 24
+colorMap: {}
+props:
+  - name: variant
+    label: Shape
+    type: enum
+    group: style
+    default: circle
+    options:
+      - circle
+      - square
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - xs
+      - sm
+      - md
+      - lg
+      - xl
+  - name: source
+    label: Image source
+    type: string
+    group: content
+  - name: initials
+    label: Initials
+    type: string
+    group: content
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: muted

@@ -1,0 +1,108 @@
+type: component
+id: Button
+label: Button
+description: Pressable button with variant and size support.
+category: action
+tags:
+  - button
+  - cta
+  - action
+  - pressable
+themeMapping:
+  bg: primary
+  text: primaryForeground
+variants:
+  - name: primary
+    label: Primary
+    overrides:
+      borderWidth: 0
+  - name: secondary
+    label: Secondary
+    overrides:
+      borderWidth: 0
+  - name: outline
+    label: Outline
+    overrides:
+      bg: transparent
+      borderWidth: 1
+  - name: ghost
+    label: Ghost
+    overrides:
+      bg: transparent
+      borderWidth: 0
+  - name: destructive
+    label: Destructive
+    overrides:
+      borderWidth: 0
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap:
+  sm:
+    height: 32
+    px: 3
+    fontSize: 13
+  md:
+    height: 40
+    px: 4
+    fontSize: 15
+  lg:
+    height: 48
+    px: 5
+    fontSize: 17
+colorMap: {}
+props:
+  - name: label
+    label: Label
+    type: string
+    group: content
+    default: Button
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: primary
+    options:
+      - primary
+      - secondary
+      - outline
+      - ghost
+      - destructive
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: loading
+    label: Loading
+    type: boolean
+    group: behavior
+    default: false
+  - name: fullWidth
+    label: Full width
+    type: boolean
+    group: layout
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: md
+  - name: iconPosition
+    label: Icon position
+    type: enum
+    group: layout
+    default: left
+    options:
+      - left
+      - right

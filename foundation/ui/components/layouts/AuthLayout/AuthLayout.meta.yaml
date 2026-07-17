@@ -1,0 +1,76 @@
+type: layout
+id: AuthLayout
+label: Authentication
+description: 'Panel branding (desktop) + centered form. Mobile: full screen.'
+category: page
+tags:
+  - auth
+  - login
+  - signup
+  - onboarding
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: children
+    label: Form
+    required: true
+    kind: children
+  - name: branding
+    label: Panel branding
+    required: false
+    kind: named
+responsive: true
+animated: false
+props:
+  - name: brandingBackground
+    label: Branding Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: background
+    label: Background
+    type: background
+    group: style
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: brandingRatio
+    label: Branding Ratio
+    type: ratio
+    group: layout
+    default: 0.5
+    min: 0
+    max: 1
+  - name: padding
+    label: Form Padding
+    type: spacing
+    group: layout
+    default: 5
+  - name: shadowed
+    label: Mobile Shadow
+    type: boolean
+    group: style
+    default: true
+  - name: formMaxWidth
+    label: Form Max Width
+    type: number
+    group: layout
+    default: 520
+  - name: formScrollPaddingY
+    label: Scroll Y Padding
+    type: spacing
+    group: layout
+    default: 8
+  - name: formScrollPaddingX
+    label: Scroll X Padding
+    type: spacing
+    group: layout
+    default: 4

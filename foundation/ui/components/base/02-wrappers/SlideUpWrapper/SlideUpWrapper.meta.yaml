@@ -1,0 +1,15 @@
+name: SlideUpWrapper
+description: Animates its children sliding up from below on mount.
+props:
+  - name: duration
+    type: number
+    description: Animation duration in ms
+    default: 500
+  - name: delay
+    type: number
+    description: Animation delay in ms
+    default: 0
+  - name: distance
+    type: number
+    description: Distance to slide from in pixels
+    default: 50

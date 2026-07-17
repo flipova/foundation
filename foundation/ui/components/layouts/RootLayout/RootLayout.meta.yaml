@@ -1,0 +1,71 @@
+type: layout
+id: RootLayout
+label: Root
+description: Root page container with direct flex control. Ideal as the base of every page.
+category: page
+tags:
+  - root
+  - page
+  - container
+  - flex
+themeMapping:
+  root: background
+slots:
+  - name: children
+    label: Content
+    required: true
+    kind: children
+responsive: false
+animated: false
+props:
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: padding
+    label: Padding
+    type: spacing
+    group: layout
+    default: 0
+  - name: justifyContent
+    label: Justify
+    type: enum
+    group: layout
+    default: flex-start
+    options:
+      - flex-start
+      - center
+      - flex-end
+      - space-between
+      - space-around
+      - space-evenly
+  - name: alignItems
+    label: Align Items
+    type: enum
+    group: layout
+    default: stretch
+    options:
+      - stretch
+      - flex-start
+      - center
+      - flex-end
+      - baseline
+  - name: flexDirection
+    label: Direction
+    type: enum
+    group: layout
+    default: column
+    options:
+      - column
+      - row
+  - name: gap
+    label: Gap
+    type: number
+    group: layout
+    default: 0

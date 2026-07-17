@@ -1,0 +1,11 @@
+name: TooltipWrapper
+description: Wraps a component and displays a tooltip bubble near it.
+props:
+  - name: text
+    type: string
+    description: Tooltip text
+    default: 
+  - name: isVisible
+    type: boolean
+    description: Whether tooltip is visible
+    default: false

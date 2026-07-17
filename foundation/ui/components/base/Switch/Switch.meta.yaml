@@ -1,0 +1,56 @@
+type: component
+id: Switch
+label: Switch
+description: Toggle switch.
+category: input
+tags:
+  - switch
+  - toggle
+  - boolean
+themeMapping:
+  active: primary
+  track: muted
+variants: []
+sizes:
+  - sm
+  - md
+sizeMap:
+  sm:
+    scale: 0.8
+    labelSize: 13
+    width: 36
+    height: 20
+  md:
+    scale: 1
+    labelSize: 15
+    width: 44
+    height: 24
+colorMap: {}
+props:
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: activeColor
+    label: Active color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: trackColor
+    label: Track color
+    type: color
+    group: style
+    themeDefault: muted

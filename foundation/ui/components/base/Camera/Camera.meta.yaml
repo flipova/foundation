@@ -1,0 +1,53 @@
+type: component
+id: Camera
+label: Camera
+description: Camera viewfinder for photo/video capture.
+category: media
+tags:
+  - camera
+  - photo
+  - capture
+  - scan
+themeMapping:
+  bg: muted
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: facing
+    label: Facing
+    type: enum
+    group: behavior
+    default: back
+    options:
+      - front
+      - back
+  - name: flash
+    label: Flash
+    type: enum
+    group: behavior
+    default: 'off'
+    options:
+      - 'off'
+      - 'on'
+      - auto
+  - name: enableTorch
+    label: Torch
+    type: boolean
+    group: behavior
+    default: false
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 300
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: lg

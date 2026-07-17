@@ -1,0 +1,75 @@
+type: layout
+id: GridLayout
+label: Grid
+description: Responsive grid with adaptive columns.
+category: content
+tags:
+  - grid
+  - columns
+  - responsive
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: items
+    label: Cells
+    required: true
+    kind: items
+responsive: true
+animated: false
+previewItemCount: 6
+props:
+  - name: columns
+    label: Columns
+    type: number
+    group: layout
+    description: Number of columns (auto if omitted)
+  - name: cellHeight
+    label: Cell Height
+    type: number
+    group: layout
+    description: Fixed height in px - omitted = content adaptive
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: false
+  - name: padding
+    label: Padding
+    type: spacing
+    group: layout
+    default: 0
+  - name: itemBackground
+    label: Item Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: itemBorderRadius
+    label: Item Radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Background
+    type: color
+    group: style
+    default: transparent
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: compact
+    label: Compact Mode
+    type: boolean
+    group: behavior
+    default: false

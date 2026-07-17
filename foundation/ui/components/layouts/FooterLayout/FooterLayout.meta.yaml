@@ -1,0 +1,87 @@
+type: layout
+id: FooterLayout
+label: Footer
+description: Main content with fixed or scrollable footer.
+category: content
+tags:
+  - footer
+  - sticky
+  - bottom-bar
+themeMapping:
+  root: background
+slots:
+  - name: content
+    label: Content
+    required: true
+    kind: named
+  - name: footer
+    label: Footer
+    required: true
+    kind: named
+responsive: false
+animated: false
+props:
+  - name: footerHeight
+    label: Footer Height
+    type: number
+    group: layout
+    default: 60
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: sticky
+    label: Sticky Footer
+    type: boolean
+    group: behavior
+    default: false
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: footerBackground
+    label: Footer Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: footerBorderRadius
+    label: Footer Radius
+    type: radius
+    group: style
+    default: none
+  - name: contentBorderRadius
+    label: Content Radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Content Padding
+    type: spacing
+    group: layout
+    default: 5
+  - name: footerPadding
+    label: Footer Padding
+    type: spacing
+    group: layout
+    default: 5
+  - name: compact
+    label: Compact Mode
+    type: boolean
+    group: behavior
+    default: false

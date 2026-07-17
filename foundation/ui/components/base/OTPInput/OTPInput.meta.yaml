@@ -1,0 +1,4 @@
+name: OTPInput
+description: A multi-cell One-Time-Password input.
+tags: [base, input, otp]
+props: []

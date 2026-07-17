@@ -1,0 +1,45 @@
+type: component
+id: LottieAnimation
+label: Lottie
+description: Lottie animation player.
+category: media
+tags:
+  - lottie
+  - animation
+  - motion
+  - json
+themeMapping: {}
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: source
+    label: Source URL
+    type: string
+    group: content
+  - name: autoPlay
+    label: Auto play
+    type: boolean
+    group: behavior
+    default: true
+  - name: loop
+    label: Loop
+    type: boolean
+    group: behavior
+    default: true
+  - name: speed
+    label: Speed
+    type: number
+    group: behavior
+    default: 1
+  - name: width
+    label: Width
+    type: number
+    group: layout
+    default: 200
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 200

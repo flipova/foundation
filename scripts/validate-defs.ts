@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/**
+ * validate-defs.ts
+ *
+ * Vérifie que chaque entrée dans registry.yaml possède
+ * un fichier de définition correspondant dans registry/defs/.
+ * Signale aussi les defs orphelins (présents dans defs/ mais absents du registre).
+ *
+ * Usage: npx tsx scripts/validate-defs.ts
+ */
+
+import fs from 'fs';
+import path from 'path';
+import yaml from 'yaml';
+
+const ROOT = path.join(__dirname, '..');
+const DEFS_DIR = path.join(ROOT, 'foundation/registry/defs');
+const REGISTRY_PATH = path.join(ROOT, 'foundation/registry/registry.yaml');
+
+function main() {
+  console.log('🔍 Flipova — Validation Defs vs Registry\n');
+
+  const registryContent = fs.readFileSync(REGISTRY_PATH, 'utf8');
+  const registry = yaml.parse(registryContent) as Record<string, unknown>;
+  const registryIds = Object.keys(registry);
+
+  const defFiles = fs.readdirSync(DEFS_DIR)
+    .filter(f => f.endsWith('.yaml'))
+    .map(f => f.replace('.yaml', ''));
+
+  const missingDefs = registryIds.filter(id => !defFiles.includes(id));
+  const orphanDefs = defFiles.filter(id => !registryIds.includes(id));
+
+  if (missingDefs.length === 0 && orphanDefs.length === 0) {
+    console.log(`✅ Tout est synchronisé ! ${registryIds.length} composants, ${defFiles.length} defs.`);
+    return;
+  }
+
+  if (missingDefs.length > 0) {
+    console.log(`❌ DEFS MANQUANTES (${missingDefs.length}) — présents dans le registre mais sans def :`);
+    missingDefs.forEach(id => console.log(`   - ${id}.yaml`));
+    console.log();
+  }
+
+  if (orphanDefs.length > 0) {
+    console.log(`⚠️  DEFS ORPHELINES (${orphanDefs.length}) — présentes dans defs/ mais absentes du registre :`);
+    orphanDefs.forEach(id => console.log(`   - ${id}.yaml`));
+    console.log();
+  }
+
+  console.log(`📊 Total registre : ${registryIds.length} | Defs : ${defFiles.length} | Manquantes : ${missingDefs.length}`);
+
+  if (missingDefs.length > 0) process.exit(1);
+}
+
+main();

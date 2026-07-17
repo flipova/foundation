@@ -1,0 +1,7 @@
+name: ScalePressWrapper
+description: Wraps any element and adds a bouncy shrink effect when pressed.
+props:
+  - name: scaleTo
+    type: number
+    description: Scale factor when pressed
+    default: 0.95

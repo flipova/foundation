@@ -1,0 +1,44 @@
+type: component
+id: Card
+label: Card
+description: Surface container used to group and display information.
+category: display
+tags:
+  - card
+  - surface
+  - container
+themeMapping:
+  bg: card
+  text: cardForeground
+  border: border
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: shadow
+    label: Shadow
+    type: enum
+    group: style
+    default: md
+    options:
+      - none
+      - sm
+      - md
+      - lg
+      - xl
+  - name: interactive
+    label: Interactive
+    type: boolean
+    group: behavior
+    default: false
+  - name: padding
+    label: Padding
+    type: spacing
+    group: layout
+    default: 4
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: md

@@ -1,0 +1,48 @@
+type: component
+id: Gradient
+label: Gradient
+description: Linear gradient background container.
+category: display
+tags:
+  - gradient
+  - linear
+  - background
+  - color
+themeMapping: {}
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: startColor
+    label: Start color
+    type: color
+    group: style
+    default: '#3b82f6'
+  - name: endColor
+    label: End color
+    type: color
+    group: style
+    default: '#8b5cf6'
+  - name: direction
+    label: Direction
+    type: enum
+    group: style
+    default: vertical
+    options:
+      - vertical
+      - horizontal
+      - diagonal
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none
+  - name: height
+    label: Height
+    type: number
+    group: layout
+  - name: padding
+    label: Padding
+    type: spacing
+    group: layout

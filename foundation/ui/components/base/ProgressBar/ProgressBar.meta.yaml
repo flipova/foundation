@@ -1,0 +1,53 @@
+type: component
+id: ProgressBar
+label: Progress Bar
+description: Horizontal progress indicator.
+category: feedback
+tags:
+  - progress
+  - bar
+  - loading
+  - percentage
+themeMapping:
+  active: primary
+  track: muted
+variants: []
+sizes:
+  - sm
+  - md
+sizeMap: {}
+colorMap: {}
+props:
+  - name: progress
+    label: Progress (0-1)
+    type: number
+    group: content
+    default: 0.5
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: color
+    label: Color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: trackColor
+    label: Track color
+    type: color
+    group: style
+    themeDefault: muted
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: full
+  - name: showLabel
+    label: Show label
+    type: boolean
+    group: behavior
+    default: false

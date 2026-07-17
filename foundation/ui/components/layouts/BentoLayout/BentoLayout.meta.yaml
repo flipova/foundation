@@ -1,0 +1,66 @@
+type: layout
+id: BentoLayout
+label: Bento
+description: Bento box grid with varied cell sizes.
+category: content
+tags:
+  - bento
+  - grid
+  - mosaic
+  - dashboard
+themeMapping:
+  root: background
+slots:
+  - name: items
+    label: Items
+    required: true
+    kind: items
+responsive: true
+animated: false
+previewItemCount: 5
+props:
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 2
+  - name: itemBackground
+    label: Item Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: itemBorderRadius
+    label: Item Radius
+    type: radius
+    group: style
+    default: none
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+    default: 1200
+  - name: baseHeight
+    label: Base Height
+    type: number
+    group: layout
+    default: 200
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: cellConfig
+    label: Cell Config
+    type: json
+    group: content
+    default: []

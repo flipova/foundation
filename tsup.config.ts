@@ -1,5 +1,19 @@
 import { defineConfig } from "tsup";
+import * as fs from "fs";
+import * as yaml from "js-yaml";
 
+const yamlPlugin = {
+  name: 'yaml',
+  setup(build: any) {
+    build.onLoad({ filter: /\.yaml$/ }, async (args: any) => {
+      const text = await fs.promises.readFile(args.path, 'utf8');
+      return {
+        contents: JSON.stringify(yaml.load(text)),
+        loader: 'json',
+      };
+    });
+  },
+};
 // All native / RN packages that must never end up in web bundles.
 // Consumers that import @flipova/foundation/web get a pure browser build.
 const nativeExternal = [
@@ -9,11 +23,18 @@ const nativeExternal = [
   "expo-status-bar",
   "expo-navigation-bar",
   "expo-camera",
+  "expo-blur",
+  "expo-video",
   "react-native-gesture-handler",
   "react-native-reanimated",
   "react-native-safe-area-context",
   "react-native-screens",
   "lucide-react-native",
+  "react-native-maps",
+  "react-native-webview",
+  "lottie-react-native",
+  "@react-native-picker/picker",
+  "react-native-date-picker",
 ];
 
 const sharedExternal = [
@@ -47,12 +68,13 @@ export default defineConfig([
     // Explicitly external: ALL native packages so they never leak into chunks
     external: sharedExternal,
     outDir: "dist",
+    esbuildPlugins: [yamlPlugin],
   },
 
   // ── Studio CLI ─────────────────────────────────────────────────────────────
   {
     entry: {
-      "studio-v2/cli/index": "studio-v2/cli/index.ts",
+      "cli/flipova": "scripts/init-cli.ts",
     },
     format: ["cjs"],
     dts: false,

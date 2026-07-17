@@ -17,6 +17,9 @@ import { usePlatformOverride } from "./PlatformOverride";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+/**
+ * Informations sur la plateforme d'exécution courante.
+ */
 export interface PlatformInfo {
   /** true si Platform.OS === 'web' */
   isWeb: boolean;
@@ -30,6 +33,12 @@ export interface PlatformInfo {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
+/**
+ * Hook permettant d'obtenir les informations de la plateforme courante (web, iOS, Android).
+ * Tient compte de toute surcharge (override) si elle existe.
+ *
+ * @returns Un objet contenant des booléens indiquant la plateforme.
+ */
 export const usePlatformInfo = (): PlatformInfo => {
   const override = usePlatformOverride();
   if (override?.platform) return override.platform;

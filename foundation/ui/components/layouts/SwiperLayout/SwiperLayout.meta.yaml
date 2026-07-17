@@ -1,0 +1,101 @@
+type: layout
+id: SwiperLayout
+label: Swiper
+description: Multi-directional swipeable carousel with preloading.
+category: card
+tags:
+  - swiper
+  - carousel
+  - slides
+  - stories
+architecture:
+  dependencies:
+    - react-native-reanimated
+    - react-native-gesture-handler
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: items
+    label: Slides
+    required: true
+    kind: items
+constants:
+  scaleFactor: 0.85
+responsive: false
+animated: true
+previewItemCount: 4
+props:
+  - name: enableSwipeUp
+    label: Swipe Up
+    type: boolean
+    group: behavior
+    default: false
+  - name: enableSwipeDown
+    label: Swipe Down
+    type: boolean
+    group: behavior
+    default: false
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: cardBackground
+    label: Card Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: cardBorderRadius
+    label: Card Radius
+    type: radius
+    group: style
+    default: none
+  - name: showCardCount
+    label: Card Counter
+    type: boolean
+    group: behavior
+    default: false
+  - name: preloadRange
+    label: Preloading
+    type: number
+    group: behavior
+    default: 2
+  - name: swipeThreshold
+    label: Swipe Threshold
+    type: number
+    group: behavior
+    default: 40
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: springDamping
+    label: Spring Damping
+    type: number
+    group: behavior
+    default: 12
+  - name: springStiffness
+    label: Spring Stiffness
+    type: number
+    group: behavior
+    default: 160
+  - name: cardCountBackground
+    label: Counter Background
+    type: color
+    group: style
+    default: rgba(0,0,0,0.6)
+  - name: cardCountTextColor
+    label: Counter Text
+    type: color
+    group: style
+    default: '#fff'

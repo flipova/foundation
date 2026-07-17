@@ -1,0 +1,97 @@
+type: layout
+id: DeckLayout
+label: Deck
+description: Swipeable card stack with depth effect.
+category: card
+tags:
+  - deck
+  - cards
+  - swipe
+  - tinder
+  - stack
+architecture:
+  dependencies:
+    - react-native-reanimated
+    - react-native-gesture-handler
+    - expo-haptics
+slots:
+  - name: items
+    label: Cards
+    required: true
+    kind: items
+constants:
+  swipeThreshold: 60
+  exitDistance: 450
+  springConfig:
+    damping: 20
+    stiffness: 200
+    mass: 0.5
+responsive: false
+animated: true
+previewItemCount: 4
+props:
+  - name: peekOffset
+    label: Peek Offset
+    type: number
+    group: layout
+    default: 12
+  - name: peekScale
+    label: Peek Scale
+    type: ratio
+    group: layout
+    default: 0.05
+    min: 0
+    max: 0.2
+  - name: cycle
+    label: Loop
+    type: boolean
+    group: behavior
+    default: false
+  - name: cardShadow
+    label: Card Shadows
+    type: boolean
+    group: style
+    default: true
+  - name: cardBackground
+    label: Card Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: cardBorderRadius
+    label: Card Radius
+    type: radius
+    group: style
+    default: 24
+  - name: containerWidth
+    label: Container Width
+    type: string
+    group: layout
+    default: 90%
+  - name: containerHeight
+    label: Container Height
+    type: string
+    group: layout
+    default: 75%
+  - name: peekCount
+    label: Background Cards
+    type: number
+    group: layout
+    default: 2
+  - name: peekRotation
+    label: Peek Rotation
+    type: number
+    group: layout
+    default: 0
+  - name: direction
+    label: Direction
+    type: enum
+    group: behavior
+    default: horizontal
+    options:
+      - horizontal
+      - vertical
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background

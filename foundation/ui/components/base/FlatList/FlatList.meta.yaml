@@ -1,0 +1,41 @@
+type: component
+id: FlatList
+label: List
+description: Scrollable list with virtualization.
+category: display
+tags:
+  - list
+  - flatlist
+  - scroll
+  - virtualized
+themeMapping:
+  bg: background
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: horizontal
+    label: Horizontal
+    type: boolean
+    group: layout
+    default: false
+  - name: numColumns
+    label: Columns
+    type: number
+    group: layout
+    default: 1
+  - name: spacing
+    label: Item spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: showsScrollIndicator
+    label: Scroll indicator
+    type: boolean
+    group: behavior
+    default: true
+  - name: background
+    label: Background
+    type: color
+    group: style

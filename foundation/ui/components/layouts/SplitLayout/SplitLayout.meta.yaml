@@ -1,0 +1,84 @@
+type: layout
+id: SplitLayout
+label: Split
+description: Two panels (left/right or top/bottom) with independent scroll.
+category: content
+tags:
+  - split
+  - two-pane
+  - master-detail
+themeMapping:
+  root: background
+  left: card
+  right: card
+slots:
+  - name: left
+    label: Left Panel
+    required: true
+    kind: named
+  - name: right
+    label: Right Panel
+    required: true
+    kind: named
+responsive: true
+animated: false
+props:
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: leftWidth
+    label: Fixed Left Width
+    type: number
+    group: layout
+  - name: ratio
+    label: Left Ratio
+    type: ratio
+    group: layout
+    default: 0.5
+    min: 0
+    max: 1
+  - name: orientation
+    label: Orientation
+    type: enum
+    group: layout
+    default: horizontal
+    options:
+      - horizontal
+      - vertical
+  - name: hideLeftOnMobile
+    label: Hide Left on Mobile
+    type: boolean
+    group: behavior
+    default: false
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: leftBackground
+    label: Left Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: rightBackground
+    label: Right Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: leftBorderRadius
+    label: Left Radius
+    type: radius
+    group: style
+    default: none
+  - name: rightBorderRadius
+    label: Right Radius
+    type: radius
+    group: style
+    default: none

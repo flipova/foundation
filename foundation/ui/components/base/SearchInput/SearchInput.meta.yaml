@@ -1,0 +1,4 @@
+name: SearchInput
+description: A specialized input for searching with a clear button.
+tags: [base, input, search]
+props: []

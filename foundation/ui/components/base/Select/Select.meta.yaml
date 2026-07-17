@@ -1,0 +1,90 @@
+type: component
+id: Select
+label: Select
+description: Dropdown select input with options.
+category: input
+tags:
+  - select
+  - dropdown
+  - picker
+  - form
+themeMapping:
+  bg: input
+  text: foreground
+  border: border
+variants:
+  - name: outlined
+    label: Outlined
+    overrides:
+      borderWidth: 1
+  - name: filled
+    label: Filled
+    overrides:
+      borderWidth: 0
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap:
+  sm:
+    height: 32
+    px: 3
+    fontSize: 13
+    labelSize: 11
+  md:
+    height: 40
+    px: 4
+    fontSize: 15
+    labelSize: 13
+  lg:
+    height: 48
+    px: 5
+    fontSize: 17
+    labelSize: 14
+colorMap: {}
+props:
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: outlined
+    options:
+      - outlined
+      - filled
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: placeholder
+    label: Placeholder
+    type: string
+    group: content
+    default: Select...
+  - name: error
+    label: Error message
+    type: string
+    group: content
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: md
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: input

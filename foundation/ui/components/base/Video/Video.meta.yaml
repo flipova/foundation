@@ -1,0 +1,68 @@
+type: component
+id: Video
+label: Voido
+description: Video player with controls, autoplay, and loop.
+category: media
+tags:
+  - video
+  - player
+  - media
+  - stream
+themeMapping:
+  bg: muted
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: source
+    label: Source URL
+    type: string
+    group: content
+  - name: poster
+    label: Poster URL
+    type: string
+    group: content
+  - name: autoplay
+    label: Autoplay
+    type: boolean
+    group: behavior
+    default: false
+  - name: loop
+    label: Loop
+    type: boolean
+    group: behavior
+    default: false
+  - name: muted
+    label: Muted
+    type: boolean
+    group: behavior
+    default: true
+  - name: controls
+    label: Show controls
+    type: boolean
+    group: behavior
+    default: true
+  - name: resizeMode
+    label: Resize mode
+    type: enum
+    group: style
+    default: contain
+    options:
+      - cover
+      - contain
+      - stretch
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 220
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none

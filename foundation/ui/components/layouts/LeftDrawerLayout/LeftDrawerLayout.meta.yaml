@@ -1,0 +1,106 @@
+type: layout
+id: LeftDrawerLayout
+label: Left Drawer
+description: Animated left lateral drawer with swipe gesture.
+category: navigation
+tags:
+  - drawer
+  - side-menu
+  - swipe
+  - navigation
+architecture:
+  dependencies:
+    - react-native-reanimated
+    - react-native-gesture-handler
+    - expo-haptics
+themeMapping:
+  root: background
+  drawer: background
+  accent: primary
+  border: border
+slots:
+  - name: content
+    label: Main Content
+    required: true
+    kind: named
+  - name: drawerContent
+    label: Drawer Content
+    required: true
+    kind: named
+constants:
+  springConfig:
+    damping: 25
+    stiffness: 200
+    mass: 0.5
+    overshootClamping: true
+responsive: false
+animated: true
+props:
+  - name: drawerWidth
+    label: Drawer Width
+    type: number
+    group: layout
+    default: 280
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: drawerBackground
+    label: Drawer Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: drawerBorderRadius
+    label: Drawer Radius
+    type: radius
+    group: style
+    default: none
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: defaultOpen
+    label: Open by Default
+    type: boolean
+    group: behavior
+    default: false
+  - name: handleColor
+    label: Handle Color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: backdropOpacity
+    label: Backdrop Opacity
+    type: ratio
+    group: style
+    default: 0.4
+    min: 0
+    max: 1
+  - name: contentScaleWhenOpen
+    label: Open Content Scale
+    type: ratio
+    group: behavior
+    default: 0.98
+    min: 0.5
+    max: 1
+  - name: handleBarColor
+    label: Handle Bar Color
+    type: color
+    group: style
+    themeDefault: border
+  - name: handleBarWidth
+    label: Gesture Zone Width
+    type: number
+    group: layout
+    default: 40

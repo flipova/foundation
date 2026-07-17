@@ -1,0 +1,233 @@
+.playgroundContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background-color: var(--ifm-background-surface-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 996px) {
+  .playgroundContainer {
+    flex-direction: row;
+    min-height: 400px;
+  }
+}
+
+.previewPane {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background-image: 
+    linear-gradient(to right, var(--ifm-color-emphasis-100) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--ifm-color-emphasis-100) 1px, transparent 1px);
+  background-size: 20px 20px;
+  min-height: 300px;
+}
+
+.canvas {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar {
+  width: 100%;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  background-color: var(--ifm-background-color);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 996px) {
+  .sidebar {
+    width: 320px;
+    border-top: none;
+    border-left: 1px solid var(--ifm-color-emphasis-200);
+  }
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 16px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ifm-color-emphasis-600);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: var(--ifm-color-primary);
+  background-color: var(--ifm-color-emphasis-100);
+}
+
+.activeTab {
+  color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+.sidebarContent {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 16px;
+}
+
+/* Controls */
+.controlsList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.propGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.groupHeader {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ifm-color-emphasis-500);
+  letter-spacing: 0.5px;
+}
+
+.controlField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.controlHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controlLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.controlDefault {
+  font-size: 11px;
+  color: var(--ifm-color-emphasis-400);
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--ifm-color-primary);
+}
+
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+}
+
+/* Toggle Switch */
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--ifm-color-emphasis-300);
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--ifm-color-primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+/* Code Exporter */
+.codeContainer {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 13px;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.codeTag { color: #569cd6; }
+.codeAttr { color: #9cdcfe; }
+.codeString { color: #ce9178; }
+.codeBool { color: #4fc1ff; }
+.codeBrace { color: #ffd700; }

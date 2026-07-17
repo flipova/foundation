@@ -1,5 +1,13 @@
-export type ThemeMode = 'light' | 'dark';
+import type { ThemeName } from '../generated';
 
+/**
+ * Type représentant les modes de thème intégrés (clair ou sombre) et générés.
+ */
+export type ThemeMode = ThemeName | 'light' | 'dark';
+
+/**
+ * Type représentant un mode de thème personnalisé sous forme de chaîne de caractères.
+ */
 export type CustomThemeMode = string;
 
 /**
@@ -50,6 +58,10 @@ export type ColorScheme = {
   gradients: ThemeGradients;
 };
 
+/**
+ * Registre des thèmes disponibles dans l'application.
+ * Contient au minimum les thèmes clair et sombre, plus tout thème personnalisé.
+ */
 export type ThemeRegistry = {
   light: ColorScheme;
   dark: ColorScheme;
