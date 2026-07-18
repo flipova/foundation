@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.0
+
+### Minor Changes
+
+- 7682c7f: Refactor: Remove Flipova Studio, finalize English translations, and fix Docusaurus build issues.
+
 ## 1.11.0
 
 ### Minor Changes
