@@ -1,0 +1,56 @@
+type: component
+id: RadioGroup
+label: Radio Group
+description: Group of radio buttons for single selection.
+category: input
+tags:
+  - radio
+  - group
+  - select
+  - form
+themeMapping:
+  active: primary
+  border: border
+  text: foreground
+variants: []
+sizes:
+  - sm
+  - md
+sizeMap: {}
+colorMap: {}
+props:
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: direction
+    label: Direction
+    type: enum
+    group: layout
+    default: column
+    options:
+      - column
+      - row
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 2
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: activeColor
+    label: Active color
+    type: color
+    group: style
+    themeDefault: primary

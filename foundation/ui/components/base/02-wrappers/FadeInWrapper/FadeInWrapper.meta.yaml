@@ -1,0 +1,11 @@
+name: FadeInWrapper
+description: Animates its children in with a smooth opacity fade on mount.
+props:
+  - name: duration
+    type: number
+    description: Animation duration in ms
+    default: 500
+  - name: delay
+    type: number
+    description: Animation delay in ms
+    default: 0

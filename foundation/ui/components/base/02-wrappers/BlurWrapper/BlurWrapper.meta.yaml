@@ -1,0 +1,11 @@
+name: BlurWrapper
+description: Wraps children in a frosted glass/blur container.
+props:
+  - name: intensity
+    type: number
+    description: Blur intensity (1-100)
+    default: 50
+  - name: tint
+    type: string
+    description: Tint color (light, dark, default)
+    default: default

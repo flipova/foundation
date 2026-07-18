@@ -1,0 +1,108 @@
+type: layout
+id: FlipLayout
+label: Flip
+description: Carousel with front/back flip and horizontal swipe.
+category: card
+tags:
+  - flip
+  - card
+  - recto-verso
+  - flashcard
+architecture:
+  dependencies:
+    - react-native-reanimated
+    - react-native-gesture-handler
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: items
+    label: Front Faces
+    required: true
+    kind: items
+  - name: backContent
+    label: Back Faces
+    required: false
+    kind: named-array
+constants:
+  flipThreshold: 22
+  scaleFactor: 0.92
+  flipScaleFactor: 0.9
+  springNoBounce:
+    damping: 30
+    stiffness: 240
+    mass: 0.6
+  springSnap:
+    damping: 35
+    stiffness: 300
+    mass: 0.5
+  exitLeft: -700
+  exitRight: 700
+responsive: false
+animated: true
+previewItemCount: 3
+props:
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: cardBackground
+    label: Card Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: flipPerspective
+    label: Flip Perspective
+    type: number
+    group: layout
+    default: 1200
+  - name: swipeThreshold
+    label: Swipe Threshold
+    type: number
+    group: behavior
+    default: 40
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: cardBorderRadius
+    label: Card Radius
+    type: radius
+    group: style
+    default: 20
+  - name: cardAspectRatio
+    label: Card ratio (web)
+    type: number
+    group: layout
+    default: 0.5625
+    description: Width/height ratio on web - omitted = adaptive
+  - name: cardMaxHeight
+    label: Max Card Height
+    type: number
+    group: layout
+    description: Max height in px - omitted = no limit
+  - name: dezoomDuration
+    label: Zoom Out Duration
+    type: number
+    group: behavior
+    default: 120
+  - name: flipDuration
+    label: Flip Duration
+    type: number
+    group: behavior
+    default: 320
+  - name: slideOutDuration
+    label: Slide Out Duration
+    type: number
+    group: behavior
+    default: 140

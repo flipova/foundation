@@ -1,0 +1,4 @@
+name: NumberInput
+description: A specialized input for numbers with increment/decrement steppers.
+tags: [base, input, number, stepper]
+props: []

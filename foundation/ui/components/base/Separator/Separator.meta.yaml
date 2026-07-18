@@ -1,0 +1,45 @@
+type: component
+id: Separator
+label: Separator
+description: Visual separator with optional label.
+category: display
+tags:
+  - separator
+  - divider
+  - or
+  - line
+themeMapping:
+  color: border
+  text: mutedForeground
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: color
+    label: Color
+    type: color
+    group: style
+    themeDefault: border
+  - name: thickness
+    label: Thickness
+    type: number
+    group: style
+    default: 1
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 4
+  - name: orientation
+    label: Orientation
+    type: enum
+    group: layout
+    default: horizontal
+    options:
+      - horizontal
+      - vertical

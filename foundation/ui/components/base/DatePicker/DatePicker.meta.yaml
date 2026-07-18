@@ -1,0 +1,74 @@
+type: component
+id: DatePicker
+label: Date Picker
+description: Date/time picker input.
+category: input
+tags:
+  - date
+  - time
+  - picker
+  - calendar
+  - form
+themeMapping:
+  bg: input
+  text: foreground
+  border: border
+  accent: primary
+variants: []
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap:
+  sm:
+    height: 32
+    fontSize: 13
+  md:
+    height: 40
+    fontSize: 15
+  lg:
+    height: 48
+    fontSize: 17
+colorMap: {}
+props:
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: mode
+    label: Mode
+    type: enum
+    group: behavior
+    default: date
+    options:
+      - date
+      - time
+      - datetime
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: placeholder
+    label: Placeholder
+    type: string
+    group: content
+    default: Select date
+  - name: error
+    label: Error message
+    type: string
+    group: content
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: md

@@ -1,0 +1,40 @@
+type: component
+id: Icon
+label: Icon
+description: Vector icon from Feather icon set.
+category: display
+tags:
+  - icon
+  - feather
+  - vector
+  - symbol
+themeMapping:
+  color: foreground
+variants: []
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap: {}
+colorMap: {}
+props:
+  - name: name
+    label: Icon name
+    type: string
+    group: content
+    default: star
+  - name: size
+    label: Size
+    type: number
+    group: style
+    default: 24
+  - name: color
+    label: Color
+    type: color
+    group: style
+    themeDefault: foreground
+  - name: strokeWidth
+    label: Stroke width
+    type: number
+    group: style
+    default: 2

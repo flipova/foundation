@@ -1,0 +1,64 @@
+type: layout
+id: MasonryLayout
+label: Masonry
+description: Multi-column masonry grid.
+category: content
+tags:
+  - masonry
+  - pinterest
+  - waterfall
+themeMapping:
+  root: background
+  surface: card
+slots:
+  - name: items
+    label: Items
+    required: true
+    kind: items
+responsive: false
+animated: false
+previewItemCount: 6
+props:
+  - name: columns
+    label: Columns
+    type: number
+    group: layout
+    default: 2
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 1
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: background
+    label: Background
+    type: color
+    group: style
+    default: transparent
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: itemBackground
+    label: Item Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: itemBorderRadius
+    label: Item Radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout

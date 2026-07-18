@@ -331,7 +331,7 @@ git push --force-with-lease origin feature/your-branch
 - **Registry**: GitHub Packages (`https://npm.pkg.github.com`)
 - **Package**: `@flipova/foundation`
 - **Access**: Private (requires authentication)
-- **CLI**: `npx flipova-studio` works after installation
+- **CLI**: `npx flipova-ds` works after installation
 
 The entire workflow is automated and ensures every published version is properly built, tested, documented, and versioned correctly!
 
@@ -352,21 +352,6 @@ foundation/           # Design system library (published as @flipova/foundation)
 │   └── utils/        # responsive, platform, spacing resolution
 ├── theme/            # ThemeProvider, theme definitions (light, dark, neon...)
 └── tokens/           # spacing, colors, radii, typography, shadows, motion...
-
-studio/               # Visual app builder
-├── app/              # Expo Router app (the studio UI)
-│   ├── app/          # Routes (_layout.tsx, index.tsx)
-│   └── src/
-│       ├── renderer/ # NodeRenderer, componentMap, slotConfig, PlatformSimulator
-│       ├── store/    # StudioProvider (state), tokens (resolution)
-│       └── ui/       # Topbar, LibraryPanel, LayersPanel, DeviceCanvas,
-│                     # PropertiesPanel, DesignPanel, CodePanel, Statusbar,
-│                     # shared/SmartInput, modals/...
-├── cli/              # npx flipova-studio
-├── engine/
-│   ├── codegen/      # generator.ts (page→TSX), project.ts (full project)
-│   └── tree/         # types.ts (TreeNode, ProjectDocument), operations.ts
-└── server/           # Express + WebSocket server, REST API
 ```
 
 ## Adding a New Foundation Component
@@ -456,20 +441,10 @@ export { default as MyComponent } from "./MyComponent";
 export type { MyComponentProps } from "./MyComponent";
 ```
 
-### 4. Map in Studio
-
-Add to `studio/app/src/renderer/componentMap.ts`:
-```ts
-import MyComponent from '../../../../foundation/layout/ui/components/MyComponent';
-// ...
-MyComponent: safe(MyComponent),
-```
-
-### 5. Build & Test
+### 4. Build & Test
 
 ```bash
-npm run build          # Build foundation + studio
-npx flipova-studio     # Start studio, component appears in Library > Components
+npm run build          # Build foundation
 ```
 
 ## Adding a New Block
@@ -481,23 +456,6 @@ Blocks have `slots` and `components` arrays in their registry entry.
 
 Same process but use `foundation/layout/registry/layouts.ts` and `foundation/layout/ui/`.
 Layouts have `slots`, `responsive`, `animated`, `dependencies`, and `constants`.
-
-## SmartInput Linking
-
-All linkable data is available in the SmartInput linker:
-- `$` Tokens, `T` Theme, `S` State, `G` Global, `Q` Queries
-- `N` Nav, `C` Config, `D` Device, `@` Vars, `#` Nodes
-
-States from `setState` actions in triggers are auto-discovered.
-
-## Code Generation
-
-The codegen in `studio/engine/codegen/` transforms the tree into:
-- Page TSX files with imports, hooks, JSX
-- Project scaffold (app.json, package.json, tsconfig, eas.json)
-- Service clients, query hooks, auth provider, global state
-- StyleSheet.create for optimized styles
-- Screen groups with route guards
 
 ## Versioning & Publishing with Changesets
 
@@ -631,6 +589,6 @@ npm run release
 - **Registry**: GitHub Packages (`https://npm.pkg.github.com`)
 - **Package**: `@flipova/foundation`
 - **Access**: Private (requires authentication)
-- **CLI**: `npx flipova-studio` works after installation
+- **CLI**: `npx flipova-ds` works after installation
 
 The entire process is automated and ensures that every published version is properly built, tested, and documented!

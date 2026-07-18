@@ -1,0 +1,129 @@
+type: layout
+id: ResponsiveLayout
+label: Responsive
+description: Adaptive layout header/sidebar/content/footer with 3 modes.
+category: page
+tags:
+  - responsive
+  - adaptive
+  - header
+  - sidebar
+  - footer
+themeMapping:
+  root: background
+slots:
+  - name: content
+    label: Content
+    required: true
+    kind: named
+  - name: header
+    label: Header
+    required: false
+    kind: named
+  - name: sidebar
+    label: Sidebar
+    required: false
+    kind: named
+  - name: footer
+    label: Footer
+    required: false
+    kind: named
+responsive: true
+animated: false
+props:
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: headerHeight
+    label: Header Height
+    type: number
+    group: layout
+    default: 60
+  - name: sidebarWidth
+    label: Sidebar Width
+    type: number
+    group: layout
+    default: 260
+  - name: footerHeight
+    label: Footer Height
+    type: number
+    group: layout
+    default: 60
+  - name: adaptiveMode
+    label: Adaptive Mode
+    type: enum
+    group: behavior
+    default: basic
+    options:
+      - basic
+      - sidebar
+      - full
+  - name: hideHeader
+    label: Hide Header
+    type: boolean
+    group: behavior
+    default: false
+  - name: hideFooter
+    label: Hide Footer
+    type: boolean
+    group: behavior
+    default: false
+  - name: collapseFooterOnTablet
+    label: Compact Footer on Tablet
+    type: boolean
+    group: behavior
+    default: false
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: headerBackground
+    label: Header Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: sidebarBackground
+    label: Sidebar Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: footerBackground
+    label: Footer Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: contentBackground
+    label: Content Background
+    type: color
+    group: style
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: contentPadding
+    label: Content Padding
+    type: padding
+    group: layout
+  - name: mobileHeaderHeight
+    label: Mobile Header Height
+    type: number
+    group: layout
+    default: 56
+  - name: tabletFooterHeight
+    label: Tablet Footer Height
+    type: number
+    group: layout
+    default: 48
+  - name: sidebarMaxWidth
+    label: Sidebar Max Width
+    type: number
+    group: layout
+    default: 320

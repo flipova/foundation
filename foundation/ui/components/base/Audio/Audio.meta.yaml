@@ -1,0 +1,12 @@
+name: Audio
+description: A base component for audio playback using expo-av.
+tags: [base, media, audio, player]
+props:
+  source:
+    type: string
+    description: The source URI of the audio file
+    required: true
+  autoPlay:
+    type: boolean
+    description: Whether the audio should auto-play
+    default: false

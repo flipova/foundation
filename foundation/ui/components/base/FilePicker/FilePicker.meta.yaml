@@ -1,0 +1,72 @@
+type: component
+id: FilePicker
+label: File Picker
+description: File/image upload input.
+category: input
+tags:
+  - file
+  - upload
+  - image
+  - picker
+  - form
+themeMapping:
+  bg: muted
+  text: foreground
+  border: border
+  accent: primary
+variants:
+  - name: button
+    label: Button
+    overrides: {}
+  - name: dropzone
+    label: Drop Zone
+    overrides: {}
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap: {}
+colorMap: {}
+props:
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: button
+    options:
+      - button
+      - dropzone
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: accept
+    label: Accept types
+    type: string
+    group: behavior
+    default: image/*
+  - name: multiple
+    label: Multiple
+    type: boolean
+    group: behavior
+    default: false
+  - name: label
+    label: Label
+    type: string
+    group: content
+    default: Upload file
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: md

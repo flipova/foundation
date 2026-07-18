@@ -1,0 +1,19 @@
+type: layout
+id: SketchLayout
+label: Sketch (placeholder)
+description: Placeholder for a drawing canvas.
+category: special
+tags:
+  - sketch
+  - draw
+  - canvas
+  - placeholder
+slots: []
+responsive: false
+animated: false
+props:
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background

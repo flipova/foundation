@@ -1,0 +1,57 @@
+type: layout
+id: VoidLayout
+label: Void
+description: Minimal container with optional scroll, padding, and maxWidth.
+category: page
+tags:
+  - blank
+  - empty
+  - minimal
+  - wrapper
+slots:
+  - name: children
+    label: Content
+    required: true
+    kind: children
+responsive: false
+animated: false
+props:
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+    description: Maximum container width
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 0
+  - name: centerContent
+    label: Center Content
+    type: boolean
+    group: layout
+    default: false
+  - name: showBorder
+    label: Visible Border
+    type: boolean
+    group: style
+    default: false

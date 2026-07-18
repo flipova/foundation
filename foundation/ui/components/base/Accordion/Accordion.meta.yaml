@@ -1,0 +1,44 @@
+type: component
+id: Accordion
+label: Accordion
+description: Expandable/collapsible content section.
+category: display
+tags:
+  - accordion
+  - collapse
+  - expand
+  - faq
+themeMapping:
+  bg: card
+  text: foreground
+  border: border
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: title
+    label: Title
+    type: string
+    group: content
+    default: Section
+  - name: defaultOpen
+    label: Default open
+    type: boolean
+    group: behavior
+    default: false
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: lg
+  - name: borderColor
+    label: Border color
+    type: color
+    group: style
+    themeDefault: border

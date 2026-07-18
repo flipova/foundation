@@ -1,32 +1,38 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Web-compatible hook for managing theme color scheme in the application.
+ * Hook compatible avec le web pour gérer le schéma de couleurs du thème dans l'application.
  *
- * This hook provides a unified way to handle theme selection by:
- * - Using the explicitly provided theme mode if specified
- * - Falling back to the browser's preferred color scheme (light/dark) via `prefers-color-scheme`
- * - Defaulting to 'light' theme when the media query is unavailable
+ * Ce hook fournit une manière unifiée de gérer la sélection du thème :
+ * - Utilisation du mode de thème fourni explicitement s'il est spécifié.
+ * - Utilisation de la préférence du navigateur (clair/sombre) via `prefers-color-scheme`.
+ * - Utilisation du thème clair par défaut si la requête média n'est pas disponible.
+ * Web-compatible hook to manage the color scheme of the theme in the application.
  *
- * @param theme - Optional explicit theme mode to use instead of system preference
- * @returns The resolved theme mode ('light' | 'dark')
+ * This hook provides a unified way to manage theme selection:
+ * - Uses the explicitly provided theme mode if specified.
+ * - Uses the browser's preference (light/dark) via `prefers-color-scheme`.
+ * - Uses the light theme by default if the media query is not available.
+ *
+ * @param theme - (Optional) Explicit theme mode to use instead of the system preference.
+ * @returns The resolved theme mode ('light' or 'dark').
  *
  * @example
  * ```typescript
- * // Use browser's system color scheme
- * const theme = useColorScheme();
- *
+ * // Use the system's color scheme
+ * const { colorScheme } = useColorScheme();
+ * 
  * // Force light theme regardless of system preference
- * const lightTheme = useColorScheme('light');
- *
+ * const { colorScheme } = useColorScheme('light');
+ * 
  * // Force dark theme regardless of system preference
- * const darkTheme = useColorScheme('dark');
+ * const { colorScheme } = useColorScheme('dark');
  * ```
  *
  * @remarks
- * - Uses the `prefers-color-scheme` CSS media query via `window.matchMedia`
- * - Listens for system theme changes in real time and updates accordingly
- * - Falls back to 'light' on environments where `matchMedia` is unavailable (e.g. SSR)
+ * - Uses the CSS media query `prefers-color-scheme` via `window.matchMedia`.
+ * - Listens for system theme changes in real-time and updates accordingly.
+ * - Defaults to 'light' in environments where `matchMedia` is not available (e.g., SSR).
  */
 export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
   const getSystemScheme = (): 'light' | 'dark' => {

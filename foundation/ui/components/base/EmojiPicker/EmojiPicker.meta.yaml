@@ -1,0 +1,4 @@
+name: EmojiPicker
+description: A grid of emojis categorized by type.
+tags: [base, input, picker, emoji]
+props: []

@@ -1,0 +1,85 @@
+type: layout
+id: FlexLayout
+label: Flex
+description: Adaptive direction, wrap, and spacing. Optional scroll.
+category: content
+tags:
+  - flex
+  - row
+  - column
+  - wrap
+  - adaptive
+themeMapping:
+  root: background
+slots:
+  - name: children
+    label: Elements
+    required: true
+    kind: children
+responsive: true
+animated: false
+props:
+  - name: direction
+    label: Direction
+    type: enum
+    group: layout
+    default: row
+    options:
+      - row
+      - column
+  - name: wrap
+    label: Wrap Line
+    type: boolean
+    group: layout
+    default: false
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 4
+  - name: align
+    label: Align Items
+    type: enum
+    group: layout
+    default: stretch
+    options:
+      - stretch
+      - flex-start
+      - center
+      - flex-end
+      - baseline
+  - name: justify
+    label: Justify Content
+    type: enum
+    group: layout
+    default: flex-start
+    options:
+      - flex-start
+      - center
+      - flex-end
+      - space-between
+      - space-around
+      - space-evenly
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: false
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none

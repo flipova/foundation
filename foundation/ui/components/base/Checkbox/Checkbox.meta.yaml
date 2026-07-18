@@ -1,0 +1,63 @@
+type: component
+id: Checkbox
+label: Checkbox
+description: Toggle checkbox with label.
+category: input
+tags:
+  - checkbox
+  - toggle
+  - form
+  - boolean
+themeMapping:
+  active: primary
+  border: border
+variants:
+  - name: square
+    label: Square
+    overrides:
+      borderRadius: sm
+  - name: rounded
+    label: Rounded
+    overrides:
+      borderRadius: full
+sizes:
+  - sm
+  - md
+sizeMap: {}
+colorMap: {}
+props:
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: square
+    options:
+      - square
+      - rounded
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: activeColor
+    label: Active color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: checked
+    label: Checked
+    type: boolean
+    group: behavior
+    default: false

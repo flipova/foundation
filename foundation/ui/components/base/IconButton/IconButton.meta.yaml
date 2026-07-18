@@ -1,0 +1,77 @@
+type: component
+id: IconButton
+label: Icon Button
+description: Pressable icon-only button.
+category: action
+tags:
+  - icon
+  - button
+  - action
+themeMapping:
+  bg: muted
+  icon: foreground
+variants:
+  - name: filled
+    label: Filled
+    overrides: {}
+  - name: ghost
+    label: Ghost
+    overrides:
+      bg: transparent
+  - name: outline
+    label: Outline
+    overrides:
+      bg: transparent
+      borderWidth: 1
+sizes:
+  - sm
+  - md
+  - lg
+sizeMap:
+  sm:
+    height: 32
+    width: 32
+    iconSize: 16
+  md:
+    height: 40
+    width: 40
+    iconSize: 20
+  lg:
+    height: 48
+    width: 48
+    iconSize: 24
+colorMap: {}
+props:
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: ghost
+    options:
+      - filled
+      - ghost
+      - outline
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+      - lg
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: full
+  - name: color
+    label: Icon color
+    type: color
+    group: style
+    themeDefault: foreground

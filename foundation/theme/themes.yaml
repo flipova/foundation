@@ -1,0 +1,432 @@
+autumn:
+  background: autumn.background
+  foreground: autumn.text
+  card: autumn.surface
+  cardForeground: autumn.text
+  primary: autumn.primary
+  primaryForeground: white
+  secondary: autumn.secondary
+  secondaryForeground: black
+  muted: autumn.muted
+  mutedForeground: autumn.textSecondary
+  accent: autumn.accent
+  accentForeground: white
+  destructive: error.600
+  destructiveForeground: white
+  border: autumn.border
+  input: autumn.surface
+  ring: autumn.primaryLight
+  success: autumn.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - autumn.primaryLight
+      - autumn.primaryDark
+    secondary:
+      - autumn.secondaryLight
+      - autumn.secondaryDark
+    success:
+      - autumn.successLight
+      - autumn.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - autumn.background
+      - autumn.muted
+    vibrant:
+      - autumn.accentLight
+      - autumn.primary
+christmas:
+  background: christmas.background
+  foreground: christmas.text
+  card: christmas.surface
+  cardForeground: christmas.text
+  primary: christmas.primary
+  primaryForeground: white
+  secondary: christmas.secondary
+  secondaryForeground: black
+  muted: christmas.muted
+  mutedForeground: christmas.textSecondary
+  accent: christmas.accent
+  accentForeground: black
+  destructive: error.600
+  destructiveForeground: white
+  border: christmas.border
+  input: christmas.surface
+  ring: christmas.primaryLight
+  success: christmas.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - christmas.primaryLight
+      - christmas.primaryDark
+    secondary:
+      - christmas.secondaryLight
+      - christmas.secondaryDark
+    success:
+      - christmas.successLight
+      - christmas.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - christmas.background
+      - christmas.muted
+    vibrant:
+      - christmas.accentLight
+      - christmas.primary
+dark:
+  background: black
+  foreground: white
+  card: primary.900
+  cardForeground: gray.100
+  primary: primary.500
+  primaryForeground: white
+  secondary: secondary.500
+  secondaryForeground: white
+  muted: primary.900
+  mutedForeground: gray.500
+  accent: primary.900
+  accentForeground: primary.200
+  destructive: error.500
+  destructiveForeground: white
+  border: primary.800
+  input: primary.900
+  ring: secondary.600
+  success: success.500
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - primary.800
+      - black
+    secondary:
+      - secondary.900
+      - black
+    vibrant:
+      - primary.800
+      - secondary.900
+    success:
+      - success.50
+      - success.100
+    warning:
+      - warning.50
+      - warning.100
+    error:
+      - error.50
+      - error.100
+    info:
+      - primary.50
+      - primary.200
+    subtle:
+      - primary.900
+      - black
+halloween:
+  background: halloween.background
+  foreground: halloween.text
+  card: halloween.surface
+  cardForeground: halloween.text
+  primary: halloween.primary
+  primaryForeground: black
+  secondary: halloween.secondary
+  secondaryForeground: white
+  muted: halloween.muted
+  mutedForeground: halloween.textSecondary
+  accent: halloween.accent
+  accentForeground: white
+  destructive: error.600
+  destructiveForeground: white
+  border: halloween.border
+  input: halloween.surface
+  ring: halloween.primaryLight
+  success: halloween.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - halloween.primaryLight
+      - halloween.primaryDark
+    secondary:
+      - halloween.secondaryLight
+      - halloween.secondaryDark
+    success:
+      - halloween.successLight
+      - halloween.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - halloween.background
+      - halloween.muted
+    vibrant:
+      - halloween.accentLight
+      - halloween.primary
+light:
+  background: white
+  foreground: black
+  card: primary.50
+  cardForeground: primary.900
+  primary: primary.500
+  primaryForeground: white
+  secondary: secondary.500
+  secondaryForeground: white
+  muted: gray.100
+  mutedForeground: gray.500
+  accent: secondary.50
+  accentForeground: secondary.700
+  destructive: error.600
+  destructiveForeground: white
+  border: primary.100
+  input: white
+  ring: primary.500
+  success: success.600
+  warning: warning.600
+  error: error.600
+  info: info.600
+  transparent: transparent
+  gradients:
+    primary:
+      - primary.50
+      - white
+    secondary:
+      - secondary.200
+      - white
+    vibrant:
+      - primary.100
+      - secondary.100
+    success:
+      - success.50
+      - success.100
+    warning:
+      - warning.50
+      - warning.100
+    error:
+      - error.50
+      - error.100
+    info:
+      - primary.50
+      - primary.200
+    subtle:
+      - white
+      - primary.50
+neon:
+  background: neon.background
+  foreground: neon.text
+  card: neon.surface
+  cardForeground: neon.text
+  primary: neon.primary
+  primaryForeground: black
+  secondary: neon.secondary
+  secondaryForeground: black
+  muted: neon.muted
+  mutedForeground: neon.textSecondary
+  accent: neon.accent
+  accentForeground: white
+  destructive: error.600
+  destructiveForeground: white
+  border: neon.border
+  input: neon.surface
+  ring: neon.primaryLight
+  success: neon.success
+  warning: warning.500
+  error: error.500
+  info: neon.secondary
+  transparent: transparent
+  gradients:
+    primary:
+      - neon.primaryLight
+      - neon.primaryDark
+    secondary:
+      - neon.secondaryLight
+      - neon.secondaryDark
+    success:
+      - neon.successLight
+      - neon.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - neon.secondaryLight
+      - neon.secondaryDark
+    subtle:
+      - neon.background
+      - neon.muted
+    vibrant:
+      - neon.accentLight
+      - neon.primary
+spring:
+  background: spring.background
+  foreground: spring.text
+  card: spring.surface
+  cardForeground: spring.text
+  primary: spring.primary
+  primaryForeground: white
+  secondary: spring.secondary
+  secondaryForeground: white
+  muted: spring.muted
+  mutedForeground: spring.textSecondary
+  accent: spring.accent
+  accentForeground: black
+  destructive: error.600
+  destructiveForeground: white
+  border: spring.border
+  input: spring.surface
+  ring: spring.primaryLight
+  success: spring.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - spring.primaryLight
+      - spring.primaryDark
+    secondary:
+      - spring.secondaryLight
+      - spring.secondaryDark
+    success:
+      - spring.successLight
+      - spring.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - spring.background
+      - spring.muted
+    vibrant:
+      - spring.accentLight
+      - spring.primary
+summer:
+  background: summer.background
+  foreground: summer.text
+  card: summer.surface
+  cardForeground: summer.text
+  primary: summer.primary
+  primaryForeground: white
+  secondary: summer.secondary
+  secondaryForeground: white
+  muted: summer.muted
+  mutedForeground: summer.textSecondary
+  accent: summer.accent
+  accentForeground: white
+  destructive: error.600
+  destructiveForeground: white
+  border: summer.border
+  input: summer.surface
+  ring: summer.primaryLight
+  success: summer.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - summer.primaryLight
+      - summer.primaryDark
+    secondary:
+      - summer.secondaryLight
+      - summer.secondaryDark
+    success:
+      - summer.successLight
+      - summer.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - summer.background
+      - summer.muted
+    vibrant:
+      - summer.accentLight
+      - summer.primary
+winter:
+  background: winter.background
+  foreground: winter.text
+  card: winter.surface
+  cardForeground: winter.text
+  primary: winter.primary
+  primaryForeground: white
+  secondary: winter.secondary
+  secondaryForeground: black
+  muted: winter.muted
+  mutedForeground: winter.textSecondary
+  accent: winter.accent
+  accentForeground: white
+  destructive: error.600
+  destructiveForeground: white
+  border: winter.border
+  input: winter.surface
+  ring: winter.primaryLight
+  success: winter.success
+  warning: warning.500
+  error: error.500
+  info: info.500
+  transparent: transparent
+  gradients:
+    primary:
+      - winter.primaryLight
+      - winter.primaryDark
+    secondary:
+      - winter.secondaryLight
+      - winter.secondaryDark
+    success:
+      - winter.successLight
+      - winter.success
+    warning:
+      - warning.100
+      - warning.600
+    error:
+      - error.100
+      - error.600
+    info:
+      - info.100
+      - info.600
+    subtle:
+      - winter.background
+      - winter.muted
+    vibrant:
+      - winter.accentLight
+      - winter.primary

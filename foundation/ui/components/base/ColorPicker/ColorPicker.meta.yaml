@@ -1,0 +1,4 @@
+name: ColorPicker
+description: A visual grid of color swatches for choosing a theme or element color.
+tags: [base, input, picker, color]
+props: []

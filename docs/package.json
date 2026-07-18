@@ -18,11 +18,14 @@
     "@docusaurus/core": "3.10.0",
     "@docusaurus/faster": "3.10.0",
     "@docusaurus/preset-classic": "3.10.0",
+    "@flipova/foundation": "*",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-native": "^0.86.0",
+    "react-native-web": "^0.21.2"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.0",

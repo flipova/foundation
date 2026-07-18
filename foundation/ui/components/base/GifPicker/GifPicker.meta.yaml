@@ -1,0 +1,4 @@
+name: GifPicker
+description: A placeholder picker for GIFs.
+tags: [base, input, picker, gif]
+props: []

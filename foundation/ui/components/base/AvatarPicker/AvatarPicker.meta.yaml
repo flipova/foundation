@@ -1,0 +1,4 @@
+name: AvatarPicker
+description: Allows users to select an avatar from a list of predefined options or upload one.
+tags: [base, input, picker, avatar]
+props: []

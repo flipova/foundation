@@ -1,0 +1,41 @@
+type: component
+id: WebView
+label: WebView
+description: Embedded web browser view.
+category: media
+tags:
+  - webview
+  - browser
+  - iframe
+  - embed
+themeMapping:
+  bg: muted
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: url
+    label: URL
+    type: string
+    group: content
+    default: https://expo.dev
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 400
+  - name: scrollEnabled
+    label: Scroll
+    type: boolean
+    group: behavior
+    default: true
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none

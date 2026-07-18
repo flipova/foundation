@@ -196,28 +196,26 @@ export default defineConfig({
 
 ---
 
-## Flipova Studio
+## Flipova CLI
 
-Generate entire React Native screens visually:
-
-```bash
-npx flipova-studio
-# Opens http://localhost:4200
-```
-
-Or run on a custom port:
+### Initialization
+To initialize your project with a configuration file (`flipova.config.ts`):
 
 ```bash
-npx flipova-studio --port 3000
+npx flipova
 ```
 
-Generate code to `./generated/`:
+### Design System Manager
+To interactively manage your themes, components, layouts, and tokens registry:
 
 ```bash
-npx flipova-studio generate
+npx flipova-ds
 ```
 
-See the [Studio guide](./studio) for full documentation.
+This interactive CLI allows you to:
+- Add or remove themes
+- Register new UI primitives, components, or layouts
+- Regenerate TypeScript definitions
 
 ---
 
@@ -245,4 +243,3 @@ const btnProps: ButtonProps = {
 | [Components](./components) | Every available UI component with props |
 | [Layouts](./layouts) | Box, Stack, Inline, Center and layout patterns |
 | [Web Usage](./web) | Using Foundation in browser-only projects |
-| [Studio](./studio) | Visual drag-and-drop builder |

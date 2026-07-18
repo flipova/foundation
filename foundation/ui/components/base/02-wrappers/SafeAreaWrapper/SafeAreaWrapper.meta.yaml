@@ -1,0 +1,7 @@
+name: SafeAreaWrapper
+description: A convenient wrapper that applies safe area boundaries to specific sections of children.
+props:
+  - name: edges
+    type: array
+    description: Edges to apply safe area (top, bottom, left, right)
+    default: ["top","bottom"]

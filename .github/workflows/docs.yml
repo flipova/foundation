@@ -5,9 +5,10 @@ on:
     branches:
       - main
     paths:
+      - 'package.json'
       - 'docs/**'
       - 'foundation/**'
-      - 'studio/**'
+      - 'scripts/**'
   workflow_dispatch:
 
 permissions:
@@ -16,8 +17,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -34,13 +35,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: docs/package-lock.json
 
-      - name: Install dependencies
-        run: |
-          cd docs
-          npm ci
+      - name: Install all dependencies (monorepo root)
+        run: npm ci
 
+      # Build the Foundation library so docs:sync can import the compiled registry
+      - name: Build Foundation
+        run: npm run build
+
+      # Generate all MDX pages + sidebar JSON from the registry
+      - name: Sync documentation from registry
+        run: npm run docs:sync -- --skip-screenshots
+
+      # Build the Docusaurus site
       - name: Build documentation
         run: |
           cd docs

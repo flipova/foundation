@@ -1,0 +1,7 @@
+name: ShimmerWrapper
+description: Adds a shiny animated loading shimmer effect over its children.
+props:
+  - name: isLoading
+    type: boolean
+    description: Whether to show the shimmer
+    default: true

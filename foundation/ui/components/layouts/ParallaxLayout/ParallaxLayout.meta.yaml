@@ -1,0 +1,88 @@
+type: layout
+id: ParallaxLayout
+label: Parallax
+description: >-
+  Horizontal scrollable rows with parallax synchronization. Items are
+  automatically distributed into rows based on itemsPerRow.
+category: scroll
+tags:
+  - parallax
+  - horizontal
+  - sync
+  - showcase
+architecture:
+  dependencies:
+    - react-native-reanimated
+slots:
+  - name: items
+    label: Items
+    required: true
+    kind: items
+responsive: false
+animated: true
+previewItemCount: 9
+props:
+  - name: rowCount
+    label: Number of Rows
+    type: number
+    group: layout
+    default: 3
+  - name: itemWidth
+    label: Item Width
+    type: number
+    group: layout
+    default: 200
+  - name: spacing
+    label: Vertical Spacing
+    type: spacing
+    group: layout
+    default: 4
+  - name: itemSpacing
+    label: Item Spacing
+    type: number
+    group: layout
+    default: 12
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: background
+  - name: rowBackground
+    label: Row Background
+    type: color
+    group: style
+  - name: itemBackground
+    label: Item Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: itemBorderRadius
+    label: Item Radius
+    type: radius
+    group: style
+    default: none
+  - name: rowBorderRadius
+    label: Row Radius
+    type: radius
+    group: style
+    default: none
+  - name: alternateDirection
+    label: Alternate Direction
+    type: boolean
+    group: behavior
+    default: true
+  - name: bounces
+    label: Scroll Bounce
+    type: boolean
+    group: behavior
+    default: false
+  - name: showScrollIndicator
+    label: Scroll Indicator
+    type: boolean
+    group: behavior
+    default: false
+  - name: scrollEventThrottle
+    label: Scroll Throttle
+    type: number
+    group: behavior
+    default: 16

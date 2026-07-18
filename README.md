@@ -15,7 +15,7 @@ Flipova Foundation provides design tokens, a declarative theming engine, layout 
 - **Zero-Config Web Support**: The web entry point (`@flipova/foundation/web`) is completely free of heavy native dependencies, enabling rapid bundling for SSR and SSG environments like Next.js and Vite.
 - **Declarative Layouts**: Build complex UI using intuitive layout primitives (`Box`, `Stack`, `Inline`, `Center`).
 - **Dynamic Theming**: First-class support for dark/light modes, dynamic color schemes, and custom design tokens.
-- **Built-in Studio Builder**: Comes with a powerful visual UI builder (`flipova-studio`) to drag, drop, and construct layouts visually, outputting production-ready React code.
+- **Interactive CLI Tools**: Includes `flipova` and `flipova-ds` to instantly scaffold projects, manage design system registries, and handle themes natively from the terminal.
 
 ---
 
@@ -61,7 +61,15 @@ The package is deeply modularized so you only import what you need. Importing fr
 
 ## Core Concepts & Usage
 
-### 1. Initialization and Theming
+### 1. Project Initialization
+
+To initialize Flipova Foundation in a new or existing project, run the scaffolding CLI. This command interactively sets up `flipova.config.ts`, creates required directories, and installs peer dependencies if necessary.
+
+```bash
+npx flipova
+```
+
+### 2. Initialization and Theming
 
 Whether you are on the Web or Native, initializing the design system requires a Provider.
 
@@ -101,7 +109,7 @@ export default function App() {
 }
 ```
 
-### 2. Advanced Theming
+### 3. Advanced Theming
 
 The `ThemeProvider` allows you to customize the default tokens and color schemes. You can override specific variables or introduce completely new themes (e.g., "neon" or "high-contrast").
 
@@ -132,7 +140,7 @@ export default function App() {
 }
 ```
 
-### 3. Layout Primitives
+### 4. Layout Primitives
 
 Flipova strongly discourages inline styling. Instead, all structural layouts should be composed using foundational primitives. This guarantees identical spacing and alignment across web and mobile.
 
@@ -162,103 +170,21 @@ export function UserCard() {
 }
 ```
 
----
 
-## Flipova Studio (Visual Builder)
+### 5. Managing the Design System
 
-The foundation library comes bundled with **Flipova Studio**, a local visual builder designed to accelerate UI development. It allows you to drag, drop, and configure Foundation components in a web interface, and instantly outputs clean React Native or React Web code.
-
-To start the studio, run:
+Flipova Foundation provides a powerful interactive CLI to manage your design system directly from the terminal.
 
 ```bash
-npx flipova-studio
-```
-*This starts the builder locally at http://localhost:4200.*
-
-### Studio CLI Commands
-
-| Command | Description |
-| :--- | :--- |
-| `npx flipova-studio` | Start the studio server and visual interface. |
-| `npx flipova-studio --port 3000` | Start the studio on a custom port. |
-| `npx flipova-studio --dev` | Start the studio in development mode with Vite HMR enabled. |
-| `npx flipova-studio generate` | Execute the code generator engine against your saved project tree without starting the UI. |
-
----
-
-## Working With Generated Code
-
-When you use the Flipova Studio, it saves your project definitions into a `.flipova-studio/project.json` file. Running the `generate` command translates this JSON into standard React/React Native files in your `generated/` directory.
-
-### Integration in Next.js or Vite
-
-For Web projects using bundlers like Webpack or Vite, simply import the generated screens directly into your routing layer.
-
-```tsx
-// pages/index.tsx (Next.js)
-import { HomeScreen } from '../generated/screens/HomeScreen';
-
-export default function Page() {
-  return <HomeScreen />;
-}
+npx flipova-ds
 ```
 
-### Integration in Expo (React Native)
+The interactive menu allows you to:
+- **Manage Themes**: Add or remove custom themes. It automatically registers them.
+- **Manage the Registry**: Browse, add, or remove UI primitives, components, or layout definitions.
+- **Generate Tokens**: Recompile TypeScript definitions from your `tokens.yaml` and `themes.yaml` sources.
 
-If you are using Expo Router, you can map the generated screens to your `app/` routes directly. The generated code uses `@flipova/foundation` primitives, which seamlessly map to `<View>` and `<Text>` on native devices.
-
-```tsx
-// app/index.tsx (Expo Router)
-import { HomeScreen } from '../../generated/screens/HomeScreen';
-
-export default function Index() {
-  return <HomeScreen />;
-}
-```
-
----
-
-## Docker Support
-
-For continuous integration, isolated environments, or team collaboration, Flipova Studio can be run via Docker. It supports data persistence and exposes your generated code to your host machine via volume mapping.
-
-### Using Docker Compose (Recommended)
-
-Create a `docker-compose.yml` file:
-
-```yaml
-version: '3.8'
-services:
-  flipova-studio:
-    image: ghcr.io/flipova/foundation:latest
-    ports:
-      - "4200:4200"
-    volumes:
-      - studio-data:/app/.flipova-studio
-      - ./generated:/app/generated
-volumes:
-  studio-data:
-```
-
-Then run:
-```bash
-docker-compose up -d
-```
-
-### Using Pre-built Images via Docker CLI
-
-```bash
-# Pull from GitHub Container Registry
-docker pull ghcr.io/flipova/foundation:latest
-
-# Run the container with volume mapping
-docker run -d \
-  -p 4200:4200 \
-  -v studio-data:/app/.flipova-studio \
-  -v ./generated:/app/generated \
-  --name flipova-studio \
-  ghcr.io/flipova/foundation:latest
-```
+Whenever you make manual changes to `themes.yaml`, `tokens.yaml`, or registry metadata files, running `npx flipova-ds` allows you to rapidly regenerate the type definitions (`generated.ts`).
 
 ---
 

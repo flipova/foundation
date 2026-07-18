@@ -1,0 +1,50 @@
+type: component
+id: MapView
+label: Map
+description: Interactive map view with markers.
+category: media
+tags:
+  - map
+  - location
+  - gps
+  - marker
+themeMapping: {}
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: latitude
+    label: Latitude
+    type: number
+    group: content
+    default: 48.8566
+  - name: longitude
+    label: Longitude
+    type: number
+    group: content
+    default: 2.3522
+  - name: zoom
+    label: Zoom
+    type: number
+    group: content
+    default: 12
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+    default: 300
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: lg
+  - name: showsUserLocation
+    label: User location
+    type: boolean
+    group: behavior
+    default: true

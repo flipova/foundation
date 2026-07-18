@@ -47,12 +47,6 @@ This document describes the structured CI/CD pipeline for Flipova Foundation.
 │         └─► Publish triggered (if changesets processed)          │
 │              │                                                  │
 │              ├─► npm publish (to GitHub Packages)                │
-│              │                                                  │
-│              ├─► Docker build (ghcr.io & Docker Hub)              │
-│              │                                                  │
-│              ├─► Archive creation (tar.gz)                        │
-│              │                                                  │
-│              └─► CLI binaries (Linux, macOS, Windows)             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -90,13 +84,10 @@ This document describes the structured CI/CD pipeline for Flipova Foundation.
 - **Concurrency**: Does not cancel (important for release process)
 - **Jobs**:
   1. **release**: Handle changesets - create version PR or publish npm package
-  2. **docker**: Build and push Docker images (ghcr.io) for linux/amd64 and linux/arm64 - runs only if published
-  3. **archive**: Create tar.gz archive - runs only if published
-  4. **cli**: Build CLI binaries for Linux, macOS, Windows - runs only if published
 - **Behavior**:
   - If changesets present: Creates "Version Packages" PR
   - If no changesets: Skips
-  - When version PR merged: Publishes npm, then builds Docker, archive, and CLI binaries
+  - When version PR merged: Publishes npm
 
 ### Docs (`docs.yml`)
 - **Triggers**: Push to main with docs changes, workflow_dispatch
@@ -140,4 +131,4 @@ Required settings for main branch:
 4. Release workflow detects changeset and creates version PR
 5. Version PR is reviewed and merged
 6. Publish workflow runs automatically
-7. All release formats are published simultaneously
+7. NPM packages are published

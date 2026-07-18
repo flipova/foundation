@@ -1,0 +1,56 @@
+type: layout
+id: Swipe2ScreenLayout
+label: Swipe to Screen
+description: Presentation layout with swipe to a projected screen and QR code.
+category: special
+tags:
+  - swipe
+  - projection
+  - qr
+  - slides
+architecture:
+  dependencies:
+    - react-native-gesture-handler
+    - expo-camera
+    - expo-haptics
+slots:
+  - name: items
+    label: Slides
+    required: true
+    kind: items
+responsive: false
+animated: true
+previewItemCount: 3
+props:
+  - name: containerBackground
+    label: Container Background
+    type: color
+    group: style
+    default: '#000'
+  - name: screenBackground
+    label: Screen Background
+    type: color
+    group: style
+    default: '#fff'
+  - name: swipeThreshold
+    label: Swipe Threshold
+    type: number
+    group: behavior
+    default: 100
+  - name: projectedScale
+    label: Projected Scale
+    type: ratio
+    group: behavior
+    default: 0.8
+    min: 0.5
+    max: 1
+  - name: animationDuration
+    label: Animation Duration
+    type: number
+    group: behavior
+    default: 300
+  - name: slides
+    label: Slides
+    type: json
+    group: content
+    default: []

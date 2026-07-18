@@ -1,0 +1,42 @@
+type: component
+id: Tabs
+label: Tabs
+description: Tab navigation with content panels.
+category: navigation
+tags:
+  - tabs
+  - navigation
+  - panel
+  - switch
+themeMapping:
+  active: primary
+  bg: card
+  border: border
+variants: []
+sizes: []
+sizeMap: {}
+colorMap: {}
+props:
+  - name: activeColor
+    label: Active color
+    type: color
+    group: style
+    themeDefault: primary
+  - name: background
+    label: Background
+    type: color
+    group: style
+    themeDefault: card
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: none
+  - name: position
+    label: Position
+    type: enum
+    group: layout
+    default: top
+    options:
+      - top
+      - bottom

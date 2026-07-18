@@ -1,0 +1,106 @@
+type: primitive
+id: Box
+label: Box
+description: Flexible container with spacing, background, and border support.
+category: primitive
+tags:
+  - box
+  - container
+  - view
+  - div
+slots:
+  - name: children
+    label: Content
+    required: false
+props:
+  - name: flex
+    label: Flex
+    type: number
+    group: layout
+  - name: bg
+    label: Background
+    type: color
+    group: style
+  - name: p
+    label: Padding
+    type: spacing
+    group: layout
+  - name: px
+    label: Padding X
+    type: spacing
+    group: layout
+  - name: py
+    label: Padding Y
+    type: spacing
+    group: layout
+  - name: m
+    label: Margin
+    type: spacing
+    group: layout
+  - name: mx
+    label: Margin X
+    type: spacing
+    group: layout
+  - name: my
+    label: Margin Y
+    type: spacing
+    group: layout
+  - name: width
+    label: Width
+    type: number
+    group: layout
+  - name: height
+    label: Height
+    type: number
+    group: layout
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: minHeight
+    label: Min Height
+    type: number
+    group: layout
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+  - name: overflow
+    label: Overflow
+    type: enum
+    group: style
+    options:
+      - visible
+      - hidden
+      - scroll
+  - name: justifyContent
+    label: Justify
+    type: enum
+    group: layout
+    options:
+      - flex-start
+      - flex-end
+      - center
+      - space-between
+      - space-around
+      - space-evenly
+  - name: alignItems
+    label: Align Items
+    type: enum
+    group: layout
+    options:
+      - stretch
+      - flex-start
+      - flex-end
+      - center
+      - baseline
+  - name: alignSelf
+    label: Align Self
+    type: enum
+    group: layout
+    options:
+      - auto
+      - flex-start
+      - center
+      - flex-end
+      - stretch

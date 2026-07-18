@@ -1,0 +1,69 @@
+type: component
+id: Chip
+label: Chip
+description: Selectable chip / tag with optional close action.
+category: input
+tags:
+  - chip
+  - tag
+  - filter
+  - selectable
+themeMapping:
+  bg: muted
+  text: foreground
+  active: primary
+variants:
+  - name: filled
+    label: Filled
+    overrides: {}
+  - name: outline
+    label: Outline
+    overrides:
+      bg: transparent
+      borderWidth: 1
+sizes:
+  - sm
+  - md
+sizeMap: {}
+colorMap: {}
+props:
+  - name: label
+    label: Label
+    type: string
+    group: content
+  - name: variant
+    label: Variant
+    type: enum
+    group: style
+    default: filled
+    options:
+      - filled
+      - outline
+  - name: size
+    label: Size
+    type: enum
+    group: style
+    default: md
+    options:
+      - sm
+      - md
+  - name: selected
+    label: Selected
+    type: boolean
+    group: behavior
+    default: false
+  - name: closable
+    label: Closable
+    type: boolean
+    group: behavior
+    default: false
+  - name: disabled
+    label: Disabled
+    type: boolean
+    group: behavior
+    default: false
+  - name: borderRadius
+    label: Border radius
+    type: radius
+    group: style
+    default: full

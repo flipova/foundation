@@ -1,0 +1,95 @@
+type: layout
+id: SidebarLayout
+label: Sidebar
+description: Content with lateral sidebar, collapsible on mobile.
+category: navigation
+tags:
+  - sidebar
+  - navigation
+  - drawer
+  - layout
+themeMapping:
+  root: background
+  sidebar: card
+  border: border
+slots:
+  - name: sidebar
+    label: Sidebar
+    required: true
+    kind: named
+  - name: content
+    label: Content
+    required: true
+    kind: named
+responsive: true
+animated: false
+props:
+  - name: sidebarWidth
+    label: Sidebar Width
+    type: number
+    group: layout
+    default: 280
+  - name: position
+    label: Sidebar Position
+    type: enum
+    group: layout
+    default: left
+    options:
+      - left
+      - right
+  - name: collapsible
+    label: Collapsible on Mobile
+    type: boolean
+    group: behavior
+    default: true
+  - name: spacing
+    label: Spacing
+    type: spacing
+    group: layout
+    default: 4
+  - name: maxWidth
+    label: Max Width
+    type: number
+    group: layout
+  - name: scrollable
+    label: Scrollable
+    type: boolean
+    group: behavior
+    default: true
+  - name: background
+    label: Background
+    type: background
+    group: style
+  - name: borderRadius
+    label: Border Radius
+    type: radius
+    group: style
+    default: none
+  - name: sidebarBackground
+    label: Sidebar Background
+    type: background
+    group: style
+  - name: sidebarBorderRadius
+    label: Sidebar Radius
+    type: radius
+    group: style
+    default: none
+  - name: padding
+    label: Padding
+    type: padding
+    group: layout
+  - name: resizable
+    label: Resizable
+    type: boolean
+    group: behavior
+    default: false
+  - name: sidebarMinWidth
+    label: Min Sidebar Width
+    type: number
+    group: layout
+    default: 150
+  - name: sidebarMaxWidth
+    label: Sidebar Max Width
+    type: number
+    group: layout
+    default: 600

@@ -1,10 +1,5 @@
 node_modules/
 dist/
-.flipova-studio/
-generated/
-studio/app/dist/
-studio/app/.expo/
-studio/app/node_modules/
 *.tsbuildinfo
 .DS_Store
 .env
