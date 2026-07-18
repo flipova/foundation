@@ -40,7 +40,7 @@ jobs:
 
       # Build the Foundation library so docs:sync can import the compiled registry
       - name: Build Foundation
-        run: npm run build:foundation
+        run: npm run build
 
       # Generate all MDX pages + sidebar JSON from the registry
       - name: Sync documentation from registry
