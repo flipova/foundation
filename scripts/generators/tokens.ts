@@ -9,8 +9,8 @@ export function buildTokens(inputFile: string, outputFile: string) {
   const tokensData = yaml.load(fs.readFileSync(inputFile, 'utf8')) as Record<string, any>;
   
   let output = `// ==============================================================================
-// FICHIER GENERÉ AUTOMATIQUEMENT - NE PAS MODIFIER MANUELLEMENT
-// Modifiez foundation/tokens/tokens.yaml et relancez \`npm run ds\`
+// AUTOMATICALLY GENERATED FILE - DO NOT MODIFY MANUALLY
+// Edit foundation/tokens/tokens.yaml and run \`npm run ds\`
 // ==============================================================================
 
 `;
@@ -21,7 +21,7 @@ export function buildTokens(inputFile: string, outputFile: string) {
   }
 
   // Write types for flat/nested tokens
-  output += `// --- Types générés automatiquement ---\n\n`;
+  output += `// --- Automatically generated types ---\n\n`;
   output += `export type ColorToken = keyof typeof colors;\n`;
   output += `export type SpacingToken = keyof typeof spacing;\n`;
   output += `export type RadiusToken = keyof typeof radii;\n`;

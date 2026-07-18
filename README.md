@@ -15,7 +15,7 @@ Flipova Foundation provides design tokens, a declarative theming engine, layout 
 - **Zero-Config Web Support**: The web entry point (`@flipova/foundation/web`) is completely free of heavy native dependencies, enabling rapid bundling for SSR and SSG environments like Next.js and Vite.
 - **Declarative Layouts**: Build complex UI using intuitive layout primitives (`Box`, `Stack`, `Inline`, `Center`).
 - **Dynamic Theming**: First-class support for dark/light modes, dynamic color schemes, and custom design tokens.
-- **Built-in Studio Builder**: Comes with a powerful visual UI builder (`flipova-studio`) to drag, drop, and construct layouts visually, outputting production-ready React code.
+- **Interactive CLI Tools**: Includes `flipova` and `flipova-ds` to instantly scaffold projects, manage design system registries, and handle themes natively from the terminal.
 
 ---
 
@@ -61,7 +61,15 @@ The package is deeply modularized so you only import what you need. Importing fr
 
 ## Core Concepts & Usage
 
-### 1. Initialization and Theming
+### 1. Project Initialization
+
+To initialize Flipova Foundation in a new or existing project, run the scaffolding CLI. This command interactively sets up `flipova.config.ts`, creates required directories, and installs peer dependencies if necessary.
+
+```bash
+npx flipova
+```
+
+### 2. Initialization and Theming
 
 Whether you are on the Web or Native, initializing the design system requires a Provider.
 
@@ -101,7 +109,7 @@ export default function App() {
 }
 ```
 
-### 2. Advanced Theming
+### 3. Advanced Theming
 
 The `ThemeProvider` allows you to customize the default tokens and color schemes. You can override specific variables or introduce completely new themes (e.g., "neon" or "high-contrast").
 
@@ -132,7 +140,7 @@ export default function App() {
 }
 ```
 
-### 3. Layout Primitives
+### 4. Layout Primitives
 
 Flipova strongly discourages inline styling. Instead, all structural layouts should be composed using foundational primitives. This guarantees identical spacing and alignment across web and mobile.
 
@@ -163,6 +171,20 @@ export function UserCard() {
 ```
 
 
+### 5. Managing the Design System
+
+Flipova Foundation provides a powerful interactive CLI to manage your design system directly from the terminal.
+
+```bash
+npx flipova-ds
+```
+
+The interactive menu allows you to:
+- **Manage Themes**: Add or remove custom themes. It automatically registers them.
+- **Manage the Registry**: Browse, add, or remove UI primitives, components, or layout definitions.
+- **Generate Tokens**: Recompile TypeScript definitions from your `tokens.yaml` and `themes.yaml` sources.
+
+Whenever you make manual changes to `themes.yaml`, `tokens.yaml`, or registry metadata files, running `npx flipova-ds` allows you to rapidly regenerate the type definitions (`generated.ts`).
 
 ---
 

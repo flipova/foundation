@@ -12,7 +12,7 @@ import { createTheme } from "../theme/createTheme";
 import type { ColorScheme, ThemeGradients } from "../theme/types";
 
 // ==============================================================================
-// 1. Types de Configuration
+// 1. Configuration Types
 // ==============================================================================
 
 export interface TokenOverrides {
@@ -68,7 +68,7 @@ export interface ResolvedConfig {
 }
 
 // ==============================================================================
-// 2. Utilitaires de Configuration
+// 2. Configuration Utilities
 // ==============================================================================
 
 export function defineConfig(config: FoundationConfig): FoundationConfig {
@@ -76,7 +76,7 @@ export function defineConfig(config: FoundationConfig): FoundationConfig {
 }
 
 // ==============================================================================
-// 3. Résolution de Configuration
+// 3. Configuration Resolution
 // ==============================================================================
 
 export function resolveConfig(userConfig?: FoundationConfig): ResolvedConfig {

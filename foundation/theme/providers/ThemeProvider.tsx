@@ -72,18 +72,22 @@ interface ThemeProviderProps {
  * 
  * Gère l'état du thème actuel et permet d'accéder à la fonctionnalité de changement de thème.
  * Prend en charge les thèmes intégrés (clair, sombre, néon) et les thèmes personnalisés.
+ * Provides the theme context to child components.
  * 
- * @param props - Les propriétés du fournisseur de thème.
- * @returns Un composant fournisseur de contexte.
+ * Manages the current theme state and provides access to theme changing functionality.
+ * Supports built-in themes (light, dark, neon) and custom themes.
+ * 
+ * @param props - The theme provider properties.
+ * @returns A context provider component.
  * 
  * @example
  * ```tsx
- * // Utilisation de base
+ * // Basic usage
  * <ThemeProvider>
  *   <App />
  * </ThemeProvider>
  * 
- * // Avec un thème par défaut et des thèmes personnalisés
+ * // With default theme and custom themes
  * <ThemeProvider defaultTheme="dark" customThemes={{ myTheme: customThemeConfig }}>
  *   <App />
  * </ThemeProvider>

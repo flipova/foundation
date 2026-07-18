@@ -7,26 +7,32 @@ import { useColorScheme as useRNColorScheme } from 'react-native';
  * - Utilisation du mode de thème fourni explicitement s'il est spécifié.
  * - Utilisation du schéma de couleurs natif de l'appareil (clair/sombre) par défaut.
  * - Utilisation du thème clair par défaut si le schéma natif n'est pas disponible.
+ * Hook to manage the theme color scheme in the application.
  * 
- * @param theme - (Optionnel) Mode de thème explicite à utiliser au lieu de la préférence de l'appareil.
- * @returns Le mode de thème résolu ('light' ou 'dark').
+ * This hook provides a unified way to manage theme selection:
+ * - Uses the explicitly provided theme mode if specified.
+ * - Uses the device's native color scheme (light/dark) by default.
+ * - Defaults to light theme if the native scheme is unavailable.
+ * 
+ * @param theme - (Optional) Explicit theme mode to use instead of the device preference.
+ * @returns The resolved theme mode ('light' or 'dark').
  * 
  * @example
  * ```typescript
- * // Utiliser le schéma de couleurs natif de l'appareil
+ * // Use the device's native color scheme
  * const theme = useColorScheme();
  * 
- * // Forcer le thème clair indépendamment de la préférence de l'appareil
+ * // Force light theme regardless of device preference
  * const lightTheme = useColorScheme('light');
  * 
- * // Forcer le thème sombre indépendamment de la préférence de l'appareil
+ * // Force dark theme regardless of device preference
  * const darkTheme = useColorScheme('dark');
  * ```
  * 
  * @remarks
- * - Le hook exploite le hook `useColorScheme` intégré de React Native.
- * - Sur les plateformes où la détection du schéma de couleurs n'est pas disponible, il utilise 'light' par défaut.
- * - Ceci est généralement utilisé avec le ThemeProvider pour garantir une thématisation cohérente dans toute l'application.
+ * - The hook leverages the built-in `useColorScheme` hook from React Native.
+ * - On platforms where color scheme detection is not available, it defaults to 'light'.
+ * - This is typically used with the ThemeProvider to ensure consistent theming throughout the application.
  */
 export function useColorScheme(theme?: 'light' | 'dark'): 'light' | 'dark' {
   const nativeScheme = useRNColorScheme();

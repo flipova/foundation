@@ -8,11 +8,13 @@ export function buildThemes(inputFile: string, outputFile: string) {
   
   const themesData = yaml.load(fs.readFileSync(inputFile, 'utf8')) as Record<string, any>;
   
-  let output = `// ==============================================================================
-// FICHIER GENERÉ AUTOMATIQUEMENT - NE PAS MODIFIER MANUELLEMENT
-// Modifiez foundation/theme/themes.yaml et relancez \`npm run theme:generate\`
+  const fileHeader = `// ==============================================================================
+// AUTOMATICALLY GENERATED FILE - DO NOT MODIFY MANUALLY
+// Edit foundation/theme/themes.yaml and run \`npm run theme:generate\`
 // ==============================================================================
-
+`;
+  
+  let output = `${fileHeader}
 import { colors } from "../tokens";
 import { createTheme } from "./createTheme";
 import type { ColorScheme } from "./types";
