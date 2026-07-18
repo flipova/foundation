@@ -47,36 +47,6 @@ const sidebars: SidebarsConfig = {
   // ── API Reference sidebar (auto-generated or minimal static fallback) ──────
   apiSidebar: generated.apiSidebar ?? [
     'api/intro',
-    {
-      type: 'category',
-      label: '🧩 Components',
-      collapsed: false,
-      items: [],
-    },
-    {
-      type: 'category',
-      label: '📐 Layouts',
-      collapsed: false,
-      items: [],
-    },
-    {
-      type: 'category',
-      label: '🏗️ Blocks',
-      collapsed: true,
-      items: [],
-    },
-    {
-      type: 'category',
-      label: '🎨 Tokens',
-      collapsed: false,
-      items: [],
-    },
-    {
-      type: 'category',
-      label: '🪝 Hooks',
-      collapsed: false,
-      items: [],
-    },
   ],
 };
 

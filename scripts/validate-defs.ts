@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 /**
- * validate-defs.ts
  *
- * Vérifie que chaque entrée dans registry.yaml possède
- * un fichier de définition correspondant dans registry/defs/.
- * Signale aussi les defs orphelins (présents dans defs/ mais absents du registre).
+ * Verifies that each entry in registry.yaml has a corresponding definition file in registry/defs/.
+ * Also reports orphan defs (present in defs/ but absent from the registry).
  *
  * Usage: npx tsx scripts/validate-defs.ts
  */
@@ -32,23 +30,23 @@ function main() {
   const orphanDefs = defFiles.filter(id => !registryIds.includes(id));
 
   if (missingDefs.length === 0 && orphanDefs.length === 0) {
-    console.log(`✅ Tout est synchronisé ! ${registryIds.length} composants, ${defFiles.length} defs.`);
+    console.log(`✅ Everything is synced! ${registryIds.length} components, ${defFiles.length} defs.`);
     return;
   }
 
   if (missingDefs.length > 0) {
-    console.log(`❌ DEFS MANQUANTES (${missingDefs.length}) — présents dans le registre mais sans def :`);
+    console.log(`❌ MISSING DEFS (${missingDefs.length}) — present in registry but without def :`);
     missingDefs.forEach(id => console.log(`   - ${id}.yaml`));
     console.log();
   }
 
   if (orphanDefs.length > 0) {
-    console.log(`⚠️  DEFS ORPHELINES (${orphanDefs.length}) — présentes dans defs/ mais absentes du registre :`);
+    console.log(`⚠️  ORPHAN DEFS (${orphanDefs.length}) — present in defs/ but missing from registry :`);
     orphanDefs.forEach(id => console.log(`   - ${id}.yaml`));
     console.log();
   }
 
-  console.log(`📊 Total registre : ${registryIds.length} | Defs : ${defFiles.length} | Manquantes : ${missingDefs.length}`);
+  console.log(`📊 Total registry : ${registryIds.length} | Defs : ${defFiles.length} | Missing : ${missingDefs.length}`);
 
   if (missingDefs.length > 0) process.exit(1);
 }

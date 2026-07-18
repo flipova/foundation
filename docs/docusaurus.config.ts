@@ -1,9 +1,12 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // This runs in Node.js – don't use client-side code here.
 
+const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8'));
 const config: Config = {
   title: 'Flipova Foundation',
   tagline: 'Design tokens, theming & UI primitives for React Native, Expo, Web & Desktop.',
@@ -71,23 +74,53 @@ const config: Config = {
           'expo-status-bar',
           '@react-native-picker/picker',
           'react-native-date-picker',
+          '@react-native-community/datetimepicker',
+          'expo-image',
+          'expo-asset',
+          'expo-modules-core',
+          'expo-file-system',
+          'expo-font',
+          'expo-constants',
+          'expo-keep-awake',
+          'react-native-vector-icons',
+          '@expo/vector-icons',
+          'react-native',
+          'expo',
         ];
-
-        const nativeModuleRegex = new RegExp(
-          `node_modules[\\\\/](${nativeOnlyPackages.map((p) => p.replace(/-/g, '[-_]').replace('/', '[\\\\/]')).join('|')})`
-        );
 
         return {
           resolve: {
             alias: {
               'react-native$': 'react-native-web',
+              // Use a catch-all alias array for native modules
+              ...nativeOnlyPackages.reduce((acc, pkg) => {
+                if (pkg !== 'react-native') {
+                  acc[`${pkg}$`] = require.resolve('./src/stubs/dummy.js');
+                }
+                return acc;
+              }, {})
             },
+            fallback: {
+              'expo-modules-core': require.resolve('./src/stubs/dummy.js'),
+              'expo-modules-core/build/PermissionsInterface': require.resolve('./src/stubs/dummy.js'),
+            }
           },
           module: {
             rules: [
               {
-                test: /\.[jt]sx?$/,
-                include: nativeModuleRegex,
+                enforce: 'pre',
+                test: /.*/,
+                include: (filepath) => {
+                  const normalizedPath = filepath.replace(/\\/g, '/');
+                  if (!normalizedPath.includes('/node_modules/')) return false;
+                  if (!/\.[jt]sx?$/.test(normalizedPath) && !normalizedPath.endsWith('.mjs') && !normalizedPath.endsWith('.cjs')) return false;
+                  
+                  if (normalizedPath.includes('/node_modules/expo') || normalizedPath.includes('/node_modules/@expo/')) return true;
+                  return nativeOnlyPackages.some(pkg => 
+                    normalizedPath.includes(`/${pkg}/`) || 
+                    normalizedPath.endsWith(`/${pkg}`)
+                  );
+                },
                 use: require.resolve('./src/stubs/null-loader.js'),
               },
             ],
@@ -160,6 +193,11 @@ const config: Config = {
         },
 
         // ── Right ─────────────────────────────────────────────────────────
+        {
+          label: `v${pkg.version}`,
+          position: 'right',
+          href: 'https://github.com/flipova/foundation/releases',
+        },
         {
           type: 'search',
           position: 'right',

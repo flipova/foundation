@@ -7,34 +7,29 @@ import styles from './index.module.css';
 
 const FEATURES = [
   {
-    icon: '💎',
+    icon: 'System',
     title: 'Design Tokens',
     description: 'Comprehensive spacing, color, typography, shadow, and motion tokens shared across web and native.',
   },
   {
-    icon: '✨',
+    icon: 'Themes',
     title: '9 Built-in Themes',
     description: 'Light, dark, neon, autumn, spring, summer, winter, halloween, christmas — plus full custom theme support.',
   },
   {
-    icon: '📐',
+    icon: 'Layout',
     title: 'Layout Primitives',
     description: 'Box, Stack, Inline, Center, Scroll, Divider — composable layout primitives for every pattern.',
   },
   {
-    icon: '🧩',
+    icon: 'UI',
     title: 'Interactive UI',
     description: 'Button, TextInput, Avatar, Badge, Accordion, Tabs and more — all theme-aware and interactive out of the box.',
   },
   {
-    icon: '🌐',
+    icon: 'Web',
     title: 'Web First, Native Ready',
     description: 'Import from @flipova/foundation/web for zero React Native deps — pure DOM, works with Vite and Next.js.',
-  },
-  {
-    icon: '🏗️',
-    title: 'Flipova Studio',
-    description: 'Visual drag-and-drop builder that generates production-ready React Native code via npx flipova-studio.',
   },
 ];
 

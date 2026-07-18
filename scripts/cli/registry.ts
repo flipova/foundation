@@ -140,7 +140,7 @@ export async function registryCli(command?: string) {
         registryData[newId] = newEntry;
         saveAndRegenerate(registryData, `L'element "${newId}" a ete ajoute au registre avec succes !`);
         
-        console.log(`\nAstuce : Allez dans 'foundation/registry/registry.yaml' pour configurer les proprietes, variantes et themes de votre nouvel element.`);
+        console.log(`\nTip: Go to 'foundation/registry/registry.yaml' to configure the properties, variants, and themes of your new element.`);
     }
 }
 

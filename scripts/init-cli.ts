@@ -127,12 +127,12 @@ async function main() {
         const overwrite = await prompts({
             type: 'confirm',
             name: 'value',
-            message: `Le fichier ${filename} existe deja. Voulez-vous l'ecraser ?`,
+            message: `The file ${filename} already exists. Do you want to overwrite it?`,
             initial: false
         });
         if (!overwrite.value) {
-            console.log("Erreur: Initialisation annulee.");
-            process.exit(1);
+            console.log("Error: Initialization cancelled.");
+            process.exit(0);
         }
     }
 
@@ -142,8 +142,8 @@ async function main() {
 
     fs.writeFileSync(filePath, finalContent, 'utf8');
 
-    console.log(`\nSucces ! Fichier ${filename} cree a la racine du projet.`);
-    console.log("\nN'oubliez pas d'envelopper la racine de votre application avec <FoundationProvider config={config}> !\n");
+    console.log(`\nSuccess! File ${filename} created at the root of the project.`);
+    console.log("\nDon't forget to wrap the root of your application with <FoundationProvider config={config}>!\n");
 }
 
 main().catch(console.error);

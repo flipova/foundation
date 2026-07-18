@@ -83,7 +83,8 @@
     "version": "changeset version",
     "prepublishOnly": "npm run build && npm run typecheck",
     "ds": "npx tsx scripts/cli/index.ts",
-    "tokens:generate": "npx tsx scripts/generators/index.ts tokens"
+    "tokens:generate": "npx tsx scripts/generators/index.ts tokens",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "expo": ">=55.0.0",

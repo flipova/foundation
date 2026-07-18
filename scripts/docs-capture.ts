@@ -608,36 +608,36 @@ function buildSidebar(sections: {
     ],
     apiSidebar: [
       'api/intro',
-      {
+      ...(componentItems.length > 0 ? [{
         type: 'category',
         label: 'Components',
         collapsed: false,
         items: componentItems,
-      },
-      {
+      }] : []),
+      ...(layoutItems.length > 0 ? [{
         type: 'category',
         label: 'Layouts',
         collapsed: false,
         items: layoutItems,
-      },
-      {
+      }] : []),
+      ...(blockItems.length > 0 ? [{
         type: 'category',
         label: 'Blocks',
         collapsed: true,
         items: blockItems,
-      },
-      {
+      }] : []),
+      ...(tokenItems.length > 0 ? [{
         type: 'category',
         label: 'Tokens',
         collapsed: false,
         items: tokenItems,
-      },
-      {
+      }] : []),
+      ...(hookItems.length > 0 ? [{
         type: 'category',
         label: 'Hooks',
         collapsed: false,
         items: hookItems,
-      },
+      }] : []),
     ],
   };
 }
