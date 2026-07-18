@@ -19,8 +19,8 @@ export async function themeCli(command?: string) {
             name: 'selectedCmd',
             message: 'Que souhaitez-vous faire avec les thèmes ?',
             choices: [
-                { title: '➕ Ajouter un nouveau thème', value: 'add' },
-                { title: '🗑️ Supprimer un thème existant', value: 'remove' }
+                { title: 'Ajouter un nouveau theme', value: 'add' },
+                { title: 'Supprimer un theme existant', value: 'remove' }
             ]
         });
         command = selectedCmd;
@@ -59,7 +59,7 @@ export async function themeCli(command?: string) {
         }
 
         delete themesData[response.id];
-        saveAndRegenerate(themesData, `Removed theme "${response.id}" from themes.yaml`);
+        saveAndRegenerate(themesData, `Theme "${response.id}" supprime avec succes !`);
         return;
     }
 

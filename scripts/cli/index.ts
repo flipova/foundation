@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import prompts from 'prompts';
 import { registryCli } from './registry';
 import { themeCli } from './theme';
@@ -25,25 +26,25 @@ async function main() {
         }
 
         if (domain === 'tokens' && action === 'generate') {
-            console.log('🔄 Génération des tokens TypeScript...');
+            console.log('Generation des tokens TypeScript...');
             buildTokens(TOKENS_YAML, TOKENS_OUT);
-            console.log('✨ Tokens générés avec succès !');
+            console.log('Tokens generes avec succes !');
             return;
         }
     }
 
     // Interactive Menu
-    console.log('\n✨ Welcome to Flipova Foundation CLI ✨\n');
+    console.log('\nWelcome to Flipova Foundation CLI\n');
 
     const { target } = await prompts({
         type: 'select',
         name: 'target',
         message: 'Que souhaitez-vous gérer ?',
         choices: [
-            { title: '🎨 Thèmes (Couleurs, Modes clair/sombre)', value: 'theme' },
-            { title: '📚 Registre (Composants, Primitives, Layouts)', value: 'registry' },
-            { title: '🔄 Générer les Tokens (depuis tokens.yaml)', value: 'tokens' },
-            { title: '❌ Quitter', value: 'exit' }
+            { title: 'Themes (Couleurs, Modes clair/sombre)', value: 'theme' },
+            { title: 'Registre (Composants, Primitives, Layouts)', value: 'registry' },
+            { title: 'Generer les Tokens (depuis tokens.yaml)', value: 'tokens' },
+            { title: 'Quitter', value: 'exit' }
         ]
     });
 
@@ -57,13 +58,13 @@ async function main() {
     } else if (target === 'registry') {
         await registryCli();
     } else if (target === 'tokens') {
-        console.log('🔄 Génération des tokens TypeScript...');
+        console.log('Generation des tokens TypeScript...');
         try {
             buildTokens(TOKENS_YAML, TOKENS_OUT);
-            console.log('✨ Terminé avec succès !');
+            console.log('Termine avec succes !');
         } catch (e) {
             const error = e as Error;
-            console.error('❌ Échec de la génération :', error.message);
+            console.error('Echec de la generation :', error.message);
         }
     }
 }

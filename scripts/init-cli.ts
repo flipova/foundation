@@ -93,7 +93,7 @@ export default defineConfig({
 `;
 
 async function main() {
-    console.log("🚀 Bienvenue dans l'assistant d'initialisation de Flipova Foundation !\\n");
+    console.log("Bienvenue dans l'assistant d'initialisation de Flipova Foundation !\n");
 
     const response = await prompts([
         {
@@ -116,7 +116,7 @@ async function main() {
     ]);
 
     if (response.typescript === undefined || !response.theme) {
-        console.log("❌ Initialisation annulée.");
+        console.log("Erreur: Initialisation annulee.");
         process.exit(1);
     }
 
@@ -127,11 +127,11 @@ async function main() {
         const overwrite = await prompts({
             type: 'confirm',
             name: 'value',
-            message: `⚠️ Le fichier ${filename} existe déjà. Voulez-vous l'écraser ?`,
+            message: `Le fichier ${filename} existe deja. Voulez-vous l'ecraser ?`,
             initial: false
         });
         if (!overwrite.value) {
-            console.log("❌ Initialisation annulée.");
+            console.log("Erreur: Initialisation annulee.");
             process.exit(1);
         }
     }
@@ -142,8 +142,8 @@ async function main() {
 
     fs.writeFileSync(filePath, finalContent, 'utf8');
 
-    console.log(`\n✅ Succès ! Fichier ${filename} créé à la racine du projet.`);
-    console.log("\n👉 N'oubliez pas d'envelopper la racine de votre application avec <FoundationProvider config={config}> !\n");
+    console.log(`\nSucces ! Fichier ${filename} cree a la racine du projet.`);
+    console.log("\nN'oubliez pas d'envelopper la racine de votre application avec <FoundationProvider config={config}> !\n");
 }
 
 main().catch(console.error);

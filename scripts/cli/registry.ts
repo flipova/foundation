@@ -22,8 +22,8 @@ export async function registryCli(command?: string) {
             name: 'selectedCmd',
             message: 'Que souhaitez-vous faire avec le registre ?',
             choices: [
-                { title: '➕ Ajouter un nouvel élément', value: 'add' },
-                { title: '🗑️ Supprimer un élément existant', value: 'remove' }
+                { title: 'Ajouter un nouvel element', value: 'add' },
+                { title: 'Supprimer un element existant', value: 'remove' }
             ]
         });
         command = selectedCmd;
@@ -61,7 +61,7 @@ export async function registryCli(command?: string) {
         }
 
         delete registryData[response.id];
-        saveAndRegenerate(registryData, `Élément "${response.id}" supprimé avec succès !`);
+        saveAndRegenerate(registryData, `Element "${response.id}" supprime avec succes !`);
         return;
     }
 
@@ -80,10 +80,10 @@ export async function registryCli(command?: string) {
                 name: 'type',
                 message: 'Quel est le type de cet élément ?',
                 choices: [
-                    { title: '🧩 Component (Boutons, Inputs, etc.)', value: 'component' },
-                    { title: '🧱 Layout (Containers, Grilles, etc.)', value: 'layout' },
-                    { title: '🪨 Primitive (Box, Text, etc.)', value: 'primitive' },
-                    { title: '📦 Block (Composants complexes assemblés)', value: 'block' }
+                    { title: 'Component (Boutons, Inputs, etc.)', value: 'component' },
+                    { title: 'Layout (Containers, Grilles, etc.)', value: 'layout' },
+                    { title: 'Primitive (Box, Text, etc.)', value: 'primitive' },
+                    { title: 'Block (Composants complexes assembles)', value: 'block' }
                 ],
                 initial: 0
             },
@@ -121,7 +121,7 @@ export async function registryCli(command?: string) {
 
         const newId = response.id.trim();
         if (registryData[newId]) {
-            console.error(`\n❌ Erreur : L'élément "${newId}" existe déjà dans le registre.`);
+            console.error(`\nErreur : L'element "${newId}" existe deja dans le registre.`);
             return;
         }
 
@@ -138,9 +138,9 @@ export async function registryCli(command?: string) {
         };
 
         registryData[newId] = newEntry;
-        saveAndRegenerate(registryData, `L'élément "${newId}" a été ajouté au registre avec succès !`);
+        saveAndRegenerate(registryData, `L'element "${newId}" a ete ajoute au registre avec succes !`);
         
-        console.log(`\n💡 Astuce : Allez dans 'foundation/registry/registry.yaml' pour configurer les propriétés, variantes et thèmes de votre nouvel élément.`);
+        console.log(`\nAstuce : Allez dans 'foundation/registry/registry.yaml' pour configurer les proprietes, variantes et themes de votre nouvel element.`);
     }
 }
 
@@ -152,14 +152,14 @@ function saveAndRegenerate(registryData: Record<string, RegistryEntry>, successM
     });
 
     fs.writeFileSync(REGISTRY_PATH, yamlContent);
-    console.log(`\n✅ ${successMessage}`);
+    console.log(`\nSucces: ${successMessage}`);
 
-    console.log('🔄 Génération des définitions TypeScript en cours...');
+    console.log('Generation des definitions TypeScript en cours...');
     try {
         buildRegistry(UI_DIR, OUT_FILE);
-        console.log('✨ Terminé avec succès !');
+        console.log('Termine avec succes !');
     } catch (e) {
         const error = e as Error;
-        console.error('❌ Échec lors de la génération TypeScript :', error.message);
+        console.error('Echec lors de la generation TypeScript :', error.message);
     }
 }

@@ -57,7 +57,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "bin": {
-    "flipova": "./dist/cli/flipova.js"
+    "flipova": "./dist/cli/flipova.js",
+    "flipova-ds": "./dist/cli/ds.js"
   },
   "files": [
     "dist",

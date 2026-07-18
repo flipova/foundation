@@ -165,7 +165,7 @@ function slotsSection(meta: any): string {
 
 | Slot | Required | Kind |
 |------|----------|------|
-${meta.slots.map((s: any) => `| \`${s.name}\` | ${s.required ? '✅' : '❌'} | \`${s.kind}\` |`).join('\n')}
+${meta.slots.map((s: any) => `| \`${s.name}\` | ${s.required ? 'Oui' : 'Non'} | \`${s.kind}\` |`).join('\n')}
 `;
 }
 
@@ -510,7 +510,7 @@ ${example}
 
 function loadRegistry(): any {
   if (!fs.existsSync(DIST_REGISTRY)) {
-    console.error(`\n❌  Cannot find: ${DIST_REGISTRY}`);
+    console.error(`\nErreur : Cannot find: ${DIST_REGISTRY}`);
     console.error(`   Run \`npm run build:foundation\` first.\n`);
     process.exit(1);
   }
@@ -610,31 +610,31 @@ function buildSidebar(sections: {
       'api/intro',
       {
         type: 'category',
-        label: '🧩 Components',
+        label: 'Components',
         collapsed: false,
         items: componentItems,
       },
       {
         type: 'category',
-        label: '📐 Layouts',
+        label: 'Layouts',
         collapsed: false,
         items: layoutItems,
       },
       {
         type: 'category',
-        label: '🏗️ Blocks',
+        label: 'Blocks',
         collapsed: true,
         items: blockItems,
       },
       {
         type: 'category',
-        label: '🎨 Tokens',
+        label: 'Tokens',
         collapsed: false,
         items: tokenItems,
       },
       {
         type: 'category',
-        label: '🪝 Hooks',
+        label: 'Hooks',
         collapsed: false,
         items: hookItems,
       },
@@ -645,7 +645,7 @@ function buildSidebar(sections: {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('\n🚀  Flipova Foundation – Docs Sync\n');
+  console.log('\nFlipova Foundation - Docs Sync\n');
 
   // Ensure output directories are clean
   Object.values(OUT).forEach((d) => {
@@ -663,7 +663,7 @@ async function main() {
   console.log(`Found: ${components.length} components, ${layouts.length} layouts, ${blocks.length} blocks\n`);
 
   // ── Components ──
-  console.log('📄  Generating component pages…');
+  console.log('Generating component pages...');
   for (const meta of components) {
     const content = generateComponentMDX(meta);
     fs.writeFileSync(path.join(OUT.components, `${slug(meta.id)}.mdx`), content, 'utf-8');
@@ -671,7 +671,7 @@ async function main() {
   }
 
   // ── Layouts ──
-  console.log('\n📄  Generating layout pages…');
+  console.log('\nGenerating layout pages...');
   for (const meta of layouts) {
     const content = generateLayoutMDX(meta);
     fs.writeFileSync(path.join(OUT.layouts, `${slug(meta.id)}.mdx`), content, 'utf-8');
@@ -679,7 +679,7 @@ async function main() {
   }
 
   // ── Blocks ──
-  console.log('\n📄  Generating block pages…');
+  console.log('\nGenerating block pages...');
   for (const meta of blocks) {
     const content = generateBlockMDX(meta);
     fs.writeFileSync(path.join(OUT.blocks, `${slug(meta.id)}.mdx`), content, 'utf-8');
@@ -687,7 +687,7 @@ async function main() {
   }
 
   // ── Tokens ──
-  console.log('\n🎨  Generating token pages…');
+  console.log('\nGenerating token pages...');
   const generatedTokenKeys: string[] = [];
   for (const [key, meta] of Object.entries(TOKEN_FILES)) {
     const exported = tokens[key];
@@ -699,7 +699,7 @@ async function main() {
   }
 
   // ── Hooks ──
-  console.log('\n🪝  Generating hook pages…');
+  console.log('\nGenerating hook pages...');
   for (const hook of HOOKS) {
     const content = generateHookMDX(hook);
     fs.writeFileSync(path.join(OUT.hooks, `hook-${slug(hook.id)}.mdx`), content, 'utf-8');
@@ -707,7 +707,7 @@ async function main() {
   }
 
   // ── Sidebar JSON ──
-  console.log('\n🗂️  Writing sidebar config…');
+  console.log('\nWriting sidebar config...');
   const sidebar = buildSidebar({
     components,
     layouts,
@@ -715,12 +715,12 @@ async function main() {
     tokenKeys: generatedTokenKeys,
   });
   fs.writeFileSync(OUT.sidebar, JSON.stringify(sidebar, null, 2), 'utf-8');
-  console.log(`   ✅  ${OUT.sidebar}`);
+  console.log(`   Done: ${OUT.sidebar}`);
 
-  console.log('\n✅  Done! Run `cd docs && npm start` to preview.\n');
+  console.log('\nDone! Run `cd docs && npm start` to preview.\n');
 }
 
 main().catch((err) => {
-  console.error('❌  Fatal error:', err);
+  console.error('Fatal error:', err);
   process.exit(1);
 });

@@ -21,22 +21,22 @@ async function main() {
     if (command === 'registry' || command === 'all') {
       console.log('Generating registry...');
       buildRegistry(UI_DIR, REGISTRY_OUT);
-      console.log('✅ Successfully generated registry');
+      console.log('Successfully generated registry');
     }
 
     if (command === 'themes' || command === 'theme' || command === 'all') {
       console.log('Generating themes...');
       const themes = buildThemes(THEMES_YAML, THEMES_OUT);
-      console.log(`✅ Successfully generated themes (${Object.keys(themes).length} themes)`);
+      console.log(`Successfully generated themes (${Object.keys(themes).length} themes)`);
     }
 
     if (command === 'tokens' || command === 'all') {
       console.log('Generating tokens...');
       buildTokens(TOKENS_YAML, TOKENS_OUT);
-      console.log('✅ Successfully generated tokens');
+      console.log('Successfully generated tokens');
     }
   } catch (error) {
-    console.error('❌ Error during generation:', error);
+    console.error('Error during generation:', error);
     process.exit(1);
   }
 }

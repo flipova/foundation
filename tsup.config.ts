@@ -75,6 +75,7 @@ export default defineConfig([
   {
     entry: {
       "cli/flipova": "scripts/init-cli.ts",
+      "cli/ds": "scripts/cli/index.ts",
     },
     format: ["cjs"],
     dts: false,
