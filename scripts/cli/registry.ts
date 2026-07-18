@@ -2,19 +2,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import prompts from 'prompts';
-import { execSync } from 'child_process';
+import { buildRegistry } from '../generators/registry';
 
-const REGISTRY_PATH = path.resolve(__dirname, '../foundation/registry/registry.yaml');
+const REGISTRY_PATH = path.resolve(__dirname, '../../foundation/registry/registry.yaml');
+const UI_DIR = path.resolve(__dirname, '../../foundation/ui/components');
+const OUT_FILE = path.resolve(__dirname, '../../foundation/registry/generated.ts');
 
 type RegistryEntry = Record<string, unknown>;
 
-async function main() {
-    console.log('\n✨ Welcome to Flipova Foundation CLI ✨\n');
-
-    const args = process.argv.slice(2);
-    let command = args[0];
-
-    // Load existing registry
+export async function registryCli(command?: string) {
     let registryData: Record<string, RegistryEntry> = {};
     if (fs.existsSync(REGISTRY_PATH)) {
         registryData = yaml.load(fs.readFileSync(REGISTRY_PATH, 'utf8')) as Record<string, RegistryEntry>;
@@ -61,7 +57,7 @@ async function main() {
 
         if (!response.confirm || !response.id) {
             console.log('Opération annulée.');
-            process.exit(0);
+            return;
         }
 
         delete registryData[response.id];
@@ -120,13 +116,13 @@ async function main() {
 
         if (!response.id) {
             console.log('Opération annulée.');
-            process.exit(0);
+            return;
         }
 
         const newId = response.id.trim();
         if (registryData[newId]) {
             console.error(`\n❌ Erreur : L'élément "${newId}" existe déjà dans le registre.`);
-            process.exit(1);
+            return;
         }
 
         const newEntry = {
@@ -141,7 +137,6 @@ async function main() {
             props: []
         };
 
-        // Append to registry
         registryData[newId] = newEntry;
         saveAndRegenerate(registryData, `L'élément "${newId}" a été ajouté au registre avec succès !`);
         
@@ -161,13 +156,10 @@ function saveAndRegenerate(registryData: Record<string, RegistryEntry>, successM
 
     console.log('🔄 Génération des définitions TypeScript en cours...');
     try {
-        execSync('npx tsx scripts/generate-registry.ts', { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
+        buildRegistry(UI_DIR, OUT_FILE);
         console.log('✨ Terminé avec succès !');
     } catch (e) {
         const error = e as Error;
         console.error('❌ Échec lors de la génération TypeScript :', error.message);
-        process.exit(1);
     }
 }
-
-main().catch(console.error);

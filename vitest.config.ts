@@ -11,12 +11,9 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: [], // We can add a setup file later if needed
     include: [
-      "studio/**/*.test.ts",
-      "studio/**/*.test.tsx",
-      "studio-v2/**/*.test.ts",
-      "studio-v2/**/*.test.tsx",
       "foundation/**/*.test.ts",
       "foundation/**/*.test.tsx",
+      "scripts/**/*.test.ts",
     ],
   },
 });

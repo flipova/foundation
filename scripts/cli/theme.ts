@@ -2,17 +2,28 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import prompts from 'prompts';
-import { execSync } from 'child_process';
+import { buildThemes } from '../generators/themes';
 
-const THEMES_PATH = path.resolve(__dirname, '../foundation/theme/themes.yaml');
+const THEMES_PATH = path.resolve(__dirname, '../../foundation/theme/themes.yaml');
+const THEMES_OUT = path.resolve(__dirname, '../../foundation/theme/generated.ts');
 
-async function main() {
-    const args = process.argv.slice(2);
-    const command = args[0];
-
+export async function themeCli(command?: string) {
     let themesData: Record<string, any> = {};
     if (fs.existsSync(THEMES_PATH)) {
         themesData = yaml.load(fs.readFileSync(THEMES_PATH, 'utf8')) as Record<string, any>;
+    }
+
+    if (!command) {
+        const { selectedCmd } = await prompts({
+            type: 'select',
+            name: 'selectedCmd',
+            message: 'Que souhaitez-vous faire avec les thèmes ?',
+            choices: [
+                { title: '➕ Ajouter un nouveau thème', value: 'add' },
+                { title: '🗑️ Supprimer un thème existant', value: 'remove' }
+            ]
+        });
+        command = selectedCmd;
     }
 
     if (command === 'remove') {
@@ -44,7 +55,7 @@ async function main() {
 
         if (!response.confirm || !response.id) {
             console.log('Operation cancelled.');
-            process.exit(0);
+            return;
         }
 
         delete themesData[response.id];
@@ -52,7 +63,7 @@ async function main() {
         return;
     }
 
-    if (command === 'add' || !command) {
+    if (command === 'add') {
         console.log('--- Theme Addition ---');
         
         const response = await prompts([
@@ -73,13 +84,13 @@ async function main() {
 
         if (!response.id || !response.base) {
             console.log('Operation cancelled.');
-            process.exit(0);
+            return;
         }
 
         const newId = response.id.toLowerCase();
         if (themesData[newId]) {
             console.error(`Error: Theme "${newId}" already exists.`);
-            process.exit(1);
+            return;
         }
 
         // Clone base theme
@@ -100,13 +111,10 @@ function saveAndRegenerate(themesData: Record<string, any>, successMessage: stri
 
     console.log('Regenerating TypeScript definitions...');
     try {
-        execSync('npx tsx scripts/generate-themes.ts', { stdio: 'inherit', cwd: path.resolve(__dirname, '..') });
+        buildThemes(THEMES_PATH, THEMES_OUT);
         console.log('Done!');
     } catch (e) {
         const error = e as Error;
         console.error('Failed to regenerate TypeScript files:', error.message);
-        process.exit(1);
     }
 }
-
-main().catch(console.error);

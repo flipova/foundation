@@ -68,12 +68,12 @@
   "scripts": {
     "ui:generate": "npx tsx scripts/generate.ts",
     "registry:validate": "npx tsx scripts/validate-defs.ts",
-    "registry:add": "npx tsx scripts/registry-cli.ts add",
-    "registry:remove": "npx tsx scripts/registry-cli.ts remove",
-    "registry:generate": "npx tsx scripts/generate-registry.ts",
-    "theme:add": "npx tsx scripts/theme-cli.ts add",
-    "theme:remove": "npx tsx scripts/theme-cli.ts remove",
-    "theme:generate": "npx tsx scripts/generate-themes.ts",
+    "registry:add": "npx tsx scripts/cli/index.ts registry add",
+    "registry:remove": "npx tsx scripts/cli/index.ts registry remove",
+    "registry:generate": "npx tsx scripts/generators/index.ts registry",
+    "theme:add": "npx tsx scripts/cli/index.ts theme add",
+    "theme:remove": "npx tsx scripts/cli/index.ts theme remove",
+    "theme:generate": "npx tsx scripts/generators/index.ts theme",
     "build": "npm run registry:generate && tsup",
     "dev": "npm run ui:generate && tsup --watch",
     "docs:sync": "npx tsx scripts/docs-capture.ts",
@@ -81,8 +81,8 @@
     "release": "npm run build && npm run typecheck && changeset publish",
     "version": "changeset version",
     "prepublishOnly": "npm run build && npm run typecheck",
-    "ds": "npx tsx scripts/design-system-cli.ts",
-    "tokens:generate": "npx tsx scripts/generate-tokens.ts"
+    "ds": "npx tsx scripts/cli/index.ts",
+    "tokens:generate": "npx tsx scripts/generators/index.ts tokens"
   },
   "peerDependencies": {
     "expo": ">=55.0.0",
