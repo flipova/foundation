@@ -58,6 +58,7 @@ const config: Config = {
         if (config.plugins) {
           config.plugins = config.plugins.filter(
             (p) =>
+              p &&
               p.constructor &&
               p.constructor.name !== 'WebpackBarPlugin' &&
               p.constructor.name !== 'ProgressPlugin'

@@ -1,6 +1,7 @@
 import { createContext, useContext, RefObject } from 'react';
 import { LayoutRectangle, View } from 'react-native';
 
+export type LayoutRect = LayoutRectangle;
 export type TutoElementRegistry = Map<string, LayoutRectangle>;
 
 export interface TutoContextType {
