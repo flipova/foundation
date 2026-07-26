@@ -150,6 +150,7 @@ const config: Config = {
     colorMode: {
       respectPrefersColorScheme: true,
       defaultMode: 'dark',
+      disableSwitch: false,
     },
 
     metadata: [
@@ -275,9 +276,9 @@ const config: Config = {
     },
 
     prism: {
-      theme: prismThemes.vsDark,
-      darkTheme: prismThemes.vsDark,
-      additionalLanguages: ['bash', 'json', 'diff'],
+      theme: prismThemes.oneDark,
+      darkTheme: prismThemes.oneDark,
+      additionalLanguages: ['bash', 'json', 'diff', 'tsx', 'typescript'],
     },
 
     docs: {
