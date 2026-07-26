@@ -110,7 +110,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     ...customThemes,
   };
 
-  // Sync with defaultTheme prop changes (e.g. from studio theme selector)
+  // Sync with defaultTheme prop changes
   useEffect(() => {
     if (defaultTheme) {
       setCurrentTheme(defaultTheme);

@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import styles from './styles.module.css';
 
-export default function CodeExporter({ meta, state, componentName }) {
+export default function CodeExporter({ meta, state, componentName }: any) {
   const codeString = useMemo(() => {
     let propsString = '';
     
     if (meta?.props) {
-      meta.props.forEach(p => {
+      meta.props.forEach((p: any) => {
         const val = state[p.name];
         
         // Skip if value is undefined or matches the default value

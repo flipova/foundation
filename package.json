@@ -50,6 +50,11 @@
       "types": "./dist/config/index.d.ts",
       "import": "./dist/config/index.mjs",
       "require": "./dist/config/index.js"
+    },
+    "./web": {
+      "types": "./dist/web/index.d.ts",
+      "import": "./dist/web/index.mjs",
+      "require": "./dist/web/index.js"
     }
   },
   "publishConfig": {

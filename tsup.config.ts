@@ -14,8 +14,9 @@ const yamlPlugin = {
     });
   },
 };
-// All native / RN packages that must never end up in web bundles.
-// Consumers that import @flipova/foundation/web get a pure browser build.
+
+// Native & React Native packages that must never end up in web bundles.
+// Consumers importing @flipova/foundation/web get a pure browser build.
 const nativeExternal = [
   "@expo/vector-icons",
   "expo-linear-gradient",
@@ -42,12 +43,10 @@ const sharedExternal = [
   "react-dom",
   "react-native",
   ...nativeExternal,
-  "express",
-  "ws",
 ];
 
 export default defineConfig([
-  // ── Platform-agnostic entries (React Native + shared) ──────────────────────
+  // ── Main Entry Points (React Native + Web shared) ──────────────────────────
   {
     entry: {
       "index":          "foundation/index.ts",
@@ -65,25 +64,29 @@ export default defineConfig([
     treeshake: { preset: "recommended", moduleSideEffects: false },
     splitting: true,
     minify: false,
-    // Explicitly external: ALL native packages so they never leak into chunks
     external: sharedExternal,
     outDir: "dist",
     esbuildPlugins: [yamlPlugin],
   },
 
-  // ── Studio CLI ─────────────────────────────────────────────────────────────
+  // ── Web-only: Pure browser build with zero React Native ────────────────────
   {
     entry: {
-      "cli/flipova": "scripts/init-cli.ts",
-      "cli/ds": "scripts/cli/index.ts",
+      "web/index": "foundation/web/index.ts",
     },
-    format: ["cjs"],
-    dts: false,
-    sourcemap: false,
+    format: ["cjs", "esm"],
+    dts: true,
+    sourcemap: true,
     clean: false,
-    splitting: false,
+    treeshake: { preset: "recommended", moduleSideEffects: false },
+    splitting: true,
     minify: false,
-    external: [],
+    external: sharedExternal,
     outDir: "dist",
+    esbuildPlugins: [yamlPlugin],
+    esbuildOptions(options) {
+      // Prioritize .web.tsx variants for browser builds
+      options.resolveExtensions = ['.web.tsx', '.web.ts', '.tsx', '.ts', '.jsx', '.js', '.json'];
+    },
   },
 ]);
