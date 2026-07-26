@@ -11,8 +11,23 @@ export interface ImageProps {
   src: string;
   /**
    * Alternative text description for accessibility.
+   * Required for semantic HTML and screen reader support.
    */
   alt?: string;
+  /**
+   * Fallback image URI displayed if the primary image fails to load.
+   * Useful for handling broken links or network errors gracefully.
+   */
+  fallbackSrc?: string;
+  /**
+   * Callback fired when the image fails to load.
+   * @param error Error details from the image loading failure.
+   */
+  onError?: (error: Error) => void;
+  /**
+   * Callback fired when the image successfully loads.
+   */
+  onLoad?: () => void;
   /**
    * Determines how the image should be resized to fit its container.
    * Maps to `expo-image`'s `contentFit` prop.
@@ -39,7 +54,14 @@ export function useImageLogic(props: ImageProps) {
   }, []);
 
   const merged = { ...metaDefaults, ...props };
-  const { src, alt, resizeMode, ...rest } = merged;
+  const { src, alt, fallbackSrc, onError, onLoad, resizeMode, ...rest } = merged;
 
-  return { src, alt, resizeMode, rest };
+  // Validate that alt text is provided for accessibility
+  if (!alt && typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.warn(
+      'Image component: alt prop is recommended for accessibility. Provide a meaningful description of the image content.'
+    );
+  }
+
+  return { src, alt, fallbackSrc, onError, onLoad, resizeMode, rest };
 }

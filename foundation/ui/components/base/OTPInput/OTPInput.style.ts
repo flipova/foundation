@@ -11,6 +11,9 @@ export function useOTPInputStyle(logic: any) {
         alignItems: 'center',
         marginVertical: 16,
       },
+      containerError: {
+        opacity: 0.7,
+      },
       cell: { 
         width: 56, 
         height: 64, 
@@ -39,6 +42,10 @@ export function useOTPInputStyle(logic: any) {
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 4,
+      },
+      cellError: {
+        borderColor: '#EF4444',
+        backgroundColor: '#FEE2E2',
       }
     });
   }, [logic]);

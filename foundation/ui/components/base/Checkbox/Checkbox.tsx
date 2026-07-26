@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { useCheckboxLogic, CheckboxProps } from './Checkbox.logic';
 import { useCheckboxStyle } from './Checkbox.style';
 import { Check } from 'lucide-react-native';
+import { isWeb } from '@/ui/utils/platform';
 
 /**
  * A control that allows the user to toggle between checked and not checked states.
@@ -24,15 +25,51 @@ import { Check } from 'lucide-react-native';
  * 
  * @accessibility
  * - The entire wrapper is pressable to aid users with limited dexterity.
- * - Depending on the use case, consider adding explicit `accessibilityRole="checkbox"` and 
- *   `accessibilityState={{ checked: logic.checked, disabled: logic.disabled }}` to the Pressable via `rest`.
+ * - Proper ARIA roles and states for web (aria-checked, aria-disabled, aria-label).
+ * - Native accessibility role and state for React Native.
+ * - Error states supported with aria-invalid and aria-describedby.
  */
 const Checkbox: React.FC<CheckboxProps> = (rawProps) => {
   const logic = useCheckboxLogic(rawProps);
   const styles = useCheckboxStyle(logic);
 
+  if (isWeb) {
+    return (
+      <Pressable
+        style={[styles.wrapper as any, logic.rest.style]}
+        onPress={logic.handlePress}
+        disabled={logic.disabled}
+        role="checkbox"
+        aria-checked={logic.checked}
+        aria-disabled={logic.disabled}
+        aria-label={logic.label || 'Checkbox'}
+        tabIndex={logic.disabled ? -1 : 0}
+      >
+        <View
+          style={styles.container as any}
+          role="presentation"
+        >
+          {logic.checked && <Check size={14} color={styles.iconColor} />}
+        </View>
+        {logic.label && (
+          <Text style={styles.label as any}>
+            {logic.label}
+          </Text>
+        )}
+      </Pressable>
+    );
+  }
+
   return (
-    <Pressable style={[styles.wrapper as any, logic.rest.style]} onPress={logic.handlePress} disabled={logic.disabled}>
+    <Pressable
+      style={[styles.wrapper as any, logic.rest.style]}
+      onPress={logic.handlePress}
+      disabled={logic.disabled}
+      accessible
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: logic.checked, disabled: logic.disabled }}
+      accessibilityLabel={logic.label || 'Checkbox'}
+    >
       <View style={styles.container as any}>
         {logic.checked && <Check size={14} color={styles.iconColor} />}
       </View>

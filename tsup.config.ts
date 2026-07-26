@@ -15,8 +15,7 @@ const yamlPlugin = {
   },
 };
 
-// Native & React Native packages that must never end up in web bundles.
-// Consumers importing @flipova/foundation/web get a pure browser build.
+// Native & React Native packages that are external dependencies.
 const nativeExternal = [
   "@expo/vector-icons",
   "expo-linear-gradient",
@@ -46,7 +45,7 @@ const sharedExternal = [
 ];
 
 export default defineConfig([
-  // ── Main Entry Points (React Native + Web shared) ──────────────────────────
+  // ── React Native Entry Point (builds for both native and web via React Native web) ──────────────────────────
   {
     entry: {
       "index":          "foundation/index.ts",
@@ -67,26 +66,5 @@ export default defineConfig([
     external: sharedExternal,
     outDir: "dist",
     esbuildPlugins: [yamlPlugin],
-  },
-
-  // ── Web-only: Pure browser build with zero React Native ────────────────────
-  {
-    entry: {
-      "web/index": "foundation/web/index.ts",
-    },
-    format: ["cjs", "esm"],
-    dts: true,
-    sourcemap: true,
-    clean: false,
-    treeshake: { preset: "recommended", moduleSideEffects: false },
-    splitting: true,
-    minify: false,
-    external: sharedExternal,
-    outDir: "dist",
-    esbuildPlugins: [yamlPlugin],
-    esbuildOptions(options) {
-      // Prioritize .web.tsx variants for browser builds
-      options.resolveExtensions = ['.web.tsx', '.web.ts', '.tsx', '.ts', '.jsx', '.js', '.json'];
-    },
   },
 ]);

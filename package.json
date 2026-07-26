@@ -50,11 +50,6 @@
       "types": "./dist/config/index.d.ts",
       "import": "./dist/config/index.mjs",
       "require": "./dist/config/index.js"
-    },
-    "./web": {
-      "types": "./dist/web/index.d.ts",
-      "import": "./dist/web/index.mjs",
-      "require": "./dist/web/index.js"
     }
   },
   "publishConfig": {
@@ -222,6 +217,7 @@
     "@react-native-picker/picker": "^2.11.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "csstype": "^3.2.3",
     "expo-audio": "^57.0.2",
     "expo-document-picker": "^57.0.1",
     "expo-image": "^57.0.1",

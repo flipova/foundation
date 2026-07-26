@@ -10,6 +10,12 @@ export interface OTPInputProps {
   value?: string;
   /** Callback when the value changes */
   onChangeText?: (val: string) => void;
+  /** Whether the input is in an error state */
+  error?: boolean;
+  /** Error message to display */
+  errorMessage?: string;
+  /** Callback fired when OTP is complete (length reached) */
+  onComplete?: (otp: string) => void;
   [key: string]: any;
 }
 
@@ -25,7 +31,7 @@ export function useOTPInputLogic(props: OTPInputProps) {
   }, []);
 
   const merged = { ...metaDefaults, ...props };
-  const { length = 4, value, onChangeText, ...rest } = merged;
+  const { length = 4, value, onChangeText, error, errorMessage, onComplete, ...rest } = merged;
 
   const [internalValue, setInternalValue] = useState<string[]>(
     (value || '').padEnd(length, ' ').split('').slice(0, length).map(c => c === ' ' ? '' : c)
@@ -54,7 +60,14 @@ export function useOTPInputLogic(props: OTPInputProps) {
         newValues[index + i] = char;
       });
       setInternalValue(newValues);
-      onChangeText?.(newValues.join(''));
+      const otpString = newValues.join('');
+      onChangeText?.(otpString);
+      
+      // Check if OTP is complete
+      if (newValues.every(v => v !== '') && onComplete) {
+        onComplete(otpString);
+      }
+      
       focusInput(Math.min(index + chars.length, length - 1));
       return;
     }
@@ -62,7 +75,13 @@ export function useOTPInputLogic(props: OTPInputProps) {
     const newValues = [...internalValue];
     newValues[index] = text;
     setInternalValue(newValues);
-    onChangeText?.(newValues.join(''));
+    const otpString = newValues.join('');
+    onChangeText?.(otpString);
+
+    // Check if OTP is complete
+    if (newValues.every(v => v !== '') && onComplete) {
+      onComplete(otpString);
+    }
 
     if (text !== '' && index < length - 1) {
       focusInput(index + 1);
@@ -84,5 +103,17 @@ export function useOTPInputLogic(props: OTPInputProps) {
     if (focusedIndex === index) setFocusedIndex(null);
   };
 
-  return { length, internalValue, handleChange, handleKeyPress, handleFocus, handleBlur, focusedIndex, inputsRef, rest };
+  return {
+    length,
+    internalValue,
+    handleChange,
+    handleKeyPress,
+    handleFocus,
+    handleBlur,
+    focusedIndex,
+    inputsRef,
+    error,
+    errorMessage,
+    rest,
+  };
 }
