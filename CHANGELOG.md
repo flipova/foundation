@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.12.1
+
+### Patch Changes
+
+- 229602a: fix: cleanup docs configuration and expose web bundle properly
+- e1eb3b3: Cleanup web export configuration and documentation - remove studio references, finalize web import system, organize documentation
+
 ## 1.12.0
 
 ### Minor Changes
