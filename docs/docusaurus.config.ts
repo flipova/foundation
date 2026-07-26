@@ -12,9 +12,7 @@ const config: Config = {
   tagline: 'Design tokens, theming & UI primitives for React Native, Expo, Web & Desktop.',
   favicon: 'img/favicon.ico',
 
-  future: {
-    v4: true,
-  },
+
 
   url: 'https://flipova.github.io',
   baseUrl: '/foundation/',
@@ -56,12 +54,22 @@ const config: Config = {
   plugins: [
     () => ({
       name: 'resolve-react-native-web',
-      configureWebpack() {
+      configureWebpack(config) {
+        if (config.plugins) {
+          config.plugins = config.plugins.filter(
+            (p) =>
+              p.constructor &&
+              p.constructor.name !== 'WebpackBarPlugin' &&
+              p.constructor.name !== 'ProgressPlugin'
+          );
+        }
+
         const nativeOnlyPackages = [
           'react-native-maps',
           'lottie-react-native',
           'react-native-gesture-handler',
           'react-native-reanimated',
+          'reanimated-color-picker',
           'react-native-safe-area-context',
           'react-native-screens',
           'react-native-webview',
@@ -93,7 +101,7 @@ const config: Config = {
             alias: {
               'react-native$': 'react-native-web',
               // Use a catch-all alias array for native modules
-              ...nativeOnlyPackages.reduce((acc, pkg) => {
+              ...nativeOnlyPackages.reduce((acc: Record<string, string>, pkg) => {
                 if (pkg !== 'react-native') {
                   acc[`${pkg}$`] = require.resolve('./src/stubs/dummy.js');
                 }
@@ -121,6 +129,11 @@ const config: Config = {
                     normalizedPath.endsWith(`/${pkg}`)
                   );
                 },
+                use: require.resolve('./src/stubs/null-loader.js'),
+              },
+              {
+                test: /\.png$/,
+                include: (filepath) => filepath.replace(/\\/g, '/').includes('/node_modules/reanimated-color-picker'),
                 use: require.resolve('./src/stubs/null-loader.js'),
               },
             ],

@@ -23,5 +23,5 @@
     }
   },
   "include": ["foundation", "docs"],
-  "exclude": ["node_modules", "dist", "studio/web", "**/*.example.ts"]
+  "exclude": ["node_modules", "dist", "**/*.example.ts"]
 }

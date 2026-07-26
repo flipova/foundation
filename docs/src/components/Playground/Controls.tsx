@@ -12,8 +12,8 @@ const RADIUS_OPTIONS = [
   { label: 'Full', value: 'full' },
 ];
 
-function ControlField({ propDef, value, onChange }) {
-  const handleChange = (e) => {
+function ControlField({ propDef, value, onChange }: any) {
+  const handleChange = (e: any) => {
     let val = e.target.value;
     if (propDef.type === 'boolean') {
       val = e.target.checked;
@@ -39,7 +39,7 @@ function ControlField({ propDef, value, onChange }) {
       const options = propDef.options || (propDef.type === 'radius' ? RADIUS_OPTIONS : []);
       return (
         <select className={styles.select} value={String(value || '')} onChange={handleChange}>
-          {options.map(opt => (
+          {options.map((opt: any) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
@@ -79,11 +79,11 @@ function ControlField({ propDef, value, onChange }) {
   );
 }
 
-export default function Controls({ meta, state, onChange }) {
+export default function Controls({ meta, state, onChange }: any) {
   const groups = useMemo(() => {
-    const g = {};
+    const g: Record<string, any[]> = {};
     if (meta?.props) {
-      meta.props.forEach(p => {
+      meta.props.forEach((p: any) => {
         const gName = p.group || 'General';
         if (!g[gName]) g[gName] = [];
         g[gName].push(p);
@@ -92,8 +92,8 @@ export default function Controls({ meta, state, onChange }) {
     return g;
   }, [meta]);
 
-  const handleChange = (name, value) => {
-    onChange(prev => ({ ...prev, [name]: value }));
+  const handleChange = (name: string, value: any) => {
+    onChange((prev: any) => ({ ...prev, [name]: value }));
   };
 
   if (!meta?.props || meta.props.length === 0) {
@@ -105,7 +105,7 @@ export default function Controls({ meta, state, onChange }) {
       {Object.entries(groups).map(([groupName, props]) => (
         <div key={groupName} className={styles.propGroup}>
           <div className={styles.groupHeader}>{groupName}</div>
-          {props.map(p => (
+          {(props as any[]).map((p: any) => (
             <ControlField 
               key={p.name} 
               propDef={p} 

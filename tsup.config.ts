@@ -14,8 +14,9 @@ const yamlPlugin = {
     });
   },
 };
-// All native / RN packages that must never end up in web bundles.
-// Consumers that import @flipova/foundation/web get a pure browser build.
+
+// Native & React Native packages that must never end up in web bundles.
+// Consumers importing @flipova/foundation/web get a pure browser build.
 const nativeExternal = [
   "@expo/vector-icons",
   "expo-linear-gradient",
@@ -42,12 +43,10 @@ const sharedExternal = [
   "react-dom",
   "react-native",
   ...nativeExternal,
-  "express",
-  "ws",
 ];
 
 export default defineConfig([
-  // ── Platform-agnostic entries (React Native + shared) ──────────────────────
+  // ── Main Entry Points (React Native + Web shared) ──────────────────────────
   {
     entry: {
       "index":          "foundation/index.ts",
@@ -65,13 +64,12 @@ export default defineConfig([
     treeshake: { preset: "recommended", moduleSideEffects: false },
     splitting: true,
     minify: false,
-    // Explicitly external: ALL native packages so they never leak into chunks
     external: sharedExternal,
     outDir: "dist",
     esbuildPlugins: [yamlPlugin],
   },
 
-  // ── Web-only build (browser pure, zero React Native/Expo deps) ─────────────
+  // ── Web-only: Pure browser build with zero React Native ────────────────────
   {
     entry: {
       "web/index": "foundation/web/index.ts",
@@ -83,26 +81,12 @@ export default defineConfig([
     treeshake: { preset: "recommended", moduleSideEffects: false },
     splitting: true,
     minify: false,
-    // For web: all native packages PLUS native-only platforms
     external: sharedExternal,
     outDir: "dist",
     esbuildPlugins: [yamlPlugin],
-    resolveExtensions: [".web.tsx", ".web.ts", ".tsx", ".ts", ".jsx", ".js"],
-  },
-
-  // ── Studio CLI ─────────────────────────────────────────────────────────────
-  {
-    entry: {
-      "cli/flipova": "scripts/init-cli.ts",
-      "cli/ds": "scripts/cli/index.ts",
+    esbuildOptions(options) {
+      // Prioritize .web.tsx variants for browser builds
+      options.resolveExtensions = ['.web.tsx', '.web.ts', '.tsx', '.ts', '.jsx', '.js', '.json'];
     },
-    format: ["cjs"],
-    dts: false,
-    sourcemap: false,
-    clean: false,
-    splitting: false,
-    minify: false,
-    external: [],
-    outDir: "dist",
   },
 ]);

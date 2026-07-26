@@ -3,11 +3,11 @@ import Controls from './Controls';
 import CodeExporter from './CodeExporter';
 import styles from './styles.module.css';
 
-export default function Playground({ component: Component, meta, componentName }) {
+export default function Playground({ component: Component, meta, componentName }: any) {
   const [propsState, setPropsState] = useState(() => {
-    const initialState = {};
+    const initialState: Record<string, any> = {};
     if (meta?.props) {
-      meta.props.forEach(p => {
+      meta.props.forEach((p: any) => {
         if (p.default !== undefined) {
           initialState[p.name] = p.default;
         }

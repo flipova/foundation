@@ -1,5 +1,5 @@
 /**
- * PlatformOverride — Context to override platform detection in studio/preview mode.
+ * PlatformOverride — Context to override platform detection in preview mode.
  * When provided, useBreakpoint and usePlatformInfo will use these values instead of real ones.
  */
 import React, { createContext, useContext } from 'react';
