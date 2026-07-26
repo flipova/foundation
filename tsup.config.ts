@@ -71,6 +71,25 @@ export default defineConfig([
     esbuildPlugins: [yamlPlugin],
   },
 
+  // ── Web-only build (browser pure, zero React Native/Expo deps) ─────────────
+  {
+    entry: {
+      "web/index": "foundation/web/index.ts",
+    },
+    format: ["cjs", "esm"],
+    dts: true,
+    sourcemap: true,
+    clean: false,
+    treeshake: { preset: "recommended", moduleSideEffects: false },
+    splitting: true,
+    minify: false,
+    // For web: all native packages PLUS native-only platforms
+    external: sharedExternal,
+    outDir: "dist",
+    esbuildPlugins: [yamlPlugin],
+    resolveExtensions: [".web.tsx", ".web.ts", ".tsx", ".ts", ".jsx", ".js"],
+  },
+
   // ── Studio CLI ─────────────────────────────────────────────────────────────
   {
     entry: {
