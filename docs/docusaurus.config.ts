@@ -9,7 +9,7 @@ const config: Config = {
   favicon: 'img/favicon.svg',
 
   url: 'https://flipova.github.io',
-  baseUrl: '/',
+  baseUrl: process.env.BASE_URL || '/foundation/',
 
   organizationName: 'flipova',
   projectName: 'foundation',
