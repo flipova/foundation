@@ -18,10 +18,9 @@
     "paths": {
       "@/*": ["./foundation/*"],
       "@flipova/foundation": ["./foundation/index.ts"],
-      "@flipova/foundation/*": ["./foundation/*"],
-      "@flipova/foundation/web": ["./foundation/web/index.ts"]
+      "@flipova/foundation/*": ["./foundation/*"]
     }
   },
-  "include": ["foundation", "docs"],
+  "include": ["foundation", "scripts"],
   "exclude": ["node_modules", "dist", "**/*.example.ts"]
 }

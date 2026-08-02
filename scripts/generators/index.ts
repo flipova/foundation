@@ -2,8 +2,10 @@ import * as path from 'path';
 import { buildRegistry } from './registry';
 import { buildThemes } from './themes';
 import { buildTokens } from './tokens';
+import { buildDocs } from './docs';
 
 const ROOT = path.resolve(__dirname, '../../');
+const FOUNDATION_DIR = path.join(ROOT, 'foundation');
 const UI_DIR = path.join(ROOT, 'foundation/ui/components');
 const REGISTRY_OUT = path.join(ROOT, 'foundation/registry/generated.ts');
 
@@ -34,6 +36,13 @@ async function main() {
       console.log('Generating tokens...');
       buildTokens(TOKENS_YAML, TOKENS_OUT);
       console.log('Successfully generated tokens');
+    }
+
+    if (command === 'docs' || command === 'documentation') {
+      const targetDir = args[1] ? path.resolve(process.cwd(), args[1]) : path.join(ROOT, 'docs/docs');
+      console.log(`Generating MDX documentation into ${targetDir}...`);
+      const res = buildDocs(FOUNDATION_DIR, targetDir);
+      console.log(`Successfully generated ${res.totalFiles} MDX documentation files mirroring foundation structure!`);
     }
   } catch (error) {
     console.error('Error during generation:', error);

@@ -3,6 +3,29 @@ id: Button
 label: Button
 description: Pressable button with variant and size support.
 category: action
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Button, Inline, Stack, Text } from '@flipova/foundation';
+
+  export default function ButtonExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Stack spacing={4} style={{ padding: 20 }}>
+          <Text variant="heading" size="md">Button Actions</Text>
+          <Inline spacing={3} alignItems="center">
+            <Button
+            label="Button"
+            variant="primary"
+            size="md"
+            disabled={false}
+            loading={false}
+            fullWidth={false}
+          onPress={() => console.log('Button pressed')} />
+          </Inline>
+        </Stack>
+      </FoundationProvider>
+    );
+  }
 tags:
   - button
   - cta

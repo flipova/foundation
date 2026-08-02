@@ -106,3 +106,28 @@ props:
     type: number
     group: behavior
     default: 140
+example: |-
+  import React from 'react';
+  import { FoundationProvider, FlipLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function FlipLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <FlipLayout
+            borderRadius="none"
+            flipPerspective={1200}
+            swipeThreshold={40}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Flip Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Flip Section 2</Text>
+          </Card>
+        </FlipLayout>
+      </FoundationProvider>
+    );
+  }

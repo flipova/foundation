@@ -1,121 +1,170 @@
-import type { ReactNode } from 'react';
-import Link from '@docusaurus/Link';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import React, { useState } from 'react';
 import Layout from '@theme/Layout';
-import Heading from '@theme/Heading';
-import styles from './index.module.css';
+import Link from '@docusaurus/Link';
+import {
+  Palette,
+  Box,
+  Layout as LayoutIcon,
+  Smartphone,
+  Zap,
+  ChevronRight,
+  Copy,
+  Check,
+  Code2,
+  Shield,
+} from 'lucide-react';
 
-const FEATURES = [
-  {
-    icon: 'System',
-    title: 'Design Tokens',
-    description: 'Comprehensive spacing, color, typography, shadow, and motion tokens shared across web and native.',
-  },
-  {
-    icon: 'Themes',
-    title: '9 Built-in Themes',
-    description: 'Light, dark, neon, autumn, spring, summer, winter, halloween, christmas — plus full custom theme support.',
-  },
-  {
-    icon: 'Layout',
-    title: 'Layout Primitives',
-    description: 'Box, Stack, Inline, Center, Scroll, Divider — composable layout primitives for every pattern.',
-  },
-  {
-    icon: 'UI',
-    title: 'Interactive UI',
-    description: 'Button, TextInput, Avatar, Badge, Accordion, Tabs and more — all theme-aware and interactive out of the box.',
-  },
-  {
-    icon: 'Web',
-    title: 'Web First, Native Ready',
-    description: 'Import from @flipova/foundation/web for zero React Native deps — pure DOM, works with Vite and Next.js.',
-  },
-];
+export default function Home(): React.JSX.Element {
+  const [copied, setCopied] = useState(false);
 
-function Hero() {
-  const { siteConfig } = useDocusaurusContext();
+  const copyInstallCommand = () => {
+    navigator.clipboard.writeText('npm i @flipova/foundation');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <header className={styles.hero}>
-      <div className={styles.heroBg} />
-      <div className="container">
-        <div className={styles.heroContent}>
-          <span className={styles.heroEyebrow}>v1.11 · The Multi-Platform Framework</span>
-          <Heading as="h1" className={styles.heroTitle}>
-            Build beautiful apps
-            <br />
-            <span className={styles.gradientText}>faster & consistently</span>
-          </Heading>
-          <p className={styles.heroSubtitle}>
-            {siteConfig.tagline}.<br />
-            One single robust design system for React Native, Expo, Web, and Desktop.
-          </p>
-          <div className={styles.heroButtons}>
-            <Link className="button button--primary button--lg" to="/docs/guides/getting-started">
-              Get Started →
-            </Link>
-            <Link className="button button--secondary button--lg" href="https://github.com/flipova/foundation" target="_blank">
-              GitHub
-            </Link>
+    <Layout
+      title="Flipova Foundation"
+      description="Design system, tokens, and primitive layout components for React Native (iOS, Android & Web)."
+    >
+      <div className="home-wrapper">
+        {/* Hero Section */}
+        <section className="hero-section">
+          <div className="hero-container">
+            <div className="version-pill">
+              <span className="pill-dot"></span>
+              <span>Flipova Foundation v1.12.0</span>
+            </div>
+
+            <h1 className="hero-title">
+              The Premier UI Ecosystem for <br />
+              <span className="hero-gradient-text">React Native & Web.</span>
+            </h1>
+
+            <p className="hero-subtitle">
+              An agnostic, deterministic architecture delivering 46+ reactive components, 
+              20+ layout primitives, and a unified token system.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="hero-actions">
+              <Link to="/docs/guides/getting-started" className="btn-primary">
+                <span>Explore Documentation</span>
+                <ChevronRight className="btn-icon" />
+              </Link>
+
+              <button onClick={copyInstallCommand} className="btn-secondary">
+                <Code2 className="btn-icon text-blue-400" />
+                <span className="font-mono text-xs">npm i @flipova/foundation</span>
+                {copied ? <Check className="btn-icon text-emerald-400" /> : <Copy className="btn-icon opacity-60" />}
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-    </header>
-  );
-}
+        </section>
 
-function Features() {
-  return (
-    <section className={styles.features}>
-      <div className="container">
-        <p className={styles.sectionLabel}>Why Foundation</p>
-        <Heading as="h2" className={styles.sectionTitle}>Everything you need, beautifully crafted</Heading>
-        <p className={styles.sectionSubtitle}>
-          A battle-tested design system that scales from a startup's first screen to a multi-platform production app.
-        </p>
-        <div className="row">
-          {FEATURES.map((f, idx) => (
-            <div key={idx} className="col col--4 margin-bottom--lg">
-              <div className={styles.glassCard}>
-                <span className={styles.featureIcon}>{f.icon}</span>
-                <h3 className={styles.featureTitle}>{f.title}</h3>
-                <p className={styles.featureDescription}>{f.description}</p>
+        {/* Feature Grid Section - 100% Uniform Cards */}
+        <section className="features-section">
+          <div className="features-container">
+            <div className="section-header">
+              <span className="section-eyebrow">Architecture & Capabilities</span>
+              <h2 className="section-title">Engineered for Native Speed</h2>
+            </div>
+
+            <div className="features-grid">
+              {/* Feature 1 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <Palette className="w-5 h-5" />
+                </div>
+                <h3>Tokens & Theme System</h3>
+                <p>
+                  Adaptable spacing scales, harmonized typography, and dynamic dark/light theme switching via token injection.
+                </p>
+                <Link to="/docs/tokens/tokens" className="card-link">
+                  <span>View Tokens</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Feature 2 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <Box className="w-5 h-5" />
+                </div>
+                <h3>46+ Core Components</h3>
+                <p>
+                  Production-ready buttons, inputs, modals, loaders, cards, and media controls crafted for maximum fluidity.
+                </p>
+                <Link to="/docs/ui/components/base/Button/Button" className="card-link">
+                  <span>Explore Components</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Feature 3 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <LayoutIcon className="w-5 h-5" />
+                </div>
+                <h3>20+ Primitive Layouts</h3>
+                <p>
+                  Reactive grid systems, sliding drawers, sticky headers/footers, and scrollable container primitives.
+                </p>
+                <Link to="/docs/ui/components/layouts/RootLayout/RootLayout" className="card-link">
+                  <span>Discover Layouts</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Feature 4 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <h3>Cross-Platform Native</h3>
+                <p>
+                  Flawless performance on iOS, Android, and Web powered by robust multi-environment render adapters.
+                </p>
+                <Link to="/docs/ui/hooks/useBreakpoint" className="card-link">
+                  <span>Check Hooks</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Feature 5 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <h3>Zero Extra Dependencies</h3>
+                <p>
+                  Minimal bundle footprint, strict TypeScript typing, and autonomous CLI executable generation.
+                </p>
+                <Link to="/docs/tokens/tokens" className="card-link">
+                  <span>API Specs</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+
+              {/* Feature 6 */}
+              <div className="feature-card">
+                <div className="feature-icon-box">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <h3>Agnostic Documentation</h3>
+                <p>
+                  100% deterministically generated documentation straight from `.meta.yaml` definitions and TSDoc comments.
+                </p>
+                <Link to="/docs/tokens/tokens" className="card-link">
+                  <span>Metadata Registry</span>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        </section>
       </div>
-    </section>
-  );
-}
-
-function CTA() {
-  return (
-    <section className={styles.cta}>
-      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
-        <Heading as="h2" className={styles.ctaTitle}>Ready to build?</Heading>
-        <p className={styles.ctaSubtitle}>
-          Read the docs, install the package, and ship your first multi-platform app today.
-        </p>
-        <div className={styles.heroButtons}>
-          <Link className="button button--secondary button--lg" to="/docs/guides/getting-started">
-            Read the Documentation
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export default function Home(): ReactNode {
-  const { siteConfig } = useDocusaurusContext();
-  return (
-    <Layout title={siteConfig.title} description={siteConfig.tagline}>
-      <Hero />
-      <main>
-        <Features />
-        <CTA />
-      </main>
     </Layout>
   );
 }

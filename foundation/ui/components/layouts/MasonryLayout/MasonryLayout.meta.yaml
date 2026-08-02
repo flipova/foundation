@@ -62,3 +62,30 @@ props:
     label: Padding
     type: padding
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, MasonryLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function MasonryLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <MasonryLayout
+            columns={2}
+            spacing={1}
+            scrollable={true}
+            background="transparent"
+            borderRadius="none"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Masonry Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Masonry Section 2</Text>
+          </Card>
+        </MasonryLayout>
+      </FoundationProvider>
+    );
+  }

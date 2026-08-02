@@ -54,3 +54,28 @@ props:
     type: color
     group: style
     themeDefault: primary
+example: |-
+  import React, { useState } from 'react';
+  import { FoundationProvider, RadioGroup, Card, Stack, Text, Button } from '@flipova/foundation';
+
+  export default function RadioGroupExample() {
+    const [value, setValue] = useState('');
+
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated" style={{ maxWidth: 400 }}>
+          <Stack spacing={4}>
+            <Text variant="heading" size="md">Radio Group Input</Text>
+            <RadioGroup
+            size="md"
+            label="Label"
+            direction="column"
+            spacing={2}
+            disabled={false}
+          value={value} onChangeText={setValue} />
+            <Button variant="primary" label="Submit" onPress={() => console.log(value)} />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

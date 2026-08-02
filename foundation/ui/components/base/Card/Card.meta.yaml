@@ -42,3 +42,24 @@ props:
     type: radius
     group: style
     default: md
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Card, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function CardExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Card Example</Text>
+            <Card
+            shadow="md"
+            interactive={false}
+            padding={4}
+            borderRadius="md"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

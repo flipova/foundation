@@ -9,7 +9,7 @@ export interface VideoProps {
   /**
    * The URI or local path to the video file.
    */
-  source: string;
+  source: string | { uri: string };
 
   /**
    * If true, the video will start playing automatically once loaded.
@@ -25,6 +25,11 @@ export interface VideoProps {
    * Determines whether native playback controls should be displayed. Defaults to true.
    */
   controls?: boolean;
+
+  /**
+   * If true, the video will be muted (useful for autoplay on web).
+   */
+  muted?: boolean;
 
   /**
    * Additional custom props that will be passed to the container View.
@@ -44,9 +49,12 @@ export function useVideoLogic(props: VideoProps) {
   }, []);
 
   const merged = { ...metaDefaults, ...props };
-  const { source, autoPlay, loop, controls, ...rest } = merged;
+  const { source, autoPlay, loop, controls, muted, ...rest } = merged;
 
-  const player = useVideoPlayer(source, player => {
+  // Resolve source to a string URI for expo-video player
+  const sourceUri = typeof source === 'string' ? source : (source as { uri: string })?.uri ?? '';
+
+  const player = useVideoPlayer(sourceUri, player => {
     player.loop = loop ?? false;
     if (autoPlay) {
       player.play();
@@ -62,5 +70,8 @@ export function useVideoLogic(props: VideoProps) {
     }
   }, [loop, autoPlay, player]);
 
-  return { source, autoPlay, loop, controls, player, rest };
+  // isPlaying reflects the current autoPlay state for web sync
+  const isPlaying = autoPlay ?? false;
+
+  return { source, sourceUri, autoPlay, loop, controls, muted, isPlaying, player, rest };
 }

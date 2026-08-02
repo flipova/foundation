@@ -27,10 +27,10 @@ import { resolveConfig } from "./index";
 const ConfigContext = createContext<ResolvedConfig | null>(null);
 
 /**
- * Hook pour obtenir la configuration résolue de Foundation.
+ * Hook to retrieve the resolved Foundation configuration.
  * 
- * @returns La configuration résolue.
- * @throws Erreur s'il est utilisé en dehors d'un FoundationProvider.
+ * @returns The resolved configuration.
+ * @throws Error if used outside a FoundationProvider.
  */
 export function useFoundationConfig(): ResolvedConfig {
   const ctx = useContext(ConfigContext);
@@ -41,16 +41,16 @@ export function useFoundationConfig(): ResolvedConfig {
 }
 
 /**
- * Hook pour obtenir les tokens résolus.
+ * Hook to retrieve resolved design tokens.
  * 
- * @returns Les tokens résolus.
+ * @returns Resolved tokens object.
  */
 export function useTokens(): ResolvedConfig["tokens"] {
   return useFoundationConfig().tokens;
 }
 
 /**
- * Propriétés du FoundationProvider.
+ * FoundationProvider props interface.
  */
 interface FoundationProviderProps {
   children?: React.ReactNode;
@@ -58,13 +58,13 @@ interface FoundationProviderProps {
 }
 
 /**
- * Fournisseur principal de Foundation.
+ * Main Foundation Provider component.
  * 
- * Enveloppe l'application avec la configuration résolue (tokens et thèmes).
- * Remplace le ThemeProvider autonome et sert de point d'entrée unique.
+ * Wraps the application with resolved configuration (tokens and themes).
+ * Serves as the primary single entry point.
  * 
- * @param props - Les propriétés du fournisseur de configuration.
- * @returns Le composant fournisseur encapsulant les enfants avec le contexte.
+ * @param props - Configuration provider properties.
+ * @returns Provider component wrapping children with context.
  *
  * @example
  * ```tsx

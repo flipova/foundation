@@ -1,12 +1,11 @@
 {
   "name": "@flipova/foundation",
-  "version": "1.12.1",
+  "version": "1.12.0",
   "description": "Design tokens, theming system, and layout primitives for React Native (iOS, Android, Web)",
   "author": "Flipova",
   "license": "MIT",
   "workspaces": [
-    ".",
-    "docs"
+    "."
   ],
   "repository": {
     "type": "git",
@@ -18,43 +17,52 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "browser": "./dist/index.js",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./tokens": {
       "types": "./dist/tokens/index.d.ts",
+      "browser": "./dist/tokens/index.js",
       "import": "./dist/tokens/index.mjs",
-      "require": "./dist/tokens/index.js"
+      "require": "./dist/tokens/index.js",
+      "default": "./dist/tokens/index.js"
     },
     "./theme": {
       "types": "./dist/theme/index.d.ts",
+      "browser": "./dist/theme/index.js",
       "import": "./dist/theme/index.mjs",
-      "require": "./dist/theme/index.js"
+      "require": "./dist/theme/index.js",
+      "default": "./dist/theme/index.js"
     },
     "./registry": {
       "types": "./dist/registry/index.d.ts",
+      "browser": "./dist/registry/index.js",
       "import": "./dist/registry/index.mjs",
-      "require": "./dist/registry/index.js"
+      "require": "./dist/registry/index.js",
+      "default": "./dist/registry/index.js"
     },
     "./ui": {
       "types": "./dist/ui/index.d.ts",
+      "browser": "./dist/ui/index.js",
       "import": "./dist/ui/index.mjs",
-      "require": "./dist/ui/index.js"
+      "require": "./dist/ui/index.js",
+      "default": "./dist/ui/index.js"
     },
     "./types": {
       "types": "./dist/types/index.d.ts",
+      "browser": "./dist/types/index.js",
       "import": "./dist/types/index.mjs",
-      "require": "./dist/types/index.js"
+      "require": "./dist/types/index.js",
+      "default": "./dist/types/index.js"
     },
     "./config": {
       "types": "./dist/config/index.d.ts",
+      "browser": "./dist/config/index.js",
       "import": "./dist/config/index.mjs",
-      "require": "./dist/config/index.js"
-    },
-    "./web": {
-      "types": "./dist/web/index.d.ts",
-      "import": "./dist/web/index.mjs",
-      "require": "./dist/web/index.js"
+      "require": "./dist/config/index.js",
+      "default": "./dist/config/index.js"
     }
   },
   "publishConfig": {
@@ -82,12 +90,16 @@
     "theme:generate": "npx tsx scripts/generators/index.ts theme",
     "build": "npm run registry:generate && tsup",
     "dev": "npm run ui:generate && tsup --watch",
-    "docs:sync": "npx tsx scripts/docs-capture.ts",
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
     "version": "changeset version",
     "prepublishOnly": "npm run build && npm run typecheck",
     "ds": "npx tsx scripts/cli/index.ts",
+    "docs": "npx tsx scripts/cli/index.ts docs",
+    "docs:generate": "npx tsx scripts/generators/index.ts docs",
+    "docs:dev": "npm run docs:generate && npm --prefix docs run start",
+    "docs:build": "npm run docs:generate && npm --prefix docs run build",
+    "docs:preview": "npm --prefix docs run serve",
     "tokens:generate": "npx tsx scripts/generators/index.ts tokens",
     "test": "vitest run"
   },
@@ -222,6 +234,7 @@
     "@react-native-picker/picker": "^2.11.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "csstype": "^3.2.3",
     "expo-audio": "^57.0.2",
     "expo-document-picker": "^57.0.1",
     "expo-image": "^57.0.1",

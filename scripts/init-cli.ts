@@ -2,6 +2,9 @@
 import prompts from 'prompts';
 import fs from 'fs';
 import path from 'path';
+import { buildDocs } from './generators/docs';
+
+const FOUNDATION_DIR = path.resolve(__dirname, '../foundation');
 
 const TEMPLATE = `/**
  * flipova.config.js
@@ -93,6 +96,15 @@ export default defineConfig({
 `;
 
 async function main() {
+    const args = process.argv.slice(2);
+    if (args[0] === 'docs' || args[0] === 'documentation') {
+        const outDir = path.resolve(process.cwd(), args[1] || 'docs');
+        console.log(`Génération de la documentation MDX dans ${outDir}...`);
+        const res = buildDocs(FOUNDATION_DIR, outDir);
+        console.log(`Documentation MDX générée avec succès (${res.totalFiles} fichiers) !`);
+        return;
+    }
+
     console.log("Bienvenue dans l'assistant d'initialisation de Flipova Foundation !\n");
 
     const response = await prompts([

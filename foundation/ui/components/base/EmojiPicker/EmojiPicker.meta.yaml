@@ -1,4 +1,26 @@
+type: component
+id: EmojiPicker
 name: EmojiPicker
 description: A grid of emojis categorized by type.
-tags: [base, input, picker, emoji]
+tags:
+  - base
+  - input
+  - picker
+  - emoji
 props: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, EmojiPicker, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function EmojiPickerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">EmojiPicker Example</Text>
+            <EmojiPicker />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

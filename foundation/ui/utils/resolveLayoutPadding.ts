@@ -1,13 +1,13 @@
 /**
- * Résout un LayoutPadding en props individuelles pt/pb/pl/pr.
- * Élimine la duplication dans 7+ layouts.
+ * Resolves a LayoutPadding configuration object into individual pt/pb/pl/pr spacing props.
+ * Eliminates duplicate padding calculation across layouts.
  */
 
 import type { SpacingToken } from '../../tokens';
 import type { LayoutPadding } from "../../types";
 
 /**
- * Interface représentant les marges internes (padding) résolues pour chaque côté.
+ * Interface representing resolved padding values for top, bottom, left, and right.
  */
 export interface ResolvedPadding {
   pt?: SpacingToken;
@@ -17,11 +17,11 @@ export interface ResolvedPadding {
 }
 
 /**
- * Résout une définition de padding de layout (vertical/horizontal ou top/bottom/left/right)
- * en un objet avec des propriétés pour chaque direction.
+ * Resolves a layout padding definition (vertical/horizontal or top/bottom/left/right)
+ * into an object containing individual directional padding tokens.
  *
- * @param padding - Les espacements définis pour la disposition.
- * @returns Un objet contenant pt, pb, pl, et pr.
+ * @param padding - Layout padding configuration object.
+ * @returns Object containing pt, pb, pl, and pr values.
  */
 export function resolveLayoutPadding(padding?: LayoutPadding): ResolvedPadding {
   if (!padding) return {};

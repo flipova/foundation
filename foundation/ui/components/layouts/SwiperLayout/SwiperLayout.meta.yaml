@@ -99,3 +99,28 @@ props:
     type: color
     group: style
     default: '#fff'
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SwiperLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function SwiperLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <SwiperLayout
+            enableSwipeUp={false}
+            enableSwipeDown={false}
+            borderRadius="none"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Swiper Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Swiper Section 2</Text>
+          </Card>
+        </SwiperLayout>
+      </FoundationProvider>
+    );
+  }

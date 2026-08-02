@@ -1,4 +1,26 @@
+type: component
+id: NumberInput
 name: NumberInput
 description: A specialized input for numbers with increment/decrement steppers.
-tags: [base, input, number, stepper]
+tags:
+  - base
+  - input
+  - number
+  - stepper
 props: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, NumberInput, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function NumberInputExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">NumberInput Example</Text>
+            <NumberInput />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

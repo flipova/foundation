@@ -2,10 +2,10 @@ import { Dimensions, Platform } from "react-native";
 import { Breakpoint, breakpoints } from '../../tokens';
 
 /**
- * Retourne le point d'arrêt (breakpoint) correspondant à la largeur d'écran donnée ou courante.
+ * Returns the breakpoint token corresponding to a given or current viewport width.
  *
- * @param innerWidth - Largeur d'écran optionnelle à utiliser (par défaut la largeur de la fenêtre).
- * @returns Le point d'arrêt (ex: xs, sm, md, lg, xl, 2xl).
+ * @param innerWidth - Optional viewport width (defaults to window/screen width).
+ * @returns The active breakpoint token ('xs', 'sm', 'md', 'lg', 'xl', '2xl').
  */
 export const getBreakpoint = (innerWidth?: number): Breakpoint => {
   const width =
@@ -23,17 +23,17 @@ export const getBreakpoint = (innerWidth?: number): Breakpoint => {
 };
 
 /**
- * Type pour une valeur responsive (valeur brute ou objet associant breakpoint et valeur).
+ * Type representing a responsive value (primitive value or a record map of breakpoint tokens to values).
  */
 export type ResponsiveValue<T> = T | Partial<Record<Breakpoint, T>>;
 
 /**
- * Obtient la valeur correspondante pour un point d'arrêt donné à partir d'un objet ResponsiveValue.
- * Gère le repli (fallback) vers le point d'arrêt inférieur le plus proche.
+ * Resolves a value for a specific breakpoint from a ResponsiveValue configuration.
+ * Handles fallback resolution by searching down to nearest lower breakpoint.
  *
- * @param value - La valeur ou configuration responsive.
- * @param currentBreakpoint - Le point d'arrêt actuel de référence.
- * @returns La valeur résolue pour le point d'arrêt.
+ * @param value - Primitive value or responsive value map.
+ * @param currentBreakpoint - Current reference breakpoint.
+ * @returns Resolved value for active breakpoint.
  */
 export const getResponsiveValue = <T>(
   value: ResponsiveValue<T>,

@@ -37,3 +37,23 @@ props:
     label: Padding
     type: spacing
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, BlurView, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function BlurViewExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Blur View Example</Text>
+            <BlurView
+            intensity={50}
+            tint="default"
+            borderRadius="none"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

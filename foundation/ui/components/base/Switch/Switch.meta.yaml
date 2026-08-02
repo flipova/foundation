@@ -54,3 +54,26 @@ props:
     type: color
     group: style
     themeDefault: muted
+example: |-
+  import React, { useState } from 'react';
+  import { FoundationProvider, Switch, Card, Stack, Text, Button } from '@flipova/foundation';
+
+  export default function SwitchExample() {
+    const [value, setValue] = useState('');
+
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated" style={{ maxWidth: 400 }}>
+          <Stack spacing={4}>
+            <Text variant="heading" size="md">Switch Input</Text>
+            <Switch
+            size="md"
+            disabled={false}
+            label="Label"
+          value={value} onChangeText={setValue} />
+            <Button variant="primary" label="Submit" onPress={() => console.log(value)} />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -114,3 +114,28 @@ props:
     type: color
     group: style
     themeDefault: mutedForeground
+example: |-
+  import React from 'react';
+  import { FoundationProvider, TopDrawerLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function TopDrawerLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <TopDrawerLayout
+            drawerHeight={600}
+            scrollable={true}
+            drawerBorderRadius="3xl"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Top Drawer Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Top Drawer Section 2</Text>
+          </Card>
+        </TopDrawerLayout>
+      </FoundationProvider>
+    );
+  }

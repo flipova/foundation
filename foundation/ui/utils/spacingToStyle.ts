@@ -4,10 +4,10 @@ import { spacing, SpacingToken } from '../../tokens';
 type SpacingShorthand = SpacingToken | number;
 
 /**
- * Convertit des raccourcis d'espacement (spacing) en propriétés de style de padding React Native.
+ * Converts spacing shorthands into React Native padding ViewStyle properties.
  *
- * @param value - La valeur ou le tableau de valeurs d'espacement (nombres ou tokens).
- * @returns Un objet partiel ViewStyle avec les marges intérieures (padding) appliquées.
+ * @param value - Spacing token/number or array tuple (vertical/horizontal or top/right/bottom/left).
+ * @returns A partial ViewStyle object with resolved padding properties.
  */
 export const spacingToStyle = (
   value:

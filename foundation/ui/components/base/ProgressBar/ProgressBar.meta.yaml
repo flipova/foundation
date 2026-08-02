@@ -51,3 +51,24 @@ props:
     type: boolean
     group: behavior
     default: false
+example: |-
+  import React from 'react';
+  import { FoundationProvider, ProgressBar, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function ProgressBarExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Progress Bar Example</Text>
+            <ProgressBar
+            progress={0.5}
+            size="md"
+            borderRadius="full"
+            showLabel={false}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

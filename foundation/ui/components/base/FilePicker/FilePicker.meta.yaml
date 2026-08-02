@@ -70,3 +70,29 @@ props:
     type: radius
     group: style
     default: md
+example: |-
+  import React, { useState } from 'react';
+  import { FoundationProvider, FilePicker, Card, Stack, Text, Button } from '@flipova/foundation';
+
+  export default function FilePickerExample() {
+    const [value, setValue] = useState('');
+
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated" style={{ maxWidth: 400 }}>
+          <Stack spacing={4}>
+            <Text variant="heading" size="md">File Picker Input</Text>
+            <FilePicker
+            variant="button"
+            size="md"
+            accept="image/*"
+            multiple={false}
+            label="Upload file"
+            disabled={false}
+          value={value} onChangeText={setValue} />
+            <Button variant="primary" label="Submit" onPress={() => console.log(value)} />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -93,3 +93,30 @@ props:
     type: number
     group: layout
     default: 600
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SidebarLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function SidebarLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <SidebarLayout
+            sidebarWidth={280}
+            position="left"
+            collapsible={true}
+            spacing={4}
+            scrollable={true}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Sidebar Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Sidebar Section 2</Text>
+          </Card>
+        </SidebarLayout>
+      </FoundationProvider>
+    );
+  }

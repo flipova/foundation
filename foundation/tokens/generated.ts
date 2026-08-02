@@ -1,6 +1,6 @@
 // ==============================================================================
-// FICHIER GENERÉ AUTOMATIQUEMENT - NE PAS MODIFIER MANUELLEMENT
-// Modifiez foundation/tokens/tokens.yaml et relancez `npm run ds`
+// AUTOMATICALLY GENERATED FILE - DO NOT MODIFY MANUALLY
+// Edit foundation/tokens/tokens.yaml and run `npm run ds`
 // ==============================================================================
 
 export const colors = {
@@ -420,7 +420,7 @@ export const zIndex = {
   "tooltip": 1700
 } as const;
 
-// --- Types générés automatiquement ---
+// --- Automatically generated types ---
 
 export type ColorToken = keyof typeof colors;
 export type SpacingToken = keyof typeof spacing;

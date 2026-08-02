@@ -95,3 +95,30 @@ props:
     type: color
     group: style
     themeDefault: background
+example: |-
+  import React from 'react';
+  import { FoundationProvider, DeckLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function DeckLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <DeckLayout
+            peekOffset={12}
+            peekScale={0.05}
+            cycle={false}
+            cardShadow={true}
+            cardBorderRadius={24}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Deck Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Deck Section 2</Text>
+          </Card>
+        </DeckLayout>
+      </FoundationProvider>
+    );
+  }

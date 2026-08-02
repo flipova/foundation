@@ -11,6 +11,11 @@ export interface FilePickerProps {
    */
   onFileSelect?: (file: any) => void;
   /**
+   * Callback fired when file validation fails.
+   * @param error Error message describing the validation failure.
+   */
+  onFileError?: (error: string) => void;
+  /**
    * Disables the file picker, preventing interaction if set to true.
    */
   disabled?: boolean;
@@ -19,9 +24,18 @@ export interface FilePickerProps {
    */
   label?: string;
   /**
-   * Optional MIME type to restrict file selection (e.g. 'image/*').
+   * Optional MIME type to restrict file selection (e.g. 'image/*', 'image/png,image/jpeg').
    */
   accept?: string;
+  /**
+   * Maximum file size in megabytes. If not specified, no limit is enforced.
+   */
+  maxSizeInMB?: number;
+  /**
+   * Array of allowed file extensions (without dot, e.g., ['pdf', 'docx']).
+   * If not specified, no extension validation is performed.
+   */
+  allowedExtensions?: string[];
   /**
    * Any other props to spread to the underlying Pressable or container.
    */
@@ -40,7 +54,25 @@ export function useFilePickerLogic(props: FilePickerProps) {
   }, []);
 
   const merged = { ...metaDefaults, ...props };
-  const { onFileSelect, disabled, label = 'Select a file', accept, ...rest } = merged;
+  const {
+    onFileSelect,
+    onFileError,
+    disabled,
+    label = 'Select a file',
+    accept,
+    maxSizeInMB,
+    allowedExtensions,
+    ...rest
+  } = merged;
 
-  return { onFileSelect, disabled, label, accept, rest };
+  return {
+    onFileSelect,
+    onFileError,
+    disabled,
+    label,
+    accept,
+    maxSizeInMB,
+    allowedExtensions,
+    rest,
+  };
 }

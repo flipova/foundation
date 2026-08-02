@@ -1,4 +1,26 @@
+type: component
+id: GifPicker
 name: GifPicker
 description: A placeholder picker for GIFs.
-tags: [base, input, picker, gif]
+tags:
+  - base
+  - input
+  - picker
+  - gif
 props: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, GifPicker, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function GifPickerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">GifPicker Example</Text>
+            <GifPicker />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

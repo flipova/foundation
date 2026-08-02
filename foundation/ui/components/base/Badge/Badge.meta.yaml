@@ -109,3 +109,25 @@ props:
     type: radius
     group: style
     default: full
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Badge, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function BadgeExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Badge Example</Text>
+            <Badge
+            label="Label"
+            variant="solid"
+            size="md"
+            color="primary"
+            borderRadius="full"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -91,3 +91,29 @@ props:
     type: number
     group: behavior
     default: 16
+example: |-
+  import React from 'react';
+  import { FoundationProvider, HeaderContentLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function HeaderContentLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <HeaderContentLayout
+            headerHeight={150}
+            headerCollapsedHeight={60}
+            spacing={0}
+            headerBorderRadius="none"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Collapsible Header Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Collapsible Header Section 2</Text>
+          </Card>
+        </HeaderContentLayout>
+      </FoundationProvider>
+    );
+  }

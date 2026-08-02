@@ -1,3 +1,5 @@
+type: component
+id: ShimmerWrapper
 name: ShimmerWrapper
 description: Adds a shiny animated loading shimmer effect over its children.
 props:
@@ -5,3 +7,21 @@ props:
     type: boolean
     description: Whether to show the shimmer
     default: true
+example: |-
+  import React from 'react';
+  import { FoundationProvider, ShimmerWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function ShimmerWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">ShimmerWrapper Example</Text>
+            <ShimmerWrapper
+            isLoading={true}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

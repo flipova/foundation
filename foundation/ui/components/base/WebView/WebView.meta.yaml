@@ -39,3 +39,24 @@ props:
     type: radius
     group: style
     default: none
+example: |-
+  import React from 'react';
+  import { FoundationProvider, WebView, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function WebViewExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">WebView Example</Text>
+            <WebView
+            url="https://expo.dev"
+            height={400}
+            scrollEnabled={true}
+            borderRadius="none"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -1,3 +1,5 @@
+type: component
+id: CollapsibleWrapper
 name: CollapsibleWrapper
 description: A container that smoothly expands or collapses its children height.
 props:
@@ -5,3 +7,21 @@ props:
     type: boolean
     description: Whether the container is expanded
     default: false
+example: |-
+  import React from 'react';
+  import { FoundationProvider, CollapsibleWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function CollapsibleWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">CollapsibleWrapper Example</Text>
+            <CollapsibleWrapper
+            isExpanded={false}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

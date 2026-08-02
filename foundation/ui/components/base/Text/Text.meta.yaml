@@ -56,3 +56,24 @@ props:
     label: Max lines
     type: number
     group: behavior
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Text, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function TextExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Text Example</Text>
+            <Text
+            text="Text"
+            fontSize={14}
+            fontWeight="400"
+            textAlign="left"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

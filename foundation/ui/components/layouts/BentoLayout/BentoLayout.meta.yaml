@@ -64,3 +64,30 @@ props:
     type: json
     group: content
     default: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, BentoLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function BentoLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <BentoLayout
+            spacing={2}
+            itemBorderRadius="none"
+            scrollable={true}
+            maxWidth={1200}
+            baseHeight={200}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Bento Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Bento Section 2</Text>
+          </Card>
+        </BentoLayout>
+      </FoundationProvider>
+    );
+  }

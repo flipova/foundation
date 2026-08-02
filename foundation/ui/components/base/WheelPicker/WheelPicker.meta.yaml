@@ -1,3 +1,5 @@
+type: component
+id: WheelPicker
 name: WheelPicker
 description: A scrollable barrel wheel picker. If items exceed maxItemsInWheel, a "More..." option opens a submenu modal.
 props:
@@ -20,3 +22,24 @@ props:
     type: string
     description: Label for the "More..." option
     default: Plus...
+example: |-
+  import React from 'react';
+  import { FoundationProvider, WheelPicker, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function WheelPickerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">WheelPicker Example</Text>
+            <WheelPicker
+            value="Sample"
+            itemHeight={40}
+            maxItemsInWheel={5}
+            moreLabel="Plus..."
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

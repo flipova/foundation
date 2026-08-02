@@ -1,3 +1,5 @@
+type: component
+id: KeyboardAvoidWrapper
 name: KeyboardAvoidWrapper
 description: Automatically handles keyboard layout shifting for its wrapped children.
 props:
@@ -5,3 +7,21 @@ props:
     type: number
     description: Extra offset above keyboard
     default: 20
+example: |-
+  import React from 'react';
+  import { FoundationProvider, KeyboardAvoidWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function KeyboardAvoidWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">KeyboardAvoidWrapper Example</Text>
+            <KeyboardAvoidWrapper
+            offset={20}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

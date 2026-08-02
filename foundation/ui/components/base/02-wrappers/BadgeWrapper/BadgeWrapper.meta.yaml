@@ -1,3 +1,5 @@
+type: component
+id: BadgeWrapper
 name: BadgeWrapper
 description: Wraps an element and places a customizable notification badge in the top right corner.
 props:
@@ -12,4 +14,24 @@ props:
   - name: color
     type: string
     description: Badge background color
-    default: #FF3B30
+    default: null
+example: |-
+  import React from 'react';
+  import { FoundationProvider, BadgeWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function BadgeWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">BadgeWrapper Example</Text>
+            <BadgeWrapper
+            count={0}
+            showZero={false}
+            color="Sample"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -88,3 +88,29 @@ props:
     type: color
     group: style
     themeDefault: input
+example: |-
+  import React, { useState } from 'react';
+  import { FoundationProvider, Select, Card, Stack, Text, Button } from '@flipova/foundation';
+
+  export default function SelectExample() {
+    const [value, setValue] = useState('');
+
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated" style={{ maxWidth: 400 }}>
+          <Stack spacing={4}>
+            <Text variant="heading" size="md">Select Input</Text>
+            <Select
+            variant="outlined"
+            size="md"
+            label="Label"
+            placeholder="Select..."
+            error="Error message"
+            disabled={false}
+          value={value} onChangeText={setValue} />
+            <Button variant="primary" label="Submit" onPress={() => console.log(value)} />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

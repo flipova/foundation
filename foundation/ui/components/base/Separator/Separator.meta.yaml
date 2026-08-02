@@ -43,3 +43,24 @@ props:
     options:
       - horizontal
       - vertical
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Separator, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function SeparatorExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Separator Example</Text>
+            <Separator
+            label="Label"
+            thickness={1}
+            spacing={4}
+            orientation="horizontal"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

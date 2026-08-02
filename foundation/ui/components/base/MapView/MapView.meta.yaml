@@ -48,3 +48,25 @@ props:
     type: boolean
     group: behavior
     default: true
+example: |-
+  import React from 'react';
+  import { FoundationProvider, MapView, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function MapViewExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Map Example</Text>
+            <MapView
+            latitude={48.8566}
+            longitude={2.3522}
+            zoom={12}
+            height={300}
+            borderRadius="lg"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -1,3 +1,5 @@
+type: component
+id: SlideUpWrapper
 name: SlideUpWrapper
 description: Animates its children sliding up from below on mount.
 props:
@@ -13,3 +15,23 @@ props:
     type: number
     description: Distance to slide from in pixels
     default: 50
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SlideUpWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function SlideUpWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">SlideUpWrapper Example</Text>
+            <SlideUpWrapper
+            duration={500}
+            delay={0}
+            distance={50}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

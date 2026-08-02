@@ -1,18 +1,18 @@
 import type { ThemeName } from '../generated';
 
 /**
- * Type représentant les modes de thème intégrés (clair ou sombre) et générés.
+ * Type representing built-in and generated theme modes.
  */
 export type ThemeMode = ThemeName | 'light' | 'dark';
 
 /**
- * Type représentant un mode de thème personnalisé sous forme de chaîne de caractères.
+ * Type representing a custom theme mode as a string.
  */
 export type CustomThemeMode = string;
 
 /**
- * Gradients du thème.
- * Chaque gradient est un tableau de 2+ couleurs hex.
+ * Theme gradient color definitions.
+ * Each gradient is an array of 2+ color strings.
  */
 export type ThemeGradients = {
   primary: string[];
@@ -26,11 +26,11 @@ export type ThemeGradients = {
 };
 
 /**
- * Schéma de couleurs d'un thème.
+ * Theme color scheme specification.
  *
- * Contient UNIQUEMENT les couleurs et gradients — les tokens statiques
- * (spacing, radii, shadows, typography) sont importés directement
- * depuis `foundation/tokens` car ils ne changent pas entre les thèmes.
+ * Contains color and gradient tokens — static tokens
+ * (spacing, radii, shadows, typography) are imported directly
+ * from `foundation/tokens` as they remain constant across themes.
  */
 export type ColorScheme = {
   background: string;
@@ -59,8 +59,8 @@ export type ColorScheme = {
 };
 
 /**
- * Registre des thèmes disponibles dans l'application.
- * Contient au minimum les thèmes clair et sombre, plus tout thème personnalisé.
+ * Registry of available application themes.
+ * Contains light and dark themes, plus any registered custom themes.
  */
 export type ThemeRegistry = {
   light: ColorScheme;

@@ -1,8 +1,8 @@
 /**
- * useAdaptiveValue — Hook utilitaire
+ * useAdaptiveValue — Utility Hook
  *
- * Sélectionne une valeur selon le breakpoint courant.
- * Élimine la duplication du pattern if(isMobile)/if(isTablet)/if(isDesktop).
+ * Selects a value based on the active responsive breakpoint.
+ * Eliminates repeating if(isMobile)/if(isTablet)/if(isDesktop) logic blocks.
  *
  * @example
  * const spacing = useAdaptiveValue({ mobile: 2, tablet: 4, desktop: 8 }, 4);
@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { useBreakpoint } from "./useBreakpoint";
 
 /**
- * Configuration pour une valeur qui s'adapte en fonction du breakpoint.
+ * Configuration object for adaptive breakpoint values.
  */
 export interface AdaptiveConfig<T> {
   mobile?: T;
@@ -21,11 +21,11 @@ export interface AdaptiveConfig<T> {
 }
 
 /**
- * Hook permettant de sélectionner dynamiquement une valeur selon le breakpoint courant.
+ * Hook to dynamically resolve a value based on current breakpoint.
  *
- * @param adaptive - Objet de configuration par breakpoint (mobile, tablette, bureau).
- * @param fallback - Valeur de repli si la configuration n'est pas définie.
- * @returns La valeur adaptée au breakpoint courant.
+ * @param adaptive - Per-breakpoint configuration object (mobile, tablet, desktop).
+ * @param fallback - Fallback value if configuration is undefined.
+ * @returns The value adapted to current breakpoint.
  */
 export function useAdaptiveValue<T>(
   adaptive: AdaptiveConfig<T> | undefined,

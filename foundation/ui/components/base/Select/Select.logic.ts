@@ -31,6 +31,11 @@ export interface SelectProps {
   disabled?: boolean;
   
   /**
+   * Error message to display. Styles the picker with error appearance.
+   */
+  error?: string;
+  
+  /**
    * Additional props to pass to the container view.
    */
   [key: string]: any;
@@ -45,8 +50,8 @@ if (SelectMeta?.props) {
 
 export function useSelectLogic(props: SelectProps) {
   const merged = { ...META_DEFAULTS, ...props };
-  const { value, onValueChange, options = [], placeholder, disabled, ...rest } = merged;
+  const { value, onValueChange, options = [], placeholder, disabled, error, ...rest } = merged;
   const [isFocused, setIsFocused] = useState(false);
 
-  return { value, onValueChange, options, placeholder, disabled, isFocused, setIsFocused, rest };
+  return { value, onValueChange, options, placeholder, disabled, error, isFocused, setIsFocused, rest };
 }

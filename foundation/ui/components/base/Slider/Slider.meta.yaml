@@ -70,3 +70,29 @@ props:
     type: color
     group: style
     themeDefault: primary
+example: |-
+  import React, { useState } from 'react';
+  import { FoundationProvider, Slider, Card, Stack, Text, Button } from '@flipova/foundation';
+
+  export default function SliderExample() {
+    const [value, setValue] = useState('');
+
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated" style={{ maxWidth: 400 }}>
+          <Stack spacing={4}>
+            <Text variant="heading" size="md">Slider Input</Text>
+            <Slider
+            size="md"
+            min={0}
+            max={100}
+            step={1}
+            label="Label"
+            showValue={true}
+          value={value} onChangeText={setValue} />
+            <Button variant="primary" label="Submit" onPress={() => console.log(value)} />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

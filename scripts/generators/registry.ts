@@ -64,10 +64,11 @@ import type { ComponentMeta, BlockMeta, LayoutMeta, PrimitiveMeta } from "../typ
   out += `export const layoutRegistry = [\n  ${layouts.join(',\n  ')}\n] as const;\n\n`;
   out += `export const primitiveRegistry = [\n  ${primitives.join(',\n  ')}\n] as const;\n\n`;
 
-  out += `export function getComponentMeta(id: string): any { return componentRegistry.find((m: any) => m.id === id); }\n`;
-  out += `export function getBlockMeta(id: string): any { return blockRegistry.find((m: any) => m.id === id); }\n`;
-  out += `export function getLayoutMeta(id: string): any { return layoutRegistry.find((m: any) => m.id === id); }\n`;
-  out += `export function getPrimitiveMeta(id: string): any { return primitiveRegistry.find((m: any) => m.id === id); }\n`;
+  out += `export function getComponentMeta(id: string): any { return componentRegistry.find((m: any) => m.id === id) || layoutRegistry.find((m: any) => m.id === id) || primitiveRegistry.find((m: any) => m.id === id) || blockRegistry.find((m: any) => m.id === id); }\n`;
+  out += `export function getBlockMeta(id: string): any { return blockRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }\n`;
+  out += `export function getLayoutMeta(id: string): any { return layoutRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }\n`;
+  out += `export function getPrimitiveMeta(id: string): any { return primitiveRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }\n`;
+  out += `export function getMeta(id: string): any { return getComponentMeta(id); }\n`;
 
   const registryDir = path.dirname(outFile);
   if (!fs.existsSync(registryDir)) {

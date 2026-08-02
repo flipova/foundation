@@ -1,0 +1,427 @@
+---
+title: "tokens"
+description: "Configuration definition for tokens"
+source: "tokens/tokens.yaml"
+slug: "/tokens/tokens"
+---
+
+# TOKENS Configuration
+
+## Section: `colors`
+
+```yaml
+colors:
+  white: '#FFFFFF'
+  black: '#000000'
+  gray:
+    '50': '#F9FAFB'
+    '100': '#F3F4F6'
+    '200': '#E5E7EB'
+    '300': '#D1D5DB'
+    '400': '#9CA3AF'
+    '500': '#6B7280'
+    '600': '#4B5563'
+    '700': '#374151'
+    '800': '#1F2937'
+    '900': '#111827'
+  primary:
+    '50': '#E5E5F4'
+    '100': '#CCCCE9'
+    '200': '#9999D3'
+    '300': '#6666BD'
+    '400': '#3333A7'
+    '500': '#000091'
+    '600': '#000082'
+    '700': '#00006D'
+    '800': '#000055'
+    '900': '#00003D'
+  primaryForeground: '#FFFFFF'
+  secondary:
+    '50': '#E7E7FF'
+    '100': '#CFCFFF'
+    '200': '#9F9FFF'
+    '300': '#6F6FFF'
+    '400': '#3F3FFF'
+    '500': '#0D0EFF'
+    '600': '#0B0CD6'
+    '700': '#0809AD'
+    '800': '#060685'
+    '900': '#03035C'
+  secondaryForeground: '#FFFFFF'
+  success:
+    '50': '#F0FDF4'
+    '100': '#DCFCE7'
+    '500': '#22C55E'
+    '600': '#16A34A'
+    '700': '#15803D'
+  warning:
+    '50': '#FFFBEB'
+    '100': '#FEF3C7'
+    '500': '#F59E0B'
+    '600': '#D97706'
+    '700': '#B45309'
+  error:
+    '50': '#FEF2F2'
+    '100': '#FEE2E2'
+    '500': '#EF4444'
+    '600': '#DC2626'
+    '700': '#B91C1C'
+  info:
+    '50': '#EFF6FF'
+    '100': '#DBEAFE'
+    '500': '#3B82F6'
+    '600': '#2563EB'
+    '700': '#1D4ED8'
+  neon:
+    background: '#1A0033'
+    surface: '#2D0047'
+    primary: '#9200db'
+    primaryLight: '#4200589f'
+    primaryDark: '#2c0150ff'
+    secondary: '#00E5FF'
+    secondaryLight: '#66FFFF'
+    secondaryDark: '#00ACC1'
+    accent: '#FF006E'
+    accentLight: '#FF4081'
+    accentDark: '#C2185B'
+    success: '#00FF88'
+    successLight: '#66FFAA'
+    muted: '#3D0066'
+    border: '#520080'
+    text: '#FFFFFF'
+    textSecondary: '#B3B3CC'
+  spring:
+    background: '#F0F4F8'
+    surface: '#FFFFFF'
+    primary: '#5a0832de'
+    primaryLight: '#FBCFE8'
+    primaryDark: '#DB2777'
+    secondary: '#4ADE80'
+    secondaryLight: '#BBF7D0'
+    secondaryDark: '#166534'
+    accent: '#8B5CF6'
+    accentLight: '#C4B5FD'
+    accentDark: '#6D28D9'
+    success: '#10B981'
+    successLight: '#D1FAE5'
+    muted: '#E2E8F0'
+    border: '#CBD5E1CC'
+    text: '#334155'
+    textSecondary: '#64748B'
+  summer:
+    background: '#FEF3C7'
+    surface: '#FFFFFF'
+    primary: '#301f01ff'
+    primaryLight: '#FCD34D'
+    primaryDark: '#D97706'
+    secondary: '#EF4444'
+    secondaryLight: '#F87171'
+    secondaryDark: '#DC2626'
+    accent: '#3B82F6'
+    accentLight: '#60A5FA'
+    accentDark: '#2563EB'
+    success: '#10B981'
+    successLight: '#34D399'
+    muted: '#FEF9C3'
+    border: '#FDE68A'
+    text: '#78350F'
+    textSecondary: '#92400E'
+  autumn:
+    background: '#2D1B14'
+    surface: '#4A2C2A'
+    primary: '#000000ff'
+    primaryLight: '#FB923C'
+    primaryDark: '#C2410C'
+    secondary: '#A16207'
+    secondaryLight: '#CA8A04'
+    secondaryDark: '#854D0E'
+    accent: '#DC2626'
+    accentLight: '#EF4444'
+    accentDark: '#B91C1C'
+    success: '#16A34A'
+    successLight: '#22C55E'
+    muted: '#451A03'
+    border: '#7C2D12'
+    text: '#FEF3C7'
+    textSecondary: '#FDE68A'
+  winter:
+    background: '#0F172A'
+    surface: '#1E293B'
+    primary: '#253a5aff'
+    primaryLight: '#38BDF8'
+    primaryDark: '#0284C7'
+    secondary: '#E2E8F0'
+    secondaryLight: '#F1F5F9'
+    secondaryDark: '#CBD5E1'
+    accent: '#8B5CF6'
+    accentLight: '#A78BFA'
+    accentDark: '#7C3AED'
+    success: '#10B981'
+    successLight: '#34D399'
+    muted: '#1E293B'
+    border: '#334155'
+    text: '#F8FAFC'
+    textSecondary: '#CBD5E1'
+  halloween:
+    background: '#080510'
+    surface: '#120E1F'
+    primary: '#7C3AEDCC'
+    primaryLight: '#A78BFA'
+    primaryDark: '#4C1D95'
+    secondary: '#10B981'
+    secondaryLight: '#34D399'
+    secondaryDark: '#065F46'
+    accent: '#94A3B8'
+    accentLight: '#E2E8F0'
+    accentDark: '#475569'
+    success: '#059669'
+    successLight: '#A7F3D0'
+    muted: '#1F1B2E'
+    border: '#2E2845'
+    text: '#F8FAFC'
+    textSecondary: '#9D84B7'
+  christmas:
+    background: '#0A2417'
+    surface: '#123D29'
+    primary: '#3f991bcc'
+    primaryLight: '#C24141'
+    primaryDark: '#7F1D1D'
+    secondary: '#C5A059'
+    secondaryLight: '#E3C58B'
+    secondaryDark: '#926D27'
+    accent: '#F8FAFC'
+    accentLight: '#FFFFFF'
+    accentDark: '#CBD5E1'
+    success: '#15803D'
+    successLight: '#22C55E'
+    muted: '#1E3A2B'
+    border: '#2D5A43'
+    text: '#F1F5F9'
+    textSecondary: '#D4AF37'
+  transparent: transparent
+
+```
+
+## Section: `spacing`
+
+```yaml
+spacing:
+  '0': 0
+  '1': 4
+  '2': 8
+  '3': 12
+  '4': 16
+  '5': 20
+  '6': 24
+  '7': 28
+  '8': 32
+  '10': 40
+  '12': 48
+  '14': 56
+  '16': 64
+  '20': 80
+  '24': 96
+  '28': 112
+  '32': 128
+  '36': 144
+  '40': 160
+  '44': 176
+  '48': 192
+  '52': 208
+  '56': 224
+  '60': 240
+  '64': 256
+
+```
+
+## Section: `typography`
+
+```yaml
+typography:
+  fontSizes:
+    xs: 12
+    sm: 14
+    base: 16
+    lg: 18
+    xl: 20
+    2xl: 24
+    3xl: 30
+    4xl: 36
+    5xl: 48
+    6xl: 60
+    7xl: 72
+  fontWeights:
+    thin: '100'
+    extralight: '200'
+    light: '300'
+    normal: '400'
+    medium: '500'
+    semibold: '600'
+    bold: '700'
+    extrabold: '800'
+    black: '900'
+  lineHeights:
+    none: 1
+    tight: 1.25
+    snug: 1.375
+    normal: 1.5
+    relaxed: 1.625
+    loose: 2
+  letterSpacings:
+    tighter: -0.8
+    tight: -0.4
+    normal: 0
+    wide: 0.4
+    wider: 0.8
+    widest: 1.6
+
+```
+
+## Section: `breakpoints`
+
+```yaml
+breakpoints:
+  xs: 0
+  sm: 576
+  md: 768
+  lg: 992
+  xl: 1200
+  2xl: 1440
+
+```
+
+## Section: `opacity`
+
+```yaml
+opacity:
+  '0': 0
+  '5': 0.05
+  '10': 0.1
+  '20': 0.2
+  '25': 0.25
+  '30': 0.3
+  '40': 0.4
+  '50': 0.5
+  '60': 0.6
+  '70': 0.7
+  '75': 0.75
+  '80': 0.8
+  '90': 0.9
+  '95': 0.95
+  '100': 1
+
+```
+
+## Section: `motion`
+
+```yaml
+motion:
+  durations:
+    instant: 0
+    fast: 150
+    base: 250
+    slow: 350
+    slower: 500
+  easings:
+    linear: linear
+    easeIn: ease-in
+    easeOut: ease-out
+    easeInOut: ease-in-out
+
+```
+
+## Section: `radii`
+
+```yaml
+radii:
+  none: 0
+  xs: 2
+  sm: 4
+  base: 6
+  md: 8
+  lg: 12
+  xl: 16
+  2xl: 20
+  3xl: 24
+  full: 9999
+
+```
+
+## Section: `shadows`
+
+```yaml
+shadows:
+  none:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 0
+    shadowOpacity: 0
+    shadowRadius: 0
+    elevation: 0
+  sm:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 1
+    shadowOpacity: 0.05
+    shadowRadius: 2
+    elevation: 2
+  base:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 2
+    shadowOpacity: 0.1
+    shadowRadius: 4
+    elevation: 3
+  md:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 4
+    shadowOpacity: 0.15
+    shadowRadius: 8
+    elevation: 5
+  lg:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 8
+    shadowOpacity: 0.2
+    shadowRadius: 16
+    elevation: 8
+  xl:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 12
+    shadowOpacity: 0.25
+    shadowRadius: 24
+    elevation: 12
+  2xl:
+    shadowColor: '#000'
+    shadowOffset:
+      width: 0
+      height: 16
+    shadowOpacity: 0.3
+    shadowRadius: 32
+    elevation: 16
+
+```
+
+## Section: `zIndex`
+
+```yaml
+zIndex:
+  base: 0
+  dropdown: 1000
+  sticky: 1100
+  fixed: 1200
+  backdrop: 1300
+  modal: 1400
+  popover: 1500
+  toast: 1600
+  tooltip: 1700
+
+```

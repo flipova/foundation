@@ -17,3 +17,24 @@ props:
     type: color
     group: style
     themeDefault: background
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SketchLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function SketchLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <SketchLayout >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Sketch (placeholder) Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Sketch (placeholder) Section 2</Text>
+          </Card>
+        </SketchLayout>
+      </FoundationProvider>
+    );
+  }
