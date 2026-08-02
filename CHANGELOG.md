@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.13.0
+
+### Minor Changes
+
+- 7b2dc77: Redesign documentation portal with Apple-style aesthetic, translate codebase comments to English, reorganize sidebar, and add comprehensive guides.
+
 ## 1.12.0
 
 ### Minor Changes
