@@ -28,6 +28,8 @@ const config: Config = {
     locales: ['en'],
   },
 
+  trailingSlash: false,
+
   plugins: [
     function customWebpackPlugin() {
       return {
