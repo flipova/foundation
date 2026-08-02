@@ -63,6 +63,13 @@
       "import": "./dist/config/index.mjs",
       "require": "./dist/config/index.js",
       "default": "./dist/config/index.js"
+    },
+    "./web": {
+      "types": "./dist/web/index.d.ts",
+      "browser": "./dist/web/index.js",
+      "import": "./dist/web/index.mjs",
+      "require": "./dist/web/index.js",
+      "default": "./dist/web/index.js"
     }
   },
   "publishConfig": {

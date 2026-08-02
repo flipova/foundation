@@ -55,6 +55,7 @@ export default defineConfig([
       "registry/index": "foundation/registry/index.ts",
       "types/index":    "foundation/types/index.ts",
       "ui/index":       "foundation/ui/index.ts",
+      "web/index":      "foundation/web/index.ts",
       "cli/flipova":     "scripts/init-cli.ts",
       "cli/ds":          "scripts/cli/index.ts",
     },
