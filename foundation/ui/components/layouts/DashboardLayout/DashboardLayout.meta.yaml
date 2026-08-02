@@ -109,3 +109,31 @@ props:
     type: boolean
     group: behavior
     default: false
+example: |-
+  import React from 'react';
+  import { FoundationProvider, DashboardLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function DashboardLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <DashboardLayout
+            sidebarWidth={260}
+            sidebarCollapsedWidth={70}
+            headerHeight={70}
+            footerHeight={60}
+            spacing={0}
+            borderRadius="none"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Dashboard Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Dashboard Section 2</Text>
+          </Card>
+        </DashboardLayout>
+      </FoundationProvider>
+    );
+  }

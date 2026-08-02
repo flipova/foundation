@@ -1,12 +1,12 @@
 /**
- * Types partagés pour le système de disposition, le registre de composants et le registre de blocs.
- * Sert de contrat pour un constructeur d'interface utilisateur visuel.
+ * Shared types for layout system, component registry, and block registry.
+ * Serves as the schema contract for visual UI builders and design tools.
  */
 
 import { SpacingToken } from '../tokens';
 
 /**
- * Définit l'espacement autour d'un élément.
+ * Defines padding spacing around a layout element.
  */
 export interface LayoutPadding {
   top?: SpacingToken;
@@ -18,12 +18,12 @@ export interface LayoutPadding {
 }
 
 /**
- * Type pour définir l'arrière-plan d'une disposition, pouvant être une couleur unie ou un dégradé.
+ * Background property type for layouts (solid color hex or gradient array).
  */
 export type LayoutBackground = string | [string, string, ...string[]];
 
 /**
- * Rôles de couleurs extraits du schéma de couleurs du thème.
+ * Color roles extracted from the active theme ColorScheme.
  */
 export type ThemeColorRole = Exclude<
   {
@@ -33,7 +33,7 @@ export type ThemeColorRole = Exclude<
 >;
 
 /**
- * Descripteur pour un emplacement (slot) pouvant accueillir des composants enfants.
+ * Descriptor for a layout or component slot that accepts child elements.
  */
 export interface SlotDescriptor {
   readonly name: string;
@@ -44,7 +44,7 @@ export interface SlotDescriptor {
 }
 
 /**
- * Types de propriétés supportés par le système.
+ * Property types supported by the design system metadata.
  */
 export type PropType =
   | "string"
@@ -64,7 +64,7 @@ export type PropType =
   | "json";
 
 /**
- * Décrit une propriété d'un composant, d'une disposition ou d'un bloc.
+ * Property descriptor for a component, layout, or block.
  */
 export interface PropDescriptor<T = unknown> {
   readonly name: string;
@@ -83,20 +83,20 @@ export interface PropDescriptor<T = unknown> {
 }
 
 /**
- * Catégories de dispositions.
+ * Layout categories.
  */
 export type LayoutCategory = "page" | "content" | "navigation" | "card" | "scroll" | "special";
 /**
- * Catégories de composants.
+ * Component categories.
  */
 export type ComponentCategory = "input" | "action" | "display" | "feedback" | "overlay" | "media" | "navigation";
 /**
- * Catégories de blocs.
+ * Block categories.
  */
 export type BlockCategory = "auth" | "profile" | "navigation" | "content" | "data" | "feedback" | "form" | "overlay" | "social" | "ecommerce" | "finance" | "onboarding" | "messaging" | "calendar" | "files" | "location" | "media";
 
 /**
- * Configuration pour les animations de type ressort (spring).
+ * Configuration for spring animations.
  */
 export interface SpringConfig {
   readonly damping: number;
@@ -106,7 +106,7 @@ export interface SpringConfig {
 }
 
 /**
- * Constantes spécifiques à une disposition (layout).
+ * Constants specific to a layout animation or gesture threshold.
  */
 export interface LayoutConstants {
   readonly springConfig?: SpringConfig;
@@ -125,7 +125,7 @@ export interface LayoutConstants {
 }
 
 /**
- * Configuration de taille standardisée pour les composants.
+ * Standardized size configuration for components.
  */
 export interface ComponentSizeConfig {
   readonly height?: number;
@@ -135,11 +135,11 @@ export interface ComponentSizeConfig {
   readonly fontSize?: number;
   readonly iconSize?: number;
   readonly borderRadius?: string | number;
-  readonly [key: string]: unknown; // Allow other specific sizing properties
+  readonly [key: string]: unknown;
 }
 
 /**
- * Configuration de couleur standardisée pour les composants.
+ * Standardized color configuration for components.
  */
 export interface ComponentColorConfig {
   readonly bg?: ThemeColorRole | "transparent" | string;
@@ -147,12 +147,12 @@ export interface ComponentColorConfig {
   readonly border?: ThemeColorRole | "transparent" | string;
   readonly subtle?: ThemeColorRole | string | readonly [string, string];
   readonly active?: ThemeColorRole | string;
-  readonly solid?: readonly [string, string]; // e.g. ["primary", "primaryForeground"]
+  readonly solid?: readonly [string, string];
   readonly [key: string]: unknown;
 }
 
 /**
- * Descripteur d'une variante de composant, permettant de surcharger certaines propriétés.
+ * Descriptor for a component variant with override properties.
  */
 export interface VariantDescriptor<Props = Record<string, unknown>> {
   readonly name: string;
@@ -170,10 +170,12 @@ interface BaseMeta {
   readonly tags: readonly string[];
   readonly customConfig?: Record<string, any>;
   readonly enumMap?: Record<string, readonly string[]>;
+  readonly example?: string;
+  readonly examples?: readonly string[];
 }
 
 /**
- * Métadonnées spécifiques à une disposition (layout).
+ * Layout-specific metadata interface.
  */
 export interface LayoutMeta extends BaseMeta {
   readonly category: LayoutCategory;
@@ -191,7 +193,7 @@ export interface LayoutMeta extends BaseMeta {
 }
 
 /**
- * Métadonnées spécifiques à un composant.
+ * Component-specific metadata interface.
  */
 export interface ComponentMeta<Props = any> extends BaseMeta {
   readonly category: ComponentCategory;
@@ -209,7 +211,7 @@ export interface ComponentMeta<Props = any> extends BaseMeta {
 }
 
 /**
- * Métadonnées spécifiques à un bloc.
+ * Block-specific metadata interface.
  */
 export interface BlockMeta extends BaseMeta {
   readonly category: BlockCategory;
@@ -218,7 +220,7 @@ export interface BlockMeta extends BaseMeta {
 }
 
 /**
- * Métadonnées spécifiques à un primitif.
+ * Primitive-specific metadata interface.
  */
 export interface PrimitiveMeta extends BaseMeta {
   readonly category: string;
@@ -226,12 +228,12 @@ export interface PrimitiveMeta extends BaseMeta {
 }
 
 /**
- * Type union représentant n'importe quelles métadonnées (disposition, composant, bloc ou primitif).
+ * Union type representing any metadata item (layout, component, block, or primitive).
  */
 export type AnyMeta = LayoutMeta | ComponentMeta | BlockMeta | PrimitiveMeta;
 
 /**
- * Type utilitaire pour rendre toutes les propriétés optionnelles.
+ * Utility type to make all properties optional for default objects.
  */
 export type DefaultsOf<T extends Record<string, unknown>> = {
   [K in keyof T]?: T[K];

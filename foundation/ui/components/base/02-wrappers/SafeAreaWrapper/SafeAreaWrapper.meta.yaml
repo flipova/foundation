@@ -1,7 +1,27 @@
+type: component
+id: SafeAreaWrapper
 name: SafeAreaWrapper
 description: A convenient wrapper that applies safe area boundaries to specific sections of children.
 props:
   - name: edges
     type: array
     description: Edges to apply safe area (top, bottom, left, right)
-    default: ["top","bottom"]
+    default:
+      - top
+      - bottom
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SafeAreaWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function SafeAreaWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">SafeAreaWrapper Example</Text>
+            <SafeAreaWrapper />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

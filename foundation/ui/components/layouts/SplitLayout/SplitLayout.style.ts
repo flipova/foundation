@@ -32,7 +32,7 @@ export function useSplitLayoutStyle(logic: any) {
       height: isVertical ? logic.leftWidth : '100%',
       backgroundColor: getColor(logic.leftBackground),
       borderRadius: getRadius(logic.leftBorderRadius),
-      display: logic.hideLeftOnMobile ? 'none' : 'flex', // En conditions réelles, utiliser un hook de media query
+      display: logic.hideLeftOnMobile ? 'none' : 'flex', // In production, use a media query hook
     },
     right: {
       flex: logic.leftWidth ? 1 : (1 - logic.ratio),

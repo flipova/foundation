@@ -104,3 +104,19 @@ props:
       - center
       - flex-end
       - stretch
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Box, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function BoxExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Box Example</Text>
+            <Box />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -152,7 +152,8 @@ export const BoxMeta = {
         "stretch"
       ]
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Box, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function BoxExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Box Example</Text>\n          <Box />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const CenterMeta = {
@@ -209,7 +210,8 @@ export const CenterMeta = {
       "type": "number",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Center, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function CenterExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Center Example</Text>\n          <Center />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const InlineMeta = {
@@ -296,7 +298,8 @@ export const InlineMeta = {
       "group": "layout",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Inline, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function InlineExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Inline Example</Text>\n          <Inline\n          spacing={2}\n          align=\"stretch\"\n          justify=\"flex-start\"\n          wrap={false}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ScrollMeta = {
@@ -356,7 +359,8 @@ export const ScrollMeta = {
       "type": "number",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Scroll, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ScrollExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Scroll Example</Text>\n          <Scroll\n          horizontal={false}\n          showsScrollIndicator={true}\n          scrollEnabled={true}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const StackMeta = {
@@ -415,10 +419,12 @@ export const StackMeta = {
       "type": "number",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Stack, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function StackExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Stack Example</Text>\n          <Stack\n          spacing={2}\n          align=\"stretch\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BadgeWrapperMeta = {
+  "id": "BadgeWrapper",
   "name": "BadgeWrapper",
   "description": "Wraps an element and places a customizable notification badge in the top right corner.",
   "props": [
@@ -440,10 +446,12 @@ export const BadgeWrapperMeta = {
       "description": "Badge background color",
       "default": null
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, BadgeWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function BadgeWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">BadgeWrapper Example</Text>\n          <BadgeWrapper\n          count={0}\n          showZero={false}\n          color=\"Sample\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BlurWrapperMeta = {
+  "id": "BlurWrapper",
   "name": "BlurWrapper",
   "description": "Wraps children in a frosted glass/blur container.",
   "props": [
@@ -459,10 +467,12 @@ export const BlurWrapperMeta = {
       "description": "Tint color (light, dark, default)",
       "default": "default"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, BlurWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function BlurWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">BlurWrapper Example</Text>\n          <BlurWrapper\n          intensity={50}\n          tint=\"default\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const CollapsibleWrapperMeta = {
+  "id": "CollapsibleWrapper",
   "name": "CollapsibleWrapper",
   "description": "A container that smoothly expands or collapses its children height.",
   "props": [
@@ -472,10 +482,12 @@ export const CollapsibleWrapperMeta = {
       "description": "Whether the container is expanded",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, CollapsibleWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function CollapsibleWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">CollapsibleWrapper Example</Text>\n          <CollapsibleWrapper\n          isExpanded={false}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FadeInWrapperMeta = {
+  "id": "FadeInWrapper",
   "name": "FadeInWrapper",
   "description": "Animates its children in with a smooth opacity fade on mount.",
   "props": [
@@ -491,10 +503,12 @@ export const FadeInWrapperMeta = {
       "description": "Animation delay in ms",
       "default": 0
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, FadeInWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function FadeInWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">FadeInWrapper Example</Text>\n          <FadeInWrapper\n          duration={500}\n          delay={0}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const KeyboardAvoidWrapperMeta = {
+  "id": "KeyboardAvoidWrapper",
   "name": "KeyboardAvoidWrapper",
   "description": "Automatically handles keyboard layout shifting for its wrapped children.",
   "props": [
@@ -504,10 +518,12 @@ export const KeyboardAvoidWrapperMeta = {
       "description": "Extra offset above keyboard",
       "default": 20
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, KeyboardAvoidWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function KeyboardAvoidWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">KeyboardAvoidWrapper Example</Text>\n          <KeyboardAvoidWrapper\n          offset={20}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SafeAreaWrapperMeta = {
+  "id": "SafeAreaWrapper",
   "name": "SafeAreaWrapper",
   "description": "A convenient wrapper that applies safe area boundaries to specific sections of children.",
   "props": [
@@ -520,10 +536,12 @@ export const SafeAreaWrapperMeta = {
         "bottom"
       ]
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SafeAreaWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SafeAreaWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">SafeAreaWrapper Example</Text>\n          <SafeAreaWrapper />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ScalePressWrapperMeta = {
+  "id": "ScalePressWrapper",
   "name": "ScalePressWrapper",
   "description": "Wraps any element and adds a bouncy shrink effect when pressed.",
   "props": [
@@ -533,10 +551,12 @@ export const ScalePressWrapperMeta = {
       "description": "Scale factor when pressed",
       "default": 0.95
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ScalePressWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ScalePressWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">ScalePressWrapper Example</Text>\n          <ScalePressWrapper\n          scaleTo={0.95}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ShimmerWrapperMeta = {
+  "id": "ShimmerWrapper",
   "name": "ShimmerWrapper",
   "description": "Adds a shiny animated loading shimmer effect over its children.",
   "props": [
@@ -546,10 +566,12 @@ export const ShimmerWrapperMeta = {
       "description": "Whether to show the shimmer",
       "default": true
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ShimmerWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ShimmerWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">ShimmerWrapper Example</Text>\n          <ShimmerWrapper\n          isLoading={true}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SkeletonWrapperMeta = {
+  "id": "SkeletonWrapper",
   "name": "SkeletonWrapper",
   "description": "A wrapper component that measures its children and displays an animated shimmering skeleton outline when loading.",
   "tags": [
@@ -565,10 +587,12 @@ export const SkeletonWrapperMeta = {
       "description": "Whether the component is currently loading. If true, shows skeleton.",
       "required": true
     }
-  }
+  },
+  "example": "import React from 'react';\nimport { FoundationProvider, SkeletonWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SkeletonWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">SkeletonWrapper Example</Text>\n          <SkeletonWrapper\n          isLoading={true}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SlideUpWrapperMeta = {
+  "id": "SlideUpWrapper",
   "name": "SlideUpWrapper",
   "description": "Animates its children sliding up from below on mount.",
   "props": [
@@ -590,10 +614,12 @@ export const SlideUpWrapperMeta = {
       "description": "Distance to slide from in pixels",
       "default": 50
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SlideUpWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SlideUpWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">SlideUpWrapper Example</Text>\n          <SlideUpWrapper\n          duration={500}\n          delay={0}\n          distance={50}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TooltipWrapperMeta = {
+  "id": "TooltipWrapper",
   "name": "TooltipWrapper",
   "description": "Wraps a component and displays a tooltip bubble near it.",
   "props": [
@@ -609,7 +635,8 @@ export const TooltipWrapperMeta = {
       "description": "Whether tooltip is visible",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, TooltipWrapper, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function TooltipWrapperExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">TooltipWrapper Example</Text>\n          <TooltipWrapper\n          text=\"Sample\"\n          isVisible={false}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const AccordionMeta = {
@@ -668,10 +695,12 @@ export const AccordionMeta = {
       "group": "style",
       "themeDefault": "border"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Accordion, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function AccordionExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Accordion Example</Text>\n          <Accordion\n          title=\"Section\"\n          defaultOpen={false}\n          borderRadius=\"lg\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const AudioMeta = {
+  "id": "Audio",
   "name": "Audio",
   "description": "A base component for audio playback using expo-av.",
   "tags": [
@@ -691,7 +720,8 @@ export const AudioMeta = {
       "description": "Whether the audio should auto-play",
       "default": false
     }
-  }
+  },
+  "example": "import React from 'react';\nimport { FoundationProvider, Audio, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function AudioExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Audio Example</Text>\n          <Audio\n          source=\"Sample\"\n          autoPlay={false}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const AvatarMeta = {
@@ -805,10 +835,12 @@ export const AvatarMeta = {
       "group": "style",
       "themeDefault": "muted"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Avatar, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function AvatarExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Avatar Example</Text>\n          <Avatar\n          variant=\"circle\"\n          size=\"md\"\n          source=\"Image source\"\n          initials=\"Initials\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const AvatarPickerMeta = {
+  "id": "AvatarPicker",
   "name": "AvatarPicker",
   "description": "Allows users to select an avatar from a list of predefined options or upload one.",
   "tags": [
@@ -817,7 +849,8 @@ export const AvatarPickerMeta = {
     "picker",
     "avatar"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, AvatarPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function AvatarPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">AvatarPicker Example</Text>\n          <AvatarPicker />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BadgeMeta = {
@@ -974,7 +1007,8 @@ export const BadgeMeta = {
       "group": "style",
       "default": "full"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Badge, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function BadgeExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Badge Example</Text>\n          <Badge\n          label=\"Label\"\n          variant=\"solid\"\n          size=\"md\"\n          color=\"primary\"\n          borderRadius=\"full\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BlurViewMeta = {
@@ -1026,7 +1060,8 @@ export const BlurViewMeta = {
       "type": "spacing",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, BlurView, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function BlurViewExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Blur View Example</Text>\n          <BlurView\n          intensity={50}\n          tint=\"default\"\n          borderRadius=\"none\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ButtonMeta = {
@@ -1034,6 +1069,7 @@ export const ButtonMeta = {
   "label": "Button",
   "description": "Pressable button with variant and size support.",
   "category": "action",
+  "example": "import React from 'react';\nimport { FoundationProvider, Button, Inline, Stack, Text } from '@flipova/foundation';\n\nexport default function ButtonExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Stack spacing={4} style={{ padding: 20 }}>\n        <Text variant=\"heading\" size=\"md\">Button Actions</Text>\n        <Inline spacing={3} alignItems=\"center\">\n          <Button\n          label=\"Button\"\n          variant=\"primary\"\n          size=\"md\"\n          disabled={false}\n          loading={false}\n          fullWidth={false}\n        onPress={() => console.log('Button pressed')} />\n        </Inline>\n      </Stack>\n    </FoundationProvider>\n  );\n}",
   "tags": [
     "button",
     "cta",
@@ -1251,7 +1287,8 @@ export const CameraMeta = {
       "group": "style",
       "default": "lg"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Camera, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function CameraExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Camera Example</Text>\n          <Camera\n          facing=\"back\"\n          flash=\"off\"\n          enableTorch={false}\n          height={300}\n          borderRadius=\"lg\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const CardMeta = {
@@ -1309,7 +1346,8 @@ export const CardMeta = {
       "group": "style",
       "default": "md"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Card, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function CardExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Card Example</Text>\n          <Card\n          shadow=\"md\"\n          interactive={false}\n          padding={4}\n          borderRadius=\"md\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const CheckboxMeta = {
@@ -1399,7 +1437,8 @@ export const CheckboxMeta = {
       "group": "behavior",
       "default": false
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, Checkbox, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function CheckboxExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Checkbox Input</Text>\n          <Checkbox\n          variant=\"square\"\n          size=\"md\"\n          disabled={false}\n          label=\"Label\"\n          checked={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ChipMeta = {
@@ -1496,10 +1535,12 @@ export const ChipMeta = {
       "group": "style",
       "default": "full"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, Chip, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function ChipExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Chip Input</Text>\n          <Chip\n          label=\"Label\"\n          variant=\"filled\"\n          size=\"md\"\n          selected={false}\n          closable={false}\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ColorPickerMeta = {
+  "id": "ColorPicker",
   "name": "ColorPicker",
   "description": "A visual grid of color swatches for choosing a theme or element color.",
   "tags": [
@@ -1508,7 +1549,8 @@ export const ColorPickerMeta = {
     "picker",
     "color"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, ColorPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ColorPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">ColorPicker Example</Text>\n          <ColorPicker />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const DatePickerMeta = {
@@ -1608,7 +1650,8 @@ export const DatePickerMeta = {
       "group": "style",
       "default": "md"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, DatePicker, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function DatePickerExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Date Picker Input</Text>\n          <DatePicker\n          size=\"md\"\n          mode=\"date\"\n          label=\"Label\"\n          placeholder=\"Select date\"\n          error=\"Error message\"\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const DividerMeta = {
@@ -1650,10 +1693,12 @@ export const DividerMeta = {
       "type": "spacing",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Divider, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function DividerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Divider Example</Text>\n          <Divider\n          vertical={false}\n          thickness={1}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const EmojiPickerMeta = {
+  "id": "EmojiPicker",
   "name": "EmojiPicker",
   "description": "A grid of emojis categorized by type.",
   "tags": [
@@ -1662,7 +1707,8 @@ export const EmojiPickerMeta = {
     "picker",
     "emoji"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, EmojiPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function EmojiPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">EmojiPicker Example</Text>\n          <EmojiPicker />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FilePickerMeta = {
@@ -1761,7 +1807,8 @@ export const FilePickerMeta = {
       "group": "style",
       "default": "md"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, FilePicker, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function FilePickerExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">File Picker Input</Text>\n          <FilePicker\n          variant=\"button\"\n          size=\"md\"\n          accept=\"image/*\"\n          multiple={false}\n          label=\"Upload file\"\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FlatListMeta = {
@@ -1769,6 +1816,7 @@ export const FlatListMeta = {
   "label": "List",
   "description": "Scrollable list with virtualization.",
   "category": "display",
+  "example": "import React from 'react';\nimport { FoundationProvider, FlatList, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function FlatListExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">List Example</Text>\n          <FlatList\n          horizontal={false}\n          numColumns={1}\n          spacing={0}\n          showsScrollIndicator={true}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}",
   "tags": [
     "list",
     "flatlist",
@@ -1821,6 +1869,7 @@ export const FlatListMeta = {
 } as const;
 
 export const GifPickerMeta = {
+  "id": "GifPicker",
   "name": "GifPicker",
   "description": "A placeholder picker for GIFs.",
   "tags": [
@@ -1829,7 +1878,8 @@ export const GifPickerMeta = {
     "picker",
     "gif"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, GifPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function GifPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">GifPicker Example</Text>\n          <GifPicker />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const GradientMeta = {
@@ -1894,7 +1944,8 @@ export const GradientMeta = {
       "type": "spacing",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Gradient, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function GradientExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Gradient Example</Text>\n          <Gradient\n          startColor=\"#3b82f6\"\n          endColor=\"#8b5cf6\"\n          direction=\"vertical\"\n          borderRadius=\"none\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const IconMeta = {
@@ -1948,7 +1999,8 @@ export const IconMeta = {
       "group": "style",
       "default": 2
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Icon, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function IconExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Icon Example</Text>\n          <Icon\n          name=\"star\"\n          size={24}\n          strokeWidth={2}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const IconButtonMeta = {
@@ -2056,10 +2108,12 @@ export const IconButtonMeta = {
       "group": "style",
       "themeDefault": "foreground"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, IconButton, Inline, Stack, Text } from '@flipova/foundation';\n\nexport default function IconButtonExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Stack spacing={4} style={{ padding: 20 }}>\n        <Text variant=\"heading\" size=\"md\">Icon Button Actions</Text>\n        <Inline spacing={3} alignItems=\"center\">\n          <IconButton\n          variant=\"ghost\"\n          size=\"md\"\n          disabled={false}\n          borderRadius=\"full\"\n        onPress={() => console.log('IconButton pressed')} />\n        </Inline>\n      </Stack>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const IconPickerMeta = {
+  "id": "IconPicker",
   "name": "IconPicker",
   "description": "A searchable grid of icons.",
   "tags": [
@@ -2068,7 +2122,8 @@ export const IconPickerMeta = {
     "picker",
     "icon"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, IconPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function IconPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">IconPicker Example</Text>\n          <IconPicker />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ImageMeta = {
@@ -2142,7 +2197,8 @@ export const ImageMeta = {
       "group": "style",
       "themeDefault": "muted"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Image, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ImageExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Image Example</Text>\n          <Image\n          source=\"Source URL\"\n          alt=\"Alt text\"\n          resizeMode=\"cover\"\n          height={200}\n          borderRadius=\"none\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const LottieAnimationMeta = {
@@ -2203,7 +2259,8 @@ export const LottieAnimationMeta = {
       "group": "layout",
       "default": 200
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, LottieAnimation, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function LottieAnimationExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Lottie Example</Text>\n          <LottieAnimation\n          source=\"Source URL\"\n          autoPlay={true}\n          loop={true}\n          speed={1}\n          width={200}\n          height={200}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const MapViewMeta = {
@@ -2271,10 +2328,12 @@ export const MapViewMeta = {
       "group": "behavior",
       "default": true
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, MapView, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function MapViewExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Map Example</Text>\n          <MapView\n          latitude={48.8566}\n          longitude={2.3522}\n          zoom={12}\n          height={300}\n          borderRadius=\"lg\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const NumberInputMeta = {
+  "id": "NumberInput",
   "name": "NumberInput",
   "description": "A specialized input for numbers with increment/decrement steppers.",
   "tags": [
@@ -2283,10 +2342,12 @@ export const NumberInputMeta = {
     "number",
     "stepper"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, NumberInput, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function NumberInputExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">NumberInput Example</Text>\n          <NumberInput />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const OTPInputMeta = {
+  "id": "OTPInput",
   "name": "OTPInput",
   "description": "A multi-cell One-Time-Password input.",
   "tags": [
@@ -2294,10 +2355,12 @@ export const OTPInputMeta = {
     "input",
     "otp"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, OTPInput, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function OTPInputExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">OTPInput Example</Text>\n          <OTPInput />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const PasswordInputMeta = {
+  "id": "PasswordInput",
   "name": "PasswordInput",
   "description": "A secure text input with visibility toggle.",
   "tags": [
@@ -2306,7 +2369,8 @@ export const PasswordInputMeta = {
     "password",
     "secure"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, PasswordInput, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function PasswordInputExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">PasswordInput Example</Text>\n          <PasswordInput />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const PressableMeta = {
@@ -2340,7 +2404,8 @@ export const PressableMeta = {
       "group": "style",
       "default": 0.7
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Pressable, Inline, Stack, Text } from '@flipova/foundation';\n\nexport default function PressableExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Stack spacing={4} style={{ padding: 20 }}>\n        <Text variant=\"heading\" size=\"md\">Pressable Actions</Text>\n        <Inline spacing={3} alignItems=\"center\">\n          <Pressable\n          disabled={false}\n          opacity={0.7}\n        onPress={() => console.log('Pressable pressed')} />\n        </Inline>\n      </Stack>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ProgressBarMeta = {
@@ -2412,7 +2477,8 @@ export const ProgressBarMeta = {
       "group": "behavior",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ProgressBar, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function ProgressBarExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Progress Bar Example</Text>\n          <ProgressBar\n          progress={0.5}\n          size=\"md\"\n          borderRadius=\"full\"\n          showLabel={false}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const RadioGroupMeta = {
@@ -2488,10 +2554,12 @@ export const RadioGroupMeta = {
       "group": "style",
       "themeDefault": "primary"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, RadioGroup, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function RadioGroupExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Radio Group Input</Text>\n          <RadioGroup\n          size=\"md\"\n          label=\"Label\"\n          direction=\"column\"\n          spacing={2}\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SearchInputMeta = {
+  "id": "SearchInput",
   "name": "SearchInput",
   "description": "A specialized input for searching with a clear button.",
   "tags": [
@@ -2499,7 +2567,8 @@ export const SearchInputMeta = {
     "input",
     "search"
   ],
-  "props": []
+  "props": [],
+  "example": "import React from 'react';\nimport { FoundationProvider, SearchInput, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SearchInputExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">SearchInput Example</Text>\n          <SearchInput />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SelectMeta = {
@@ -2624,7 +2693,8 @@ export const SelectMeta = {
       "group": "style",
       "themeDefault": "input"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, Select, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function SelectExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Select Input</Text>\n          <Select\n          variant=\"outlined\"\n          size=\"md\"\n          label=\"Label\"\n          placeholder=\"Select...\"\n          error=\"Error message\"\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SeparatorMeta = {
@@ -2685,7 +2755,8 @@ export const SeparatorMeta = {
         "vertical"
       ]
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Separator, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SeparatorExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Separator Example</Text>\n          <Separator\n          label=\"Label\"\n          thickness={1}\n          spacing={4}\n          orientation=\"horizontal\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SliderMeta = {
@@ -2783,7 +2854,8 @@ export const SliderMeta = {
       "group": "style",
       "themeDefault": "primary"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, Slider, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function SliderExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Slider Input</Text>\n          <Slider\n          size=\"md\"\n          min={0}\n          max={100}\n          step={1}\n          label=\"Label\"\n          showValue={true}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SpinnerMeta = {
@@ -2827,7 +2899,8 @@ export const SpinnerMeta = {
       "group": "style",
       "themeDefault": "primary"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Spinner, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function SpinnerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Spinner Example</Text>\n          <Spinner\n          size=\"md\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SwitchMeta = {
@@ -2903,7 +2976,8 @@ export const SwitchMeta = {
       "group": "style",
       "themeDefault": "muted"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, Switch, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function SwitchExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Switch Input</Text>\n          <Switch\n          size=\"md\"\n          disabled={false}\n          label=\"Label\"\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TabsMeta = {
@@ -2959,7 +3033,8 @@ export const TabsMeta = {
         "bottom"
       ]
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Tabs, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function TabsExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Tabs Example</Text>\n          <Tabs\n          borderRadius=\"none\"\n          position=\"top\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TextMeta = {
@@ -3036,7 +3111,8 @@ export const TextMeta = {
       "type": "number",
       "group": "behavior"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Text, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function TextExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Text Example</Text>\n          <Text\n          text=\"Text\"\n          fontSize={14}\n          fontWeight=\"400\"\n          textAlign=\"left\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TextAreaMeta = {
@@ -3171,7 +3247,8 @@ export const TextAreaMeta = {
       "group": "style",
       "themeDefault": "input"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, TextArea, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function TextAreaExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Text Area Input</Text>\n          <TextArea\n          variant=\"outlined\"\n          size=\"md\"\n          placeholder=\"Placeholder\"\n          label=\"Label\"\n          error=\"Error message\"\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TextInputMeta = {
@@ -3321,12 +3398,13 @@ export const TextInputMeta = {
       "group": "style",
       "themeDefault": "border"
     }
-  ]
+  ],
+  "example": "import React, { useState } from 'react';\nimport { FoundationProvider, TextInput, Card, Stack, Text, Button } from '@flipova/foundation';\n\nexport default function TextInputExample() {\n  const [value, setValue] = useState('');\n\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\" style={{ maxWidth: 400 }}>\n        <Stack spacing={4}>\n          <Text variant=\"heading\" size=\"md\">Text Input Input</Text>\n          <TextInput\n          variant=\"outlined\"\n          size=\"md\"\n          placeholder=\"Placeholder\"\n          label=\"Label\"\n          error=\"Error message\"\n          disabled={false}\n        value={value} onChangeText={setValue} />\n          <Button variant=\"primary\" label=\"Submit\" onPress={() => console.log(value)} />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const VideoMeta = {
   "id": "Video",
-  "label": "Voido",
+  "label": "Video",
   "description": "Video player with controls, autoplay, and loop.",
   "category": "media",
   "tags": [
@@ -3415,7 +3493,8 @@ export const VideoMeta = {
       "group": "style",
       "default": "none"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Video, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function VideoExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">Video Example</Text>\n          <Video\n          source=\"Source URL\"\n          poster=\"Poster URL\"\n          autoplay={false}\n          loop={false}\n          muted={true}\n          controls={true}\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const WebViewMeta = {
@@ -3471,10 +3550,12 @@ export const WebViewMeta = {
       "group": "style",
       "default": "none"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, WebView, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function WebViewExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">WebView Example</Text>\n          <WebView\n          url=\"https://expo.dev\"\n          height={400}\n          scrollEnabled={true}\n          borderRadius=\"none\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const WheelPickerMeta = {
+  "id": "WheelPicker",
   "name": "WheelPicker",
   "description": "A scrollable barrel wheel picker. If items exceed maxItemsInWheel, a \"More...\" option opens a submenu modal.",
   "props": [
@@ -3507,7 +3588,8 @@ export const WheelPickerMeta = {
       "description": "Label for the \"More...\" option",
       "default": "Plus..."
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, WheelPicker, Card, Stack, Text } from '@flipova/foundation';\n\nexport default function WheelPickerExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Card p={5} borderRadius=\"lg\" variant=\"elevated\">\n        <Stack spacing={3}>\n          <Text variant=\"heading\" size=\"md\">WheelPicker Example</Text>\n          <WheelPicker\n          value=\"Sample\"\n          itemHeight={40}\n          maxItemsInWheel={5}\n          moreLabel=\"Plus...\"\n        />\n        </Stack>\n      </Card>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const AuthLayoutMeta = {
@@ -3613,7 +3695,8 @@ export const AuthLayoutMeta = {
       "group": "layout",
       "default": 4
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, AuthLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function AuthLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <AuthLayout\n          borderRadius=\"none\"\n          spacing={0}\n          brandingRatio={0.5}\n          padding={5}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Authentication Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Authentication Section 2</Text>\n        </Card>\n      </AuthLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BentoLayoutMeta = {
@@ -3705,7 +3788,8 @@ export const BentoLayoutMeta = {
       "group": "content",
       "default": []
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, BentoLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function BentoLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <BentoLayout\n          spacing={2}\n          itemBorderRadius=\"none\"\n          scrollable={true}\n          maxWidth={1200}\n          baseHeight={200}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Bento Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Bento Section 2</Text>\n        </Card>\n      </BentoLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const BottomDrawerLayoutMeta = {
@@ -3851,7 +3935,8 @@ export const BottomDrawerLayoutMeta = {
       "group": "layout",
       "default": 56
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, BottomDrawerLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function BottomDrawerLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <BottomDrawerLayout\n          drawerHeight={400}\n          scrollable={true}\n          drawerBorderRadius=\"3xl\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Bottom Drawer Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Bottom Drawer Section 2</Text>\n        </Card>\n      </BottomDrawerLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const CenteredLayoutMeta = {
@@ -3936,7 +4021,8 @@ export const CenteredLayoutMeta = {
       "group": "layout",
       "default": 6
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, CenteredLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function CenteredLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <CenteredLayout\n          maxWidth={500}\n          padding={4}\n          borderRadius=\"3xl\"\n          shadowed={false}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Centered Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Centered Section 2</Text>\n        </Card>\n      </CenteredLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const DashboardLayoutMeta = {
@@ -4093,7 +4179,8 @@ export const DashboardLayoutMeta = {
       "group": "behavior",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, DashboardLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function DashboardLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <DashboardLayout\n          sidebarWidth={260}\n          sidebarCollapsedWidth={70}\n          headerHeight={70}\n          footerHeight={60}\n          spacing={0}\n          borderRadius=\"none\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Dashboard Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Dashboard Section 2</Text>\n        </Card>\n      </DashboardLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const DeckLayoutMeta = {
@@ -4226,7 +4313,8 @@ export const DeckLayoutMeta = {
       "group": "style",
       "themeDefault": "background"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, DeckLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function DeckLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <DeckLayout\n          peekOffset={12}\n          peekScale={0.05}\n          cycle={false}\n          cardShadow={true}\n          cardBorderRadius={24}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Deck Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Deck Section 2</Text>\n        </Card>\n      </DeckLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FlexLayoutMeta = {
@@ -4342,7 +4430,8 @@ export const FlexLayoutMeta = {
       "group": "style",
       "default": "none"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, FlexLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function FlexLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <FlexLayout\n          direction=\"row\"\n          wrap={false}\n          spacing={4}\n          align=\"stretch\"\n          justify=\"flex-start\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Flex Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Flex Section 2</Text>\n        </Card>\n      </FlexLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FlipLayoutMeta = {
@@ -4491,7 +4580,8 @@ export const FlipLayoutMeta = {
       "group": "behavior",
       "default": 140
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, FlipLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function FlipLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <FlipLayout\n          borderRadius=\"none\"\n          flipPerspective={1200}\n          swipeThreshold={40}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Flip Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Flip Section 2</Text>\n        </Card>\n      </FlipLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const FooterLayoutMeta = {
@@ -4614,7 +4704,8 @@ export const FooterLayoutMeta = {
       "group": "behavior",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, FooterLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function FooterLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <FooterLayout\n          footerHeight={60}\n          spacing={0}\n          sticky={false}\n          scrollable={true}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Footer Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Footer Section 2</Text>\n        </Card>\n      </FooterLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const GridLayoutMeta = {
@@ -4719,7 +4810,8 @@ export const GridLayoutMeta = {
       "group": "behavior",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, GridLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function GridLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <GridLayout\n          spacing={0}\n          scrollable={false}\n          padding={0}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Grid Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Grid Section 2</Text>\n        </Card>\n      </GridLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const HeaderContentLayoutMeta = {
@@ -4850,7 +4942,8 @@ export const HeaderContentLayoutMeta = {
       "group": "behavior",
       "default": 16
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, HeaderContentLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function HeaderContentLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <HeaderContentLayout\n          headerHeight={150}\n          headerCollapsedHeight={60}\n          spacing={0}\n          headerBorderRadius=\"none\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Collapsible Header Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Collapsible Header Section 2</Text>\n        </Card>\n      </HeaderContentLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const LeftDrawerLayoutMeta = {
@@ -4996,7 +5089,8 @@ export const LeftDrawerLayoutMeta = {
       "group": "layout",
       "default": 40
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, LeftDrawerLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function LeftDrawerLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <LeftDrawerLayout\n          drawerWidth={280}\n          scrollable={true}\n          drawerBorderRadius=\"none\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Left Drawer Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Left Drawer Section 2</Text>\n        </Card>\n      </LeftDrawerLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const MasonryLayoutMeta = {
@@ -5086,7 +5180,8 @@ export const MasonryLayoutMeta = {
       "type": "padding",
       "group": "layout"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, MasonryLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function MasonryLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <MasonryLayout\n          columns={2}\n          spacing={1}\n          scrollable={true}\n          background=\"transparent\"\n          borderRadius=\"none\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Masonry Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Masonry Section 2</Text>\n        </Card>\n      </MasonryLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ParallaxLayoutMeta = {
@@ -5207,7 +5302,8 @@ export const ParallaxLayoutMeta = {
       "group": "behavior",
       "default": 16
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ParallaxLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function ParallaxLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <ParallaxLayout\n          rowCount={3}\n          itemWidth={200}\n          spacing={4}\n          itemSpacing={12}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Parallax Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Parallax Section 2</Text>\n        </Card>\n      </ParallaxLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ResponsiveLayoutMeta = {
@@ -5389,7 +5485,8 @@ export const ResponsiveLayoutMeta = {
       "group": "layout",
       "default": 320
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ResponsiveLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function ResponsiveLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <ResponsiveLayout\n          spacing={0}\n          headerHeight={60}\n          sidebarWidth={260}\n          footerHeight={60}\n          adaptiveMode=\"basic\"\n          hideHeader={false}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Responsive Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Responsive Section 2</Text>\n        </Card>\n      </ResponsiveLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const RootLayoutMeta = {
@@ -5485,7 +5582,8 @@ export const RootLayoutMeta = {
       "group": "layout",
       "default": 0
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, RootLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function RootLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <RootLayout\n          scrollable={true}\n          padding={0}\n          justifyContent=\"flex-start\"\n          alignItems=\"stretch\"\n          flexDirection=\"column\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Root Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Root Section 2</Text>\n        </Card>\n      </RootLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const ScrollLayoutMeta = {
@@ -5657,7 +5755,8 @@ export const ScrollLayoutMeta = {
       "group": "layout",
       "default": 50
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, ScrollLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function ScrollLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <ScrollLayout\n          spacing={4}\n          useSafeAreaInsets={true}\n          headerHeight={80}\n          footerHeight={60}\n          scrollDirection=\"vertical\"\n          showScrollIndicator={false}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Scroll Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Scroll Section 2</Text>\n        </Card>\n      </ScrollLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SidebarLayoutMeta = {
@@ -5791,7 +5890,8 @@ export const SidebarLayoutMeta = {
       "group": "layout",
       "default": 600
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SidebarLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SidebarLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SidebarLayout\n          sidebarWidth={280}\n          position=\"left\"\n          collapsible={true}\n          spacing={4}\n          scrollable={true}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Sidebar Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Sidebar Section 2</Text>\n        </Card>\n      </SidebarLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SketchLayoutMeta = {
@@ -5816,10 +5916,12 @@ export const SketchLayoutMeta = {
       "group": "style",
       "themeDefault": "background"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SketchLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SketchLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SketchLayout >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Sketch (placeholder) Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Sketch (placeholder) Section 2</Text>\n        </Card>\n      </SketchLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SortableGridLayoutMeta = {
+  "id": "SortableGridLayout",
   "name": "SortableGridLayout",
   "description": "A drag-and-drop reorderable grid layout for rendering interactive lists or grids.",
   "tags": [
@@ -5845,7 +5947,8 @@ export const SortableGridLayoutMeta = {
       "description": "Spacing between items.",
       "default": 8
     }
-  }
+  },
+  "example": "import React from 'react';\nimport { FoundationProvider, SortableGridLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SortableGridLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SortableGridLayout\n          columns={3}\n          spacing={8}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">SortableGridLayout Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">SortableGridLayout Section 2</Text>\n        </Card>\n      </SortableGridLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SplitLayoutMeta = {
@@ -5962,7 +6065,8 @@ export const SplitLayoutMeta = {
       "group": "style",
       "default": "none"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SplitLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SplitLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SplitLayout\n          spacing={0}\n          ratio={0.5}\n          orientation=\"horizontal\"\n          hideLeftOnMobile={false}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Split Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Split Section 2</Text>\n        </Card>\n      </SplitLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const Swipe2ScreenLayoutMeta = {
@@ -6039,7 +6143,8 @@ export const Swipe2ScreenLayoutMeta = {
       "group": "content",
       "default": []
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, Swipe2ScreenLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function Swipe2ScreenLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <Swipe2ScreenLayout\n          containerBackground=\"#000\"\n          screenBackground=\"#fff\"\n          swipeThreshold={100}\n          projectedScale={0.8}\n          animationDuration={300}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Swipe to Screen Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Swipe to Screen Section 2</Text>\n        </Card>\n      </Swipe2ScreenLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SwiperLayoutMeta = {
@@ -6181,7 +6286,8 @@ export const SwiperLayoutMeta = {
       "group": "style",
       "default": "#fff"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SwiperLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SwiperLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SwiperLayout\n          enableSwipeUp={false}\n          enableSwipeDown={false}\n          borderRadius=\"none\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Swiper Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Swiper Section 2</Text>\n        </Card>\n      </SwiperLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const SystemLayoutMeta = {
@@ -6260,7 +6366,8 @@ export const SystemLayoutMeta = {
       "group": "style",
       "themeDefault": "card"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, SystemLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function SystemLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <SystemLayout\n          rootBackgroundColor=\"#0c3ddbff\"\n          statusBarContentStyle=\"auto\"\n          navigationBarContentStyle=\"light\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">System UI Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">System UI Section 2</Text>\n        </Card>\n      </SystemLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TopDrawerLayoutMeta = {
@@ -6420,7 +6527,8 @@ export const TopDrawerLayoutMeta = {
       "group": "style",
       "themeDefault": "mutedForeground"
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, TopDrawerLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function TopDrawerLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <TopDrawerLayout\n          drawerHeight={600}\n          scrollable={true}\n          drawerBorderRadius=\"3xl\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Top Drawer Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Top Drawer Section 2</Text>\n        </Card>\n      </TopDrawerLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const TutoLayoutMeta = {
@@ -6529,7 +6637,8 @@ export const TutoLayoutMeta = {
       "group": "content",
       "default": []
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, TutoLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function TutoLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <TutoLayout\n          overlayOpacity={0.78}\n          showSkip={true}\n          nextLabel=\"Next\"\n          finishLabel=\"Finish\"\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">TutoLayout Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">TutoLayout Section 2</Text>\n        </Card>\n      </TutoLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const VoidLayoutMeta = {
@@ -6609,12 +6718,26 @@ export const VoidLayoutMeta = {
       "group": "style",
       "default": false
     }
-  ]
+  ],
+  "example": "import React from 'react';\nimport { FoundationProvider, VoidLayout, Card, Text, Stack } from '@flipova/foundation';\n\nexport default function VoidLayoutExample() {\n  return (\n    <FoundationProvider defaultTheme=\"dark\">\n      <VoidLayout\n          scrollable={true}\n          borderRadius=\"none\"\n          spacing={0}\n        >\n        <Card p={4} variant=\"elevated\">\n          <Stack spacing={2}>\n            <Text variant=\"heading\" size=\"md\">Void Section 1</Text>\n            <Text color=\"mutedForeground\">Content layout block powered by Flipova Foundation.</Text>\n          </Stack>\n        </Card>\n        <Card p={4} variant=\"outlined\">\n          <Text variant=\"heading\" size=\"md\">Void Section 2</Text>\n        </Card>\n      </VoidLayout>\n    </FoundationProvider>\n  );\n}"
 } as const;
 
 export const componentRegistry = [
+  BadgeWrapperMeta,
+  BlurWrapperMeta,
+  CollapsibleWrapperMeta,
+  FadeInWrapperMeta,
+  KeyboardAvoidWrapperMeta,
+  SafeAreaWrapperMeta,
+  ScalePressWrapperMeta,
+  ShimmerWrapperMeta,
+  SkeletonWrapperMeta,
+  SlideUpWrapperMeta,
+  TooltipWrapperMeta,
   AccordionMeta,
+  AudioMeta,
   AvatarMeta,
+  AvatarPickerMeta,
   BadgeMeta,
   BlurViewMeta,
   ButtonMeta,
@@ -6622,18 +6745,26 @@ export const componentRegistry = [
   CardMeta,
   CheckboxMeta,
   ChipMeta,
+  ColorPickerMeta,
   DatePickerMeta,
+  EmojiPickerMeta,
   FilePickerMeta,
   FlatListMeta,
+  GifPickerMeta,
   GradientMeta,
   IconMeta,
   IconButtonMeta,
+  IconPickerMeta,
   ImageMeta,
   LottieAnimationMeta,
   MapViewMeta,
+  NumberInputMeta,
+  OTPInputMeta,
+  PasswordInputMeta,
   PressableMeta,
   ProgressBarMeta,
   RadioGroupMeta,
+  SearchInputMeta,
   SelectMeta,
   SeparatorMeta,
   SliderMeta,
@@ -6644,7 +6775,8 @@ export const componentRegistry = [
   TextAreaMeta,
   TextInputMeta,
   VideoMeta,
-  WebViewMeta
+  WebViewMeta,
+  WheelPickerMeta
 ] as const;
 
 export const blockRegistry = [
@@ -6671,6 +6803,7 @@ export const layoutRegistry = [
   ScrollLayoutMeta,
   SidebarLayoutMeta,
   SketchLayoutMeta,
+  SortableGridLayoutMeta,
   SplitLayoutMeta,
   Swipe2ScreenLayoutMeta,
   SwiperLayoutMeta,
@@ -6689,7 +6822,8 @@ export const primitiveRegistry = [
   DividerMeta
 ] as const;
 
-export function getComponentMeta(id: string): any { return componentRegistry.find((m: any) => m.id === id); }
-export function getBlockMeta(id: string): any { return blockRegistry.find((m: any) => m.id === id); }
-export function getLayoutMeta(id: string): any { return layoutRegistry.find((m: any) => m.id === id); }
-export function getPrimitiveMeta(id: string): any { return primitiveRegistry.find((m: any) => m.id === id); }
+export function getComponentMeta(id: string): any { return componentRegistry.find((m: any) => m.id === id) || layoutRegistry.find((m: any) => m.id === id) || primitiveRegistry.find((m: any) => m.id === id) || blockRegistry.find((m: any) => m.id === id); }
+export function getBlockMeta(id: string): any { return blockRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }
+export function getLayoutMeta(id: string): any { return layoutRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }
+export function getPrimitiveMeta(id: string): any { return primitiveRegistry.find((m: any) => m.id === id) || getComponentMeta(id); }
+export function getMeta(id: string): any { return getComponentMeta(id); }

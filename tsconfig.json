@@ -21,6 +21,6 @@
       "@flipova/foundation/*": ["./foundation/*"]
     }
   },
-  "include": ["foundation", "docs"],
+  "include": ["foundation", "scripts"],
   "exclude": ["node_modules", "dist", "**/*.example.ts"]
 }

@@ -1,4 +1,26 @@
+type: component
+id: ColorPicker
 name: ColorPicker
 description: A visual grid of color swatches for choosing a theme or element color.
-tags: [base, input, picker, color]
+tags:
+  - base
+  - input
+  - picker
+  - color
 props: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, ColorPicker, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function ColorPickerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">ColorPicker Example</Text>
+            <ColorPicker />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -36,3 +36,19 @@ props:
     label: Height
     type: number
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Center, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function CenterExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Center Example</Text>
+            <Center />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

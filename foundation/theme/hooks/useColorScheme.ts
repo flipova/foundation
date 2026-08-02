@@ -1,12 +1,6 @@
 import { useColorScheme as useRNColorScheme } from 'react-native';
 
 /**
- * Hook pour gérer le schéma de couleurs du thème dans l'application.
- * 
- * Ce hook fournit une manière unifiée de gérer la sélection du thème :
- * - Utilisation du mode de thème fourni explicitement s'il est spécifié.
- * - Utilisation du schéma de couleurs natif de l'appareil (clair/sombre) par défaut.
- * - Utilisation du thème clair par défaut si le schéma natif n'est pas disponible.
  * Hook to manage the theme color scheme in the application.
  * 
  * This hook provides a unified way to manage theme selection:

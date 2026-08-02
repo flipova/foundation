@@ -1,6 +1,13 @@
+type: layout
+id: SortableGridLayout
 name: SortableGridLayout
 description: A drag-and-drop reorderable grid layout for rendering interactive lists or grids.
-tags: [layout, grid, drag-and-drop, interactive, reorderable]
+tags:
+  - layout
+  - grid
+  - drag-and-drop
+  - interactive
+  - reorderable
 props:
   data:
     type: array
@@ -14,3 +21,27 @@ props:
     type: number
     description: Spacing between items.
     default: 8
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SortableGridLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function SortableGridLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <SortableGridLayout
+            columns={3}
+            spacing={8}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">SortableGridLayout Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">SortableGridLayout Section 2</Text>
+          </Card>
+        </SortableGridLayout>
+      </FoundationProvider>
+    );
+  }

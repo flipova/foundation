@@ -2,10 +2,10 @@ import { colors } from "../tokens";
 import type { ColorScheme } from "./types";
 
 /**
- * Crée un schéma de couleurs de thème en fusionnant les valeurs par défaut avec les surcharges (overrides).
+ * Creates a theme color scheme by merging default colors with optional overrides.
  * 
- * @param overrides - (Optionnel) Objet contenant les valeurs de couleurs à surcharger.
- * @returns Le schéma de couleurs complet du thème généré.
+ * @param overrides - (Optional) Object containing color values to override.
+ * @returns The complete generated theme color scheme.
  */
 export const createTheme = (overrides: Partial<ColorScheme> = {}): ColorScheme => ({
   background: colors.white,

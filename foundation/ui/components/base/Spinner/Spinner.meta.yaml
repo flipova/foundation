@@ -31,3 +31,21 @@ props:
     type: color
     group: style
     themeDefault: primary
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Spinner, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function SpinnerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Spinner Example</Text>
+            <Spinner
+            size="md"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

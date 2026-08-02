@@ -81,3 +81,24 @@ props:
     type: color
     group: style
     themeDefault: muted
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Avatar, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function AvatarExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Avatar Example</Text>
+            <Avatar
+            variant="circle"
+            size="md"
+            source="Image source"
+            initials="Initials"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -1,8 +1,33 @@
+type: component
+id: SkeletonWrapper
 name: SkeletonWrapper
 description: A wrapper component that measures its children and displays an animated shimmering skeleton outline when loading.
-tags: [base, wrapper, loader, skeleton, shimmer]
+tags:
+  - base
+  - wrapper
+  - loader
+  - skeleton
+  - shimmer
 props:
   isLoading:
     type: boolean
     description: Whether the component is currently loading. If true, shows skeleton.
     required: true
+example: |-
+  import React from 'react';
+  import { FoundationProvider, SkeletonWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function SkeletonWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">SkeletonWrapper Example</Text>
+            <SkeletonWrapper
+            isLoading={true}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

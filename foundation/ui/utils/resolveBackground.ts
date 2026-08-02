@@ -1,12 +1,12 @@
 /**
- * Résout un LayoutBackground (string | [string, string, ...]) en props bg + gradient.
- * Élimine la duplication dans AuthLayout, SidebarLayout, etc.
+ * Resolves a LayoutBackground (string | [string, string, ...]) into bg and gradient properties.
+ * Eliminates duplicate resolution logic across AuthLayout, SidebarLayout, etc.
  */
 
 import type { LayoutBackground } from "../../types";
 
 /**
- * Interface représentant les propriétés de fond résolues (couleur unie ou dégradé).
+ * Interface representing resolved background properties (solid color hex or gradient array).
  */
 export interface ResolvedBackground {
   bg?: string;
@@ -14,10 +14,10 @@ export interface ResolvedBackground {
 }
 
 /**
- * Résout une définition de fond de mise en page en un objet de propriétés (couleur unie ou dégradé).
+ * Resolves a layout background definition into a ResolvedBackground object.
  *
- * @param background - La configuration du fond (chaîne ou tableau de chaînes).
- * @returns Un objet ResolvedBackground contenant bg ou gradient.
+ * @param background - Background configuration (color string or gradient array).
+ * @returns A ResolvedBackground object containing bg or gradient properties.
  */
 export function resolveBackground(background?: LayoutBackground): ResolvedBackground {
   if (!background) return {};

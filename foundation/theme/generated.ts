@@ -1,6 +1,6 @@
 // ==============================================================================
-// FICHIER GENERÉ AUTOMATIQUEMENT - NE PAS MODIFIER MANUELLEMENT
-// Modifiez foundation/theme/themes.yaml et relancez `npm run theme:generate`
+// AUTOMATICALLY GENERATED FILE - DO NOT MODIFY MANUALLY
+// Edit foundation/theme/themes.yaml and run `npm run theme:generate`
 // ==============================================================================
 
 import { colors } from "../tokens";

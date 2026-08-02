@@ -21,18 +21,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 /**
- * Hook pour accéder au contexte du thème.
+ * Hook to access the theme context.
  * 
- * @param customTheme - (Optionnel) Mode de thème personnalisé à utiliser au lieu du thème du contexte actuel.
- * @returns La valeur du contexte du thème avec le thème actuel, le mode, la fonction pour le modifier et les thèmes disponibles.
- * @throws Erreur s'il est utilisé en dehors d'un ThemeProvider.
+ * @param customTheme - (Optional) Custom theme mode to use instead of current context theme.
+ * @returns Theme context object with current theme, mode, theme setter, and available themes.
+ * @throws Error if used outside a ThemeProvider.
  * 
  * @example
  * ```tsx
- * // Utilisation de base
+ * // Basic usage
  * const { theme, mode, setTheme } = useTheme();
  * 
- * // Avec un thème personnalisé
+ * // With a specific custom theme
  * const { theme } = useTheme('neon');
  * ```
  */
@@ -56,22 +56,18 @@ export const useTheme = (customTheme?: ThemeMode | CustomThemeMode) => {
 };
 
 /**
- * Propriétés (props) pour le composant ThemeProvider.
+ * Props for the ThemeProvider component.
  */
 interface ThemeProviderProps {
-  /** Composants enfants qui auront accès au contexte du thème */
+  /** Child components that will have access to theme context */
   children: React.ReactNode;
-  /** Thème par défaut à utiliser lorsqu'aucun thème n'est stocké dans l'état */
+  /** Default theme to use when no theme is stored in state */
   defaultTheme?: ThemeMode | CustomThemeMode;
-  /** Thèmes personnalisés supplémentaires à fusionner avec les thèmes intégrés */
+  /** Additional custom themes to merge with built-in themes */
   customThemes?: Partial<ThemeRegistry>;
 }
 
 /**
- * Fournit le contexte du thème aux composants enfants.
- * 
- * Gère l'état du thème actuel et permet d'accéder à la fonctionnalité de changement de thème.
- * Prend en charge les thèmes intégrés (clair, sombre, néon) et les thèmes personnalisés.
  * Provides the theme context to child components.
  * 
  * Manages the current theme state and provides access to theme changing functionality.

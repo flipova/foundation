@@ -1,6 +1,6 @@
 type: component
 id: Video
-label: Voido
+label: Video
 description: Video player with controls, autoplay, and loop.
 category: media
 tags:
@@ -66,3 +66,26 @@ props:
     type: radius
     group: style
     default: none
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Video, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function VideoExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Video Example</Text>
+            <Video
+            source="Source URL"
+            poster="Poster URL"
+            autoplay={false}
+            loop={false}
+            muted={true}
+            controls={true}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

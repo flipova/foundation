@@ -38,3 +38,23 @@ props:
     type: number
     group: style
     default: 2
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Icon, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function IconExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Icon Example</Text>
+            <Icon
+            name="star"
+            size={24}
+            strokeWidth={2}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -183,8 +183,26 @@ The interactive menu allows you to:
 - **Manage Themes**: Add or remove custom themes. It automatically registers them.
 - **Manage the Registry**: Browse, add, or remove UI primitives, components, or layout definitions.
 - **Generate Tokens**: Recompile TypeScript definitions from your `tokens.yaml` and `themes.yaml` sources.
+- **Generate Documentation**: Build a 1-to-1 mirror MDX documentation site straight from `.meta.yaml` and TSDoc sources.
 
 Whenever you make manual changes to `themes.yaml`, `tokens.yaml`, or registry metadata files, running `npx flipova-ds` allows you to rapidly regenerate the type definitions (`generated.ts`).
+
+---
+
+## Documentation Portal
+
+Flipova Foundation includes a built-in Docusaurus documentation portal located in `docs/`:
+
+```bash
+# Start local Docusaurus development server
+npm run docs:dev
+
+# Build static production site into docs/build
+npm run docs:build
+
+# Preview production build locally
+npm run docs:preview
+```
 
 ---
 

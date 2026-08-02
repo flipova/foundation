@@ -75,3 +75,24 @@ props:
     type: color
     group: style
     themeDefault: foreground
+example: |-
+  import React from 'react';
+  import { FoundationProvider, IconButton, Inline, Stack, Text } from '@flipova/foundation';
+
+  export default function IconButtonExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Stack spacing={4} style={{ padding: 20 }}>
+          <Text variant="heading" size="md">Icon Button Actions</Text>
+          <Inline spacing={3} alignItems="center">
+            <IconButton
+            variant="ghost"
+            size="md"
+            disabled={false}
+            borderRadius="full"
+          onPress={() => console.log('IconButton pressed')} />
+          </Inline>
+        </Stack>
+      </FoundationProvider>
+    );
+  }

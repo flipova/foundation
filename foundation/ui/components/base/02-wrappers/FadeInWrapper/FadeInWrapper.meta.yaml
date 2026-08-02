@@ -1,3 +1,5 @@
+type: component
+id: FadeInWrapper
 name: FadeInWrapper
 description: Animates its children in with a smooth opacity fade on mount.
 props:
@@ -9,3 +11,22 @@ props:
     type: number
     description: Animation delay in ms
     default: 0
+example: |-
+  import React from 'react';
+  import { FoundationProvider, FadeInWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function FadeInWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">FadeInWrapper Example</Text>
+            <FadeInWrapper
+            duration={500}
+            delay={0}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

@@ -51,3 +51,25 @@ props:
     type: radius
     group: style
     default: lg
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Camera, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function CameraExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Camera Example</Text>
+            <Camera
+            facing="back"
+            flash="off"
+            enableTorch={false}
+            height={300}
+            borderRadius="lg"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

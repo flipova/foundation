@@ -74,3 +74,29 @@ props:
     type: spacing
     group: layout
     default: 4
+example: |-
+  import React from 'react';
+  import { FoundationProvider, AuthLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function AuthLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <AuthLayout
+            borderRadius="none"
+            spacing={0}
+            brandingRatio={0.5}
+            padding={5}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Authentication Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Authentication Section 2</Text>
+          </Card>
+        </AuthLayout>
+      </FoundationProvider>
+    );
+  }

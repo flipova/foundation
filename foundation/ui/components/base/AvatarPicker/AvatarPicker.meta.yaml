@@ -1,4 +1,26 @@
+type: component
+id: AvatarPicker
 name: AvatarPicker
 description: Allows users to select an avatar from a list of predefined options or upload one.
-tags: [base, input, picker, avatar]
+tags:
+  - base
+  - input
+  - picker
+  - avatar
 props: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, AvatarPicker, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function AvatarPickerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">AvatarPicker Example</Text>
+            <AvatarPicker />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

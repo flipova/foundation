@@ -7,7 +7,7 @@ import type { BreakpointInfo } from './useBreakpoint';
 import type { PlatformInfo } from './usePlatformInfo';
 
 /**
- * Valeur de surcharge (override) pour la plateforme et les points d'arrêt (breakpoints).
+ * Override value for platform detection and responsive breakpoints.
  */
 export interface PlatformOverrideValue {
   breakpoint?: BreakpointInfo;
@@ -17,17 +17,17 @@ export interface PlatformOverrideValue {
 const Ctx = createContext<PlatformOverrideValue | null>(null);
 
 /**
- * Hook permettant d'accéder au contexte de surcharge de la plateforme.
+ * Hook to access the platform override context value.
  * 
- * @returns La valeur actuelle du contexte de surcharge ou null.
+ * @returns Current override context value or null.
  */
 export const usePlatformOverride = () => useContext(Ctx);
 
 /**
- * Fournisseur de contexte pour la surcharge des informations de plateforme.
+ * Context provider to override platform and breakpoint information.
  *
- * @param props - Les propriétés, incluant la valeur de surcharge et les enfants.
- * @returns Un élément Provider de contexte.
+ * @param props - Component props containing override value and children.
+ * @returns Context provider element.
  */
 export const PlatformOverrideProvider: React.FC<{ value: PlatformOverrideValue; children: React.ReactNode }> = ({ value, children }) => (
   <Ctx.Provider value={value}>{children}</Ctx.Provider>

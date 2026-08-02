@@ -121,3 +121,31 @@ props:
     type: number
     group: layout
     default: 50
+example: |-
+  import React from 'react';
+  import { FoundationProvider, ScrollLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function ScrollLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <ScrollLayout
+            spacing={4}
+            useSafeAreaInsets={true}
+            headerHeight={80}
+            footerHeight={60}
+            scrollDirection="vertical"
+            showScrollIndicator={false}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Scroll Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Scroll Section 2</Text>
+          </Card>
+        </ScrollLayout>
+      </FoundationProvider>
+    );
+  }

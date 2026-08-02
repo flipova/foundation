@@ -1,3 +1,5 @@
+type: component
+id: BlurWrapper
 name: BlurWrapper
 description: Wraps children in a frosted glass/blur container.
 props:
@@ -9,3 +11,22 @@ props:
     type: string
     description: Tint color (light, dark, default)
     default: default
+example: |-
+  import React from 'react';
+  import { FoundationProvider, BlurWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function BlurWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">BlurWrapper Example</Text>
+            <BlurWrapper
+            intensity={50}
+            tint="default"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

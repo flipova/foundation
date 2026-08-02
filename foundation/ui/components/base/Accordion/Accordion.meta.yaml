@@ -42,3 +42,23 @@ props:
     type: color
     group: style
     themeDefault: border
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Accordion, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function AccordionExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Accordion Example</Text>
+            <Accordion
+            title="Section"
+            defaultOpen={false}
+            borderRadius="lg"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

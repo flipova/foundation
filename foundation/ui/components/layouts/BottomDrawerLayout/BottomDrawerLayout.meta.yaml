@@ -104,3 +104,28 @@ props:
     type: number
     group: layout
     default: 56
+example: |-
+  import React from 'react';
+  import { FoundationProvider, BottomDrawerLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function BottomDrawerLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <BottomDrawerLayout
+            drawerHeight={400}
+            scrollable={true}
+            drawerBorderRadius="3xl"
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Bottom Drawer Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Bottom Drawer Section 2</Text>
+          </Card>
+        </BottomDrawerLayout>
+      </FoundationProvider>
+    );
+  }

@@ -54,3 +54,30 @@ props:
     type: json
     group: content
     default: []
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Swipe2ScreenLayout, Card, Text, Stack } from '@flipova/foundation';
+
+  export default function Swipe2ScreenLayoutExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Swipe2ScreenLayout
+            containerBackground="#000"
+            screenBackground="#fff"
+            swipeThreshold={100}
+            projectedScale={0.8}
+            animationDuration={300}
+          >
+          <Card p={4} variant="elevated">
+            <Stack spacing={2}>
+              <Text variant="heading" size="md">Swipe to Screen Section 1</Text>
+              <Text color="mutedForeground">Content layout block powered by Flipova Foundation.</Text>
+            </Stack>
+          </Card>
+          <Card p={4} variant="outlined">
+            <Text variant="heading" size="md">Swipe to Screen Section 2</Text>
+          </Card>
+        </Swipe2ScreenLayout>
+      </FoundationProvider>
+    );
+  }

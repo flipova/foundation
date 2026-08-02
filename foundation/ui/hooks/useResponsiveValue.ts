@@ -2,10 +2,10 @@ import { ResponsiveValue, getResponsiveValue } from "../utils/responsive";
 import { useBreakpoint } from "./useBreakpoint";
 
 /**
- * Hook permettant de récupérer la valeur responsive appropriée selon le point d'arrêt (breakpoint) courant.
+ * Hook to resolve a responsive value configuration based on the current breakpoint.
  *
- * @param value - Une configuration de valeurs responsives ou une valeur brute.
- * @returns La valeur correspondant au point d'arrêt actuel, ou null s'il n'est pas encore connu.
+ * @param value - Responsive value map object or primitive value.
+ * @returns Resolved value for active breakpoint, or null if breakpoint is null (e.g. SSR).
  */
 export const useResponsiveValue = <T>(value: ResponsiveValue<T>): T | null => {
   const { breakpoint } = useBreakpoint();

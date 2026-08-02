@@ -28,3 +28,22 @@ props:
     label: Spacing
     type: spacing
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Divider, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function DividerExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Divider Example</Text>
+            <Divider
+            vertical={false}
+            thickness={1}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

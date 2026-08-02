@@ -1,11 +1,11 @@
 /**
- * usePlatformInfo — Hook niveau 1
+ * usePlatformInfo — Core Platform Hook
  *
- * Détection de plateforme (iOS / Android / Web).
- * À utiliser UNIQUEMENT pour des comportements liés à la plateforme
- * (haptics, cursor, keyboard, etc.), PAS pour du responsive.
+ * Platform detection hook (iOS / Android / Web).
+ * Use EXCLUSIVELY for platform-specific behavior (haptics, cursors, keyboard),
+ * NOT for responsive styling layout decisions.
  *
- * Pour le responsive → useBreakpoint().
+ * For responsive layout decisions → useBreakpoint().
  *
  * @example
  * const { isWeb, isNative } = usePlatformInfo();
@@ -18,26 +18,26 @@ import { usePlatformOverride } from "./PlatformOverride";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
- * Informations sur la plateforme d'exécution courante.
+ * Information regarding the current runtime platform.
  */
 export interface PlatformInfo {
-  /** true si Platform.OS === 'web' */
+  /** true if Platform.OS === 'web' */
   isWeb: boolean;
-  /** true si Platform.OS !== 'web' (iOS ou Android) */
+  /** true if Platform.OS !== 'web' (iOS or Android) */
   isNative: boolean;
-  /** true si Platform.OS === 'ios' */
+  /** true if Platform.OS === 'ios' */
   isIOS: boolean;
-  /** true si Platform.OS === 'android' */
+  /** true if Platform.OS === 'android' */
   isAndroid: boolean;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * Hook permettant d'obtenir les informations de la plateforme courante (web, iOS, Android).
- * Tient compte de toute surcharge (override) si elle existe.
+ * Hook to retrieve current runtime platform flags (web, native, iOS, Android).
+ * Respects platform overrides when present.
  *
- * @returns Un objet contenant des booléens indiquant la plateforme.
+ * @returns Object containing boolean flags indicating the active platform.
  */
 export const usePlatformInfo = (): PlatformInfo => {
   const override = usePlatformOverride();

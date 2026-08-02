@@ -1,18 +1,11 @@
 /**
- * useBreakpoint — Hook niveau 1
+ * useBreakpoint — Core Layout Hook
  *
- * Détecte le breakpoint courant et expose des helpers dérivés
- * pour éviter la duplication `breakpoint === "xs" || breakpoint === "sm"`
- * dans chaque layout.
+ * Detects the current responsive breakpoint and exposes derived flags
+ * to avoid repeating `breakpoint === "xs" || breakpoint === "sm"` check blocks.
  *
  * @example
  * const { breakpoint, isMobile, isTablet, isDesktop } = useBreakpoint();
- *
- * // Avant (dupliqué partout) :
- * const isMobile = breakpoint === "xs" || breakpoint === "sm";
- *
- * // Après :
- * const { isMobile } = useBreakpoint();
  */
 
 import { useEffect, useMemo, useState } from "react";
@@ -24,20 +17,20 @@ import { usePlatformOverride } from "./PlatformOverride";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
- * Informations sur le point d'arrêt (breakpoint) actuel et les états d'écran dérivés.
+ * Current breakpoint information and derived screen state flags.
  */
 export interface BreakpointInfo {
-  /** Breakpoint brut (xs, sm, md, lg, xl, 2xl). Null en SSR avant hydratation. */
+  /** Raw breakpoint token ('xs', 'sm', 'md', 'lg', 'xl', '2xl'). Null on SSR before hydration. */
   breakpoint: Breakpoint | null;
-  /** xs ou sm */
+  /** True for xs or sm */
   isMobile: boolean;
-  /** md */
+  /** True for md */
   isTablet: boolean;
-  /** lg, xl ou 2xl */
+  /** True for lg, xl, or 2xl */
   isDesktop: boolean;
-  /** md ou plus */
+  /** True for md or larger */
   isAtLeastTablet: boolean;
-  /** lg ou plus */
+  /** True for lg or larger */
   isAtLeastDesktop: boolean;
 }
 
@@ -52,7 +45,7 @@ const getInitialBreakpoint = (): Breakpoint | null => {
     if (typeof window !== "undefined") {
       return getBreakpoint(window.innerWidth);
     }
-    return null; // SSR : on ne sait pas encore
+    return null; // SSR: viewport unknown until hydration
   }
   return getBreakpoint();
 };
@@ -69,10 +62,10 @@ const deriveInfo = (bp: Breakpoint | null): BreakpointInfo => ({
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * Hook permettant d'obtenir des informations sur le point d'arrêt (breakpoint) courant.
- * Écoute les changements de dimension d'écran pour mettre à jour ces valeurs.
+ * Hook to retrieve current responsive breakpoint and screen state flags.
+ * Listens for viewport dimension changes and updates reactively.
  *
- * @returns Un objet contenant les informations de breakpoint (ex: isMobile, isTablet).
+ * @returns BreakpointInfo object containing screen state flags (isMobile, isTablet, isDesktop).
  */
 export const useBreakpoint = (): BreakpointInfo => {
   const override = usePlatformOverride();

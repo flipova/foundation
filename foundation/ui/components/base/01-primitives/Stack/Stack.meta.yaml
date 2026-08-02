@@ -39,3 +39,22 @@ props:
     label: Flex
     type: number
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Stack, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function StackExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Stack Example</Text>
+            <Stack
+            spacing={2}
+            align="stretch"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

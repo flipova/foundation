@@ -46,3 +46,24 @@ props:
     label: Padding
     type: spacing
     group: layout
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Gradient, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function GradientExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Gradient Example</Text>
+            <Gradient
+            startColor="#3b82f6"
+            endColor="#8b5cf6"
+            direction="vertical"
+            borderRadius="none"
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

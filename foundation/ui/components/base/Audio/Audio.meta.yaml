@@ -1,6 +1,12 @@
+type: component
+id: Audio
 name: Audio
 description: A base component for audio playback using expo-av.
-tags: [base, media, audio, player]
+tags:
+  - base
+  - media
+  - audio
+  - player
 props:
   source:
     type: string
@@ -10,3 +16,22 @@ props:
     type: boolean
     description: Whether the audio should auto-play
     default: false
+example: |-
+  import React from 'react';
+  import { FoundationProvider, Audio, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function AudioExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">Audio Example</Text>
+            <Audio
+            source="Sample"
+            autoPlay={false}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }

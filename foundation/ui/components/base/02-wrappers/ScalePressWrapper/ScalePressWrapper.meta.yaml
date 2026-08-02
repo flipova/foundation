@@ -1,3 +1,5 @@
+type: component
+id: ScalePressWrapper
 name: ScalePressWrapper
 description: Wraps any element and adds a bouncy shrink effect when pressed.
 props:
@@ -5,3 +7,21 @@ props:
     type: number
     description: Scale factor when pressed
     default: 0.95
+example: |-
+  import React from 'react';
+  import { FoundationProvider, ScalePressWrapper, Card, Stack, Text } from '@flipova/foundation';
+
+  export default function ScalePressWrapperExample() {
+    return (
+      <FoundationProvider defaultTheme="dark">
+        <Card p={5} borderRadius="lg" variant="elevated">
+          <Stack spacing={3}>
+            <Text variant="heading" size="md">ScalePressWrapper Example</Text>
+            <ScalePressWrapper
+            scaleTo={0.95}
+          />
+          </Stack>
+        </Card>
+      </FoundationProvider>
+    );
+  }
