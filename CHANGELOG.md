@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.14.0
+
+### Minor Changes
+
+- 33523d8: Add comprehensive guide and documentation for integrating Flipova Foundation design tokens and theming system with external React Web component libraries (shadcn/ui, Radix UI, Material UI, Tailwind CSS).
+
 ## 1.13.0
 
 ### Minor Changes
