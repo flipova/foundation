@@ -11,6 +11,7 @@ const sidebars: SidebarsConfig = {
         'guides/theming-guide',
         'guides/architecture-guide',
         'guides/cli-guide',
+        'guides/external-component-libraries-theming',
       ],
     },
     {
