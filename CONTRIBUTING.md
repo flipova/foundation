@@ -77,7 +77,9 @@ changelog entry.
    `refactor/`, `hotfix/`) and **one topic per branch**.
 3. **Open a pull request** with the template, and start it with `Closes #<n>`
    so the issue closes automatically on merge. That linkage is what makes the
-   project board meaningful.
+   project board meaningful, and `pr-lifecycle.yml` fails the check without it.
+   For a genuinely trivial change (typo, formatting) that needs no issue, label
+   the pull request `no-issue` instead.
 4. **Declare the release decision** in the PR (the *Release decision* section).
    For a design system this is the important part: `major` breaks the public API
    (component imports, Tailwind utilities, CLI), `minor` adds to it, `patch` is

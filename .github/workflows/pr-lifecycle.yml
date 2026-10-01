@@ -85,6 +85,8 @@ jobs:
           HAS_CONFLICTS: ${{ steps.ctx.outputs.has_conflicts }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
@@ -111,7 +113,11 @@ jobs:
           fi
 
           if [ -z "$LINKED" ]; then
-            echo "::error::No issue linked. Add 'Closes #12', 'Fixes #12' or 'Refs #12' to the pull request description (see the template)."
+            if [[ "$LABELS" == *"no-issue"* ]]; then
+              echo "No issue linked, but the pull request carries the 'no-issue' label: allowed (trivial change)."
+              exit 0
+            fi
+            echo "::error::No issue linked on #${PR_NUMBER}. Open an issue (or pick an existing one) and add 'Closes #<n>' to this pull request's description. For a genuinely trivial change (typo, formatting), label it 'no-issue'."
             exit 1
           fi
           echo "Linked to $LINKED (mergeable: $MERGEABLE)"
@@ -189,7 +195,12 @@ jobs:
             const notes = [];
             if (isFork) notes.push('Fork pull request: the branch is not auto-updated.');
             if (hasConflicts) notes.push('**Conflict** with the base branch: resolve it locally.');
-            if (linked === 'none') notes.push('No issue linked: add `Closes #<n>` to the description.');
+            if (linked === 'none') {
+              const trivial = (pr.labels || []).some(l => l.name === 'no-issue');
+              notes.push(trivial
+                ? 'No issue linked, but the `no-issue` label is set: allowed (trivial change).'
+                : `No issue linked: open or pick one, then add \`Closes #<n>\` to the description (or label \`no-issue\` if trivial).`);
+            }
             if (failing.length || pending.length) notes.push(`Checks: ${checks}.`);
 
             const marker = '<!-- foundation:pr-status -->';
