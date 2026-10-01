@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Flipova Foundation Registry Manifest
+-->
+<foundationRegistry xmlns="urn:flipova:foundation:registry"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:flipova:foundation:registry schema.xsd" schema="flipova.foundation/registry/1">
+    <meta>
+        <project>flipova foundation</project>
+        <version>1.14.0</version>
+        <license>MIT</license>
+        <language>en</language>
+        <registryRoot>design</registryRoot>
+        <pipeline>
+            <source>design/tokens.xml, design/themes.xml</source>
+            <outputs>
+                <gluestackConfig>components/ui/gluestack-ui-provider/config.ts</gluestackConfig>
+                <gluestackTokens>components/ui/gluestack-ui-provider/tokens.js</gluestackTokens>
+            </outputs>
+        </pipeline>
+        <determinism>
+            <rule id="ids.stable-slug" kind="ids" severity="error">
+                <description>explicit uid, otherwise stable slug: element id (deterministic)</description>
+                <applyTo>*.xml</applyTo>
+                <params>
+                    <param name="pattern">^[A-Za-z][A-Za-z0-9-]*$</param>
+                    <param name="selectors">token,theme,role,item,register</param>
+                </params>
+            </rule>
+            <rule id="ordering.canonical" kind="ordering" severity="error">
+                <description>canonical sort by (register, id)</description>
+                <params>
+                    <param name="mode">registers</param>
+                    <param name="by">(register, id)</param>
+                </params>
+            </rule>
+            <rule id="references.explicit" kind="references" severity="error">
+                <description>$ref.&lt;register&gt;.&lt;id&gt;.&lt;path&gt; (never implicit links)</description>
+                <applyTo>*.xml</applyTo>
+                <params>
+                    <param name="pattern">^\$ref\.[a-z][a-z0-9]*\.[A-Za-z0-9_.-]+$</param>
+                    <param name="dotted">true</param>
+                </params>
+            </rule>
+            <rule id="timestamps.forbidden" kind="timestamps" severity="error">
+                <description>timestamps forbidden</description>
+                <applyTo>*.xml</applyTo>
+            </rule>
+            <rule id="locale.values-only" kind="locale" severity="error">
+                <description>locale forbidden in values; allowed only in labels</description>
+                <applyTo>*.xml</applyTo>
+                <params>
+                    <param name="exemptTags">label,description,content</param>
+                </params>
+            </rule>
+            <rule id="version.sync" kind="sync" severity="error">
+                <description>manifest &lt;version&gt; and @schema propagate to every root tag declaring them (fix: checker.py --sync-version)</description>
+                <applyTo>*.xml</applyTo>
+            </rule>
+        </determinism>
+    </meta>
+    <catalogs>
+        <catalog register="tokens">
+            <file>tokens.xml</file>
+        </catalog>
+        <catalog register="themes">
+            <file>themes.xml</file>
+        </catalog>
+    </catalogs>
+    <index>
+        <register name="tokens">
+            <item>spacing</item>
+            <item>radii</item>
+            <item>breakpoints</item>
+            <item>family</item>
+            <item>fontSizes</item>
+            <item>fontWeights</item>
+            <item>lineHeights</item>
+            <item>letterSpacings</item>
+            <item>color</item>
+            <item>shadow</item>
+            <item>zIndex</item>
+            <item>opacity</item>
+            <item>duration</item>
+            <item>easing</item>
+        </register>
+        <register name="themes">
+            <item>light</item>
+            <item>dark</item>
+        </register>
+    </index>
+</foundationRegistry>

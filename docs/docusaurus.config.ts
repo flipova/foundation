@@ -5,7 +5,8 @@ import pkg from '../package.json';
 
 const config: Config = {
   title: `Flipova Foundation v${pkg.version}`,
-  tagline: 'Design tokens, theming system, and layout primitives for React Native (iOS, Android, Web)',
+  tagline:
+    'Registry-driven theming pipeline (XML tokens + themes to gluestack config and Tailwind theme) for React Native and Web',
   favicon: 'img/favicon.svg',
 
   url: 'https://flipova.github.io',
@@ -52,7 +53,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          path: 'docs',
+          path: 'generated',
           routeBasePath: '/docs',
           sidebarPath: './sidebars.ts',
           editUrl: undefined,

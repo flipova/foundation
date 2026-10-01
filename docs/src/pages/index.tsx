@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import pkg from '../../../package.json';
 import {
   Palette,
   Box,
@@ -14,7 +15,7 @@ import {
   Shield,
 } from 'lucide-react';
 
-export default function Home(): React.JSX.Element {
+export default function Home(): JSX.Element {
   const [copied, setCopied] = useState(false);
 
   const copyInstallCommand = () => {
@@ -26,7 +27,7 @@ export default function Home(): React.JSX.Element {
   return (
     <Layout
       title="Flipova Foundation"
-      description="Design system, tokens, and primitive layout components for React Native (iOS, Android & Web)."
+      description="Registry-driven theming (XML tokens + themes to the gluestack config and the Tailwind theme) plus gluestack components for React Native and Web."
     >
       <div className="home-wrapper">
         {/* Hero Section */}
@@ -34,7 +35,7 @@ export default function Home(): React.JSX.Element {
           <div className="hero-container">
             <div className="version-pill">
               <span className="pill-dot"></span>
-              <span>Flipova Foundation v1.12.0</span>
+              <span>Flipova Foundation v{pkg.version}</span>
             </div>
 
             <h1 className="hero-title">
@@ -49,7 +50,7 @@ export default function Home(): React.JSX.Element {
 
             {/* Action Buttons */}
             <div className="hero-actions">
-              <Link to="/docs/guides/getting-started" className="btn-primary">
+              <Link to="/docs/getting-started/quick-start" className="btn-primary">
                 <span>Explore Documentation</span>
                 <ChevronRight className="btn-icon" />
               </Link>
@@ -81,7 +82,7 @@ export default function Home(): React.JSX.Element {
                 <p>
                   Adaptable spacing scales, harmonized typography, and dynamic dark/light theme switching via token injection.
                 </p>
-                <Link to="/docs/tokens/tokens" className="card-link">
+                <Link to="/docs/theming/tokens" className="card-link">
                   <span>View Tokens</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -96,7 +97,7 @@ export default function Home(): React.JSX.Element {
                 <p>
                   Production-ready buttons, inputs, modals, loaders, cards, and media controls crafted for maximum fluidity.
                 </p>
-                <Link to="/docs/ui/components/base/Button/Button" className="card-link">
+                <Link to="/docs/theming/overview" className="card-link">
                   <span>Explore Components</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -111,7 +112,7 @@ export default function Home(): React.JSX.Element {
                 <p>
                   Reactive grid systems, sliding drawers, sticky headers/footers, and scrollable container primitives.
                 </p>
-                <Link to="/docs/ui/components/layouts/RootLayout/RootLayout" className="card-link">
+                <Link to="/docs/theming/overview" className="card-link">
                   <span>Discover Layouts</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -126,7 +127,7 @@ export default function Home(): React.JSX.Element {
                 <p>
                   Flawless performance on iOS, Android, and Web powered by robust multi-environment render adapters.
                 </p>
-                <Link to="/docs/ui/hooks/useBreakpoint" className="card-link">
+                <Link to="/docs/theming/gluestack-config" className="card-link">
                   <span>Check Hooks</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -141,7 +142,7 @@ export default function Home(): React.JSX.Element {
                 <p>
                   Minimal bundle footprint, strict TypeScript typing, and autonomous CLI executable generation.
                 </p>
-                <Link to="/docs/tokens/tokens" className="card-link">
+                <Link to="/docs/schema-reference/schema" className="card-link">
                   <span>API Specs</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -154,9 +155,9 @@ export default function Home(): React.JSX.Element {
                 </div>
                 <h3>Agnostic Documentation</h3>
                 <p>
-                  100% deterministically generated documentation straight from `.meta.yaml` definitions and TSDoc comments.
+                  100% deterministically generated documentation straight from the XML registries and the manifest.
                 </p>
-                <Link to="/docs/tokens/tokens" className="card-link">
+                <Link to="/docs/tools/overview" className="card-link">
                   <span>Metadata Registry</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>

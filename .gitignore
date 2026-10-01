@@ -5,6 +5,11 @@ dist/
 .env
 .env.local
 .npm-cache/
-docs/.docusaurus/
+__pycache__/
+.venv/
+.ruff_cache/
+*.tgz
 docs/build/
+docs/.docusaurus/
+.expo/
 

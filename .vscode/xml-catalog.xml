@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OASIS XML catalog for the Flipova Foundation registries.
+
+  Maps the registry namespace to design/schema.xsd so XML-aware editors
+  (VS Code Red Hat XML / LemMinX, etc.) resolve the schema deterministically,
+  without relying on xsi:schemaLocation path resolution.
+  Registered in .vscode/settings.json under "xml.catalogs".
+
+  URIs are resolved relative to this file, hence the "../design/schema.xsd".
+-->
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <uri name="urn:flipova:foundation:registry" uri="../design/schema.xsd"/>
+    <system systemId="urn:flipova:foundation:registry" uri="../design/schema.xsd"/>
+    <rewriteURI uriStartString="urn:flipova:foundation:registry" rewritePrefix="../design/schema.xsd"/>
+</catalog>

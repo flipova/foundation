@@ -1,0 +1,640 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Flipova Foundation Registry Schema (XSD)
+  ========================================
+  Namespace: urn:flipova:foundation:registry
+  Version:   flipova.foundation/registry/1
+
+  Scope: the design pipeline has exactly ONE job: turn design/tokens.xml +
+  design/themes.xml into the gluestack-ui/nativewind theme config
+  (components/ui/gluestack-ui-provider/config.ts). This schema therefore only
+  declares the manifest (foundationRegistry), the documentation tree
+  (documentation) and the two registries (tokens, themes).
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:flipova:foundation:registry"
+  xmlns="urn:flipova:foundation:registry" elementFormDefault="qualified">
+
+  <xs:complexType name="DocArticleType">
+    <xs:annotation>
+      <xs:documentation>
+        One documentation page. `content` is the page body in Markdown: it is
+        the single source of truth for that topic -- docgen.py renders it as-is
+        (or combined with schema/registry-derived content for the
+        schema-reference/api-reference pages) and no copy of that text should
+        live anywhere else in the repository (no stray READMEs): everything is
+        centralized in documentation.xml.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="content" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Markdown body of the article. Absent for pages generated dynamically (e.g. schema-reference) from another source of truth (schema.xsd, tokens.xml, themes.xml).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique article id within documentation.xml.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="title" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Display title (page and navigation).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="slug" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Relative output path (no extension), e.g. "theming/tokens" -> docs/generated/theming/tokens.md.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="DocSectionType">
+    <xs:annotation>
+      <xs:documentation>
+        A chapter of the generated documentation, grouping articles and
+        ordered by `order` in the navigation.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="article" type="DocArticleType" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required"/>
+    <xs:attribute name="title" type="xs:string" use="required"/>
+    <xs:attribute name="order" type="xs:integer" use="required">
+      <xs:annotation>
+        <xs:documentation>Position of the chapter in the generated navigation (ascending order).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="DocumentationType">
+    <xs:annotation>
+      <xs:documentation>
+        Table of contents AND full content of the Flipova Foundation
+        documentation site, carried by design/documentation.xml (separated from
+        the manifest). docgen.py consumes it (plus schema.xsd for the schema
+        reference and tokens.xml/themes.xml for the registry reference) and
+        regenerates the whole site under docs/. Any documentation found
+        elsewhere in the repository (extra READMEs, introductory comments in
+        the scripts, etc.) is a duplicate to remove.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="section" type="DocSectionType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="foundationRegistry">
+    <xs:annotation>
+      <xs:documentation>
+        Root of the manifest. Declares the project meta, the determinism rules
+        and the registries (tokens, themes) that the pipeline compiles.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="meta" type="MetaType"/>
+        <xs:element name="catalogs" type="CatalogsType"/>
+        <xs:element name="index" type="IndexType"/>
+      </xs:sequence>
+      <xs:attribute name="schema" type="xs:string" fixed="flipova.foundation/registry/1"/>
+    </xs:complexType>
+    <xs:unique name="DeterminismRuleIdUnique">
+      <xs:selector xpath="./meta/determinism/rule"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="documentation" type="DocumentationType">
+    <xs:annotation>
+      <xs:documentation>
+        Root of design/documentation.xml, separated from the manifest: this
+        file is the SINGLE source of documentary truth of the repository.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:unique name="DocSectionIdUnique">
+      <xs:selector xpath="./section"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+    <xs:unique name="DocArticleIdUnique">
+      <xs:selector xpath="./section/article"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+    <xs:unique name="DocArticleSlugUnique">
+      <xs:selector xpath="./section/article"/>
+      <xs:field xpath="@slug"/>
+    </xs:unique>
+  </xs:element>
+  <xs:element name="tokens">
+    <xs:annotation>
+      <xs:documentation>
+        Root of the tokens registry. Tokens are the atomic values of the
+        design system: spacing, colors, typography, shadows, animations, etc.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="items" type="TokensItemsType"/>
+      </xs:sequence>
+      <xs:attribute name="schema" type="xs:string" fixed="flipova.foundation/registry/1"/>
+      <xs:attribute name="register" type="xs:string" fixed="tokens"/>
+    </xs:complexType>
+    <xs:unique name="TokenIdUnique">
+      <xs:selector xpath="./items/token"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="themes">
+    <xs:annotation>
+      <xs:documentation>
+        Root of the themes registry. A theme maps semantic roles (the
+        gluestack/nativewind CSS variable names, e.g. "background",
+        "primary-foreground") to color token references, for the light/dark
+        modes and beyond.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="items" type="ThemesItemsType"/>
+      </xs:sequence>
+      <xs:attribute name="schema" type="xs:string" fixed="flipova.foundation/registry/1"/>
+      <xs:attribute name="register" type="xs:string" fixed="themes"/>
+      <xs:attribute name="default" type="xs:string" use="required">
+        <xs:annotation>
+          <xs:documentation>Id of the default theme (e.g. "light").</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+    <xs:unique name="ThemeIdUnique">
+      <xs:selector xpath="./items/theme"/>
+      <xs:field xpath="@id"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:complexType name="MetaType">
+    <xs:annotation>
+      <xs:documentation>
+        Registry metadata: project identity and the determinism rules of the
+        generation pipeline.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="project" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Project name (e.g. "flipova foundation").</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="version" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            Project version (semver, e.g. "1.14.0"). Single source of truth:
+            propagated to the @version of every root tag declaring it
+            (checker.py --sync-version) and stamped into the generated
+            documentation (docgen.py, including docs/package.json).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="license" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>License (e.g. "MIT").</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="language" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Default language code (e.g. "en").</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="registryRoot" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Root directory of the registry files (e.g. "design").</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="pipeline" type="PipelineType"/>
+      <xs:element name="determinism" type="DeterminismType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PipelineType">
+    <xs:annotation>
+      <xs:documentation>
+        Generation pipeline configuration: the source registry files (tokens,
+        themes) and the path of the produced gluestack-ui config file.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="source" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Source files pattern (e.g. "design/tokens.xml, design/themes.xml").</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="outputs" type="OutputsType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OutputsType">
+    <xs:annotation>
+      <xs:documentation>
+        Files generated from the registries: the colour vars (themes.xml) and
+        the design-token theme fragment (tokens.xml).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="gluestackConfig" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Path of the nativewind config.ts (light/dark vars) consumed by GluestackUIProvider.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="gluestackTokens" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Path of the Tailwind/nativewind theme fragment (CommonJS) consumed by tailwind.config.js.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="SeverityType">
+    <xs:annotation>
+      <xs:documentation>
+        Severity of a determinism rule. "error" makes the checker fail;
+        "warning" reports without blocking.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="error"/>
+      <xs:enumeration value="warning"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="RuleParamType">
+    <xs:annotation>
+      <xs:documentation>
+        Free parameter of a rule (name + value), interpreted by the `kind`
+        handler in checker.py. E.g. pattern, selectors, mode. Parameters let
+        new rules be declared without touching the schema.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="DeterminismRuleType">
+    <xs:annotation>
+      <xs:documentation>
+        A declarative determinism rule. The checker (checker.py) applies each
+        rule through the handler selected by `kind`. New rules can be declared
+        in the manifest without touching the schema; the matching handler is
+        resolved at runtime (a warning is emitted while no handler is
+        registered for that `kind`).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="description" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Plain-language explanation of the rule.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="applyTo" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Glob (fnmatch, e.g. "*.xml") of the files the rule applies to,
+            relative to the root passed to the checker. Default: "*.xml".
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="params" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Key/value parameters of the handler.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="param" type="RuleParamType" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique rule id (xs:unique constraint at the root level).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="kind" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Rule nature; selects the handler in checker.py.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="severity" type="SeverityType" default="error">
+      <xs:annotation>
+        <xs:documentation>Severity: "error" (default) or "warning".</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="DeterminismType">
+    <xs:annotation>
+      <xs:documentation>
+        Rules guaranteeing a reproducible, deterministic generation. A
+        declarative, extensible list: each rule is described by a unique id, a
+        nature (kind), a severity, the targeted files (applyTo) and free
+        parameters consumed by checker.py. The order of the rules does not
+        matter: the rule's `kind` alone selects the handler.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="rule" type="DeterminismRuleType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CatalogsType">
+    <xs:annotation>
+      <xs:documentation>
+        Collection of catalogs; each points to the source file of a registry
+        (tokens, themes).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="catalog" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="file" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>Single file holding every entry of this catalog.</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="register" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>Name of the targeted registry (must match an index/register name).</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="IndexType">
+    <xs:annotation>
+      <xs:documentation>
+        Index of every registry entry, for a fast lookup without walking the
+        source files.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="register" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="item" type="xs:string" maxOccurs="unbounded">
+              <xs:annotation>
+                <xs:documentation>Entry id within the registry (token id or theme id).</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>Name of the indexed registry (tokens, themes).</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TokensItemsType">
+    <xs:annotation>
+      <xs:documentation>Collection of token definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="token" type="TokenType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TokenType">
+    <xs:annotation>
+      <xs:documentation>
+        A design token: an atomic value of the visual language.
+        Kinds: scale (numeric scale), map (named values without a scale),
+        font (families with platform variants), color (palette with shades),
+        shadow (drop shadow), animation (duration and easing).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="values" type="TokenValuesType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Unique token id (e.g. "spacing", "color"). Uniqueness enforced by constraint.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="kind" type="TokenKindType" use="required">
+      <xs:annotation>
+        <xs:documentation>Token classification.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="unit" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>Unit of measure (e.g. "px", "ms").</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="base" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>Base value for computed scales.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="formula" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>Formula used to compute the scale values.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="mode" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>Mode for breakpoints (e.g. "min-width").</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:simpleType name="TokenKindType">
+    <xs:annotation>
+      <xs:documentation>The six token natures recognized by the pipeline.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="scale"/>
+      <xs:enumeration value="map"/>
+      <xs:enumeration value="font"/>
+      <xs:enumeration value="color"/>
+      <xs:enumeration value="shadow"/>
+      <xs:enumeration value="animation"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="TokenValuesType">
+    <xs:sequence>
+      <xs:element name="value" type="TokenValueType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TokenValueType" mixed="true">
+    <xs:annotation>
+      <xs:documentation>
+        A token value. Shapes observed in the registries (the XSD accepts them
+        all through mixed content; mutual exclusivity is enforced by the
+        generator):
+          - scalar: plain text content (e.g. "0") or a lone `value` attribute
+            (e.g. spacing, opacity, color);
+          - cross-platform: `native`/`web` children (e.g. font);
+          - structured variant: `native` holding `v`, damping/stiffness/mass
+            (e.g. easing);
+          - shadow: `color`/`offset`/`opacity`/`radius`/`elevation` children.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="native" type="NativeVariantType">
+        <xs:annotation>
+          <xs:documentation>React Native variant.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="web" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Web variant.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="color" type="ColorRefType">
+        <xs:annotation>
+          <xs:documentation>Colour of a shadow, by reference.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="offset" type="OffsetType">
+        <xs:annotation>
+          <xs:documentation>Offset of a shadow.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="opacity" type="xs:string"/>
+      <xs:element name="radius" type="xs:string"/>
+      <xs:element name="elevation" type="xs:string"/>
+    </xs:choice>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Value id within the token.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="value" type="xs:string" use="optional">
+      <xs:annotation>
+        <xs:documentation>Direct scalar value (attribute form, alternative to text content).</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="NativeVariantType" mixed="true">
+    <xs:annotation>
+      <xs:documentation>
+        React Native platform variant. Either a plain string (e.g. "system",
+        "monospace") or a list of named values (e.g. '&lt;v&gt;' for a cubic
+        easing, or damping/stiffness/mass for a spring).
+      </xs:documentation>
+    </xs:annotation>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="v" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>Numeric component of a variant (e.g. easing).</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="damping" type="xs:string"/>
+      <xs:element name="stiffness" type="xs:string"/>
+      <xs:element name="mass" type="xs:string"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="ColorRefType">
+    <xs:annotation>
+      <xs:documentation>Reference to a colour token value (format "$ref.&lt;register&gt;.&lt;id&gt;.&lt;path&gt;").</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ref" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="OffsetType">
+    <xs:annotation>
+      <xs:documentation>Shadow offset (x, y).</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="x" type="xs:string"/>
+      <xs:element name="y" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ThemesItemsType">
+    <xs:annotation>
+      <xs:documentation>Collection of theme definitions.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="theme" type="ThemeType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ThemeType">
+    <xs:annotation>
+      <xs:documentation>
+        A theme: maps semantic roles to colour token references, for a coherent
+        application across modes.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="roleMap" type="RoleMapType"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Theme id (e.g. "light", "dark"). Uniqueness enforced by constraint.</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="mode" type="xs:string" use="required">
+      <xs:annotation>
+        <xs:documentation>Theme mode (e.g. "light", "dark").</xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="RoleMapType">
+    <xs:annotation>
+      <xs:documentation>Maps semantic roles (the gluestack/nativewind CSS variable names) to a literal colour value or a token reference.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="role" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:choice>
+            <xs:element name="value" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Literal value in the format expected by gluestack-ui/nativewind
+                  (RGB triplet without the "rgb()" function, e.g. "23 23 23").
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="ref" type="xs:string">
+              <xs:annotation>
+                <xs:documentation>
+                  Reference to a token value (format
+                  "$ref.&lt;register&gt;.&lt;id&gt;.&lt;path&gt;").
+                </xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:choice>
+          <xs:attribute name="id" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>Semantic role id = gluestack CSS variable name without the leading "--" (e.g. "background", "primary-foreground").</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+
+
+
+
+
