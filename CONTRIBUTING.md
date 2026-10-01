@@ -64,10 +64,36 @@ The type also drives the version bump, so for this repository a **breaking
 change to the public API** is `feat!: ...` plus a changeset set to `major` (as
 done for the v2 registry-driven theming pipeline).
 
+### Issues and pull requests
+
+Every change is traceable back to an issue, and every issue ends up in a
+changelog entry.
+
+1. **Open an issue first** using one of the two forms (`.github/ISSUE_TEMPLATE/`).
+   They ask for the version and the affected layer, which is exactly what is
+   needed to judge a design-system report. For this repository the "area" is the
+   registry entry involved: a token, a theme role, a determinism rule, a tool.
+2. **Branch off `main`** with a kebab-case name (`feature/`, `fix/`, `docs/`,
+   `refactor/`, `hotfix/`) and **one topic per branch**.
+3. **Open a pull request** with the template, and start it with `Closes #<n>`
+   so the issue closes automatically on merge. That linkage is what makes the
+   project board meaningful.
+4. **Declare the release decision** in the PR (the *Release decision* section)
+   and add the matching changeset. For a design system this is the important
+   part: `major` breaks the public API (component imports, Tailwind utilities,
+   CLI), `minor` adds to it, `patch` is internal.
+5. **Labels are applied automatically** from the files a pull request touches
+   (`.github/labeler.yml`): `registry`, `tokens`, `theme`, `components`,
+   `config`, `ci`, `docs`. A pull request touching `design/` is always
+   `registry`, so design changes are easy to filter.
+
 ### Pull request requirements
 
 - Linked issue, description, and **1 approval** required.
 - Status checks required: **CI must pass on Node 20 and Node 22**.
+- The `Design registry` gate must pass (it refuses a pull request that breaks the
+  registries, leaves a generated file stale, or changes the published surface
+  without a changeset).
 - Squash and merge: all discussions resolved, no merge commits.
 
 ### Release path (mandatory, hotfix exception)

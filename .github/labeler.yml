@@ -1,42 +1,33 @@
-tokens:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/tokens/**"
-
-theme:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/theme/**"
-
-layout:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/layout/ui/*.tsx"
-
-primitives:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/layout/ui/primitives/**"
-
-components:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/layout/ui/components/**"
-
-blocks:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/layout/ui/blocks/**"
+# Labels are applied to pull requests and issues from the files they touch.
+# NOTE: only label names that already exist in the repository are used here,
+# because actions/labeler fails the job when a configured label is unknown.
 
 registry:
   - changed-files:
-      - any-glob-to-any-file: "foundation/layout/registry/**"
+      - any-glob-to-any-file: "design/**"
+
+tokens:
+  - changed-files:
+      - any-glob-to-any-file: "design/tokens.xml"
+
+theme:
+  - changed-files:
+      - any-glob-to-any-file: "design/themes.xml"
+
+components:
+  - changed-files:
+      - any-glob-to-any-file: "components/**"
 
 config:
   - changed-files:
-      - any-glob-to-any-file: "foundation/config/**"
-
-hooks:
-  - changed-files:
-      - any-glob-to-any-file: "foundation/layout/hooks/**"
-
-studio:
-  - changed-files:
-      - any-glob-to-any-file: "studio/**"
+      - any-glob-to-any-file:
+          - "tailwind.config.js"
+          - "postcss.config.js"
+          - "globals.css"
+          - "tsup.config.ts"
+          - "tsconfig.json"
+          - "gluestack-ui.config.json"
+          - "package.json"
 
 ci:
   - changed-files:
@@ -44,6 +35,4 @@ ci:
 
 docs:
   - changed-files:
-      - any-glob-to-any-file:
-          - "*.md"
-          - "**/*.md"
+      - any-glob-to-any-file: "docs/**"

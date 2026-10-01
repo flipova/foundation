@@ -1,0 +1,48 @@
+name: Feature request
+description: Suggest an improvement to the design system, the theming pipeline or the tooling
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Design-system features usually start as a registry change, not as code.
+        Describe the use case; the implementation follows from it.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Design tokens (design/tokens.xml)
+        - Themes / semantic roles (design/themes.xml)
+        - Schema / manifest / determinism rules
+        - Tooling (generate, check, docgen, linter, XML editor)
+        - gluestack components
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is painful today, and for whom.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: What the result should look like - the registry entry you would add, the utility you would use.
+    validations:
+      required: true
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Public API impact
+      description: Determines the version bump.
+      options:
+        - none (internal)
+        - additive (minor)
+        - breaking (major)
+    validations:
+      required: true

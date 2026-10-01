@@ -1,26 +1,47 @@
+## Linked issue
+
+<!-- Required. Use "Closes #123" so the issue closes when this merges. -->
+Closes #
+
 ## What
 
 Brief description of the change.
 
 ## Why
 
-Why is this change needed?
+The problem this solves, and how you validated it.
 
 ## Type
 
-- [ ] New feature (layout, component, block)
-- [ ] Bug fix
-- [ ] Refactor
+- [ ] Design registry (`design/tokens.xml`, `design/themes.xml`)
+- [ ] Schema / manifest / determinism rules
+- [ ] Tooling (`design/tools/**`)
+- [ ] gluestack components (`components/**`)
 - [ ] Documentation
-- [ ] CI/tooling
+- [ ] CI / release process
 
-## Checklist
+## Release decision
 
-- [ ] Registry entry added/updated (if new component/layout/block)
-- [ ] `applyDefaults(rawProps, META, theme)` used (no hardcoded defaults)
-- [ ] No raw `View`/`ScrollView`/`StyleSheet` (primitives only)
-- [ ] No inline comments (only top JSDoc)
-- [ ] Exported from the appropriate `index.ts`
+<!-- A changeset is mandatory for anything touching design/, components/,
+     package.json or an entry point. CI refuses the merge without it. -->
+- [ ] Changeset added: `npx changeset`
+- Bump: `major` / `minor` / `patch` / none (CI/tooling only)
+
+## Design system
+
+- [ ] The change lives in the XML registries, not in generated files
+- [ ] `npm run design:gen` re-run, and `config.ts` / `tokens.js` committed
+- [ ] A semantic colour was added as a `<role>` in **every** theme
+- [ ] No design value added to `tailwind.config.js` (it only wires `tokens.js`)
+
+## Verification
+
+- [ ] `npm run design:pipeline` passes (lint, check, verify, doc)
 - [ ] `npm run typecheck` passes
 - [ ] `npm run build` passes
-- [ ] Changeset added (`npx changeset`)
+- [ ] `npm run design:gen --check` reports no drift
+
+## Notes
+
+Anything a reviewer should know: trade-offs, follow-ups, migration steps for
+consumers upgrading across a major version.
