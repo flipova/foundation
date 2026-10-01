@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -67,7 +68,16 @@ def build_model(root: Path, manifest_path: Path) -> RegistryModel:
                 roles[role.get("id")] = (ref_el.text or "").strip() if ref_el is not None else ""
             theme_roles[tid] = roles
 
-    version_el = mroot.find(q("meta") + "/" + q("version"))
+    # The ONE version of this repository: the root package.json, i.e. exactly
+    # what gets published. The registry stores no copy on purpose -- a second
+    # copy drifts silently (e.g. `changeset version` bumps package.json only).
+    version = ""
+    package_json = Path(root) / "package.json"
+    if package_json.exists():
+        try:
+            version = json.loads(package_json.read_text(encoding="utf-8")).get("version", "") or ""
+        except (ValueError, OSError):
+            version = ""
     return RegistryModel(
         root=Path(root),
         manifest_path=manifest_path.resolve(),
@@ -78,7 +88,7 @@ def build_model(root: Path, manifest_path: Path) -> RegistryModel:
         token_values=token_values,
         theme_roles=theme_roles,
         rules=parse_rules(mroot),
-        version=(version_el.text or "").strip() if version_el is not None else "",
+        version=version,
         schema_id=mroot.get("schema") or "",
     )
 
@@ -174,8 +184,11 @@ def _root_start_tag(data: bytes) -> int | None:
 
 
 def sync_versions(ctx: RegistryModel) -> int:
-    """Rewrite @schema / @version on every root start tag to the manifest
-    values (byte-level attribute rewrite: formatting is preserved)."""
+    """Rewrite @schema on every root start tag to the manifest value.
+
+    Only @schema is synchronised: the project version is owned by the root
+    package.json and is deliberately never duplicated in the XML.
+    """
     count = 0
     for path in expand_targets(ctx.root, "*.xml"):
         try:
@@ -193,9 +206,6 @@ def sync_versions(ctx: RegistryModel) -> int:
         if ctx.schema_id:
             new = re.sub(rb'(\bschema=")[^"]*(")',
                          lambda m: m.group(1) + ctx.schema_id.encode("utf-8") + m.group(2), new)
-        if ctx.version:
-            new = re.sub(rb'(\bversion=")[^"]*(")',
-                         lambda m: m.group(1) + ctx.version.encode("utf-8") + m.group(2), new)
         if new != tag:
             path.write_bytes(data[:start] + new + data[end:])
             print(f"  synced {path}")

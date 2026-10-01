@@ -63,9 +63,6 @@ def parse_manifest(manifest_path: Path):
         el = meta.find(q("project"))
         if el is not None:
             project = (el.text or "").strip()
-        el = meta.find(q("version"))
-        if el is not None:
-            version = (el.text or "").strip()
         el = meta.find(q("license"))
         if el is not None:
             license_name = (el.text or "").strip()

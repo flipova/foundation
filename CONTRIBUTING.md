@@ -72,14 +72,26 @@ done for the v2 registry-driven theming pipeline).
 
 ### Release (automated)
 
+There is exactly **one** version in the repository: the root `package.json`.
+The registries store no copy of it, so nothing can drift.
+
 `.github/workflows/release.yml` runs on every push to `main`:
 
 1. `changesets/action` opens or updates a **"chore: version packages"** pull
-   request (version bump + CHANGELOG).
+   request. The bump command is `npm run version:bump`
+   (`changeset version` **+** `npm run design:doc`), so `package.json`,
+   `docs/package.json` and the version shown by the site all move together.
 2. **Merging that pull request is what publishes** - nothing reaches the
    registry before that human gate.
 3. `npm run release` runs `build` + `typecheck` + `changeset publish`, executed
    by CI with `NPM_PUBLISH_TOKEN`. Never publish from a local machine.
+
+`.github/workflows/ci.yml` additionally runs a **design gate** on every pull
+request and on every push to `main` (`design:lint`, `design:check`,
+`design:verify`, `design:gen --check`), plus a hard requirement that any change
+to the published surface (`design/`, `components/`, `package.json`, entry
+points) comes with a changeset. A broken registry, a stale generated file or a
+change without a version decision therefore cannot merge.
 
 ## Repository layout
 

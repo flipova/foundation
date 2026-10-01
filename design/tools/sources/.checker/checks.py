@@ -178,9 +178,13 @@ def handler_locale(ctx: RegistryModel, rule: Rule, targets: list[Path], report: 
 
 @register("sync")
 def handler_sync(ctx: RegistryModel, rule: Rule, targets: list[Path], report: Report) -> None:
-    """The manifest is the single source for @schema and @version: every file
-    that declares one of these root attributes must carry the manifest value
-    (run `checker.py --sync-version` to fix drifted files in place)."""
+    """The manifest owns the registry namespace (@schema): every root that
+    declares it must carry the manifest value (run `checker.py --sync-version`
+    to fix drifted files in place).
+
+    The project version is NOT part of this: it lives in the root package.json
+    and is never duplicated in the XML, so it cannot drift.
+    """
     for path in targets:
         try:
             doc = etree.parse(str(path))
@@ -191,8 +195,4 @@ def handler_sync(ctx: RegistryModel, rule: Rule, targets: list[Path], report: Re
         schema = root.get("schema")
         if ctx.schema_id and schema is not None and schema != ctx.schema_id:
             report.add(rule, str(path), 1,
-                       f"root @schema {schema!r} != manifest @schema {ctx.schema_id!r}")
-        version = root.get("version")
-        if ctx.version and version is not None and version != ctx.version:
-            report.add(rule, str(path), 1,
-                       f"root @version {version!r} != manifest <version> {ctx.version!r} -- run `checker.py --sync-version`")
+                       f"root @schema {schema!r} != manifest @schema {ctx.schema_id!r} -- run `checker.py --sync-version`")

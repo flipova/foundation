@@ -34,13 +34,26 @@ jobs:
           node-version: 20
           cache: npm
 
+      # The version bump also regenerates the documentation, so the
+      # "chore: version packages" PR can never be inconsistent with package.json.
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install design tooling
+        run: pip install -r design/tools/requirements.txt
 
       - name: Create Release PR or Publish
         id: changesets
         uses: changesets/action@v1
         with:
+          # Bump + regenerate the docs in one atomic step: the registry has a
+          # single version (package.json) and nothing can drift from it.
+          version: npm run version:bump
           publish: npm run release
           title: "chore: version packages"
           commit: "chore: version packages"

@@ -73,12 +73,15 @@ def main() -> int:
     # Automatic version management: the manifest <meta><version> is the single
     # source of truth. Stamp it into the generated site and keep the Docusaurus
     # site package.json (docs/package.json) aligned in the same run.
-    version = model.get("version") or ""
-    if not version:
-        try:
-            version = json.loads((root / "package.json").read_text(encoding="utf-8")).get("version", "")
-        except (ValueError, OSError):
-            version = ""
+    # Version stamping: the ONE version is the root package.json (the version
+    # actually published). The registry deliberately stores no copy of it, so
+    # there is nothing that can drift after `changeset version` bumps it.
+    version = ""
+    try:
+        version = json.loads((root / "package.json").read_text(encoding="utf-8")).get("version", "")
+    except (ValueError, OSError):
+        version = ""
+    model["version"] = version
     site_pkg_path = out_dir.parent / "package.json"
     if version and site_pkg_path.exists():
         try:
