@@ -1,0 +1,156 @@
+name: Issue Lifecycle
+
+# Turns the issue tracker into something usable when several people triage it:
+#
+#   1. triage  - on creation: normalise the labels from the form title, look for
+#                possible duplicates, and post a single guidance comment
+#   2. resolve - on close: record which pull requests referenced the issue, so
+#                the resolution stays traceable after the issue is archived
+#   3. stale   - age out issues and pull requests that nobody picked up
+#
+# Each automation keeps ONE comment per issue (identified by an HTML marker) and
+# updates it in place, so a busy tracker never fills up with bot noise.
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled, unlabeled, closed]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  triage:
+    name: Triage a new or updated issue
+    if: github.event.action != 'closed' && github.event.action != 'created'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label, check duplicates, post guidance
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const n = issue.number;
+            const title = (issue.title || '').trim();
+            const text = (issue.body || '').toLowerCase();
+
+            const wanted = new Set(issue.labels.map(l => (typeof l === 'string' ? l : l.name)));
+            if (/^\[bug\]/i.test(title) || text.includes('what happens')) wanted.add('bug');
+            if (/^\[feature\]/i.test(title) || text.includes('proposed outcome')) wanted.add('enhancement');
+            wanted.add('needs-triage');
+            const toAdd = [...wanted].filter(l => !issue.labels.some(x => x.name === l));
+            if (toAdd.length) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number: n, labels: toAdd });
+            }
+
+            // Possible duplicates: significant words from the title.
+            const words = title
+              .replace(/^\[[^\]]+\]/, '')
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, ' ')
+              .split(/\s+/)
+              .filter(w => w.length > 3);
+            let duplicates = [];
+            if (words.length >= 2) {
+              const query = `repo:${owner}/${repo} is:issue is:open ${words.slice(0, 6).join(' ')}`;
+              const { data } = await github.rest.search.issuesAndPullRequests({ q: query, per_page: 10 });
+              duplicates = (data.items || [])
+                .filter(i => i.number !== n && !i.pull_request)
+                .slice(0, 5);
+            }
+
+            const marker = '<!-- foundation:issue-triage -->';
+            const body = [
+              marker,
+              '### Triage',
+              '',
+              `- Labels applied: ${[...wanted].join(', ')}`,
+              duplicates.length
+                ? `- Possible duplicates: ${duplicates.map(d => `#${d.number}`).join(', ')}`
+                : '- No obvious duplicate found.',
+              '',
+              '**To work on this**',
+              '',
+              '1. Branch off `main`: `git checkout -b feature|fix|docs|refactor|short-description`.',
+              '2. If the change touches `design/`, `components/`, `package.json` or an',
+              '   entry point, add a changeset: `npx changeset`.',
+              '3. Open a pull request starting its description with `Closes #' + n + '`.',
+              '4. `npm run design:pipeline`, `npm run typecheck` and `npm run build` must pass.',
+              '',
+              '<sub>Maintained by `issue-lifecycle.yml`. Do not edit this comment.</sub>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: n, per_page: 100 });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: n, body });
+            }
+
+  resolution:
+    name: Record how an issue was resolved
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Link the closing pull requests and commits
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const n = issue.number;
+            if (issue.pull_request) return;
+
+            const { data: prs } = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:pr is:merged "#${n}"`,
+              per_page: 20
+            });
+            const pullRequests = (prs.items || []).filter(i => i.pull_request);
+            const { data: commits } = await github.rest.search.commits({
+              q: `repo:${owner}/${repo} "#${n}"`,
+              per_page: 20
+            });
+            const commitList = (commits.items || []).slice(0, 10);
+
+            const marker = '<!-- foundation:issue-resolution -->';
+            const body = [
+              marker,
+              '### Resolution',
+              '',
+              issue.state_reason ? `Closed as **${issue.state_reason}**.` : 'Closed.',
+              pullRequests.length
+                ? `Pull requests: ${pullRequests.map(p => `#${p.number}`).join(', ')}`
+                : 'No merged pull request references this issue.',
+              commitList.length
+                ? `Referenced commits: ${commitList.map(c => `\`${c.sha.slice(0, 7)}\``).join(', ')}`
+                : '',
+              '',
+              '<sub>Maintained by `issue-lifecycle.yml`. Do not edit this comment.</sub>',
+            ].filter(Boolean).join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: n, per_page: 100 });
+            if (comments.some(c => c.body && c.body.includes(marker))) return;
+            await github.rest.issues.createComment({ owner, repo, issue_number: n, body });
+
+  stale:
+    name: Age out unattended threads
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-issue-stale: 60
+          days-before-issue-close: 30
+          days-before-pr-stale: 30
+          days-before-pr-close: 21
+          stale-issue-label: stale
+          exempt-issue-labels: 'pinned,security,help wanted'
+          stale-pr-label: stale
+          operations-per-run: 50
+          ascending: true

@@ -87,6 +87,41 @@ changelog entry.
    `config`, `ci`, `docs`. A pull request touching `design/` is always
    `registry`, so design changes are easy to filter.
 
+### Collaboration automation
+
+Two workflows keep the tracker and the pull requests usable when several people
+work at the same time. Both are advisory except where stated, and neither
+modifies your code.
+
+**`pr-lifecycle.yml`** (on every pull request event)
+
+| Automation | Behaviour |
+|---|---|
+| Issue linkage | **fails** when the description has no `Closes #n` / `Fixes #n` / `Refs #n` |
+| Conflict detection | **fails** when the pull request conflicts with its base |
+| Branch sync | merges the base into the branch when it falls behind, *only* if it merges cleanly and the branch belongs to this repository (never a fork) |
+| Status | one single comment, refreshed in place: linked issue, mergeable, distance to base, checks |
+| Auto-merge | enables squash auto-merge once the branch is mergeable, no conflict and every check is green |
+
+The job is serialised per pull request (`concurrency`), so two updates cannot
+race on the same branch, and the repository - never the pull request code - is
+the only thing checked out.
+
+Auto-merge never bypasses protection: required reviews, required status checks
+and squash-only are still enforced by the repository settings.
+
+**`issue-lifecycle.yml`**
+
+| Automation | Behaviour |
+|---|---|
+| Triage | normalises the labels from the form title, searches for likely duplicates and posts a single guidance comment |
+| Resolution | when an issue is closed, records the pull requests and commits that referenced it |
+| Stale | ages out untouched issues (60d) and pull requests (30d) |
+
+Both workflows keep exactly one comment per thread (identified by an HTML
+marker) and update it in place, so a busy tracker does not fill up with bot
+noise.
+
 ### Pull request requirements
 
 - Linked issue, description, and **1 approval** required.
