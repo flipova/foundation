@@ -1,5 +1,65 @@
 # Changelog
 
+## 2.0.1
+
+### Patch Changes
+
+- 3d86305: Fix the design tooling installation in CI. The workflows resolved
+  `python-version: '3.x'` to the newest CPython, for which no `lxml < 6` wheel
+  exists, so pip fell back to building from source and failed on the missing
+  libxml2/libxslt development headers.
+
+  The interpreter is now pinned and the install requires wheels, so the tooling
+  installs deterministically and a missing wheel fails immediately with a short,
+  actionable error instead of a long compile failure.
+
+- 74e42d3: Set up proper project hygiene on GitHub so every change is traceable from an
+  issue to a changelog entry.
+
+  - Issue forms (bug report, feature request) replace the templates that still
+    described the removed layout/block/studio architecture. They ask for the
+    version and the affected layer - for this repository, the registry entry
+    involved - which is what makes a design-system report actionable.
+  - The pull request template requires a linked issue (`Closes #n`), a declared
+    release decision, and the design-system checks (change lives in the XML
+    registries, generated files regenerated, roles added to every theme, no design
+    value in `tailwind.config.js`).
+  - The labeler is repointed at the current structure. It referenced the deleted
+    `foundation/` tree, so it had stopped labelling anything; it now maps
+    `registry`, `tokens`, `theme`, `components`, `config`, `ci` and `docs`.
+  - Blank issues are disabled, and questions are routed to Discussions.
+  - The soft `changeset status` check is removed from `pr-checks.yml`: the hard
+    gate already lives in the `Design registry` CI job, which scopes it to the
+    published surface.
+
+- 8fc4001: Harden the release process so a version and its publish always go through the
+  expected path, and fail early with an actionable message instead of a bare
+  `E404 Not Found` from the registry.
+
+  - `package.json` is now the single source of the version: the design registries
+    store no copy of it, so `changeset version` can no longer leave the pipeline
+    describing a different version than the one being published.
+  - The release workflow decides the path before touching the registry and refuses
+    anything unexpected: a commit on `main` that is neither a pending changeset nor
+    the `chore: version packages` commit cannot publish, and a version already
+    present on the registry is not re-published.
+  - The preflight authenticates against the registry and checks write access on
+    the package, naming the likely cause (missing, expired, classic, or
+    wrong-registry token) when it fails.
+  - A `hotfix` dispatch with a mandatory `reason` is the only way to skip the
+    version pull request; the quality gates still run.
+  - CI now runs a design registry gate on every pull request and on every push to
+    `main`, and requires a changeset for any change to the published surface.
+
+- 0cf5b22: Make the design tooling satisfy the POSIX executable-bit rule that CI enforces.
+
+  `ruff` reports `EXE001` (shebang present but file not executable) on Linux for
+  the Python entry points, which failed the design gate on every pull request.
+  The five real entry points are now marked executable in git, and the shebangs
+  were removed from the `.docgen` modules, which are imported rather than
+  executed. The `ruff` minimum version is also raised so a Windows developer runs
+  the same linter as CI.
+
 ## 2.0.0
 
 ### Major Changes
