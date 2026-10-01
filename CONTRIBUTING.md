@@ -118,6 +118,13 @@ Because a changeset can be forgotten late in a review, prefer labelling rather
 than editing files when the answer is obvious - the decision stays visible in
 the pull request conversation.
 
+**The version pull request is exempt.** The `chore: version packages` pull
+request opened by the bot on `changeset-release/main` carries **no** changeset:
+changesets *consumes* the pending ones (they are deleted by design) and its own
+release decision is the version bump it contains. The three gates - `ci.yml`,
+`changeset-guard.yml` and `pr-lifecycle.yml` - all recognise it and step aside.
+Do not add a changeset to it by hand: it would create an extra, empty release.
+
 ### Collaboration automation
 
 Two workflows keep the tracker and the pull requests usable when several people
@@ -223,6 +230,12 @@ The pull request changes the published surface without a version decision. Run
 `npx changeset`, or label it `changeset:major|minor|patch|none` and let
 `changeset-guard.yml` write it for you. If the change really needs no release,
 `changeset:none` produces an empty changeset that satisfies the gate.
+
+Two cases where this is **not** your mistake: the bot-managed
+`chore: version packages` pull request (it consumes the changesets by design,
+and the gates skip it), and a pull request whose changeset was already consumed
+by an earlier `changeset version` run - in that case the version bump is already
+recorded, so merge the version pull request instead of adding a new changeset.
 
 **`lxml` fails to build: "make sure the libxml2 and libxslt development packages are installed"**
 `pip` fell back to a source build because no `lxml < 6` wheel matches the

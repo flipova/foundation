@@ -83,11 +83,19 @@ jobs:
           LINKED: ${{ steps.ctx.outputs.linked }}
           MERGEABLE: ${{ steps.ctx.outputs.mergeable }}
           HAS_CONFLICTS: ${{ steps.ctx.outputs.has_conflicts }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           set -euo pipefail
           if [ "$HAS_CONFLICTS" = "true" ]; then
             echo "::error::This pull request conflicts with the base branch. Resolve it locally (git fetch origin && git merge origin/main), or wait for the sync step once the branches agree."
             exit 1
+          fi
+          # The changesets release pull request is bot-managed and carries no
+          # issue reference: the issue linkage rule does not apply to it.
+          if [[ "$HEAD_REF" == changeset-release/* || "$PR_TITLE" == "chore: version packages" ]]; then
+            echo "Changesets release pull request: the issue linkage rule does not apply."
+            exit 0
           fi
           if [ -z "$LINKED" ]; then
             echo "::error::No issue linked. Add 'Closes #12', 'Fixes #12' or 'Refs #12' to the pull request description (see the template)."

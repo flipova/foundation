@@ -54,6 +54,17 @@ jobs:
             const title = (pr.title || '').trim() || `Pull request #${pr.number}`;
 
             const sh = cmd => execSync(cmd, { encoding: 'utf8' }).trim();
+
+            // The changesets release pull request is exempt: it consumes the
+            // changesets (they are deleted by design) and its own release
+            // decision is the version bump it carries.
+            const isVersionPr = (headRef || '').startsWith('changeset-release/')
+              || title === 'chore: version packages';
+            if (isVersionPr) {
+              core.info('Changesets release pull request: no changeset is expected.');
+              return;
+            }
+
             const added = sh(`git diff --name-only ${base} HEAD -- .changeset`)
               .split('\n')
               .map(s => s.trim())
