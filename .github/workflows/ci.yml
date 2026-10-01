@@ -30,3 +30,62 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build
+
+  # ---------------------------------------------------------------------------
+  # Design registry gate.
+  # The XML registries and their generated artifacts are part of the published
+  # surface, so they are validated on every PR AND on every push to main.
+  # Nothing can merge (or land on main) with a broken registry, a stale
+  # generated file, or without a version decision.
+  # ---------------------------------------------------------------------------
+  design:
+    name: Design registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - run: npm ci
+      - run: pip install -r design/tools/requirements.txt
+
+      # XSD conformance of every design XML
+      - name: Lint (XSD)
+        run: npm run design:lint
+
+      # determinism rules declared in the manifest + ruff lint of the toolchain
+      - name: Check (determinism rules)
+        run: npm run design:check
+
+      # the committed canonical index must match the registries
+      - name: Verify canonical index
+        run: npm run design:verify
+
+      # generated artifacts (config.ts, tokens.js) must be up to date
+      - name: No generation drift
+        run: npm run design:gen -- --check
+
+      - name: Detect published-surface changes
+        id: surface
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --name-only "origin/main...HEAD" \
+            | grep -qE '^(design/|components/|index\.ts|tailwind\.config\.js|tsup\.config\.ts|package\.json)'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # a change to the published surface must come with a version decision
+      - name: Require a changeset
+        if: github.event_name == 'pull_request' && steps.surface.outputs.changed == 'true'
+        run: npx changeset status --since=origin/main

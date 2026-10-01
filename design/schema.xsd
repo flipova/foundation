@@ -173,27 +173,26 @@
     </xs:unique>
   </xs:element>
 
+  <!--
+    NOTE: <version> is deliberately absent.
+    The ONE version of this repository lives in the root package.json (the
+    version that is actually published). The registry never stores a copy:
+    a second copy could silently drift from the published version, which is
+    exactly what happens when `changeset version` bumps package.json only.
+    docgen.py reads package.json to stamp the documentation.
+  -->
   <xs:complexType name="MetaType">
     <xs:annotation>
       <xs:documentation>
         Registry metadata: project identity and the determinism rules of the
-        generation pipeline.
+        generation pipeline. The project version is NOT stored here - it is
+        owned by the root package.json.
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
       <xs:element name="project" type="xs:string">
         <xs:annotation>
           <xs:documentation>Project name (e.g. "flipova foundation").</xs:documentation>
-        </xs:annotation>
-      </xs:element>
-      <xs:element name="version" type="xs:string">
-        <xs:annotation>
-          <xs:documentation>
-            Project version (semver, e.g. "1.14.0"). Single source of truth:
-            propagated to the @version of every root tag declaring it
-            (checker.py --sync-version) and stamped into the generated
-            documentation (docgen.py, including docs/package.json).
-          </xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="license" type="xs:string">

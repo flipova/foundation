@@ -122,7 +122,7 @@ class RegistryModel:
     token_values: dict[str, dict[str, str]]   # token id -> value id -> literal
     theme_roles: dict[str, dict[str, str]]    # theme id  -> role id -> ref
     rules: list[Rule]
-    version: str = ""     # manifest <meta><version> (single source of truth)
+    version: str = ""     # root package.json version (the single source of truth)
     schema_id: str = ""   # manifest root @schema (propagated to every root tag)
 
 

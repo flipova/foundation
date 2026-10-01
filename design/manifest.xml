@@ -6,7 +6,6 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:flipova:foundation:registry schema.xsd" schema="flipova.foundation/registry/1">
     <meta>
         <project>flipova foundation</project>
-        <version>1.14.0</version>
         <license>MIT</license>
         <language>en</language>
         <registryRoot>design</registryRoot>
