@@ -165,6 +165,33 @@ Both workflows keep exactly one comment per thread (identified by an HTML
 marker) and update it in place, so a busy tracker does not fill up with bot
 noise.
 
+### Repository labels
+
+`.github/labels.yml` is the source of truth for every label the automation
+uses. Two reasons it matters:
+
+- `actions/labeler` **fails** on an unknown label, so a label deleted by hand
+  would break every pull request;
+- the version decision and the `no-issue` escape hatch **are** labels, so they
+  must exist to be selectable at all.
+
+```bash
+node .github/scripts/labels.mjs --list     # what exists today, what is missing
+node .github/scripts/labels.mjs --check    # read-only verification (run by CI)
+GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create   # create the missing ones
+```
+
+`PR Checks` runs `--check` on every pull request and names any missing label
+together with the `gh label create` command to recreate it, so the failure
+points at the cause instead of at the labeler.
+
+Two groups:
+
+| Group | Labels | Role |
+|---|---|---|
+| automatic | `registry` `tokens` `theme` `components` `config` `ci` `docs` | applied by `labeler.yml` from the files a pull request touches |
+| decision | `changeset:major` `changeset:minor` `changeset:patch` `changeset:none` `no-issue` | let the bots act instead of you writing files |
+
 ### Pull request requirements
 
 - Linked issue, description, and **1 approval** required.

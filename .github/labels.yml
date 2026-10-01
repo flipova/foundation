@@ -1,0 +1,63 @@
+# Labels the repository automation relies on.
+#
+# This file is the source of truth: `.github/scripts/labels.mjs --check` fails
+# when one of these is missing, which turns a silent runtime failure into an
+# explicit signal. Note that `actions/labeler` FAILS on an unknown label, so a
+# missing entry here breaks every pull request.
+#
+#   node .github/scripts/labels.mjs --list      # what the repository has today
+#   node .github/scripts/labels.mjs --check     # verify (read-only, no token)
+#   GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create
+#
+# colors: GitHub hex, without the leading '#'.
+
+labels:
+  # Automatically applied from the files a pull request touches (labeler.yml).
+  # A missing one of these makes the PR Checks job fail.
+  - name: registry
+    color: "5319E7"
+    description: Design registry (design/**)
+  - name: tokens
+    color: "0B7285"
+    description: Design tokens (design/tokens.xml)
+  - name: theme
+    color: "5F3DC4"
+    description: Themes and semantic roles (design/themes.xml)
+  - name: components
+    color: "1864AB"
+    description: gluestack components (components/**)
+  - name: config
+    color: "495057"
+    description: Build, Tailwind and package configuration
+  - name: ci
+    color: "212529"
+    description: CI and release workflow (.github/**)
+  - name: docs
+    color: "087F5B"
+    description: Documentation site (docs/**)
+
+  # Version decision: label a pull request and changeset-guard.yml writes the
+  # changeset for you. These must exist to be selectable.
+  - name: "changeset:major"
+    color: "E03131"
+    description: Breaking release - the public API changes
+  - name: "changeset:minor"
+    color: "F76707"
+    description: Additive release
+  - name: "changeset:patch"
+    color: "2F9E44"
+    description: Internal fix, no public API change
+  - name: "changeset:none"
+    color: "CED4DA"
+    description: Real change that needs no release
+
+  # Workflow behaviour.
+  - name: no-issue
+    color: "868E96"
+    description: Trivial change that needs no linked issue
+  - name: needs-triage
+    color: "F59F00"
+    description: Waiting for triage
+  - name: stale
+    color: "ADB5BD"
+    description: No activity for a while
