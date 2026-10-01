@@ -70,28 +70,36 @@ done for the v2 registry-driven theming pipeline).
 - Status checks required: **CI must pass on Node 20 and Node 22**.
 - Squash and merge: all discussions resolved, no merge commits.
 
-### Release (automated)
+### Release path (mandatory, hotfix exception)
 
-There is exactly **one** version in the repository: the root `package.json`.
-The registries store no copy of it, so nothing can drift.
+```
+feature/fix branch -> PR -> main
+main -> changesets opens/updates the "chore: version packages" PR
+"chore: version packages" -> release preflight -> publish
+```
 
-`.github/workflows/release.yml` runs on every push to `main`:
+`main` **only ever receives pull request merges**, and the **only** commit
+allowed to publish is the changesets version commit. A push to `main` that is
+neither a pending changeset nor `chore: version packages` is refused by the
+release preflight, so a release can never happen by accident.
 
-1. `changesets/action` opens or updates a **"chore: version packages"** pull
-   request. The bump command is `npm run version:bump`
-   (`changeset version` **+** `npm run design:doc`), so `package.json`,
-   `docs/package.json` and the version shown by the site all move together.
-2. **Merging that pull request is what publishes** - nothing reaches the
-   registry before that human gate.
-3. `npm run release` runs `build` + `typecheck` + `changeset publish`, executed
-   by CI with `NPM_PUBLISH_TOKEN`. Never publish from a local machine.
+**Hotfix exception** (emergency only): *Run workflow* on the `Release`
+workflow with `hotfix = true` and a mandatory `reason`. It publishes the
+version currently in `package.json` without the version pull request - but the
+quality gates still run (design gate, typecheck, registry authentication).
 
-`.github/workflows/ci.yml` additionally runs a **design gate** on every pull
-request and on every push to `main` (`design:lint`, `design:check`,
-`design:verify`, `design:gen --check`), plus a hard requirement that any change
-to the published surface (`design/`, `components/`, `package.json`, entry
-points) comes with a changeset. A broken registry, a stale generated file or a
-change without a version decision therefore cannot merge.
+**Credential**: the `NPM_PUBLISH_TOKEN` secret must be an **npm automation
+token** (Read & Write) with write access to the `@flipova` scope. npm answers
+`E404 Not Found` on upload when the token is missing, expired, classic, or
+belongs to another registry. The preflight authenticates first and explains the
+fix instead of failing on a bare `E404`.
+
+`.github/workflows/ci.yml` runs the design gate on every pull request and on
+every push to `main` (`design:lint`, `design:check`, `design:verify`,
+`design:gen --check`), plus a hard requirement that any change to the published
+surface (`design/`, `components/`, `package.json`, entry points) comes with a
+changeset. A broken registry, a stale generated file or a change without a
+version decision therefore cannot merge.
 
 ## Repository layout
 

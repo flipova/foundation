@@ -1,8 +1,31 @@
 name: Release
 
+# Mandatory path to a release:
+#
+#   PR (any branch)  ->  main  ->  changesets opens/updates the
+#   "chore: version packages" PR  ->  merging THAT PR is what publishes.
+#
+# Nothing is published from an ordinary commit on main: the preflight below
+# refuses it. The only exception is an explicit, reasoned hotfix dispatch.
+#
+# On publish, the token must be an npm automation token with write access to
+# the @flipova scope. A wrong/expired token makes npm answer "E404 Not Found"
+# on the PUT, which is why the preflight authenticates BEFORE anything is
+# attempted and explains the fix in the log.
+
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      hotfix:
+        description: 'Hotfix release: publish without the changesets version PR (emergency only)'
+        type: boolean
+        default: false
+      reason:
+        description: 'Why the hotfix path is used (mandatory when hotfix = true)'
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -11,13 +34,149 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  REGISTRY: https://registry.npmjs.org/
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  release:
+  preflight:
+    name: Release preflight
+    runs-on: ubuntu-latest
+    outputs:
+      will_publish: ${{ steps.plan.outputs.will_publish }}
+      path: ${{ steps.plan.outputs.path }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org/
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install design tooling
+        run: pip install -r design/tools/requirements.txt
+
+      # The registry is the published surface: it must be valid and in sync
+      # before anything is released.
+      - name: Repository gates
+        run: |
+          npm run design:lint
+          npm run design:check
+          npm run design:verify
+          npm run design:gen -- --check
+          npm run typecheck
+
+      - name: Decide the release path
+        id: plan
+        env:
+          HOTFIX: ${{ inputs.hotfix }}
+          REASON: ${{ inputs.reason }}
+        run: |
+          set -euo pipefail
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          subject="$(git log -1 --pretty=%s)"
+          pending="$(ls .changeset/*.md 2>/dev/null | grep -vc README || true)"
+          {
+            echo "### Release preflight"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| package | \`$name\` |"
+            echo "| local version | \`$version\` |"
+            echo "| last commit | \`$subject\` |"
+            echo "| pending changesets | $pending |"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$HOTFIX" = "true" ]; then
+            if [ -z "$REASON" ]; then
+              echo "::error::hotfix = true requires the 'reason' input."
+              exit 1
+            fi
+            echo "Hotfix path accepted (reason: $REASON)."
+            echo "path=hotfix" >> "$GITHUB_OUTPUT"
+            echo "will_publish=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$pending" -gt 0 ]; then
+            echo "Changesets pending ($pending) -> the Version Packages PR will be opened/updated. No publish here."
+            echo "path=version-pr" >> "$GITHUB_OUTPUT"
+            echo "will_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          case "$subject" in
+            "chore: version packages"*) ;;
+            *)
+              echo "::error::Refusing to publish."
+              echo "::error::main has no pending changeset and the last commit is '$subject', which is not a changesets version commit."
+              echo "::error::A release must go through the 'chore: version packages' PR, or an explicit hotfix dispatch (reason required)."
+              exit 1
+              ;;
+          esac
+
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "::error::$name@$version is already published - nothing to do."
+            exit 1
+          fi
+
+          echo "path=version-pr" >> "$GITHUB_OUTPUT"
+          echo "will_publish=true" >> "$GITHUB_OUTPUT"
+
+      # Fail BEFORE touching the registry, with an actionable message instead of
+      # a bare E404 at the end of the publish.
+      - name: Verify registry authentication and write access
+        if: steps.plan.outputs.will_publish == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          set -euo pipefail
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          {
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+            echo "always-auth=true" >> .npmrc
+            echo "registry=${REGISTRY}" >> .npmrc
+          }
+          if [ -z "${NODE_AUTH_TOKEN}" ]; then
+            echo "::error::Secret NPM_PUBLISH_TOKEN is empty."
+            echo "::error::Create an npm automation token (Access: Read & Write, scope @flipova) and store it in the repository secret NPM_PUBLISH_TOKEN."
+            exit 1
+          fi
+          if ! who="$(npm whoami --registry="${REGISTRY}" 2>&1)"; then
+            echo "::error::npm authentication failed: ${who}"
+            echo "::error::NPM_PUBLISH_TOKEN is most likely not an npm token (a GitHub Packages token fails exactly like this), expired, or a classic token - npm now requires an automation token."
+            exit 1
+          fi
+          echo "Authenticated on ${REGISTRY} as ${who}"
+          status="$(npm access get status "$name" --registry="${REGISTRY}" 2>&1 || true)"
+          echo "Write status on ${name}: ${status}"
+          if echo "$status" | grep -qi 'not authorized\|E404'; then
+            echo "::error::The token cannot publish ${name}. Grant it write access to the @flipova scope (or to the ${name} package)."
+            exit 1
+          fi
+          echo "About to publish ${name}@${version}."
+
+  changesets:
+    name: Version PR / Publish
+    needs: preflight
     runs-on: ubuntu-latest
     outputs:
       published: ${{ steps.changesets.outputs.published }}
@@ -31,8 +190,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
+          registry-url: https://registry.npmjs.org/
 
       # The version bump also regenerates the documentation, so the
       # "chore: version packages" PR can never be inconsistent with package.json.
@@ -47,12 +207,20 @@ jobs:
       - name: Install design tooling
         run: pip install -r design/tools/requirements.txt
 
+      - name: Configure registry authentication
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          {
+            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}"
+            echo "always-auth=true"
+            echo "registry=${REGISTRY}"
+          } >> .npmrc
+
       - name: Create Release PR or Publish
         id: changesets
         uses: changesets/action@v1
         with:
-          # Bump + regenerate the docs in one atomic step: the registry has a
-          # single version (package.json) and nothing can drift from it.
           version: npm run version:bump
           publish: npm run release
           title: "chore: version packages"

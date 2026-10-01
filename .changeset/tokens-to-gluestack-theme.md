@@ -56,3 +56,5 @@ triplets so Tailwind opacity modifiers (`bg-primary/50`) keep working.
   `lineHeight`, `letterSpacing`, `boxShadow` (including `shadow-hard-*` /
   `shadow-soft-*`), `zIndex` (`z-modal`, `z-toast`, ...), `opacity`,
   `transitionDuration` and `transitionTimingFunction`.
+- `package.json` normalised (`repository.url`, `bin` path), so `npm publish` no
+  longer rewrites them on every release.
