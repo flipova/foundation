@@ -78,14 +78,45 @@ changelog entry.
 3. **Open a pull request** with the template, and start it with `Closes #<n>`
    so the issue closes automatically on merge. That linkage is what makes the
    project board meaningful.
-4. **Declare the release decision** in the PR (the *Release decision* section)
-   and add the matching changeset. For a design system this is the important
-   part: `major` breaks the public API (component imports, Tailwind utilities,
-   CLI), `minor` adds to it, `patch` is internal.
+4. **Declare the release decision** in the PR (the *Release decision* section).
+   For a design system this is the important part: `major` breaks the public API
+   (component imports, Tailwind utilities, CLI), `minor` adds to it, `patch` is
+   internal.
 5. **Labels are applied automatically** from the files a pull request touches
    (`.github/labeler.yml`): `registry`, `tokens`, `theme`, `components`,
    `config`, `ci`, `docs`. A pull request touching `design/` is always
    `registry`, so design changes are easy to filter.
+
+### The version decision (changeset)
+
+A pull request that changes the published surface (`design/`, `components/`,
+`package.json`, an entry point) must decide what happens to the version. There
+are two ways, and **neither leaves you stuck**:
+
+**A. Write it yourself** - the normal path:
+
+```bash
+npx changeset          # pick major / minor / patch and describe the change
+```
+
+**B. Label it, and the bot writes it for you** - for when the change is
+obviously small and you do not want to switch to a terminal:
+
+| Label | Effect |
+|---|---|
+| `changeset:major` | a `major` changeset is written, committed and pushed to the branch |
+| `changeset:minor` | a `minor` changeset is written, committed and pushed |
+| `changeset:patch` | a `patch` changeset is written, committed and pushed |
+| `changeset:none` | an **empty** changeset: a real change that needs no release |
+
+`changeset-guard.yml` implements this. If the pull request has no changeset and
+no `changeset:*` label, the check fails and tells you exactly which label to
+apply. Applying the label makes the guard create the changeset, push it, and
+comment on the pull request; the pipeline then re-runs on its own.
+
+Because a changeset can be forgotten late in a review, prefer labelling rather
+than editing files when the answer is obvious - the decision stays visible in
+the pull request conversation.
 
 ### Collaboration automation
 
@@ -125,10 +156,13 @@ noise.
 ### Pull request requirements
 
 - Linked issue, description, and **1 approval** required.
-- Status checks required: **CI must pass on Node 20 and Node 22**.
+- Status checks required: `check (Node 20 / 22)` and `Design registry` must be
+  green; set them as *required* in the branch protection rules.
 - The `Design registry` gate must pass (it refuses a pull request that breaks the
   registries, leaves a generated file stale, or changes the published surface
-  without a changeset).
+  without a version decision).
+- `Changeset Guard` must be green: it either confirms a changeset exists, or
+  creates one from the `changeset:*` label.
 - Squash and merge: all discussions resolved, no merge commits.
 
 ### Release path (mandatory, hotfix exception)
@@ -161,6 +195,62 @@ every push to `main` (`design:lint`, `design:check`, `design:verify`,
 surface (`design/`, `components/`, `package.json`, entry points) comes with a
 changeset. A broken registry, a stale generated file or a change without a
 version decision therefore cannot merge.
+
+### Working in a stacked chain
+
+When several pull requests depend on each other, each branch is created from the
+previous one and they are merged in order. Keep a branch current before and
+during the review:
+
+```bash
+git fetch origin
+git merge origin/main          # or: git rebase origin/main
+npm run design:pipeline       # regenerate, in case the merge touched the registries
+git push
+```
+
+`pr-lifecycle.yml` does the first step automatically for branches of this
+repository when the merge is clean; a conflict always stays a human decision.
+
+Because the design pipeline regenerates files, merging `main` into a branch can
+make `config.ts`, `tokens.js` or the documentation stale. `design:gen --check`
+turns that into a clear failure instead of a silent drift.
+
+### Troubleshooting
+
+**`Some packages have been changed but no changesets were found`**
+The pull request changes the published surface without a version decision. Run
+`npx changeset`, or label it `changeset:major|minor|patch|none` and let
+`changeset-guard.yml` write it for you. If the change really needs no release,
+`changeset:none` produces an empty changeset that satisfies the gate.
+
+**`lxml` fails to build: "make sure the libxml2 and libxslt development packages are installed"**
+`pip` fell back to a source build because no `lxml < 6` wheel matches the
+interpreter. The workflows pin Python 3.12 and install with
+`--only-binary=:all:`; keep that pin (and the `ruff` floor) when touching them,
+and never widen `lxml` past 6 without checking a wheel exists for the pinned
+interpreter.
+
+**`EXE001: Shebang is present but file is not executable`**
+`ruff` applies this rule **only on POSIX**, so it appears in CI and never on a
+Windows checkout. The real entry points (`checker.py`, `docgen.py`,
+`generate.py`, `linter.py`, `xmleditor.py`) are marked executable in git
+(`git update-index --chmod=+x <file>`); any other module must not carry a
+shebang, because it is imported rather than executed.
+
+**Publishing fails with `E404 Not Found` on `registry.npmjs.org`**
+The package exists, so this is npm hiding an authentication or authorisation
+failure: the secret is empty, expired, a classic token, or a token from another
+registry (a GitHub Packages token fails exactly like this). Replace it with an
+npm **automation** token (Read & Write, scope `@flipova`). The release preflight
+checks this before uploading, so the message is explicit; if a version has
+already been consumed by `changeset version`, publish it through the hotfix
+dispatch.
+
+**The version PR is red / the pipeline is red after merging `main`**
+Run `npm run design:pipeline` locally and push the regenerated files: a merge
+that touches `design/` can invalidate the canonical index or the generated
+theme.
 
 ## Repository layout
 

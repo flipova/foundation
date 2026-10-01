@@ -1,0 +1,132 @@
+name: Changeset Guard
+
+# A pull request that changes the published surface must decide what happens to
+# the version. This workflow removes the "I forgot the changeset" dead end:
+#
+#   - changeset present in the pull request  -> nothing to do
+#   - no changeset, but a `changeset:*` label -> the changeset is WRITTEN here,
+#     committed to the branch, and explained in a comment
+#   - no changeset and no label              -> the check fails and says exactly
+#     which label to apply
+#
+# `changeset:none` produces an empty changeset: the change is real but needs no
+# release, which satisfies the gate without inventing a version bump.
+#
+# SAFETY: this workflow never executes the pull request's code - it only runs
+# git plumbing and GitHub API calls - so it can safely hold a write token. That
+# is also why the guard lives here and not in the CI design job, which does run
+# the branch's own tooling.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+
+concurrency:
+  group: changeset-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  guard:
+    name: Create or require the changeset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (no pull request code is executed)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Inspect and, if possible, create the changeset
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const ev = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+            const pr = ev.pull_request;
+            const base = pr.base.sha;
+            const headRef = pr.head.ref;
+            const isFork = pr.head.repo.full_name !== ev.repository.full_name;
+            const title = (pr.title || '').trim() || `Pull request #${pr.number}`;
+
+            const sh = cmd => execSync(cmd, { encoding: 'utf8' }).trim();
+            const added = sh(`git diff --name-only ${base} HEAD -- .changeset`)
+              .split('\n')
+              .map(s => s.trim())
+              .filter(f => f.endsWith('.md') && !f.endsWith('README.md'));
+
+            if (added.length) {
+              core.info(`Changeset present (${added.join(', ')}): nothing to do.`);
+              return;
+            }
+
+            const label = (pr.labels || [])
+              .map(l => l.name)
+              .find(n => /^changeset:(major|minor|patch|none)$/i.test(n));
+            const bump = label ? label.split(':')[1].toLowerCase() : null;
+
+            if (!bump) {
+              core.setFailed(
+                'No changeset in this pull request. Either run `npx changeset` locally, ' +
+                'or label the pull request to let this workflow write it:\n' +
+                '  - `changeset:major`  breaking change to the public API\n' +
+                '  - `changeset:minor`  additive change\n' +
+                '  - `changeset:patch`  internal fix\n' +
+                '  - `changeset:none`   real change, but no release needed'
+              );
+              return;
+            }
+
+            if (isFork) {
+              core.setFailed(
+                'No changeset in this pull request and it comes from a fork, so this ' +
+                'workflow cannot write to the branch. Run `npx changeset` locally and push it.'
+              );
+              return;
+            }
+
+            const pkg = require('./package.json').name;
+            const slug = `${bump}-${pr.number}`;
+            const path = `.changeset/${slug}.md`;
+            const body = bump === 'none'
+              ? `---\n---\n\n${title}\n\nNo release required. Added by \`changeset-guard.yml\` from the \`changeset:none\` label.\n`
+              : `---\n"${pkg}": ${bump}\n---\n\n${title}\n\nAdded by \`changeset-guard.yml\` from the \`${label}\` label.\n`;
+
+            sh(`git fetch origin ${headRef}`);
+            sh(`git checkout -B ${headRef} origin/${headRef}`);
+            fs.writeFileSync(path, body);
+            sh(`git add ${path}`);
+            sh(`git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" `
+              + `commit -m "chore: add ${bump} changeset (${label})"`);
+            sh(`git push origin HEAD:${headRef}`);
+            core.info(`Created ${path} and pushed it to ${headRef}.`);
+
+            const marker = '<!-- foundation:changeset-guard -->';
+            const comment = [
+              marker,
+              `### Changeset created automatically`,
+              '',
+              `\`${label}\` was applied: **${path}** was added to \`${headRef}\` and pushed.`,
+              'The pipeline will re-run automatically.',
+              '',
+              '<sub>Maintained by `changeset-guard.yml`. Do not edit this comment.</sub>',
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: ev.repository.owner.login, repo: ev.repository.name, issue_number: pr.number, per_page: 100
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: ev.repository.owner.login, repo: ev.repository.name,
+                comment_id: existing.id, body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: ev.repository.owner.login, repo: ev.repository.name,
+                issue_number: pr.number, body: comment
+              });
+            }
