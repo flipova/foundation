@@ -123,7 +123,10 @@ request opened by the bot on `changeset-release/main` carries **no** changeset:
 changesets *consumes* the pending ones (they are deleted by design) and its own
 release decision is the version bump it contains. The three gates - `ci.yml`,
 `changeset-guard.yml` and `pr-lifecycle.yml` - all recognise it and step aside.
-Do not add a changeset to it by hand: it would create an extra, empty release.
+It is recognised twice over, by name (branch prefix or reserved title) **and** by
+shape (it deletes changesets, adds none, and bumps the version), so the
+exemption never depends on a naming convention. Do not add a changeset to it by
+hand: it would create an extra, empty release.
 
 ### Collaboration automation
 

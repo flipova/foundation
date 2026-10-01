@@ -85,18 +85,31 @@ jobs:
           HAS_CONFLICTS: ${{ steps.ctx.outputs.has_conflicts }}
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           PR_TITLE: ${{ github.event.pull_request.title }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
           if [ "$HAS_CONFLICTS" = "true" ]; then
             echo "::error::This pull request conflicts with the base branch. Resolve it locally (git fetch origin && git merge origin/main), or wait for the sync step once the branches agree."
             exit 1
           fi
-          # The changesets release pull request is bot-managed and carries no
-          # issue reference: the issue linkage rule does not apply to it.
+
+          # A changesets release pull request carries no issue reference: it is
+          # bot-managed and its release decision is the version bump it contains.
+          # It is recognised by name AND by shape, so the exemption never depends
+          # on a naming convention: it deletes the changesets it applied, adds
+          # none, and bumps the version.
           if [[ "$HEAD_REF" == changeset-release/* || "$PR_TITLE" == "chore: version packages" ]]; then
-            echo "Changesets release pull request: the issue linkage rule does not apply."
+            echo "Changesets release pull request (by name): the issue linkage rule does not apply."
             exit 0
           fi
+          cs_added=$(git diff --name-status "$BASE_SHA" HEAD -- .changeset | grep -c '^A' || true)
+          cs_deleted=$(git diff --name-status "$BASE_SHA" HEAD -- .changeset | grep -c '^D' || true)
+          version_bumped=$(git diff "$BASE_SHA" HEAD -- package.json | grep -cE '^\+\s*"version":' || true)
+          if [ "$cs_added" -eq 0 ] && [ "$cs_deleted" -gt 0 ] && [ "$version_bumped" -gt 0 ]; then
+            echo "Changesets release pull request (by shape: $cs_deleted changeset(s) consumed, version bumped): the issue linkage rule does not apply."
+            exit 0
+          fi
+
           if [ -z "$LINKED" ]; then
             echo "::error::No issue linked. Add 'Closes #12', 'Fixes #12' or 'Refs #12' to the pull request description (see the template)."
             exit 1
@@ -158,7 +171,7 @@ jobs:
               }
             }
 
-            const { data: suites } = await github.rest.checks.listCheckSuitesForRef({
+            const { data: suites } = await github.rest.checks.listSuitesForRef({
               owner, repo, ref: pr.head.sha
             });
             const all = suites.check_suites || [];

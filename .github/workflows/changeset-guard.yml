@@ -57,10 +57,25 @@ jobs:
 
             // The changesets release pull request is exempt: it consumes the
             // changesets (they are deleted by design) and its own release
-            // decision is the version bump it carries.
-            const isVersionPr = (headRef || '').startsWith('changeset-release/')
+            // decision is the version bump it carries. Recognised by name AND by
+            // shape, so the exemption never depends on a naming convention.
+            const byName = (headRef || '').startsWith('changeset-release/')
               || title === 'chore: version packages';
-            if (isVersionPr) {
+            let byShape = false;
+            if (!byName) {
+              try {
+                const status = sh(`git diff --name-status ${base} HEAD -- .changeset`)
+                  .split('\n').map(l => l.trim()).filter(Boolean);
+                const added = status.filter(l => l.startsWith('A')).length;
+                const deleted = status.filter(l => l.startsWith('D')).length;
+                const bumped = sh(`git diff ${base} HEAD -- package.json`)
+                  .split('\n').some(l => /^\+\s*"version":/.test(l));
+                byShape = added === 0 && deleted > 0 && bumped;
+              } catch (error) {
+                core.info(`could not inspect the changeset diff: ${error.message}`);
+              }
+            }
+            if (byName || byShape) {
               core.info('Changesets release pull request: no changeset is expected.');
               return;
             }
