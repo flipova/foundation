@@ -1,0 +1,12 @@
+# Runtime is Python 3.8 (design/tools/.venv): target-version pins ruff's
+# upgrade rules (UP006/UP007/UP035/UP045 — PEP 585/604 rewrites) to 3.8, so
+# they are never suggested nor auto-applied on this codebase.
+target-version = "py38"
+
+[lint]
+# - N999 is intentionally silenced: the implementation packages are named
+#   ".checker", ".docgen", ".generate", ".linter" (dot-prefixed, per the
+#   repository's requested sources-layout convention). They are imported via
+#   synthetic module names in the thin entry points, so the "invalid module
+#   name" rule does not apply here.
+ignore = ["N999"]

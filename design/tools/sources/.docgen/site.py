@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""site writer — narrative articles, cross-references and static index.
+
+- build_title_index / resolve_xrefs: rewrite prose "see **Title**" /
+  "following **Title**" into Markdown links pointing at the referenced
+  article or section.
+- render_article_body: article Markdown = declared <content> + dynamic
+  sections (schema/API references injected by .docgen/cli.py).
+- write_site: stale-output cleanup + deterministic file emission.
+"""
+from __future__ import annotations
+
+import re
+import shutil
+from pathlib import Path
+
+from .model import DYNAMIC_ARTICLES, DocArticle, DocSection
+
+# ---------------------------------------------------------------------------
+# Cross-reference resolution: rewrites prose "see **Title**" / "following
+# **Title**" into Markdown links pointing at the referenced article or section.
+# ---------------------------------------------------------------------------
+
+def build_title_index(doc_sections: list[DocSection]) -> dict[str, str]:
+    """Build a {title: url} lookup from article titles and section titles.
+
+    Article titles map to ``/docs/{slug}``.  Section titles map to the URL of
+    their **first article** (Docusaurus does not generate standalone section
+    landing pages, so we proxy to the first child as a sensible entry point).
+    """
+    index: dict[str, str] = {}
+    for section in doc_sections:
+        section_url: str | None = None  # first article's URL, if any
+        for article in section.articles:
+            if article.title and article.slug:
+                url = f"/docs/{article.slug}"
+                if section_url is None:
+                    # First article becomes the section's proxy landing page.
+                    section_url = url
+                # Article titles point at their individual page.  An exact
+                # title match always wins over a section title match because
+                # articles are processed after their own section above.
+                index[article.title] = url
+        if section.title and section_url is not None:
+            # Section titles point at the first article in that section.
+            index[section.title] = section_url
+    return index
+
+
+def resolve_xrefs(content: str, title_index: dict[str, str]) -> str:
+    """Convert ``see **Title**`` / ``See **Title**`` / ``following **Title**``
+    in *content* into ``[Title](url)`` Markdown links using *title_index*.
+
+    Only bold ``**Title**`` spans that immediately follow one of the trigger
+    words are rewritten, leaving standalone bold runs untouched.  Unresolved
+    titles are left as-is so they remain visible during authoring.
+    """
+    pattern = re.compile(
+        r'(see|See|following)\s+\*\*([^*]+)\*\*',
+        re.UNICODE,
+    )
+    def _replace(m: re.Match[str]) -> str:
+        trigger, title = m.group(1), m.group(2)
+        url = title_index.get(title)
+        if url is None:
+            return m.group(0)  # leave unresolved references as-is
+        return f"{trigger} [{title}]({url})"
+    return pattern.sub(_replace, content)
+
+
+def render_article_body(
+    section: DocSection,
+    article: DocArticle,
+    dynamic: dict[str, str],
+    title_index: dict[str, str],
+) -> str:
+    parts = []
+    if article.content:
+        parts.append(article.content.strip() + "\n")
+    key = (section.id, article.id)
+    dyn_key = DYNAMIC_ARTICLES.get(key)
+    if dyn_key is not None:
+        parts.append(dynamic.get(dyn_key, ""))
+    body = "\n\n".join(p for p in parts if p.strip())
+    if not body:
+        body = f"# {article.title}\n\n_Content pending._\n"
+    # Resolve prose cross-references ("see **Title**") into links.
+    body = resolve_xrefs(body, title_index)
+    return body
+
+
+def write_site(model: dict, out_dir: Path, dynamic: dict[str, str],
+                repo_root: Path | None = None) -> list[Path]:
+    out_dir = out_dir.resolve()
+    if repo_root is not None and out_dir == repo_root.resolve():
+        raise SystemExit("refusing to use the repository root itself as the docs output directory")
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # Clean ONLY the artifacts this generator owns -- never wipe the whole
+    # output directory: it may be the Docusaurus site root containing
+    # hand-maintained files (package.json, src/, static/, node_modules/...).
+    slug_roots = {article.slug.split("/")[0]
+                  for section in model["doc_sections"]
+                  for article in section.articles}
+    slug_roots.add("api-reference")  # element pages (write_element_pages)
+    for name in sorted(slug_roots):
+        stale = out_dir / name
+        if stale.is_dir():
+            shutil.rmtree(stale)
+    index_path = out_dir / "README.md"
+    if index_path.exists():
+        index_path.unlink()
+
+    written: list[Path] = []
+    version = model.get("version") or ""
+    nav_lines = [f"# {model['project']} -- Documentation", "",
+                 f"**Version: {version}**" if version else "",
+                 "",
+                 ("> Generated by `design/tools/sources/docgen.py` from "
+                  "`design/manifest.xml`, `design/documentation.xml` (`<documentation>`), "
+                  "`design/schema.xsd` and the registries (`tokens.xml`, `themes.xml`). "
+                  "Do not edit files under this directory by hand -- edit the "
+                  "sources of truth and regenerate (`npm run design:doc`)."), ""]
+
+    # Build {title: url} lookup so prose cross-references ("see **Title**")
+    # can be resolved into Markdown links during article rendering.
+    title_index = build_title_index(model["doc_sections"])
+
+    for section in model["doc_sections"]:
+        nav_lines.append(f"## {section.title}")
+        nav_lines.append("")
+        for article in section.articles:
+            target = out_dir / f"{article.slug}.md"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            body = render_article_body(section, article, dynamic, title_index)
+            with open(target, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(body.rstrip() + "\n")
+            written.append(target)
+            nav_lines.append(f"- [{article.title}]({article.slug}.md)")
+        nav_lines.append("")
+
+    index_path = out_dir / "README.md"
+    with open(index_path, "w", encoding="utf-8", newline="\n") as fh:
+        fh.write("\n".join(nav_lines).rstrip() + "\n")
+    written.append(index_path)
+    return written

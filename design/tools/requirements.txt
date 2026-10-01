@@ -1,0 +1,26 @@
+# Python runtime requirements for the design-system toolchain
+#   design/tools/sources/linter.py     (agnostic XML <-> XSD validator)
+#   design/tools/sources/checker.py    (manifest determinism rules + XSD pass
+#                                       + ruff lint of design/tools/sources)
+#   design/tools/sources/generate.py   (tokens/themes -> gluestack config)
+#   design/tools/sources/docgen.py     (documentation site generator)
+#   design/tools/sources/xmleditor.py  (visual XSD-driven XML block editor:
+#                                       tkinter GUI + headless CLI)
+#
+# All tools require Python 3.8+.
+# Third-party dependencies:
+#   lxml    ElementTree / XMLSchema backend — used by every tool
+#   ruff    Python linter — run automatically by checker.py --check
+#           (i.e. by npm run design:check / design:pipeline)
+#
+# tkinter (the XML editor's GUI) ships with the standard library; headless
+# CLI modes of xmleditor.py do not need it. On minimal Linux images install
+# it with your package manager (e.g. apt install python3-tk).
+#
+# Install with:
+#   python3 -m pip install -r design/tools/requirements.txt
+# or
+#   pip install -r design/tools/requirements.txt
+
+lxml>=4.7,<6
+ruff>=0.16,<1

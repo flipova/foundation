@@ -15,26 +15,28 @@ const yamlPlugin = {
   },
 };
 
-// Native & React Native packages that are external dependencies.
+// Packages that must stay external (peer-resolved in the consumer's app)
+// rather than bundled into dist.
 const nativeExternal = [
-  "@expo/vector-icons",
-  "expo-linear-gradient",
-  "expo-haptics",
-  "expo-status-bar",
-  "expo-navigation-bar",
-  "expo-camera",
-  "expo-blur",
-  "expo-video",
-  "react-native-gesture-handler",
-  "react-native-reanimated",
   "react-native-safe-area-context",
-  "react-native-screens",
-  "lucide-react-native",
-  "react-native-maps",
-  "react-native-webview",
-  "lottie-react-native",
-  "@react-native-picker/picker",
-  "react-native-date-picker",
+  "react-native-reanimated",
+  "react-native-gesture-handler",
+  "@gorhom/bottom-sheet",
+  "@react-native-community/datetimepicker",
+  "expo",
+  "expo-glass-effect",
+  "@gluestack-ui/core",
+  "@gluestack-ui/utils",
+  "@gluestack/ui-next-adapter",
+  "nativewind",
+  "react-native-web",
+  "react-native-svg",
+  "react-aria",
+  "react-stately",
+  "@expo/html-elements",
+  "tailwind-variants",
+  "@legendapp/motion",
+  "dom-helpers",
 ];
 
 const sharedExternal = [
@@ -48,16 +50,8 @@ export default defineConfig([
   // ── React Native Entry Point (builds for both native and web via React Native web) ──────────────────────────
   {
     entry: {
-      "index":          "foundation/index.ts",
-      "tokens/index":   "foundation/tokens/index.ts",
-      "theme/index":    "foundation/theme/index.ts",
-      "config/index":   "foundation/config/index.ts",
-      "registry/index": "foundation/registry/index.ts",
-      "types/index":    "foundation/types/index.ts",
-      "ui/index":       "foundation/ui/index.ts",
-      "web/index":      "foundation/web/index.ts",
-      "cli/flipova":     "scripts/init-cli.ts",
-      "cli/ds":          "scripts/cli/index.ts",
+      "index":    "index.ts",
+      "ui/index": "components/ui/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,

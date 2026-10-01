@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Flipova Foundation Documentation Tree
+  =====================================
+  Separated from manifest.xml: this file is the single source of truth for the
+  documentation site (sections + narrative Markdown articles). Consumed by
+  design/tools/sources/docgen.py and validated against schema.xsd (global
+  <documentation> element).
+-->
+<documentation xmlns="urn:flipova:foundation:registry"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:flipova:foundation:registry schema.xsd">
+    <section id="getting-started" title="Getting Started" order="1">
+        <article id="installation" title="Installation" slug="getting-started/installation">
+            <content><![CDATA[
+# Installation
+
+Flipova Foundation ships an editable gluestack-ui component source plus **two
+generated design artifacts**, both compiled from the design registries
+(`design/tokens.xml` + `design/themes.xml`) and never edited by hand:
+
+- `components/ui/gluestack-ui-provider/config.ts` - the gluestack/nativewind
+  colour variables, for the light and dark modes;
+- `components/ui/gluestack-ui-provider/tokens.js` - the whole Tailwind theme.
+
+## Requirements
+
+- **Python 3.8+** for the design tooling.
+- **`lxml`** (and, for `design:check`, **`ruff`**) - the only third-party
+  dependencies, pinned in `design/tools/requirements.txt`.
+- Your own Node/TypeScript tooling to consume the gluestack components.
+
+## Install and initialize
+
+```bash
+npm install @flipova/foundation
+npm install gluestack-ui
+npx flipova-design init
+```
+
+`npx flipova-design init` creates the project-local `design/` workspace and the
+gluestack source tree.
+
+## Wire the theme into your Tailwind config
+
+`tailwind.config.js`, `globals.css` and `postcss.config.js` are app-level files,
+so the package does not ship them: create yours and pull the generated theme in.
+The whole design system is one generated Tailwind theme, published as
+`@flipova/foundation/tokens`.
+
+```js
+// tailwind.config.js
+const tokens = require('@flipova/foundation/tokens');
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./app/**/*.{tsx,ts,jsx,js}'],
+  presets: [require('nativewind/preset')],
+  important: 'html',
+  theme: { extend: tokens.theme },
+};
+```
+
+```css
+/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+```js
+// postcss.config.js
+module.exports = { plugins: { tailwindcss: {}, autoprefixer: {} } };
+```
+
+Every registry value is then available as an utility: `bg-primary/50`, `p-4`,
+`rounded-md`, `text-2xs`, `shadow-hard-1`, `z-modal`, `ease-standard`, and the
+`xs:`/`md:`/`lg:`/`2xl:` breakpoints.
+
+Mount the provider once at the root so the colour variables actually exist:
+
+```tsx
+import { GluestackUIProvider } from '@flipova/foundation/ui';
+
+export default function App() {
+  return <GluestackUIProvider mode="system">{/* ... */}</GluestackUIProvider>;
+}
+```
+
+### Font variables
+
+Some `family` entries delegate to *your* app fonts through CSS variables. Define
+them once (or through your font loader):
+
+```css
+:root {
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-heading: Inter, system-ui, sans-serif;
+}
+```
+
+If one is missing, `font-family: var(--font-sans)` is invalid and the text falls
+back to the inherited font - it does not break, but it is not what you expect.
+`font-system`, `font-mono` and `font-serif` are self-contained stacks that need
+no variable.
+
+## Optional virtual environment
+
+```bash
+python3 -m venv design/tools/.venv
+design/tools/.venv/bin/pip install -r design/tools/requirements.txt   # Linux/macOS
+design/tools/.venv/Scripts/python -m pip install -r design/tools/requirements.txt   # Windows
+```
+
+## Verify the install
+
+```bash
+npx flipova-design lint
+```
+
+A clean clone reports zero errors. Continue with **Quick Start**.
+]]>                </content>
+        </article>
+        <article id="quick-start" title="Quick Start" slug="getting-started/quick-start">
+            <content><![CDATA[
+# Quick Start
+
+The design pipeline does one job: it turns the **tokens** and **themes**
+registries into the gluestack/nativewind theme config. Edit the XML, then
+regenerate.
+
+```bash
+# 1. XSD conformance of every XML under design/
+npm run design:lint
+
+# 2. Determinism rules + ruff lint of the toolchain
+npm run design:check
+
+# 3. Compile tokens/themes -> config.ts (colour vars) + tokens.js (Tailwind theme)
+npm run design:gen
+
+# 4. Verify the committed canonical index is in sync
+npm run design:verify
+
+# 5. Regenerate the documentation site (docs/generated)
+npm run design:doc
+```
+
+Or run the whole chain at once:
+
+```bash
+npm run design:pipeline
+```
+
+Commit the regenerated `config.ts`, `tokens.js`, `docs/generated/**` and
+`design/canonical.index.txt` together with the XML change.
+]]>                </content>
+        </article>
+    </section>
+    <section id="theming" title="Theming" order="2">
+        <article id="overview" title="Theming Overview" slug="theming/overview">
+            <content><![CDATA[
+# Theming Overview
+
+Theming is registry-driven and has two halves:
+
+- **`design/tokens.xml`** - the atomic values (spacing, colours, typography,
+  shadows, animation). Colours live in the `color` token as shaded palette
+  entries (e.g. `primary.600`, `gray.200`).
+- **`design/themes.xml`** - each theme (`light`, `dark`) maps **semantic roles**
+  to token references. The role ids are exactly the gluestack/nativewind CSS
+  variable names without the leading `--`, so `primary-foreground` becomes
+  `--primary-foreground`, `card-foreground` becomes `--card-foreground`, and so
+  on.
+
+At generation time `generate.py` turns those two files into two artifacts:
+
+- **`config.ts`** - every role resolved to a concrete colour and emitted as a
+  **space-separated RGB triplet** (the format nativewind/gluestack expect, e.g.
+  `37 99 235`), which enables Tailwind opacity modifiers such as `bg-primary/50`;
+- **`tokens.js`** - the **entire** Tailwind theme, where each role also becomes a
+  `rgb(var(--<role>)/<alpha-value>)` colour, alongside every scale token
+  (spacing, radii, breakpoints, typography, shadow, z-index, opacity, motion).
+
+`tailwind.config.js` therefore holds **no design value at all**: it only wires
+`extend: tokens.theme`. The XML registries are the single source of truth for
+both the runtime variables and every utility class - the registry and the theme
+can never drift apart.
+
+See **Tokens**, **Themes** and the generated **gluestack config** for details.
+]]>                </content>
+        </article>
+        <article id="tokens" title="Tokens" slug="theming/tokens">
+            <content><![CDATA[
+# Tokens
+
+`design/tokens.xml` declares the atomic design values. Every token has a
+`kind` (`scale`, `map`, `font`, `color`, `shadow`, `animation`) and a set of
+`<value>` entries. Token ids are addressable from themes and styles with the
+`$ref.tokens.<id>.<value-id>` syntax.
+
+The listing below is generated directly from the registry - it is never
+duplicated by hand.
+]]>                </content>
+        </article>
+        <article id="themes" title="Themes" slug="theming/themes">
+            <content><![CDATA[
+# Themes
+
+`design/themes.xml` declares the themes (`default="light"`). Each theme holds a
+`roleMap` of semantic roles to colour token references. A role id is the
+gluestack CSS variable name without the leading `--`, so the registry and the
+runtime config stay in lockstep.
+
+The generated listing below reflects the current registry.
+]]>                </content>
+        </article>
+        <article id="gluestack-config" title="gluestack config" slug="theming/gluestack-config">
+            <content><![CDATA[
+# gluestack config
+
+`npm run design:gen` compiles the registries into
+`components/ui/gluestack-ui-provider/config.ts`:
+
+```ts
+// Generated by design/tools/sources/generate.py -- do not edit by hand.
+// Source of truth: design/tokens.xml + design/themes.xml
+import { vars } from 'nativewind';
+
+export const colors = {
+  light: {
+    '--background': '250 250 250',
+    '--primary': '37 99 235',
+    '--primary-foreground': '255 255 255',
+    // ...
+  },
+  dark: {
+    '--background': '24 24 27',
+    '--primary': '59 130 246',
+    '--primary-foreground': '255 255 255',
+    // ...
+  },
+};
+
+export const config = {
+  light: vars(colors.light),
+  dark: vars(colors.dark),
+};
+```
+
+The provider (`components/ui/gluestack-ui-provider`) applies `config[mode]`, and
+`useGluestackColors()` converts each space-separated triplet back to hex when a
+library needs a literal colour.
+
+To change a colour: edit `design/themes.xml` (or the palette in
+`design/tokens.xml`) and run `npm run design:gen`.
+
+## Design tokens
+
+The second generated artifact is `components/ui/gluestack-ui-provider/tokens.js`.
+It is the **entire** Tailwind theme: `tailwind.config.js` contains no design
+value at all, it only does `extend: tokens.theme`. So the XML registries are the
+single source of truth for the gluestack/nativewind theme.
+
+In a consuming project, that same theme is published as
+`@flipova/foundation/tokens` - see **Installation** for the three-line setup.
+
+Two inputs feed it:
+
+- **semantic colours**, one per `themes.xml` role, bound to the CSS variables
+  emitted in `config.ts` (this is what keeps `bg-primary/50` working);
+- **scale tokens**, from `design/tokens.xml`.
+
+```js
+module.exports = {
+  theme: {
+    colors: {
+      primary: 'rgb(var(--primary)/<alpha-value>)',
+      'primary-foreground': 'rgb(var(--primary-foreground)/<alpha-value>)',
+      success: 'rgb(var(--success)/<alpha-value>)',
+      // ... one entry per themes.xml role
+    },
+    spacing: { '0': '0px', '1': '4px', '4': '16px' },
+    borderRadius: { 'sm': '4px', 'md': '8px', 'full': '9999px' },
+    screens: { 'xs': '480px', 'sm': '640px', 'md': '768px' },
+    fontFamily: {
+      system: ['system-ui', '-apple-system', 'sans-serif'],
+      body: ['var(--font-sans)'],
+      roboto: ['Roboto', 'sans-serif'],
+    },
+    fontSize: { 'xs': '12px', 'md': '16px' },
+    fontWeight: { 'normal': '400', 'bold': '700' },
+    lineHeight: { 'md': '24px', '5xl': '1' },
+    letterSpacing: { 'tight': '-0.025em' },
+    boxShadow: { 'md': '0px 3px 4px rgb(0 0 0 / 0.1)', 'soft-1': '...' },
+    zIndex: { 'modal': '2000', 'toast': '3000' },
+    opacity: { 'faint': '0.08', 'muted': '0.4' },
+    transitionDuration: { 'normal': '200ms' },
+    transitionTimingFunction: { 'standard': 'cubic-bezier(0.4, 0, 0.2, 1)' },
+  },
+};
+```
+
+Adding a semantic colour = adding a `<role>` in **every** theme of
+`themes.xml`; adding a scale = adding a `<value>` in `design/tokens.xml`. Then
+run `npm run design:gen` and every utility (`bg-success`, `p-4`, `rounded-md`,
+`shadow-hard-1`, `z-modal`, `ease-standard`, ...) exists.
+
+The raw `color` palette is deliberately not injected into Tailwind: it is
+internal, and only the semantic colours are meaningful as utilities.
+]]>                </content>
+        </article>
+    </section>
+    <section id="tools" title="CLI &amp; Tools" order="3">
+        <article id="overview" title="Tools Overview" slug="tools/overview">
+            <content><![CDATA[
+# Tools Overview
+
+The design toolchain is a handful of Python scripts under
+`design/tools/sources/`, wired together only through `manifest.xml` and
+`schema.xsd`:
+
+| Tool | Role |
+|---|---|
+| `linter.py` | Validates **XSD conformance** of every XML file. 100% agnostic: it only knows "XML <-> XSD". |
+| `checker.py` | Applies the **determinism rules** declared in `meta/determinism`; during `--check` it also lints `sources/` with `ruff`. |
+| `generate.py` | Compiles `tokens.xml` + `themes.xml` into `config.ts` (colour variables) and `tokens.js` (the whole Tailwind theme). |
+| `docgen.py` | Generates the documentation site under `docs/generated` from `documentation.xml`, `schema.xsd`, `tokens.xml` and `themes.xml`. |
+| `xmleditor.py` | Visual, XSD-driven XML block editor (tkinter GUI + headless CLI) for the registry files. |
+
+Folder layout:
+
+```
+design/tools/
+├── sources/        Python scripts + their dot-packages (.checker, .docgen, .generate, .linter, .xmleditor)
+├── windows/        Windows wrappers (.cmd) - pin the venv interpreter
+├── unix/           Linux/macOS wrappers (.sh) - pin the venv interpreter
+├── design.js       cross-platform Node entry point used by the npm scripts
+├── requirements.txt
+```
+
+### Editor schema resolution
+
+XML-aware editors (VS Code Red Hat XML / LemMinX, …) resolve the registries
+through the OASIS catalog in `.vscode/xml-catalog.xml`, registered in
+`.vscode/settings.json` under `xml.catalogs`. It maps
+`urn:flipova:foundation:registry` to `design/schema.xsd`, so validation never
+depends on `xsi:schemaLocation` path resolution (which is what makes the
+`schema_reference.4` / `cvc-elt.1.a` errors appear on Windows when a path is
+mis-resolved).
+]]>                </content>
+        </article>
+        <article id="commands" title="Commands" slug="tools/commands">
+            <content><![CDATA[
+# Commands
+
+All commands go through `design/tools/design.js` (or the `.cmd`/`.sh`
+wrappers) and are exposed as npm scripts:
+
+| npm script | Target | Runs |
+|---|---|---|
+| `npm run design:gen` | `gen` | `generate.py` - compile tokens/themes into `config.ts` + `tokens.js` |
+| `npm run design:gen:check` | `gen --check` | verify regeneration is a no-op (drift check) |
+| `npm run design:check` | `check` | determinism rules + XSD pass + ruff |
+| `npm run design:verify` | `verify` | verify the committed canonical index |
+| `npm run design:canonical` | `canonical` | re-emit `design/canonical.index.txt` |
+| `npm run design:lint` | `lint` | XSD-validate every design XML |
+| `npm run design:doc` | `doc` | regenerate `docs/generated` |
+| `npm run design:edit` | `edit` | open the XML editor (GUI) |
+| `npm run design:pipeline` | `pipeline` | `gen` + `check` + `verify` + `lint` + `doc` |
+
+`generate.py` also supports `--check` directly, and `checker.py` supports
+`--list-rules`, `--emit-canonical`, `--verify-canonical` and
+`--sync-version`.
+]]>                </content>
+        </article>
+    </section>
+    <section id="contributing" title="Contributing" order="4">
+        <article id="how-to-contribute" title="How to Contribute" slug="contributing/how-to-contribute">
+            <content><![CDATA[
+# How to Contribute
+
+The registries are the single source of truth. Change the XML, run the
+pipeline, commit the regenerated output.
+
+1. **Edit a source of truth:**
+   - palette/shade value -> `design/tokens.xml`;
+   - theme role mapping -> `design/themes.xml`;
+   - determinism rule -> the `<determinism>` block in `design/manifest.xml`
+     (then implement/locate the handler in `checker.py`);
+   - documentation -> the relevant `<article><content>` in
+     `design/documentation.xml`.
+2. **Regenerate and validate:**
+   ```bash
+   npm run design:pipeline
+   ```
+   This runs `gen`, `check`, `verify` and `doc` in order, all of which must be
+   clean.
+3. **Keep the canonical index in sync** if you touched a registry:
+   ```bash
+   npm run design:canonical   # then commit design/canonical.index.txt
+   ```
+4. **Never hand-edit a generated file** (`config.ts`, `tokens.js`,
+   `docs/generated/**`) - the next run overwrites it.
+5. **Never add a design value to `tailwind.config.js`**: it only wires the
+   generated `tokens.js`. A colour, scale, font family, shadow or z-index always
+   belongs in `design/tokens.xml` / `design/themes.xml`.
+6. **Keep the roles in sync across themes**: a semantic colour is a `<role>` in
+   *every* theme of `design/themes.xml` (the generator warns when they diverge).
+]]>                </content>
+        </article>
+    </section>
+    <section id="schema-reference" title="Schema Reference" order="5">
+        <article id="schema" title="Schema Reference" slug="schema-reference/schema">
+            <content><![CDATA[
+# Schema Reference
+
+Generated directly from `design/schema.xsd` - a schema change flows through
+automatically, with no hand-maintained copy.
+]]>                </content>
+        </article>
+    </section>
+</documentation>
+
+

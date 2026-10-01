@@ -16,11 +16,16 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./foundation/*"],
-      "@flipova/foundation": ["./foundation/index.ts"],
-      "@flipova/foundation/*": ["./foundation/*"]
+      "@/*": ["./*"],
+      "@flipova/foundation": ["./index.ts"],
+      "@flipova/foundation/*": ["./*"]
     }
   },
-  "include": ["foundation", "scripts"],
-  "exclude": ["node_modules", "dist", "**/*.example.ts"]
+  "include": ["index.ts", "components", "scripts", "nativewind-env.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.example.ts",
+    "**/USAGE_EXAMPLE.tsx"
+  ]
 }
