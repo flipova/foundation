@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """site writer — narrative articles, cross-references and static index.
 
 - build_title_index / resolve_xrefs: rewrite prose "see **Title**" /

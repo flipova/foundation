@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """docgen CLI - assembles the content kinds and writes the site.
 
     python3 docgen.py --manifest ../../manifest.xml --documentation ../../documentation.xml
@@ -68,17 +67,20 @@ def main() -> int:
     dynamic["tokens"] = render_tokens_reference(tokens_path)
     dynamic["themes"] = render_themes_reference(themes_path)
 
+    # Version stamping: the ONE version is the root package.json (the version
+    # actually published). The registry deliberately stores no copy of it, so
+    # there is nothing that can drift after `changeset version` bumps it.
+    # Resolved BEFORE writing the site: the generated pages show the version.
+    version = ""
+    try:
+        version = json.loads((root / "package.json").read_text(encoding="utf-8")).get("version", "")
+    except (ValueError, OSError):
+        version = ""
+    model["version"] = version
+
     written = write_site(model, out_dir, dynamic, root)
 
-    # Automatic version management: the manifest <meta><version> is the single
-    # source of truth. Stamp it into the generated site and keep the Docusaurus
-    # site package.json (docs/package.json) aligned in the same run.
-    version = model.get("version") or ""
-    if not version:
-        try:
-            version = json.loads((root / "package.json").read_text(encoding="utf-8")).get("version", "")
-        except (ValueError, OSError):
-            version = ""
+    # Keep the Docusaurus site package.json (docs/package.json) aligned.
     site_pkg_path = out_dir.parent / "package.json"
     if version and site_pkg_path.exists():
         try:

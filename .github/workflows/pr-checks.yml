@@ -12,6 +12,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The "a changeset is required" rule is enforced as a hard gate by the
+  # `Design registry` job in ci.yml, scoped to the published surface
+  # (design/, components/, package.json, entry points). It is intentionally not
+  # duplicated here: a soft `continue-on-error` check would only add noise.
+
   label:
     runs-on: ubuntu-latest
     permissions:
@@ -40,18 +45,3 @@ jobs:
           l_label: "size/l"
           l_max_size: 500
           xl_label: "size/xl"
-
-  changeset:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - name: Check for changeset
-        run: npx changeset status
-        continue-on-error: true

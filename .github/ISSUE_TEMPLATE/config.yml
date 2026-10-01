@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question / usage help
+    url: https://github.com/flipova/foundation/discussions
+    about: Ask how to use the design system, tokens or the CLI.

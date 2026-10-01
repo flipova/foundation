@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """xsd2md walker — generic XSD -> Markdown renderer driven by <xs:documentation>.
 
 Split out of the historical docgen.py monolith: collects complexTypes /

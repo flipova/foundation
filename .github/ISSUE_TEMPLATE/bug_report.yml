@@ -1,0 +1,65 @@
+name: Bug report
+description: Something in @flipova/foundation does not behave as documented
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. The more precise the version and the affected
+        layer, the faster we can act on it.
+  - type: input
+    id: version
+    attributes:
+      label: Foundation version
+      description: The version installed from npm, or `main` for a local checkout.
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected layer
+      options:
+        - Theming / design tokens
+        - gluestack components
+        - CLI (flipova-design)
+        - Documentation site
+        - Build / packaging
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options: [Web, iOS, Android, Node / CLI, Documentation site]
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happens
+      description: What you observe, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal snippet - it makes the difference between a 5-minute and a 5-day fix.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: registry
+    attributes:
+      label: Registry involved (if any)
+      description: The relevant token / theme / rule, e.g. "roles.primary in design/themes.xml" or "token spacing".
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Diagnostics already run
+      options:
+        - label: npm run design:pipeline passes
+        - label: npm run design:gen --check reports no drift

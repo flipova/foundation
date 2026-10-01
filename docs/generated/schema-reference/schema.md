@@ -165,12 +165,11 @@ automatically, with no hand-maintained copy.
 
 ### MetaType
 
-*Registry metadata: project identity and the determinism rules of the generation pipeline.*
+*Registry metadata: project identity and the determinism rules of the generation pipeline. The project version is NOT stored here - it is owned by the root package.json.*
 
 | Élément | Occurrences | Type | Description |
 |---|---|---|---|
 | `project` | 1..1 | `string` | Project name (e.g. "flipova foundation"). |
-| `version` | 1..1 | `string` | Project version (semver, e.g. "1.14.0"). Single source of truth: propagated to the @version of every root tag declaring it (checker.py --sync-version) and stamped into the generated documentation (docgen.py, including docs/package.json). |
 | `license` | 1..1 | `string` | License (e.g. "MIT"). |
 | `language` | 1..1 | `string` | Default language code (e.g. "en"). |
 | `registryRoot` | 1..1 | `string` | Root directory of the registry files (e.g. "design"). |
