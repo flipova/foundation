@@ -29,4 +29,7 @@
 #   pip install -r design/tools/requirements.txt
 
 lxml>=4.7,<6
-ruff>=0.16,<1
+# Floor at 0.16.9: EXE001 (shebang without the executable bit) only exists on
+# POSIX, so a Windows developer must run the same linter version as CI to see
+# what CI sees. Bump this floor whenever a newer ruff adds a rule.
+ruff>=0.16.9,<1

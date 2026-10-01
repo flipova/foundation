@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """reference renderers - dynamic content of the registry/schema reference pages.
 
 - Schema Reference: rendered from `design/schema.xsd` via .docgen/xsddoc.py

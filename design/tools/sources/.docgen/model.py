@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """docs model - declarative sources of the documentation site.
 
 Parses `design/manifest.xml` (project metadata + determinism rules) and

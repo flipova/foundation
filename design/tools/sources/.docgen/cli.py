@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """docgen CLI - assembles the content kinds and writes the site.
 
     python3 docgen.py --manifest ../../manifest.xml --documentation ../../documentation.xml
