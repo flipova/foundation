@@ -63,13 +63,19 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install design tooling
-        run: pip install -r design/tools/requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          # Wheels only: building lxml from source needs the libxml2/libxslt
+          # development headers, which the runners do not provide. Requiring a
+          # wheel turns a missing one into a clear, short error here instead of
+          # a long compile failure later in the job.
+          python -m pip install --only-binary=:all: -r design/tools/requirements.txt
 
       # The registry is the published surface: it must be valid and in sync
       # before anything is released.
@@ -199,13 +205,19 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Install design tooling
-        run: pip install -r design/tools/requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          # Wheels only: building lxml from source needs the libxml2/libxslt
+          # development headers, which the runners do not provide. Requiring a
+          # wheel turns a missing one into a clear, short error here instead of
+          # a long compile failure later in the job.
+          python -m pip install --only-binary=:all: -r design/tools/requirements.txt
 
       - name: Configure registry authentication
         env:

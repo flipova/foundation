@@ -8,6 +8,12 @@
 #                                       tkinter GUI + headless CLI)
 #
 # All tools require Python 3.8+.
+#
+# In CI the tooling is installed on a pinned interpreter (3.12) with
+# `pip install --only-binary=:all:`. Wheels are mandatory here: `lxml < 6` has
+# no wheel for the newest CPython, and building it from source needs the
+# libxml2/libxslt development headers that the runners do not provide. Pinning
+# the interpreter in the workflows keeps this a fast, deterministic install.
 # Third-party dependencies:
 #   lxml    ElementTree / XMLSchema backend — used by every tool
 #   ruff    Python linter — run automatically by checker.py --check
