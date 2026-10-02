@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.3
+
+### Patch Changes
+
+- 592f9a1: Check the OIDC capability where id-token: write actually is.
+
 ## 2.0.2
 
 ### Patch Changes

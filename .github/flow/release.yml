@@ -5,5 +5,5 @@
 # the declaration and what changesets actually reads cannot disagree.
 #
 # bump: major | minor | patch | none   (none = nothing to release)
-bump: patch
-summary: 'Check the OIDC capability where id-token: write actually is.'
+bump: none
+summary: ''
