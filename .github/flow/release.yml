@@ -5,37 +5,5 @@
 # the declaration and what changesets actually reads cannot disagree.
 #
 # bump: major | minor | patch | none   (none = nothing to release)
-bump: patch
-summary: |-
-  Fix the release path, which could not complete a release at all.
-
-  Merging the 2.0.1 version pull request failed twice, for two unrelated reasons.
-
-  - The version pull request was red: `flow release check` wanted
-    `.changeset/release.md`, which `changeset version` had already consumed.
-    Deleting the changeset is what that command does, so a declaration still
-    saying `patch` made the invariant "a real bump implies the file exists" false
-    on the version pull request and on `main`. `flow release reset`, wired into
-    `npm run version:bump`, returns the declaration to `none` in the same step
-    that consumes the changeset, so the state is consistent everywhere with no
-    special case in the check.
-  - `main` refused to publish. The preflight read `git log -1 --pretty=%s` and
-    required a `chore: version packages` subject; on a repository that merges
-    pull requests the tip is always `Merge pull request #N from ...`, so the
-    check could never succeed. It now asks which commit **wrote the current
-    version** into `package.json`, with `git log -S`, and treats a version
-    already on the registry as nothing-to-do rather than as a failure.
-
-  Also here:
-
-  - `flow verify` runs the gate a contributor would otherwise forget: changeset
-    drift, generated files against the registries, registry validation, types.
-    It is a gate and not a formatter, so a failure always means "look at this".
-  - CONTRIBUTING is now organised around `npm run flow`: the cycle, the four
-    decisions you actually make, and what the tool handles for you.
-  - `flow issue new` writes the body as a literal YAML block. A Markdown body
-    dumped as a folded scalar doubles every blank line in it.
-  - the generated "How to Contribute" page had drifted from CONTRIBUTING: it is
-    generated from `design/documentation.xml`, not from the Markdown file, so it
-    still described the manual procedure. Both are now organised around
-    `npm run flow`.
+bump: none
+summary: ''
