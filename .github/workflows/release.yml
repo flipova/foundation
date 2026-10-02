@@ -98,6 +98,14 @@ jobs:
           version="$(node -p "require('./package.json').version")"
           subject="$(git log -1 --pretty=%s)"
           pending="$(ls .changeset/*.md 2>/dev/null | grep -vc README || true)"
+          # Which commit produced the version currently in package.json?
+          #
+          # Not `git log -1`: on a repository that merges pull requests the tip
+          # is always "Merge pull request #N from ...", so a tip check refuses
+          # every single publish - which is exactly what 2.0.1 did. The pickaxe
+          # asks the question that actually matters: did the changesets version
+          # commit write this version?
+          bump="$(git log -1 --format=%s -S"\"version\": \"$version\"" -- package.json 2>/dev/null || true)"
           {
             echo "### Release preflight"
             echo ""
@@ -106,6 +114,7 @@ jobs:
             echo "| package | \`$name\` |"
             echo "| local version | \`$version\` |"
             echo "| last commit | \`$subject\` |"
+            echo "| version commit | \`${bump:-not found}\` |"
             echo "| pending changesets | $pending |"
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
@@ -121,6 +130,14 @@ jobs:
             exit 0
           fi
 
+          # Already on the registry: nothing to do, and that is not a failure.
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version is already published - nothing to do."
+            echo "path=already-published" >> "$GITHUB_OUTPUT"
+            echo "will_publish=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           if [ "$pending" -gt 0 ]; then
             echo "Changesets pending ($pending) -> the Version Packages PR will be opened/updated. No publish here."
             echo "path=version-pr" >> "$GITHUB_OUTPUT"
@@ -128,20 +145,22 @@ jobs:
             exit 0
           fi
 
-          case "$subject" in
+          case "$bump" in
             "chore: version packages"*) ;;
+            "")
+              echo "::error::Refusing to publish."
+              echo "::error::No commit in the history wrote \"version\": \"$version\" into package.json."
+              echo "::error::The local version was not produced by 'changeset version'."
+              echo "::error::Either merge the 'chore: version packages' PR, or dispatch the release workflow with hotfix = true and a reason."
+              exit 1
+              ;;
             *)
               echo "::error::Refusing to publish."
-              echo "::error::main has no pending changeset and the last commit is '$subject', which is not a changesets version commit."
+              echo "::error::\"version\": \"$version\" was written by '$bump', not by a changesets version commit."
               echo "::error::A release must go through the 'chore: version packages' PR, or an explicit hotfix dispatch (reason required)."
               exit 1
               ;;
           esac
-
-          if npm view "$name@$version" version >/dev/null 2>&1; then
-            echo "::error::$name@$version is already published - nothing to do."
-            exit 1
-          fi
 
           echo "path=version-pr" >> "$GITHUB_OUTPUT"
           echo "will_publish=true" >> "$GITHUB_OUTPUT"

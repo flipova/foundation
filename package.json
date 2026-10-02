@@ -56,7 +56,7 @@
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
     "version": "changeset version",
-    "version:bump": "changeset version && npm run design:doc",
+    "version:bump": "changeset version && node .github/scripts/flow.mjs release reset && npm run design:doc",
     "prepublishOnly": "npm run build && npm run typecheck",
     "docs": "npm run design:doc",
     "docs:build": "npm --prefix docs run build",

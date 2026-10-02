@@ -155,6 +155,20 @@ export function consolidate() {
   };
 }
 
+/**
+ * End the cycle: `changeset version` has consumed the changeset, so the
+ * declaration goes back to "nothing to release".
+ *
+ * Without this the declaration keeps saying `patch` while the generated file is
+ * gone - `changeset version` deletes what it consumes - so every check that
+ * compares the two fails on the version pull request and on main. That is not a
+ * theoretical case: it is what 2.0.1 did.
+ */
+export function resetDeclaration() {
+  writeDeclaration({ bump: 'none', summary: '' });
+  return writeChangeset(null);
+}
+
 /** Compare the declaration with the generated file. CI runs this. */
 export function checkDrift() {
   const problems = [];
@@ -170,9 +184,11 @@ export function checkDrift() {
 
   const actual = existsSync(CHANGESET) ? readFileSync(CHANGESET, 'utf8') : null;
   if (expected === null) {
-    if (actual !== null) problems.push('.changeset/release.md: must not exist when the bump is "none"');
+    if (actual !== null) problems.push('.changeset/release.md: must not exist when the bump is "none" - run `flow release reset`');
   } else if (actual === null) {
-    problems.push('.changeset/release.md: missing - run `flow release sync`');
+    problems.push(
+      '.changeset/release.md: missing - run `flow release sync`, or `flow release reset` if `changeset version` already consumed it',
+    );
   } else if (actual.replace(/\r\n/g, '\n') !== expected) {
     problems.push('.changeset/release.md: out of date with .github/flow/release.yml - run `flow release sync`');
   }

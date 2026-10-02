@@ -23,6 +23,7 @@
  * that is already done.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 
@@ -50,6 +51,7 @@ import {
   consolidate,
   readDeclaration,
   renderChangeset,
+  resetDeclaration,
   writeChangeset,
   writeDeclaration,
 } from './lib/release.mjs';
@@ -180,6 +182,58 @@ const cmdReleaseSync = () => {
   const declaration = readDeclaration();
   writeChangeset(renderChangeset(declaration));
   good(`declaration ${declaration.bump} -> ${existsSync(CHANGESET) ? '.changeset/release.md' : 'no changeset'}`);
+};
+
+/**
+ * The gate a human would otherwise run by hand and forget.
+ *
+ * It is a gate, not a formatter: nothing here rewrites a file, so a failure
+ * always means "look at this", never "it fixed itself".
+ */
+const cmdVerify = async () => {
+  const checks = [
+    // `node` explicitly: a bare `.mjs` path is not executable on Windows.
+    ['the single changeset is in step with its declaration', ['node', '.github/scripts/flow.mjs', 'release', 'check']],
+    ['the generated files match the registries', ['npm', 'run', '--silent', 'design:gen:check']],
+    ['the registries validate', ['npm', 'run', '--silent', 'design:check']],
+    ['types', ['npx', '--no-install', 'tsc', '--noEmit']],
+  ];
+  let failed = 0;
+  for (const [what, argv] of checks) {
+    info(`checking ${what}...`);
+    // Captured, and only shown on failure: a passing `npm run` still writes to
+    // stderr, and interleaving that with the checklist makes both unreadable.
+    const r = spawnSync(argv[0], argv.slice(1), { cwd: ROOT, shell: true, encoding: 'utf8' });
+    if (r.status === 0) {
+      good(what);
+      continue;
+    }
+    bad(`failed: ${what}`);
+    const noise = `${r.stdout ?? ''}${r.stderr ?? ''}`.trim();
+    if (noise) info(noise.split('\n').slice(-12).map((l) => `    ${l}`).join('\n'));
+    failed += 1;
+  }
+  if (failed) {
+    bad(`${failed} check(s) failed`);
+    process.exitCode = 1;
+    return false;
+  }
+  good(`all ${checks.length} checks passed`);
+  return true;
+};
+
+/** End the cycle after `changeset version` consumed the changeset.
+ *
+ * Wired into `npm run version:bump`, which is what the release workflow runs to
+ * build the version pull request. Leaving the declaration at `patch` while the
+ * generated file has been consumed is the state that made both the version pull
+ * request and main fail their own checks.
+ */
+const cmdReleaseReset = () => {
+  const before = readDeclaration();
+  resetDeclaration();
+  good(`bump ${before.bump} -> none, .changeset/release.md removed`);
+  info('the next cycle starts with `flow release`');
 };
 
 const cmdReleaseConsolidate = () => {
@@ -560,7 +614,7 @@ const cmdStatus = async () => {
  * declared before the commit, and the pull request exists before it is linked.
  */
 const cmdWizard = async () => {
-  const total = 7;
+  const total = 8;
   const branch = currentBranch();
   const state = readState();
 
@@ -588,20 +642,30 @@ const cmdWizard = async () => {
     info(`already on ${branch}`);
   }
 
-  step(4, total, 'commit');
+  // Make your changes here, then run `npm run flow` again: this run picks up
+  // from the branch, because the steps above are already done.
+  if (!gitTry('git status --porcelain') && gitTry(`git diff --quiet HEAD`)) {
+    info('the working tree is clean - nothing to verify yet.');
+    info('make your changes, then run `npm run flow` again.');
+  } else {
+    step(4, total, 'verify');
+    await cmdVerify();
+  }
+
+  step(5, total, 'commit');
   await cmdCommit();
 
-  step(5, total, 'push');
+  step(6, total, 'push');
   cmdPush();
 
-  step(6, total, 'pull request');
+  step(7, total, 'pull request');
   try {
     await cmdPr();
   } catch (e) {
     warn(`could not open the pull request: ${e.message}`);
   }
 
-  step(7, total, 'link the issues');
+  step(8, total, 'link the issues');
   try {
     await cmdLink();
   } catch (e) {
@@ -609,7 +673,7 @@ const cmdWizard = async () => {
   }
 
   info('');
-  info('next: open the pull request, let the checks run, then merge.');
+  info('next: review, let the checks run, then merge.');
   prompt.close();
 };
 
@@ -618,6 +682,7 @@ const USAGE = `flow - the contribution cycle
 
   flow                        the cycle, interactively, in order
   flow status                 branch, issue, release and pull request at a glance
+  flow verify                 the gate: changeset, generated files, registries, types
 
   flow issue list             the local registry and its GitHub numbers
   flow issue new              declare an issue locally (template or blank)
@@ -627,6 +692,7 @@ const USAGE = `flow - the contribution cycle
 
   flow release                declare the bump and the summary
   flow release sync           regenerate .changeset/release.md
+  flow release reset          end the cycle (runs in version:bump)
   flow release consolidate    fold every changeset into the single one
   flow release check          drift between the declaration and the changeset (CI)
 
@@ -645,6 +711,8 @@ const main = async () => {
       return cmdWizard();
     case 'status':
       return cmdStatus();
+    case 'verify':
+      return cmdVerify();
     case 'help':
     case '--help':
       process.stdout.write(USAGE);
@@ -670,6 +738,8 @@ const main = async () => {
           return cmdRelease();
         case 'sync':
           return cmdReleaseSync();
+        case 'reset':
+          return cmdReleaseReset();
         case 'consolidate':
           return cmdReleaseConsolidate();
         case 'check':

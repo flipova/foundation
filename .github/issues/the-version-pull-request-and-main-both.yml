@@ -1,0 +1,52 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-version-pull-request-and-main-both
+title: "The version pull request and main both failed after the 2.0.1 merge"
+labels:
+  - bug
+body: |
+  Merging the 2.0.1 version pull request failed twice, for two unrelated reasons,
+  and both would have failed again on every future release.
+
+  ## 1. The version pull request was red
+
+  `flow release check` reported `.changeset/release.md: missing`.
+
+  `changeset version` **consumes** the changeset - deleting the file is what it
+  does - while `.github/flow/release.yml` still said `bump: patch`. The invariant
+  "a real bump implies the generated file exists" was therefore false on the
+  version pull request, and on `main` after it merged.
+
+  ## 2. `main` refused to publish
+
+  ```
+  Error: Refusing to publish.
+  Error: main has no pending changeset and the last commit is
+         'Merge pull request #67 from flipova/changeset-release/main',
+         which is not a changesets version commit.
+  ```
+
+  The preflight read `git log -1 --pretty=%s` and required it to be
+  `chore: version packages`. On a repository that merges pull requests the tip is
+  always `Merge pull request #N from ...`, so that check could never succeed: the
+  publish path was unreachable, not merely fragile.
+
+  ## Steps to reproduce
+
+  1. Declare a release, open and merge a pull request.
+  2. Merge the `chore: version packages` pull request.
+  3. Observe the `Flow state in sync` check failing on the version pull request,
+     then `Refusing to publish` on `main`.
+
+  ## Fix
+
+  - `flow release reset`, wired into `npm run version:bump`, returns the
+    declaration to `none` in the same step that consumes the changeset. The state
+    is then self-consistent on the version pull request and on `main`, with no
+    special case in the check.
+  - the preflight now asks which commit **wrote the current version** into
+    `package.json`, with `git log -S`, instead of assuming the tip is that
+    commit. A version already on the registry is reported as nothing-to-do rather
+    than as a failure.
+
+  Both were found by running the path end to end; neither was reachable from
+  reading the workflow.

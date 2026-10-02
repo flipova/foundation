@@ -7,62 +7,35 @@
 # bump: major | minor | patch | none   (none = nothing to release)
 bump: patch
 summary: |-
-  Make the contribution flow enforceable rather than advisory, and give the
-  repository one entry point for the whole cycle: issue, changeset, branch,
-  commit, pull request.
+  Fix the release path, which could not complete a release at all.
 
-  ### A single changeset, declared once
+  Merging the 2.0.1 version pull request failed twice, for two unrelated reasons.
 
-  `.github/flow/release.yml` declares the bump and the summary for the cycle,
-  and `.changeset/release.md` is generated from it. `.changeset/` holds exactly
-  one file, and `flow release check` reports any drift between the declaration
-  and what `changeset version` actually reads. The version decision is one
-  reviewable file instead of a dozen that individually mean very little.
+  - The version pull request was red: `flow release check` wanted
+    `.changeset/release.md`, which `changeset version` had already consumed.
+    Deleting the changeset is what that command does, so a declaration still
+    saying `patch` made the invariant "a real bump implies the file exists" false
+    on the version pull request and on `main`. `flow release reset`, wired into
+    `npm run version:bump`, returns the declaration to `none` in the same step
+    that consumes the changeset, so the state is consistent everywhere with no
+    special case in the check.
+  - `main` refused to publish. The preflight read `git log -1 --pretty=%s` and
+    required a `chore: version packages` subject; on a repository that merges
+    pull requests the tip is always `Merge pull request #N from ...`, so the
+    check could never succeed. It now asks which commit **wrote the current
+    version** into `package.json`, with `git log -S`, and treats a version
+    already on the registry as nothing-to-do rather than as a failure.
 
-  A changeset with malformed frontmatter used to stop the whole release with an
-  error naming neither the file nor the line. `flow release consolidate` folds
-  every existing changeset into the single one, and names the files it cannot
-  read instead of failing later.
+  Also here:
 
-  ### The cycle, end to end
-
-  `node .github/scripts/flow.mjs` walks the cycle in order and skips whatever is
-  already done: declare or adopt an issue, declare the release, branch, commit
-  with the `Issues:` trailer, push, open the pull request, link the issue. Every
-  step is also usable on its own, and a non-interactive run falls back to the
-  documented defaults instead of blocking on a prompt.
-
-  ### Issues declared in the repository
-
-  `.github/issues/<id>.yml` declares one issue per file - id, title, labels,
-  body - and syncs it to GitHub, so a tracker entry is reviewable like any other
-  source file. `flow issue link <n>` adopts an issue that already exists on the
-  tracker. `flow link` resolves the local ids and writes `Closes #n` into the
-  pull request, refusing to reference a pull request, because GitHub shares one
-  numbering between issues and pull requests.
-
-  ### Labels
-
-  `.github/labels.yml` declares every automation label with its colour, its
-  description and the paths that trigger it; `.github/labeler.yml` is generated
-  from it and checked for drift. The five labels left over from the removed
-  architecture (`blocks`, `hooks`, `layout`, `primitives`, `studio`) are gone.
-
-  ### Release path
-
-  `package.json` is the single source of the version. The release workflow
-  refuses anything unexpected, authenticates against the registry before
-  uploading, and names the likely cause of a failure - missing, expired,
-  classic, or wrong-registry token - instead of failing with a bare `E404`. A
-  `hotfix` dispatch with a mandatory reason is the only way to skip the version
-  pull request.
-
-  ### CI
-
-  - the issue-linkage failure now names the pull request and the two ways out:
-    link an issue, or label the pull request `no-issue`;
-  - labelling a pull request `changeset:major|minor|patch|none` makes the guard
-    write the changeset, commit it to the branch and explain itself;
-  - the design registry gate runs on every pull request and on `main`;
-  - line endings are normalised (`.gitattributes`), so a generated file can no
-    longer look out of date only on Windows.
+  - `flow verify` runs the gate a contributor would otherwise forget: changeset
+    drift, generated files against the registries, registry validation, types.
+    It is a gate and not a formatter, so a failure always means "look at this".
+  - CONTRIBUTING is now organised around `npm run flow`: the cycle, the four
+    decisions you actually make, and what the tool handles for you.
+  - `flow issue new` writes the body as a literal YAML block. A Markdown body
+    dumped as a folded scalar doubles every blank line in it.
+  - the generated "How to Contribute" page had drifted from CONTRIBUTING: it is
+    generated from `design/documentation.xml`, not from the Markdown file, so it
+    still described the manual procedure. Both are now organised around
+    `npm run flow`.

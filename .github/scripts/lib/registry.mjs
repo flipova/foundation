@@ -66,19 +66,21 @@ export function uniqueSlug(base, taken) {
 }
 
 /**
- * Write an issue file with LF endings and no BOM.
+ * Write an issue file with LF endings, no BOM, and the body as a literal block.
  *
- * This matters more than it looks: a changeset written through PowerShell once
- * ended up with its whole frontmatter on one line, and changesets rejected it
- * with a parse error that named the file only vaguely.
+ * Both details matter. A changeset written through PowerShell once ended up with
+ * its whole frontmatter on one line, and changesets rejected it with a parse
+ * error that named neither the file nor the line. And a YAML dumper asked to
+ * emit a Markdown body will happily choose a *folded* scalar (`>-`), which turns
+ * every blank line in the body into a doubled one - so the file is assembled by
+ * hand instead.
  */
 export function writeIssue({ id, title, labels = [], body = '' }, note) {
   const header = note ? `# ${note.replace(/\n/g, '\n# ')}\n` : '';
-  const front =
-    yaml
-      .dump({ id, title, labels, body: body.replace(/\s+$/, '') }, { lineWidth: 100, quotingType: '"', noRefs: true })
-      .trimEnd() + '\n';
-  writeFileSync(join(DIR, `${id}.yml`), `${header}${front}`, 'utf8');
+  const indent = (s) => s.replace(/\s+$/, '').replace(/^/gm, '  ');
+  const labelLines = labels.length ? labels.map((l) => `  - ${l}`).join('\n') : '  []';
+  const text = `${header}id: ${id}\ntitle: ${JSON.stringify(title)}\nlabels:\n${labelLines}\nbody: |\n${indent(body)}\n`;
+  writeFileSync(join(DIR, `${id}.yml`), text, 'utf8');
   return `${id}.yml`;
 }
 
