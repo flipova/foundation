@@ -4,13 +4,16 @@ name: Changeset Guard
 # the version. This workflow removes the "I forgot the changeset" dead end:
 #
 #   - changeset present in the pull request  -> nothing to do
+#   - the release declaration says `bump: none` -> nothing to do
 #   - no changeset, but a `changeset:*` label -> the changeset is WRITTEN here,
 #     committed to the branch, and explained in a comment
 #   - no changeset and no label              -> the check fails and says exactly
 #     which label to apply
 #
 # `changeset:none` produces an empty changeset: the change is real but needs no
-# release, which satisfies the gate without inventing a version bump.
+# release, which satisfies the gate without inventing a version bump. Prefer
+# declaring `bump: none` in `.github/flow/release.yml`: that is the canonical
+# place for the decision, and it needs no label.
 #
 # SAFETY: this workflow never executes the pull request's code - it only runs
 # git plumbing and GitHub API calls - so it can safely hold a write token. That
@@ -87,6 +90,36 @@ jobs:
 
             if (added.length) {
               core.info(`Changeset present (${added.join(', ')}): nothing to do.`);
+              return;
+            }
+
+            // `.github/flow/release.yml` is the canonical release decision, and
+            // `bump: none` is how "this change needs no release" is written down.
+            //
+            // The guard used to accept only a `changeset:*` label, and it used to
+            // *answer* that label by writing an empty changeset file - which
+            // `flow release check` then rejects as a stray file, because a
+            // `none` bump means there must be none. The two automations were
+            // arguing, and the label could not satisfy both.
+            //
+            // Reading the declaration settles it: the decision already exists, in
+            // the place the rest of the tooling reads it from.
+            //
+            // The value is read with a regex rather than a YAML parser on
+            // purpose. This job deliberately never runs `npm ci` - it must not
+            // execute the pull request's code - so `require('js-yaml')` would
+            // fail here, and the failure would be silent: the catch below would
+            // swallow it and the check would keep demanding a label.
+            let declaredBump = null;
+            try {
+              const raw = sh(`git show ${base}:.github/flow/release.yml`);
+              const found = raw.match(/^\s*bump:\s*(\S+)\s*$/m);
+              if (found) declaredBump = found[1].replace(/^["']|["']$/g, '');
+            } catch (error) {
+              core.info(`no release declaration to read: ${error.message}`);
+            }
+            if (declaredBump === 'none') {
+              core.info('The release declaration says bump: none - no changeset is expected.');
               return;
             }
 

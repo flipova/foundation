@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: changeset-guard-and-flow-release
+title: "changeset-guard and flow release contradict each other on bump: none"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  The label writes a changeset the declaration forbids, and the declaration is not read.
+  
+  ## Steps to reproduce
+  
+  1.

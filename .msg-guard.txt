@@ -1,0 +1,25 @@
+fix(ci): the changeset guard reads the release declaration
+
+Two automations were arguing with each other, and a docs pull request could not
+satisfy both.
+
+`flow release --bump none` writes no changeset file, because a `none` bump means
+there is nothing to release. `changeset-guard` accepted only a `changeset:*`
+label, and answered `changeset:none` by writing an empty changeset file - which
+`flow release check` then rejects as a stray file. The label could not satisfy
+the guard and the release check at the same time.
+
+The guard now reads `.github/flow/release.yml`, the canonical release decision,
+and treats `bump: none` as "no changeset expected". That declaration already
+exists and the rest of the tooling reads it from there; the guard had no business
+inventing a second way to say the same thing.
+
+The value is read with a regex rather than a YAML parser, on purpose: this job
+deliberately never runs `npm ci`, because it must not execute the pull request
+code. `require('js-yaml')` would fail here and the catch would swallow it, so the
+check would keep demanding a label while reporting nothing wrong. A regex has no
+dependency at all.
+
+Verified: the regex returns the right value for `none`, `patch`, a quoted value,
+`major`, and an absent key; the workflow still parses; and the guard accepts this
+pull request through its own `bump: none` declaration, with no label.
