@@ -35,7 +35,7 @@ labels - all generated, never typed.
 | --- | --- | --- |
 | 1 | `issue` | declares `.github/issues/<id>.yml` locally, from a template or blank. Or `link` adopts an issue that already exists on GitHub. |
 | 2 | `release` | you pick the bump and the summary; flow writes `.github/flow/release.yml` and generates `.changeset/release.md` from it |
-| 3 | `branch` | creates and switches to a branch off `main` |
+| 3 | `branch` | creates and switches to a branch off `main`, carrying any issue declared on `main` with it |
 | 4 | `verify` | changeset drift, generated files against the registries, registry validation, types |
 | 5 | `commit` | `git add -A`, then a commit whose subject you give and whose `Issues:` trailer flow derives |
 | 6 | `push` | pushes and sets the upstream |
@@ -101,6 +101,11 @@ a surprising message is recognisable.
   requests, so `Closes #12` where 12 is a pull request closes nothing. flow
   resolves the local ids to real issue numbers and refuses to point at a pull
   request.
+- **The issue queue.** `.github/issues/` holds work in flight, one file per
+  declared issue, and nothing else. `flow issue archive` moves a closed ticket
+  to `archive/`, which keeps its id and number out of `flow issue list` and out
+  of the `flow issue check` API calls. The id keeps that number forever, so no
+  id is ever handed to a second ticket.
 - **The pull request body.** `Closes #n` goes in the description, on its own
   line - that is where `pr-lifecycle.yml` reads it, not the title and not a
   comment.
@@ -345,6 +350,7 @@ adding it cannot move the release or trip the changeset guard.
 | `npm run flow -- issue link <n>` | adopt an existing GitHub issue |
 | `npm run flow -- issue sync` | create/update the declared issues on GitHub |
 | `npm run flow -- issue check` | read-only verification (run by CI) |
+| `npm run flow -- issue archive [id...]` | move closed issues to `.github/issues/archive/` |
 | `npm run flow -- release` | declare the bump and the summary |
 | `npm run flow -- release sync` | regenerate `.changeset/release.md` |
 | `npm run flow -- release reset` | end the cycle (also run by `version:bump`) |

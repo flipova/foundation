@@ -217,3 +217,60 @@ pickaxe stays in the job summary as a diagnostic.
 **`npm whoami`.** It cannot validate trusted publishing, so it runs only in
 token mode. In OIDC mode the preflight checks that `id-token: write` is present
 and stops there, because the publish itself is the only real check.
+
+## The workflows
+
+Seven files, and what each one is for. Everything else in `.github/` is either
+this runbook, a registry the tooling reads, or the tooling itself.
+
+| File | Name | Fires on | Does | Cancels |
+| --- | --- | --- | --- | --- |
+| `ci.yml` | CI | push to `main`, PR to `main` | the design registry gates, typecheck, build on Node 20 and 22 | yes |
+| `pr-checks.yml` | PR Checks | PR opened / reopened / synchronize / labeled / unlabeled | size, labels, the flow state files being in step | yes |
+| `pr-lifecycle.yml` | PR Lifecycle | the same, plus `edited` and `ready_for_review` | the `Closes #n` linkage, the status comment, auto-merge | yes |
+| `changeset-guard.yml` | Changeset Guard | PR opened / reopened / synchronize / labeled / unlabeled | a changeset in the pull request, or a `bump:` in `.github/flow/release.yml` that says no release | yes |
+| `issue-lifecycle.yml` | Issue Lifecycle | issue opened / edited / reopened / labeled / unlabeled / closed, and any comment | triage template, the note recording how an issue was resolved, ageing out unattended threads | no |
+| `release.yml` | Release | push to `main`, or dispatch with `hotfix` and `reason` | [the chain](#the-chain): preflight decision, then version pull request or publish | **no** |
+| `docs.yml` | Docs | push to `main`, or dispatch | build and deploy the documentation site to Pages | no (group `pages`) |
+
+`cancel-in-progress` is the interesting column. Everything a push supersedes may
+be cancelled; the release may not - a cancelled run between two commits to `main`
+is a publish that quietly did not happen, which is the failure mode this whole
+file exists to prevent.
+
+Two secrets are read, and only two: `GITHUB_TOKEN`, injected by Actions, and
+`NPM_PUBLISH_TOKEN`, which is **optional and currently absent** - its absence is
+the switch that selects trusted publishing.
+
+## Branch protection
+
+Configured at **Settings → Branches → Add rule for `main`**. What actually has to
+hold is visible on any pull request: the checks listed above all green, one
+approval, conversations resolved, no force pushes.
+
+One trap, because this repository takes merge commits: **do not enable "require
+linear history"**. `flow merge` merges with a merge commit by default, so that
+setting makes every `flow merge` fail with a 405, and the branch protection
+check is right while the workflow is unusable. If the setting is already on in
+your fork, turn it off rather than working around it.
+
+## What lives where
+
+```
+.github/
+  workflows/   the seven workflows above, and nothing else
+  scripts/     flow.mjs, maintain.mjs and lib/ - the CLI. Only flow is in package.json
+  flow/        the release declaration (tracked) and templates.yml;
+               .state.json is local scratch, gitignored
+  issues/      the OPEN issue queue - one file per declared issue;
+               archive/ holds closed work; .numbers.json maps id -> GitHub number
+  labels.yml   the label source of truth (labeler.yml is generated from it)
+  RELEASING.md this file
+
+CONTRIBUTING.md   the cycle, day to day          CODE_OF_CONDUCT.md
+README.md          what the package is            CHANGELOG.md, LICENSE
+```
+
+`flow issue archive` is what keeps `issues/` a queue instead of a museum: closed
+tickets move to `issues/archive/`, keep their number, and stay out of the
+`flow issue check` API calls and out of `flow issue list`.

@@ -42,7 +42,7 @@ import { join } from 'node:path';
 
 import { OWNER, REPO, ROOT, api, currentBranch, git, gitTry, token } from './lib/github.mjs';
 import * as prompt from './lib/prompt.mjs';
-import { readNumbers, readRegistry } from './lib/registry.mjs';
+import { archivedIds, readNumbers, readRegistry } from './lib/registry.mjs';
 import { CHANGESET_DIR, legacyChangesets } from './lib/release.mjs';
 
 const { confirm, info, warn, bad, good } = prompt;
@@ -165,8 +165,8 @@ const sectionState = () => {
           '.github/flow/.state.json is not readable JSON',
           repair('delete the unreadable scratch file (flow rebuilds it)', async () => {
             rmSync(STATE);
-          }),
-        ),
+          })
+        )
       );
     } else if (state.branch && gitTry(`git rev-parse --verify --quiet refs/heads/${state.branch}`) === null) {
       // Stale only when the branch it describes is *gone*. While that branch
@@ -179,8 +179,8 @@ const sectionState = () => {
           `.github/flow/.state.json still describes deleted branch "${state.branch}"`,
           repair('delete it (the branch it belongs to no longer exists)', async () => {
             rmSync(STATE);
-          }),
-        ),
+          })
+        )
       );
     } else {
       const unknown = (state.issues ?? []).filter((id) => !ids.has(id));
@@ -193,8 +193,8 @@ const sectionState = () => {
               const fresh = JSON.parse(readFileSync(STATE, 'utf8'));
               fresh.issues = (fresh.issues ?? []).filter((id) => ids.has(id));
               writeFileSync(STATE, `${JSON.stringify(fresh, null, 2)}\n`, 'utf8');
-            }),
-          ),
+            })
+          )
         );
       }
     }
@@ -205,13 +205,28 @@ const sectionState = () => {
   // file is missing - so dropping the mapping would leave nothing recording
   // that this id used to own that number. The fix that matters is restoring the
   // file from history, which is a judgement call and not a byte to delete.
+  //
+  // An archived file is not a missing file: `flow issue archive` moves closed
+  // issues to `.github/issues/archive/` on purpose, and those ids must keep
+  // their mapping - it is the only thing that stops the id being handed out a
+  // second time for a different ticket.
+  const archived = new Set(archivedIds());
   for (const [id, n] of Object.entries(numbers)) {
     if (ids.has(id)) continue;
+    if (archived.has(id)) continue;
     rows.push(
       row(
         'note',
-        `.numbers.json maps ${id} -> #${n}, but .github/issues/${id}.yml does not exist - restore it from history, or drop the mapping by hand`,
-      ),
+        `.numbers.json maps ${id} -> #${n}, but .github/issues/${id}.yml does not exist - restore it from history, or drop the mapping by hand`
+      )
+    );
+  }
+  if (archived.size) {
+    rows.push(
+      row(
+        'ok',
+        `${archived.size} archived issue file(s) under .github/issues/archive/ - closed work, kept out of the queue`
+      )
     );
   }
 
@@ -220,7 +235,10 @@ const sectionState = () => {
   const unsynced = registry.filter((i) => !numbers[i.id]).map((i) => i.id);
   if (unsynced.length) {
     rows.push(
-      row('note', `${unsynced.length} declared issue(s) never reached GitHub: ${unsynced.join(', ')} - \`flow issue sync\``),
+      row(
+        'note',
+        `${unsynced.length} declared issue(s) never reached GitHub: ${unsynced.join(', ')} - \`flow issue sync\``
+      )
     );
   }
 
@@ -232,8 +250,8 @@ const sectionState = () => {
         '.git/FLOW_COMMIT_MSG still holds the message of the last `flow commit`',
         repair('delete it (git has already read it)', async () => {
           rmSync(COMMIT_MSG);
-        }),
-      ),
+        })
+      )
     );
   }
 
@@ -251,8 +269,10 @@ const sectionState = () => {
     rows.push(
       row(
         'note',
-        `${stray.length} changeset file(s) the declaration does not account for: ${stray.join(', ')} - \`flow release consolidate\` folds them into it`,
-      ),
+        `${stray.length} changeset file(s) the declaration does not account for: ${stray.join(
+          ', '
+        )} - \`flow release consolidate\` folds them into it`
+      )
     );
   }
 
@@ -273,7 +293,7 @@ const closeDuplicate = async (number, canonical, id) => {
         '',
         'Reopen this one if it is in fact separate work.',
         '',
-        '<sub>Closed by \`maintain fix\`. Do not edit this comment.</sub>',
+        '<sub>Closed by `maintain fix`. Do not edit this comment.</sub>',
       ].join('\n'),
     }),
   });
@@ -323,8 +343,10 @@ const sectionIssues = async () => {
   rows.push(
     row(
       'ok',
-      `${registry.length} declared, ${Object.keys(numbers).length} of them on GitHub, ${closed} closed there; ${unregistered.length} tracker issue(s) declared nowhere locally`,
-    ),
+      `${registry.length} declared, ${Object.keys(numbers).length} of them on GitHub, ${closed} closed there; ${
+        unregistered.length
+      } tracker issue(s) declared nowhere locally`
+    )
   );
 
   // The case that matters: something GitHub still holds open that no local file
@@ -335,8 +357,8 @@ const sectionIssues = async () => {
       rows.push(
         row(
           'note',
-          `#${open.number} "${open.title}" is open on GitHub but nothing declares it - adopt it with \`flow issue link ${open.number}\``,
-        ),
+          `#${open.number} "${open.title}" is open on GitHub but nothing declares it - adopt it with \`flow issue link ${open.number}\``
+        )
       );
       continue;
     }
@@ -345,8 +367,8 @@ const sectionIssues = async () => {
       rows.push(
         row(
           'note',
-          `#${open.number} "${open.title}" shares its title with #${twinNumber} but not its body - decide which one is the work`,
-        ),
+          `#${open.number} "${open.title}" shares its title with #${twinNumber} but not its body - decide which one is the work`
+        )
       );
       continue;
     }
@@ -359,9 +381,9 @@ const sectionIssues = async () => {
           async () => {
             await closeDuplicate(open.number, twinNumber, twin.id);
           },
-          { remote: true },
-        ),
-      ),
+          { remote: true }
+        )
+      )
     );
   }
 
@@ -402,7 +424,9 @@ const sectionPrs = async () => {
   const abandoned = prs.filter((p) => p.state === 'closed' && !p.merged_at && !keptRef(p.head.ref));
   const abandonedLeft = abandoned.filter((p) => remoteBranches.includes(`origin/${p.head.ref}`));
   for (const p of abandonedLeft) {
-    rows.push(row('note', `#${p.number} was closed without merging and origin/${p.head.ref} still exists - ${p.title}`));
+    rows.push(
+      row('note', `#${p.number} was closed without merging and origin/${p.head.ref} still exists - ${p.title}`)
+    );
   }
   const abandonedGone = abandoned.length - abandonedLeft.length;
   if (abandonedGone) {
@@ -420,8 +444,10 @@ const sectionPrs = async () => {
     rows.push(
       row(
         'note',
-        `${merged.size} merged branch(es) still on the remote: ${[...merged.entries()].map(([ref, n]) => `origin/${ref} (#${n})`).join(', ')} - \`flow clean\` removes them`,
-      ),
+        `${merged.size} merged branch(es) still on the remote: ${[...merged.entries()]
+          .map(([ref, n]) => `origin/${ref} (#${n})`)
+          .join(', ')} - \`flow clean\` removes them`
+      )
     );
   }
   if (
@@ -464,8 +490,10 @@ const sectionBranches = () => {
     rows.push(
       row(
         'note',
-        `${merged.length} ref(s) whose work is already on main: ${merged.map((c) => c.label).join(', ')} - \`flow clean\` deletes them`,
-      ),
+        `${merged.length} ref(s) whose work is already on main: ${merged
+          .map((c) => c.label)
+          .join(', ')} - \`flow clean\` deletes them`
+      )
     );
   }
 
@@ -498,8 +526,8 @@ const printJson = (sections) => {
         findings: s.rows.map((r) => ({ level: r.level, message: r.message, fix: r.fix?.what ?? null })),
       })),
       null,
-      2,
-    )}\n`,
+      2
+    )}\n`
   );
 };
 
@@ -515,7 +543,9 @@ const cmdList = async () => {
   const fixable = sections.flatMap((s) => s.rows.filter((r) => r.level === 'fix'));
   const decided = sections.flatMap((s) => s.rows.filter((r) => r.level === 'note'));
   info('');
-  info(fixable.length ? `  ${fixable.length} repair(s), ${decided.length} needing a decision.` : '  nothing to repair.');
+  info(
+    fixable.length ? `  ${fixable.length} repair(s), ${decided.length} needing a decision.` : '  nothing to repair.'
+  );
   if (fixable.length) info('  repair with: node .github/scripts/maintain.mjs fix');
 };
 
@@ -617,6 +647,3 @@ main()
     process.exitCode = 1;
   })
   .finally(() => prompt.close());
-
-
-

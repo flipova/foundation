@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-closed-issue-queue-and-the-runbooks
+title: "The closed issue queue and the runbooks that drifted"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  Sixteen closed tickets sat in the registry the cycle treats as a work queue, each costing one API call per flow issue check, and the workflow README described a registry this package has never published to. Closed issues now move to archive/ behind flow issue archive, the three runbooks collapse into one file, and a code of conduct lands at the root.
+  
+  ## Validation
+  
+  What proves it works.
