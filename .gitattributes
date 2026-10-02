@@ -1,0 +1,20 @@
+# Normalise line endings in the repository itself.
+#
+# The generated files (`.changeset/release.md`, the issue registry, the labels)
+# are compared byte for byte against the file they are derived from, so a CRLF
+# checkout on Windows would make every one of them look out of date - and only
+# on Windows. Checking out LF removes the whole class of problem; the scripts
+# normalise on read too, because a working tree cloned before this file existed
+# is still CRLF.
+* text=auto eol=lf
+
+# Windows batch scripts are the exception: cmd.exe expects CRLF, and they are
+# never parsed as content.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Generated artefacts must never be diffed by line endings.
+design/**/*.xml text eol=lf
+.changeset/*.md text eol=lf
+.github/**/*.yml text eol=lf
+.github/**/*.mjs text eol=lf

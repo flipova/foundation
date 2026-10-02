@@ -43,12 +43,13 @@ jobs:
       - name: Verify the labels the automation relies on
         run: node .github/scripts/labels.mjs --check
 
-  # `.github/issues/*.yml` declares the tracker inside the repository. This keeps
-  # the declared issues and GitHub in step: a deleted, renamed or relabelled
-  # issue is reported here by name, instead of silently breaking the linkage the
-  # pull request checks rely on.
-  issues:
-    name: Issue registry in sync
+  # The tracker and the single changeset are both declared inside the
+  # repository (`.github/issues/*.yml`, `.github/flow/release.yml`). These
+  # checks keep them in step with GitHub and with what `changeset version`
+  # actually reads, so a deleted issue or a hand-edited changeset is reported
+  # by name instead of quietly breaking the release.
+  flow:
+    name: Flow state in sync
     runs-on: ubuntu-latest
     permissions:
       issues: read
@@ -59,10 +60,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Exactly one changeset, in step with its declaration
+        run: node .github/scripts/flow.mjs release check
       - name: Verify the declared issues exist and match GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node .github/scripts/issues.mjs --check
+        run: node .github/scripts/flow.mjs issue check
 
   size:
     runs-on: ubuntu-latest

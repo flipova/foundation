@@ -60,6 +60,7 @@
     "prepublishOnly": "npm run build && npm run typecheck",
     "docs": "npm run design:doc",
     "docs:build": "npm --prefix docs run build",
+    "flow": "node .github/scripts/flow.mjs",
     "test": "vitest run",
     "design:gen": "node design/tools/design.js gen",
     "design:gen:check": "node design/tools/design.js gen --check",
