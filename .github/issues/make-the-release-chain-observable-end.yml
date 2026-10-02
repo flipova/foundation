@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: make-the-release-chain-observable-end
+title: "Make the release chain observable, end to end"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  A green Release run does not say whether it published: 2.0.1 to 2.0.3 sat unpublished behind green ticks for weeks. flow status and flow release status now report what npm actually holds and what the last run decided, flow merge says which half of the chain you just landed, and flow opens an arrow-key menu when there is a terminal.
+  
+  ## Validation
+  
+  What proves it works.

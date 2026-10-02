@@ -2,8 +2,8 @@
 /**
  * `flow` - the whole contribution cycle, in one tool, in order.
  *
- *   flow                      run the cycle interactively, step by step
- *   flow status               where am I: branch, issue, release, PR
+ *   flow                      run the menu: the cycle, one decision at a time
+ *   flow status               where am I: branch, issue, release, npm, PR
  *
  *   flow issue list           the local registry and its GitHub numbers
  *   flow issue new            declare an issue locally, from a template or blank
@@ -13,14 +13,17 @@
  *   flow release sync         regenerate .changeset/release.md from the declaration
  *   flow release consolidate  fold every existing changeset into the single one
  *   flow release check        drift between the declaration and the changeset (CI)
+ *   flow release status       does npm have this version? what did Release decide?
  *   flow branch [name]        create and switch to a branch
  *   flow commit               commit with the `Issues:` trailer
  *   flow push                 push and set the upstream
  *   flow link [pr]            write `Closes #n` into the pull request
  *   flow pr                   open the pull request
  *
- * Every step is also usable on its own, and the wizard never repeats a step
- * that is already done.
+ * Every step is also usable on its own, and the menu is a front end over those
+ * same functions rather than a second code path. With no terminal there is no
+ * menu at all: the cycle runs in order, as it always did, because a wizard that
+ * hangs in a pipeline is worse than one that guesses.
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -43,13 +46,22 @@ import {
   token,
 } from './lib/github.mjs';
 import * as prompt from './lib/prompt.mjs';
-import { readNumbers, readRegistry, reconcile, slugify, uniqueSlug, writeIssue, writeNumbers } from './lib/registry.mjs';
+import {
+  readNumbers,
+  readRegistry,
+  reconcile,
+  slugify,
+  uniqueSlug,
+  writeIssue,
+  writeNumbers,
+} from './lib/registry.mjs';
 import {
   ALL_KINDS,
   CHANGESET,
   DECLARATION,
   checkDrift,
   consolidate,
+  readChangesets,
   readDeclaration,
   renderChangeset,
   resetDeclaration,
@@ -130,6 +142,9 @@ const readState = () => {
 };
 const writeState = (s) => writeFileSync(STATE, `${JSON.stringify(s, null, 2)}\n`, 'utf8');
 
+/** The published package: its name, and the version this checkout believes in. */
+const pkgJson = () => JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+
 const templates = () => {
   const doc = yaml.load(readFileSync(TEMPLATES, 'utf8')) ?? {};
   return doc.templates ?? {};
@@ -150,10 +165,14 @@ const cmdRelease = async () => {
   }
   const bump = flagBump
     ? { value: flagBump }
-    : await select('Version bump?', ALL_KINDS.map((k) => ({ label: k, value: k })), {
-        defaultIndex: Math.max(0, ALL_KINDS.indexOf(current.bump)),
-        hint: '  none = nothing to release this cycle',
-      });
+    : await select(
+        'Version bump?',
+        ALL_KINDS.map((k) => ({ label: k, value: k })),
+        {
+          defaultIndex: Math.max(0, ALL_KINDS.indexOf(current.bump)),
+          hint: '  none = nothing to release this cycle',
+        }
+      );
 
   let summary = current.summary;
   if (bump.value !== 'none') {
@@ -204,14 +223,25 @@ const cmdVerify = async () => {
     info(`checking ${what}...`);
     // Captured, and only shown on failure: a passing `npm run` still writes to
     // stderr, and interleaving that with the checklist makes both unreadable.
-    const r = spawnSync(argv[0], argv.slice(1), { cwd: ROOT, shell: true, encoding: 'utf8' });
+    const r = spawnSync(argv[0], argv.slice(1), {
+      cwd: ROOT,
+      shell: true,
+      encoding: 'utf8',
+    });
     if (r.status === 0) {
       good(what);
       continue;
     }
     bad(`failed: ${what}`);
     const noise = `${r.stdout ?? ''}${r.stderr ?? ''}`.trim();
-    if (noise) info(noise.split('\n').slice(-12).map((l) => `    ${l}`).join('\n'));
+    if (noise)
+      info(
+        noise
+          .split('\n')
+          .slice(-12)
+          .map((l) => `    ${l}`)
+          .join('\n')
+      );
     failed += 1;
   }
   if (failed) {
@@ -263,10 +293,142 @@ const cmdReleaseCheck = () => {
   good(`one changeset, bump: ${declaration.bump}, in step with ${DECLARATION.split(/[\\/]/).slice(-2).join('/')}`);
 };
 
+/**
+ * What the registry holds, in one request, without ever throwing.
+ *
+ * `flow status` and `flow release status` both ask, and the reason they ask is
+ * that a green run is silent: versions 2.0.1 to 2.0.3 were never published and
+ * nothing in the repository said so for weeks. "Not on npm" and "cannot tell"
+ * are different answers and both are information, so the failure is a value
+ * here rather than an exception.
+ */
+const npmState = async (name) => {
+  try {
+    const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`, {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.status === 404) return { versions: {}, times: {}, latest: null }; // never published
+    if (!res.ok) return { error: `the registry answered ${res.status}` };
+    const doc = await res.json();
+    return {
+      versions: doc.versions ?? {},
+      times: doc.time ?? {},
+      latest: doc['dist-tags']?.latest ?? null,
+    };
+  } catch (e) {
+    return { error: e?.cause?.code ?? e?.name ?? 'unreachable' };
+  }
+};
+
+/** The name of the step a failed Release run died in, or null if it cannot be read. */
+const failedStep = async (runId) => {
+  try {
+    const { jobs } = await api(`/actions/runs/${runId}/jobs?per_page=50`);
+    return jobs.flatMap((j) => j.steps ?? []).find((s) => s.conclusion === 'failure')?.name ?? null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * The question a green tick does not answer: did the publish happen?
+ *
+ * It reads the same facts the workflow's preflight reads - the declaration, the
+ * pending changesets, the version, the `## <version>` changelog entry that is
+ * the actual publish gate - plus what npm says and what the last runs decided,
+ * and ends with one line saying what is going to happen.
+ *
+ * Always exits 0. Drift here is a state of the chain, not a failure, and a
+ * status command that exits non-zero halfway through is one nobody pipes.
+ */
+const cmdReleaseStatus = async () => {
+  const declaration = readDeclaration();
+  const { found, broken } = readChangesets();
+  const pkg = pkgJson();
+  const local = pkg.version;
+  const state = await npmState(pkg.name);
+
+  info(`branch       ${currentBranch()}`);
+  info(
+    `declaration  bump: ${declaration.bump}${declaration.summary ? ` - ${declaration.summary.split('\n')[0]}` : ''}`
+  );
+  info(
+    `changesets   ${found.length ? `${found.length} pending: ${found.map((f) => f.file).join(', ')}` : 'none pending'}${
+      broken.length ? `   [${broken.length} unreadable]` : ''
+    }`
+  );
+  info(`package      ${local}`);
+
+  if (state.error) {
+    info(`npm          (could not be reached: ${state.error})`);
+  } else if (!state.versions[local]) {
+    info(`npm          ${local} is NOT published (latest: ${state.latest ?? 'nothing at all'})`);
+  } else {
+    const when = String(state.times?.[local] ?? '').slice(0, 10);
+    info(
+      `npm          ${local} published${when ? ` ${when}` : ''}${
+        local === state.latest ? '' : ` (latest is ${state.latest})`
+      }`
+    );
+  }
+
+  // The gate itself, not an opinion about it: `changeset version` writes
+  // `## <version>`, and the workflow refuses to publish without that line.
+  const changelog = gitTry('git show HEAD:CHANGELOG.md') ?? '';
+  const escaped = local.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const gated = new RegExp(`^## ${escaped}$`, 'm').test(changelog);
+  info(
+    `changelog    ${
+      gated ? `## ${local} present - the publish gate would pass` : `no "## ${local}" entry - the gate would refuse`
+    }`
+  );
+
+  try {
+    const runs = await api('/actions/workflows/release.yml/runs?per_page=3');
+    const described = [];
+    for (const run of runs.workflow_runs) {
+      const conclusion = run.conclusion ?? 'running';
+      if (conclusion === 'failure' || conclusion === 'timed_out') {
+        const step = await failedStep(run.id);
+        described.push(`${run.run_number} failure${step ? ` at "${step}"` : ''}`);
+      } else {
+        described.push(`${run.run_number} ${conclusion}`);
+      }
+    }
+    info(`last runs    ${described.join(', ') || '(none)'}`);
+  } catch (e) {
+    info(`last runs    (could not be listed: ${e.message.split('\n')[0]})`);
+  }
+
+  info('');
+  const verdict = () => {
+    if (state.error)
+      return ['wait', `npm could not be reached (${state.error}) - cannot tell whether ${local} is published`];
+    if (!state.versions[local]) return ['bad', `${local} is not on npm - a Release run still owes that publish`];
+    if (found.length)
+      return ['wait', `${found.length} change(s) declared - merging "chore: version packages" is what publishes next`];
+    if (declaration.bump !== 'none')
+      return [
+        'bad',
+        `the declaration says ${declaration.bump} but .changeset/ holds no changeset - run \`flow release sync\``,
+      ];
+    return ['ok', `npm has ${local} and nothing is declared - nothing to publish`];
+  };
+  const [level, text] = verdict();
+  if (level === 'ok') good(text);
+  else if (level === 'wait') warn(text);
+  else bad(text);
+  info(`https://github.com/${OWNER}/${REPO}/actions/workflows/release.yml`);
+};
+
 // --- git -------------------------------------------------------------------
 const cmdBranch = async () => {
   const given = args[1] ?? opt('name') ?? (opt('topic') ? slugify(opt('topic')) : undefined);
-  const name = given ?? (await ask('Branch name', { default: slugify(await ask('What is it about?', { default: currentBranch() })) }));
+  const name =
+    given ??
+    (await ask('Branch name', {
+      default: slugify(await ask('What is it about?', { default: currentBranch() })),
+    }));
   if (gitTry(`git rev-parse --verify ${name}`)) {
     bad(`branch ${name} already exists - switch to it, or pick another name`);
     process.exitCode = 2;
@@ -291,8 +453,7 @@ const cmdCommit = async () => {
   }
 
   const bodyFileIn = opt('body-file');
-  const fileBody =
-    bodyFileIn && existsSync(bodyFileIn) ? readFileSync(bodyFileIn, 'utf8').replace(/\s+$/, '') : '';
+  const fileBody = bodyFileIn && existsSync(bodyFileIn) ? readFileSync(bodyFileIn, 'utf8').replace(/\s+$/, '') : '';
 
   // With `--body-file` and no `--subject`, the first line of the file is the
   // subject and is removed from the body. Keeping it in both is how you get a
@@ -304,7 +465,11 @@ const cmdCommit = async () => {
     const at = lines.findIndex((l) => l.trim());
     if (at !== -1) {
       subject = lines[at].trim();
-      body = lines.slice(at + 1).join('\n').replace(/^\s*\n/, '').replace(/\s+$/, '');
+      body = lines
+        .slice(at + 1)
+        .join('\n')
+        .replace(/^\s*\n/, '')
+        .replace(/\s+$/, '');
     }
   }
   subject ??= await ask('Subject', { default: state.subject ?? '' });
@@ -368,7 +533,7 @@ const cmdIssueList = () => {
     info(
       `  ${String(numbers[issue.id] ?? 'unlinked').padEnd(9)} ${issue.id.padEnd(26)} ${issue.title.slice(0, 52)}${
         flags.length ? `  \x1b[2m[${flags.join(', ')}]\x1b[0m` : ''
-      }`,
+      }`
     );
   }
 };
@@ -387,9 +552,13 @@ const cmdIssueNew = async () => {
   }
   const picked = flagTemplate
     ? { value: flagTemplate }
-    : await select('Which template?', names.map((n) => ({ label: n, value: n })), {
-        hint: '  (blank = no template, just a title)',
-      });
+    : await select(
+        'Which template?',
+        names.map((n) => ({ label: n, value: n })),
+        {
+          hint: '  (blank = no template, just a title)',
+        }
+      );
   const template = picked ? defs[picked.value] : { title: '', labels: [], body: '{{summary}}' };
 
   const title = opt('title') ?? (await ask('Title', { default: template.title }));
@@ -403,13 +572,23 @@ const cmdIssueNew = async () => {
     (await ask('One-line summary (the rest of the body is yours to edit)', {
       hint: '  written to .github/issues/<id>.yml - edit it afterwards for the detail',
     }));
-  const labels = opt('labels') ? opt('labels').split(',').map((l) => l.trim()).filter(Boolean) : template.labels ?? [];
+  const labels = opt('labels')
+    ? opt('labels')
+        .split(',')
+        .map((l) => l.trim())
+        .filter(Boolean)
+    : template.labels ?? [];
 
   const bare = title.replace(/^\[[^\]]+\]:\s*/, '');
   const id = uniqueSlug(slugify(bare), taken);
   const file = writeIssue(
-    { id, title, labels, body: String(template.body).replace('{{summary}}', summary || bare) },
-    'Declared locally. `flow issue sync` creates it on GitHub and records the number.',
+    {
+      id,
+      title,
+      labels,
+      body: String(template.body).replace('{{summary}}', summary || bare),
+    },
+    'Declared locally. `flow issue sync` creates it on GitHub and records the number.'
   );
   const state = readState();
   state.issues = [...new Set([...state.issues, id])];
@@ -447,7 +626,9 @@ const cmdIssueLink = async (number) => {
       labels: remote.labels.map((l) => l.name).filter((l) => !l.startsWith('size/')),
       body: remote.body ?? '',
     },
-    `Adopted from GitHub issue #${number} on ${remote.created_at?.slice(0, 10) ?? 'the tracker'}. Edit the body here; \`flow issue sync\` never overwrites a GitHub body, only the title and the labels.`,
+    `Adopted from GitHub issue #${number} on ${
+      remote.created_at?.slice(0, 10) ?? 'the tracker'
+    }. Edit the body here; \`flow issue sync\` never overwrites a GitHub body, only the title and the labels.`
   );
   numbers[id] = number;
   writeNumbers(numbers);
@@ -666,7 +847,9 @@ const cmdMerge = async () => {
   const failing = runs.check_runs.filter((c) => c.conclusion === 'failure' || c.conclusion === 'timed_out');
   const pending = runs.check_runs.filter((c) => !c.conclusion);
   const passing = runs.check_runs.length - failing.length - pending.length;
-  info(`#${pr.number}: ${runs.check_runs.length} check(s) - ${passing} ok, ${failing.length} failing, ${pending.length} pending`);
+  info(
+    `#${pr.number}: ${runs.check_runs.length} check(s) - ${passing} ok, ${failing.length} failing, ${pending.length} pending`
+  );
 
   if (failing.length) {
     bad(`failing: ${failing.map((c) => c.name).join(', ')}`);
@@ -691,6 +874,20 @@ const cmdMerge = async () => {
   });
   if (!merged) return;
   good(`#${pr.number} merged with --${method}${merged.sha ? `  ${merged.sha.slice(0, 7)}` : ''}`);
+
+  // Which half of the release this was decides what happens next, and the
+  // merge line itself says neither: a version pull request and an ordinary one
+  // look identical the moment they are in.
+  info('');
+  if (pr.head.ref.startsWith('changeset-release/')) {
+    good('this WAS the version pull request - merging it is what publishes.');
+    info(`watch: https://github.com/${OWNER}/${REPO}/actions/workflows/release.yml`);
+  } else {
+    info('next: the Release workflow now runs on main.');
+    info('  changesets pending -> it opens "chore: version packages"; merging THAT is what publishes.');
+    info('  nothing pending     -> nothing will publish, which is what "bump: none" means.');
+  }
+  info('check: npm run flow -- release status');
 };
 
 /**
@@ -724,7 +921,7 @@ const cmdClean = async () => {
     .map((b) => b.trim().replace(/^origin\//, ''))
     .filter((b) => b && !keep.has(b) && b !== 'HEAD' && b !== here);
   const prunable = remotes.filter(
-    (b) => mergedRefs.has(b) || gitTry(`git merge-base --is-ancestor origin/${b} main`) !== null,
+    (b) => mergedRefs.has(b) || gitTry(`git merge-base --is-ancestor origin/${b} main`) !== null
   );
   for (const b of prunable) {
     const gone = await api(`/git/refs/heads/${b}`, { method: 'DELETE' })
@@ -747,8 +944,25 @@ const cmdStatus = async () => {
   const dirty = gitTry('git status --porcelain');
 
   info(`branch       ${branch}${upstream ? ` -> ${upstream}` : ' (no upstream)'}${ahead ? `  [${ahead} ahead]` : ''}`);
-  info(`issue        ${state.issues.length ? state.issues.map((id) => `${id}${numbers[id] ? ` (#${numbers[id]})` : ' (unlinked)'}`).join(', ') : '(none declared for this branch)'}`);
-  info(`release      bump: ${declaration.bump}${existsSync(CHANGESET) ? '' : '   [changeset missing - flow release sync]'}`);
+  info(
+    `issue        ${
+      state.issues.length
+        ? state.issues.map((id) => `${id}${numbers[id] ? ` (#${numbers[id]})` : ' (unlinked)'}`).join(', ')
+        : '(none declared for this branch)'
+    }`
+  );
+  info(
+    `release      bump: ${declaration.bump}${existsSync(CHANGESET) ? '' : '   [changeset missing - flow release sync]'}`
+  );
+  const pkg = pkgJson();
+  const npm = await npmState(pkg.name);
+  info(
+    npm.error
+      ? `npm          (could not be reached: ${npm.error})`
+      : npm.versions[pkg.version]
+      ? `npm          ${pkg.version} published - in step`
+      : `npm          ${pkg.version} is NOT published (latest: ${npm.latest ?? 'nothing at all'})`
+  );
   info(`working tree ${dirty ? 'uncommitted changes' : 'clean'}`);
   let pr = null;
   try {
@@ -759,13 +973,16 @@ const cmdStatus = async () => {
   if (pr) info(`pull request #${pr.number}  ${pr.title}`);
 };
 
-// --- the wizard ------------------------------------------------------------
+// --- the menu --------------------------------------------------------------
 /**
  * The cycle, in order, skipping whatever is already done. The order is the
  * point: an issue exists before the branch that implements it, the release is
  * declared before the commit, and the pull request exists before it is linked.
+ *
+ * This is what runs when there is no terminal, and what the menu runs when you
+ * ask it to run the cycle: one function, not two behaviours.
  */
-const cmdWizard = async () => {
+const runCycle = async () => {
   const total = 8;
   const branch = currentBranch();
   const state = readState();
@@ -829,11 +1046,75 @@ const cmdWizard = async () => {
   prompt.close();
 };
 
+const MENU = [
+  { label: 'run the cycle, in order', value: 'cycle' },
+  { label: 'new issue', value: 'issue' },
+  { label: 'declare the release', value: 'release' },
+  { label: 'release status (npm + last runs)', value: 'release-status' },
+  { label: 'open the pull request', value: 'pr' },
+  { label: 'merge it', value: 'merge' },
+  { label: 'clean up the branches', value: 'clean' },
+  { label: 'help', value: 'help' },
+  { label: 'quit', value: 'quit' },
+];
+
+/**
+ * The front end: a dashboard, then an arrow-key menu over those same functions.
+ *
+ * It loops, because a tool that exits after one action is a tool you re-run
+ * eight times. With no terminal it is not a menu at all - it runs the cycle in
+ * order, which is what keeps `npm run flow` usable in a pipe and in CI.
+ */
+const cmdWizard = async () => {
+  if (!prompt.isInteractive()) return runCycle();
+
+  for (;;) {
+    info('');
+    await cmdStatus();
+    const choice = await prompt.menu('What now?', MENU, {
+      hint: 'arrows to move, Enter to choose, q to leave',
+    });
+    if (!choice) {
+      info('bye');
+      return;
+    }
+    switch (choice.value) {
+      case 'cycle':
+        return runCycle();
+      case 'issue':
+        await cmdIssueNew();
+        break;
+      case 'release':
+        await cmdRelease();
+        cmdReleaseSync();
+        break;
+      case 'release-status':
+        await cmdReleaseStatus();
+        break;
+      case 'pr':
+        await cmdPr();
+        break;
+      case 'merge':
+        await cmdMerge();
+        break;
+      case 'clean':
+        await cmdClean();
+        break;
+      case 'help':
+        process.stdout.write(USAGE);
+        break;
+      case 'quit':
+      default:
+        return;
+    }
+  }
+};
+
 // --- dispatch --------------------------------------------------------------
 const USAGE = `flow - the contribution cycle
 
-  flow                        the cycle, interactively, in order
-  flow status                 branch, issue, release and pull request at a glance
+  flow                        the menu: a dashboard, then the cycle, one step at a time
+  flow status                 branch, issue, release, npm and pull request at a glance
   flow verify                 the gate: changeset, generated files, registries, types
 
   flow issue list             the local registry and its GitHub numbers
@@ -847,6 +1128,7 @@ const USAGE = `flow - the contribution cycle
   flow release reset          end the cycle (runs in version:bump)
   flow release consolidate    fold every changeset into the single one
   flow release check          drift between the declaration and the changeset (CI)
+  flow release status         what npm has, and what the last Release run decided
 
   flow branch [name]          create and switch to a branch
   flow commit                 commit with the "Issues:" trailer
@@ -898,6 +1180,8 @@ const main = async () => {
           return cmdReleaseConsolidate();
         case 'check':
           return cmdReleaseCheck();
+        case 'status':
+          return cmdReleaseStatus();
       }
       break;
     case 'branch':
@@ -931,4 +1215,3 @@ main()
     process.exitCode = 1;
   })
   .finally(() => prompt.close());
-
