@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-runbook-still-says-2-0-4-after-2-0
+title: "The runbook still says 2.0.4 after 2.0.5 is published"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  The runbook still said 2.0.4 is the current published version after 2.0.5 went out, so the publishing state it documents was a version behind.
+  
+  ## Validation
+  
+  What proves it works.
