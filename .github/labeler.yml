@@ -1,38 +1,37 @@
-# Labels are applied to pull requests and issues from the files they touch.
-# NOTE: only label names that already exist in the repository are used here,
-# because actions/labeler fails the job when a configured label is unknown.
+# GENERATED FILE - do not edit by hand.
+# Source of truth: .github/labels.yml (the `paths` of each label).
+# Regenerate with: node .github/scripts/labels.mjs --sync-labeler
 
-registry:
+"registry":
   - changed-files:
       - any-glob-to-any-file: "design/**"
-
-tokens:
+"tokens":
   - changed-files:
       - any-glob-to-any-file: "design/tokens.xml"
-
-theme:
+"theme":
   - changed-files:
       - any-glob-to-any-file: "design/themes.xml"
-
-components:
+"components":
   - changed-files:
       - any-glob-to-any-file: "components/**"
-
-config:
+"config":
   - changed-files:
-      - any-glob-to-any-file:
-          - "tailwind.config.js"
-          - "postcss.config.js"
-          - "globals.css"
-          - "tsup.config.ts"
-          - "tsconfig.json"
-          - "gluestack-ui.config.json"
-          - "package.json"
-
-ci:
+      - any-glob-to-any-file: "tailwind.config.js"
+  - changed-files:
+      - any-glob-to-any-file: "postcss.config.js"
+  - changed-files:
+      - any-glob-to-any-file: "globals.css"
+  - changed-files:
+      - any-glob-to-any-file: "tsup.config.ts"
+  - changed-files:
+      - any-glob-to-any-file: "tsconfig.json"
+  - changed-files:
+      - any-glob-to-any-file: "gluestack-ui.config.json"
+  - changed-files:
+      - any-glob-to-any-file: "package.json"
+"ci":
   - changed-files:
       - any-glob-to-any-file: ".github/**"
-
-docs:
+"docs":
   - changed-files:
       - any-glob-to-any-file: "docs/**"

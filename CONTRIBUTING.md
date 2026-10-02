@@ -167,30 +167,58 @@ noise.
 
 ### Repository labels
 
-`.github/labels.yml` is the source of truth for every label the automation
-uses. Two reasons it matters:
+`.github/labels.yml` is the **single source of truth** for every label the
+automation uses. Each entry declares the name, the colour, the description and -
+optionally - the `paths` that trigger it:
 
-- `actions/labeler` **fails** on an unknown label, so a label deleted by hand
-  would break every pull request;
-- the version decision and the `no-issue` escape hatch **are** labels, so they
-  must exist to be selectable at all.
-
-```bash
-node .github/scripts/labels.mjs --list     # what exists today, what is missing
-node .github/scripts/labels.mjs --check    # read-only verification (run by CI)
-GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create   # create the missing ones
+```yaml
+- name: theme
+  color: "5F3DC4"
+  description: Themes and semantic roles (design/themes.xml)
+  paths:
+    - "design/themes.xml"
 ```
 
-`PR Checks` runs `--check` on every pull request and names any missing label
-together with the `gh label create` command to recreate it, so the failure
-points at the cause instead of at the labeler.
+`actions/labeler` needs its own schema, so `.github/labeler.yml` is **generated**
+from the labels that have `paths`, and is checked for drift. That removes both
+failure modes of a hand-written labeler: referencing a label that does not exist,
+and labelling rules that silently stop working.
 
-Two groups:
+```bash
+node .github/scripts/labels.mjs --list          # what exists, what is missing
+node .github/scripts/labels.mjs --check         # labels + labeler drift (run by CI)
+node .github/scripts/labels.mjs --sync-labeler  # regenerate .github/labeler.yml
+GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create
+```
 
-| Group | Labels | Role |
+Edit `labels.yml`, then run `--sync-labeler`. Never edit `.github/labeler.yml`.
+
+`PR Checks` runs `--check` on every pull request, so a missing label or a stale
+labeler is reported by name - with the command to fix it - instead of surfacing
+as an unrelated `actions/labeler` failure.
+
+| Kind | Labels | Role |
 |---|---|---|
-| automatic | `registry` `tokens` `theme` `components` `config` `ci` `docs` | applied by `labeler.yml` from the files a pull request touches |
-| decision | `changeset:major` `changeset:minor` `changeset:patch` `changeset:none` `no-issue` | let the bots act instead of you writing files |
+| `paths` | `registry` `tokens` `theme` `components` `config` `ci` `docs` | applied automatically from the files a pull request touches |
+| no `paths` | `changeset:major` `changeset:minor` `changeset:patch` `changeset:none` `no-issue` | applied by hand to tell a bot what to do |
+
+### Linking a pull request to its issue
+
+`pr-lifecycle.yml` reads the **description of the pull request** - not the
+title, and not a comment. Concretely: open the pull request, click the pencil
+next to the description box, and put the reference on its own line:
+
+```
+Closes #42
+```
+
+Accepted: `Closes` / `Fixes` / `Resolves` / `Refs` (any case, singular, plural
+or past tense) followed by `#<number>`, and several numbers separated by commas
+(`Closes #42, #43`).
+
+Not accepted: the reference only in the **title**, only in a **commit message**,
+or inside a **bot comment**. When GitHub recognises the keyword, merging the
+pull request closes the issue automatically.
 
 ### Pull request requirements
 
