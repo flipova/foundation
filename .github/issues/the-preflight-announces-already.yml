@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-preflight-announces-already
+title: "The preflight announces already-published while it is opening the version PR"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  Run #78 announced the wrong reason for its decision: the preflight asked the registry before it asked about the pending changesets, so on every ordinary cycle the decision line reads already on npm - nothing to publish while the version pull request is being written.
+  
+  ## Validation
+  
+  What proves it works.

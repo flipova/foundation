@@ -181,16 +181,21 @@ jobs:
             exit 0
           fi
 
+          # Pending changesets are asked first, on purpose. During an ordinary
+          # cycle the version in package.json is already on the registry, so
+          # asking the registry first answers "already published" every single
+          # time and hides the only thing the reader needs to know: that a
+          # version pull request is being opened right now.
+          if [ "$pending" -gt 0 ]; then
+            echo "Changesets pending ($pending) -> the Version Packages PR will be opened/updated. No publish here."
+            decide version-pr false "$pending change(s) pending: the 'chore: version packages' pull request will be opened or updated. No publish here."
+            exit 0
+          fi
+
           # Already on the registry: nothing to do, and that is not a failure.
           if npm view "$name@$version" version >/dev/null 2>&1; then
             echo "$name@$version is already published - nothing to do."
             decide already-published false "${name}@${version} is already on npm - nothing to publish."
-            exit 0
-          fi
-
-          if [ "$pending" -gt 0 ]; then
-            echo "Changesets pending ($pending) -> the Version Packages PR will be opened/updated. No publish here."
-            decide version-pr false "$pending change(s) pending: the 'chore: version packages' pull request will be opened or updated. No publish here."
             exit 0
           fi
 
