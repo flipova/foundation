@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.4
+
+### Patch Changes
+
+- 7e14947: Gate the release on the changelog entry instead of a commit subject.
+
 ## 2.0.3
 
 ### Patch Changes
