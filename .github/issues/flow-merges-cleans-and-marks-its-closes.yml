@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: flow-merges-cleans-and-marks-its-closes
+title: "flow merges, cleans and marks its Closes line"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  flow merge and flow clean are added, and flow link writes its Closes line between two markers, so it rewrites its own line instead of stacking a second one.
+  
+  ## Validation
+  
+  What proves it works.

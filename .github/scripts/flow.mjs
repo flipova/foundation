@@ -40,6 +40,7 @@ import {
   gitTry,
   isPullRequest,
   requireToken,
+  token,
 } from './lib/github.mjs';
 import * as prompt from './lib/prompt.mjs';
 import { readNumbers, readRegistry, reconcile, slugify, uniqueSlug, writeIssue, writeNumbers } from './lib/registry.mjs';
@@ -482,7 +483,36 @@ const cmdIssueCheck = async () => {
 };
 
 // --- pull request ----------------------------------------------------------
-const MARKER = '<!-- foundation:linked-issues -->';
+/**
+ * The `Closes #n` line lives between these two markers.
+ *
+ * The markers are the whole point: without them `flow link` cannot tell its own
+ * line from one a human wrote, so adding an issue to an existing pull request
+ * appends a second `Closes` line and GitHub acts on only one of them. The first
+ * version of this file used a single trailing marker and never wrote it in the
+ * common path, which made it dead code.
+ */
+const LINK_START = '<!-- foundation:linked-issues:start -->';
+const LINK_END = '<!-- foundation:linked-issues:end -->';
+
+const linkBlock = (issues) => `${LINK_START}\nCloses ${issues.map((n) => `#${n}`).join(', ')}\n${LINK_END}`;
+
+/** Replace flow's own `Closes` block, or put one in front of the body. */
+const withLinkBlock = (raw, block) => {
+  const body = raw ?? '';
+  const marked = new RegExp(`${LINK_START}[\\s\\S]*?${LINK_END}`);
+  if (marked.test(body)) return body.replace(marked, block).replace(/\n*$/, '\n');
+  // A pull request opened before the markers existed: replace the bare line
+  // rather than stacking a second one on top of it.
+  const bare = body.match(/^\s*Closes[^\n]*\n/);
+  const rest = (bare ? body.slice(bare[0].length) : body).replace(/^\s*\n/, '').replace(/\s+$/, '');
+  return `${block}\n\n${rest}\n`;
+};
+
+const compareUrl = (title, body) => {
+  const query = new URLSearchParams({ expand: '1', title, body }).toString();
+  return `https://github.com/${OWNER}/${REPO}/compare/main...${currentBranch()}?${query}`;
+};
 
 /**
  * Write `Closes #n` into the pull request, from local ids.
@@ -491,26 +521,20 @@ const MARKER = '<!-- foundation:linked-issues -->';
  * issues and pull requests, so a wrong number silently closes nothing.
  */
 const cmdLink = async () => {
-  await requireToken('flow link');
   const state = readState();
-  const registry = readRegistry();
-  const numbers = readNumbers();
   const ids = args.length > 1 ? args.slice(1) : state.issues;
-
   if (!ids.length) {
     bad('no issue for this branch - `flow issue new` or `flow issue link <n>` first');
     process.exitCode = 2;
     return;
   }
+  await requireToken('flow link');
+
+  const registry = readRegistry();
+  const numbers = readNumbers();
   const unknown = ids.filter((id) => !registry.some((i) => i.id === id));
   if (unknown.length) {
     bad(`unknown local id(s): ${unknown.join(', ')} - see \`flow issue list\``);
-    process.exitCode = 2;
-    return;
-  }
-  const pr = args[1] && /^\d+$/.test(args[1]) ? await api(`/pulls/${args[1]}`) : await findPullRequest();
-  if (!pr) {
-    bad(`no open pull request for ${currentBranch()} - \`flow pr\` first`);
     process.exitCode = 2;
     return;
   }
@@ -532,43 +556,63 @@ const cmdLink = async () => {
   }
   if (process.exitCode) return;
 
-  const line = `Closes ${resolved.map((n) => `#${n}`).join(', ')}`;
-  const raw = pr.body ?? '';
-  const stripped = raw.replace(new RegExp(`\\n*${MARKER}\\n*`, 'g'), '').trim();
-  const body = stripped.startsWith(line) ? stripped : `${line}\n${MARKER}\n\n${stripped}`.replace(/\n*$/, '\n');
-  if (body !== raw) {
+  const pr = args[1] && /^\d+$/.test(args[1]) ? await api(`/pulls/${args[1]}`) : await findPullRequest();
+  if (!pr) {
+    bad(`no open pull request for ${currentBranch()} - \`flow pr\` first`);
+    process.exitCode = 2;
+    return;
+  }
+  const body = withLinkBlock(pr.body, linkBlock(resolved));
+  const line = resolved.map((n) => `#${n}`).join(', ');
+  if (body !== (pr.body ?? '')) {
     await api(`/pulls/${pr.number}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ body }),
     });
-    good(`#${pr.number} -> ${line}`);
+    good(`#${pr.number} -> Closes ${line}`);
   } else {
-    good(`#${pr.number} already carries "${line}"`);
+    good(`#${pr.number} already carries Closes ${line}`);
   }
 };
 
 const cmdPr = async () => {
-  await requireToken('flow pr');
   const state = readState();
   const registry = readRegistry();
   const numbers = readNumbers();
   const declaration = readDeclaration();
 
   const linked = state.issues.filter((id) => registry.some((i) => i.id === id));
-  const unlinked = linked.filter((id) => !numbers[id]);
-  if (unlinked.length) {
-    warn(`${unlinked.join(', ')} has no GitHub number yet - run \`flow issue sync\``);
-  }
+  const resync = linked.filter((id) => !numbers[id]);
+  const closes = linked.filter((id) => numbers[id]).map((id) => numbers[id]);
   const title = args[1] ?? opt('title') ?? (await ask('Pull request title', { default: state.title ?? '' }));
-  const closes = linked.filter((id) => numbers[id]).map((id) => `#${numbers[id]}`);
 
   const sections = [];
-  if (closes.length) sections.push(`Closes ${closes.join(', ')}`);
+  if (closes.length) sections.push(linkBlock(closes));
   if (declaration.bump !== 'none' && declaration.summary) {
     sections.push(`## What this changes\n\n${declaration.summary}`);
   }
-  const opened = await ensurePullRequest({ title, body: sections.join('\n\n') }).catch((e) => {
+  const body = sections.join('\n\n');
+
+  // No token: do not leave the contributor with a pushed branch and no way
+  // forward. The compare URL opens the same pull request, pre-filled.
+  if (!token()) {
+    warn('no token, so the pull request cannot be opened for you');
+    if (resync.length) warn(`${resync.join(', ')} is not synced yet - run \`flow issue sync\` first`);
+    info('');
+    info('Open it with this URL; the title and the body are already filled in:');
+    info('');
+    info(`  ${compareUrl(title, body)}`);
+    info('');
+    info('Or set GITHUB_TOKEN and run `npm run flow -- pr` instead.');
+    process.exitCode = 2;
+    return;
+  }
+
+  if (resync.length) {
+    warn(`${resync.join(', ')} has no GitHub number yet - run \`flow issue sync\` first, or the link will be missing`);
+  }
+  const opened = await ensurePullRequest({ title, body }).catch((e) => {
     if (/\/pulls -> 422/.test(e.message)) {
       bad('GitHub refused the pull request: the branch is not on the remote yet - run `flow push` first');
     } else {
@@ -583,6 +627,114 @@ const cmdPr = async () => {
   writeState(state);
   good(`${created ? 'opened' : 'updated'} #${pr.number}: ${title}`);
   info(`https://github.com/${OWNER}/${REPO}/pull/${pr.number}`);
+};
+
+// --- merging and tidying ---------------------------------------------------
+const METHODS = ['merge', 'squash', 'rebase'];
+
+/**
+ * Merge the pull request for this branch.
+ *
+ * It refuses while a check is failing: merging a red pull request is almost
+ * never what was meant, and `--force` is there for when it is.
+ *
+ * The default method is `merge`, not `squash`. Squashing rewrites the message
+ * of every commit it collapses - which is how the release preflight lost the
+ * `chore: version packages` subject it was looking for.
+ */
+const cmdMerge = async () => {
+  const method = opt('method', 'merge');
+  if (!METHODS.includes(method)) {
+    bad(`unknown method "${method}" - expected ${METHODS.join(', ')}`);
+    process.exitCode = 2;
+    return;
+  }
+  await requireToken('flow merge');
+  const pr = args[1] && /^\d+$/.test(args[1]) ? await api(`/pulls/${args[1]}`) : await findPullRequest();
+  if (!pr) {
+    bad(`no open pull request for ${currentBranch()}`);
+    process.exitCode = 2;
+    return;
+  }
+  if (pr.draft) {
+    bad(`#${pr.number} is still a draft`);
+    process.exitCode = 2;
+    return;
+  }
+
+  const runs = await api(`/commits/${pr.head.sha}/check-runs?per_page=100`);
+  const failing = runs.check_runs.filter((c) => c.conclusion === 'failure' || c.conclusion === 'timed_out');
+  const pending = runs.check_runs.filter((c) => !c.conclusion);
+  const passing = runs.check_runs.length - failing.length - pending.length;
+  info(`#${pr.number}: ${runs.check_runs.length} check(s) - ${passing} ok, ${failing.length} failing, ${pending.length} pending`);
+
+  if (failing.length) {
+    bad(`failing: ${failing.map((c) => c.name).join(', ')}`);
+    if (!opt('force')) {
+      bad('refusing to merge - pass --force to merge anyway');
+      process.exitCode = 1;
+      return;
+    }
+    warn('--force: merging over a failing check');
+  } else if (pending.length) {
+    warn(`still running: ${pending.map((c) => c.name).join(', ')}`);
+  }
+
+  const merged = await api(`/pulls/${pr.number}/merge`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ merge_method: method }),
+  }).catch((e) => {
+    bad(e.message.split('\n')[0]);
+    process.exitCode = 1;
+    return null;
+  });
+  if (!merged) return;
+  good(`#${pr.number} merged with --${method}${merged.sha ? `  ${merged.sha.slice(0, 7)}` : ''}`);
+};
+
+/**
+ * Delete the branches that are finished.
+ *
+ * A branch is finished when its work is on `main`: locally when it is fully
+ * contained in `main`, remotely when its pull request was merged. Anything else
+ * is left alone, and `main` and `changeset-release/main` are never touched.
+ */
+const cmdClean = async () => {
+  const keep = new Set(['main', 'changeset-release/main']);
+  const here = currentBranch();
+
+  const locals = git('git for-each-ref --format=%(refname:short) refs/heads')
+    .split('\n')
+    .map((b) => b.trim())
+    .filter((b) => b && !keep.has(b) && b !== here);
+  const done = locals.filter((b) => gitTry(`git merge-base --is-ancestor ${b} main`) !== null);
+  for (const b of done) {
+    git(`git branch -D ${b}`);
+    good(`deleted local ${b}`);
+  }
+  info(`local: ${done.length} merged of ${locals.length} candidate(s)`);
+
+  await requireToken('flow clean');
+  const closed = await api('/pulls?state=closed&per_page=100');
+  const mergedRefs = new Set(closed.filter((p) => p.merged_at).map((p) => p.head.ref));
+
+  const remotes = git('git for-each-ref --format=%(refname:short) refs/remotes/origin')
+    .split('\n')
+    .map((b) => b.trim().replace(/^origin\//, ''))
+    .filter((b) => b && !keep.has(b) && b !== 'HEAD' && b !== here);
+  const prunable = remotes.filter(
+    (b) => mergedRefs.has(b) || gitTry(`git merge-base --is-ancestor origin/${b} main`) !== null,
+  );
+  for (const b of prunable) {
+    const gone = await api(`/git/refs/heads/${b}`, { method: 'DELETE' })
+      .then(() => true)
+      .catch(() => false);
+    if (gone) good(`deleted origin/${b}`);
+  }
+  info(`remote: ${prunable.length} of ${remotes.length} candidate(s)`);
+  gitTry('git fetch --prune origin');
+  if (!done.length && !prunable.length) info('nothing to clean');
 };
 
 const cmdStatus = async () => {
@@ -701,6 +853,8 @@ const USAGE = `flow - the contribution cycle
   flow push                   push and set the upstream
   flow link [pr] [ids...]     write "Closes #n" into the pull request
   flow pr [title]             open the pull request
+  flow merge [pr]             merge it, once the checks are green
+  flow clean                  delete the branches whose work is on main
 `;
 
 const main = async () => {
@@ -756,6 +910,10 @@ const main = async () => {
       return cmdLink();
     case 'pr':
       return cmdPr();
+    case 'merge':
+      return cmdMerge();
+    case 'clean':
+      return cmdClean();
     default:
       break;
   }
