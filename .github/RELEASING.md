@@ -259,7 +259,9 @@ your fork, turn it off rather than working around it.
 ```
 .github/
   workflows/   the seven workflows above, and nothing else
-  scripts/     flow.mjs, maintain.mjs and lib/ - the CLI. Only flow is in package.json
+  scripts/     flow.mjs, maintain.mjs, labels.mjs and lib/ - the CLI.
+               `npm run flow`, `npm run maintain`; `flow maintain` and
+               `flow labels` forward to the other two
   flow/        the release declaration (tracked) and templates.yml;
                .state.json is local scratch, gitignored
   issues/      the OPEN issue queue - one file per declared issue;

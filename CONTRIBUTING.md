@@ -330,13 +330,17 @@ Two boundaries worth knowing:
   non-zero when it found something it could not repair.
 
 ```bash
-node .github/scripts/maintain.mjs fix          # asks first
-node .github/scripts/maintain.mjs fix --yes    # does not
-node .github/scripts/maintain.mjs issues --json
+flow maintain list            # what has accumulated, read-only
+flow maintain fix             # apply the repairs - asks first
+flow maintain fix --yes       # does not ask
+flow maintain issues --json   # the registry against the tracker, as JSON
 ```
 
-It runs outside the cycle on purpose: nothing in `package.json` points at it, so
-adding it cannot move the release or trip the changeset guard.
+`flow maintain` forwards to the same program, so `npm run maintain list` is
+exactly the same command with a longer path - both exist because a script that
+CI, a shell alias and a person all reach for should not need three spellings.
+It stays outside the cycle on purpose: it reports and tidies, and it never
+publishes.
 
 ## Command reference
 
@@ -362,15 +366,16 @@ adding it cannot move the release or trip the changeset guard.
 | `npm run flow -- push` | push and set the upstream |
 | `npm run flow -- pr [title]` | open the pull request |
 | `npm run flow -- link [pr]` | write `Closes #n` into the pull request |
-| `node .github/scripts/maintain.mjs list` | what has accumulated, read-only |
-| `node .github/scripts/maintain.mjs fix` | apply the repairs `list` found |
+| `flow maintain [list\|fix\|issues\|prs\|branches]` | what has accumulated, and `fix` applies what it may |
+| `npm run maintain list` | the same inventory, for a shell that does not know `flow` |
+| `flow labels [--list\|--check\|--sync-labeler\|--create]` | the label registry and the labeler generated from it |
 
 Labels are managed separately, because they are maintenance rather than part of
 a cycle:
 
 ```bash
-node .github/scripts/labels.mjs --list
-node .github/scripts/labels.mjs --check
-node .github/scripts/labels.mjs --sync-labeler
-GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create
+flow labels --list
+flow labels --check
+flow labels --sync-labeler
+GITHUB_TOKEN=<pat> flow labels --create
 ```

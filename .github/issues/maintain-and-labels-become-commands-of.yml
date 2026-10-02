@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: maintain-and-labels-become-commands-of
+title: "maintain and labels become commands of flow"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  The two tools sitting next door in .github/scripts were only reachable as long paths typed by hand, which is the problem flow exists to solve for the cycle. flow maintain and flow labels now forward to them, npm run maintain gives maintain its own entry, and the passthrough had to be rebuilt from the raw argv because flow parses flags for itself and was swallowing the child ones.
+  
+  ## Validation
+  
+  What proves it works.

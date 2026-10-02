@@ -46,7 +46,7 @@ const renderLabeler = () => {
   const lines = [
     '# GENERATED FILE - do not edit by hand.',
     '# Source of truth: .github/labels.yml (the `paths` of each label).',
-    '# Regenerate with: node .github/scripts/labels.mjs --sync-labeler',
+    '# Regenerate with: flow labels --sync-labeler',
     '',
   ];
   for (const label of automatic) {
@@ -114,11 +114,17 @@ if (mode === '--sync-labeler') {
 } else if (mode === '--list') {
   const existing = new Map((await api('/labels?per_page=100')).map((l) => [l.name, l]));
   const missing = declared.filter((l) => !existing.has(l.name));
-  console.log(`declared: ${declared.length} | present: ${declared.length - missing.length} | missing: ${missing.length}`);
+  console.log(
+    `declared: ${declared.length} | present: ${declared.length - missing.length} | missing: ${missing.length}`
+  );
   console.log(`labeler: ${labelerIsCurrent() ? 'up to date' : 'OUT OF DATE'} (run --sync-labeler)\n`);
   for (const l of declared) {
     const found = existing.get(l.name);
-    console.log(`  ${found ? 'ok     ' : 'MISSING'}  ${l.name.padEnd(18)} ${(l.paths ?? []).length ? '[auto] ' : '[manual]'} ${l.description ?? ''}`);
+    console.log(
+      `  ${found ? 'ok     ' : 'MISSING'}  ${l.name.padEnd(18)} ${(l.paths ?? []).length ? '[auto] ' : '[manual]'} ${
+        l.description ?? ''
+      }`
+    );
   }
   console.log('\nother labels in the repository:');
   for (const name of [...existing.keys()].filter((n) => !declared.some((l) => l.name === n)).sort()) {
