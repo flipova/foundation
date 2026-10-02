@@ -7,11 +7,16 @@
  * that guesses.
  */
 import { stdin, stdout } from 'node:process';
+import { createInterface } from 'node:readline';
 
 export const isInteractive = () => Boolean(stdin.isTTY && stdout.isTTY);
 
 let rl = null;
-const iface = () => (rl ??= stdin.createInterface({ input: stdin, output: stdout }));
+// `readline.createInterface`, not `stdin.createInterface`: Node never defines
+// the latter on a stream, so every interactive prompt died with
+// "stdin.createInterface is not a function" while the non-interactive path -
+// the one CI and pipes take - never touched this line and never noticed.
+const iface = () => (rl ??= createInterface({ input: stdin, output: stdout }));
 
 export function close() {
   rl?.close();
