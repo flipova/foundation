@@ -5,5 +5,5 @@
 # the declaration and what changesets actually reads cannot disagree.
 #
 # bump: major | minor | patch | none   (none = nothing to release)
-bump: none
-summary: ''
+bump: patch
+summary: Gate the release on the changelog entry instead of a commit subject.

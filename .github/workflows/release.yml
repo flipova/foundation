@@ -185,22 +185,27 @@ jobs:
             exit 0
           fi
 
-          case "$bump" in
-            "chore: version packages"*) ;;
-            "")
-              echo "::error::Refusing to publish."
-              echo "::error::No commit in the history wrote \"version\": \"$version\" into package.json."
-              echo "::error::The local version was not produced by 'changeset version'."
-              echo "::error::Either merge the 'chore: version packages' PR, or dispatch the release workflow with hotfix = true and a reason."
-              exit 1
-              ;;
-            *)
-              echo "::error::Refusing to publish."
-              echo "::error::\"version\": \"$version\" was written by '$bump', not by a changesets version commit."
-              echo "::error::A release must go through the 'chore: version packages' PR, or an explicit hotfix dispatch (reason required)."
-              exit 1
-              ;;
-          esac
+          # Which commit wrote the current version? Diagnostic only.
+          #
+          # This used to be the gate, and that was wrong twice over: `git log -1`
+          # is always a merge subject here, and a squash merge of the version pull
+          # request replaces `chore: version packages` with its own title. Both were
+          # found by merging for real.
+          echo "version commit: ${bump:-not found}"
+
+          # The gate is the changelog entry. `changeset version` always writes
+          # `## <version>` for the version it produced; a hand-bumped package.json
+          # does not. That survives any merge strategy, which a commit subject does not.
+          if git show HEAD:CHANGELOG.md 2>/dev/null | grep -q "^## ${version}$"; then
+            echo "CHANGELOG.md has an entry for ${version}: it was produced by changeset version."
+          else
+            echo "::error::Refusing to publish."
+            echo "::error::CHANGELOG.md has no '## ${version}' entry."
+            echo "::error::Nothing produced this version through changeset version, so it must not be"
+            echo "::error::published. Merge the 'chore: version packages' pull request, or dispatch"
+            echo "::error::this workflow with hotfix = true and a reason."
+            exit 1
+          fi
 
           echo "path=version-pr" >> "$GITHUB_OUTPUT"
           echo "will_publish=true" >> "$GITHUB_OUTPUT"
