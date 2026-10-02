@@ -4,5 +4,6 @@
   "release-process": 64,
   "one-cli-for-the-cycle-and-one-declared": 65,
   "the-version-pull-request-and-main-both": 68,
-  "npm-publish-failed-with-eotp-while-the": 71
+  "npm-publish-failed-with-eotp-while-the": 71,
+  "publish-with-trusted-publishing-oidc": 74
 }
