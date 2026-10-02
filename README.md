@@ -87,4 +87,5 @@ cd docs && npm start
 
 ## License
 
-MIT © Flipova
+MIT © Flipova. Participation is governed by
+[the Code of Conduct](CODE_OF_CONDUCT.md).

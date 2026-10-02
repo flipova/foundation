@@ -9,6 +9,7 @@
  *   flow issue new            declare an issue locally, from a template or blank
  *   flow issue link <n>       adopt an issue that already exists on GitHub
  *   flow issue sync           create/update the declared issues on GitHub
+ *   flow issue archive        move closed issues into .github/issues/archive/
  *   flow release              declare the bump and the summary (the one changeset)
  *   flow release sync         regenerate .changeset/release.md from the declaration
  *   flow release consolidate  fold every existing changeset into the single one
@@ -47,6 +48,8 @@ import {
 } from './lib/github.mjs';
 import * as prompt from './lib/prompt.mjs';
 import {
+  archiveFile,
+  archivedIds,
   readNumbers,
   readRegistry,
   reconcile,
@@ -436,7 +439,18 @@ const cmdBranch = async () => {
   }
   git(`git switch -c ${name}`);
   const state = readState();
-  writeState({ ...state, branch: name, issues: [] });
+  // Issues declared on `main` are work that exists nowhere else yet, and the new
+  // branch is cut from this same working tree, so they belong to it. Issues
+  // declared on another branch do not travel: that branch keeps them, and this
+  // one starts clean.
+  //
+  // This is what makes the documented order work. CONTRIBUTING runs `issue` at
+  // step 1 and `branch` at step 3, and until now step 3 threw step 1 away
+  // silently - so a cycle followed in order ended on "no issue declared for this
+  // branch", with the scratch file as the only place the link still existed.
+  const carried = state.branch === 'main' ? state.issues : [];
+  writeState({ ...state, branch: name, issues: carried });
+  if (carried.length) info(`carried ${carried.length} issue(s) declared on main`);
   good(`on ${name}`);
 };
 
@@ -529,18 +543,22 @@ const cmdIssueList = () => {
     const flags = [];
     if (numbers[issue.id]) flags.push(`#${numbers[issue.id]}`);
     if (state.issues.includes(issue.id)) flags.push('this branch');
-    if (issue.id === 'collaboration-automation') flags.push('in progress');
     info(
       `  ${String(numbers[issue.id] ?? 'unlinked').padEnd(9)} ${issue.id.padEnd(26)} ${issue.title.slice(0, 52)}${
         flags.length ? `  \x1b[2m[${flags.join(', ')}]\x1b[0m` : ''
       }`
     );
   }
+  const archived = archivedIds().length;
+  if (archived) {
+    info('');
+    info(`${archived} archived issue(s) in .github/issues/archive/ - closed work, out of this list on purpose`);
+  }
 };
 
 const cmdIssueNew = async () => {
   const registry = readRegistry();
-  const taken = new Set(registry.map((i) => i.id));
+  const taken = new Set([...registry.map((i) => i.id), ...archivedIds()]);
   const defs = loadTemplates();
   const names = Object.keys(defs);
 
@@ -615,10 +633,23 @@ const cmdIssueLink = async (number) => {
   const numbers = readNumbers();
   const existing = registry.find((i) => numbers[i.id] === number);
   if (existing) {
-    info(`#${number} is already declared locally as "${existing.id}".`);
+    // Declared is not the same as linked to *this* branch, and a branch that
+    // lost the association had no way back short of editing the scratch file by
+    // hand. Typing the number is the request; honour it either way.
+    const state = readState();
+    if (state.issues.includes(existing.id)) {
+      info(`#${number} is already declared locally as "${existing.id}".`);
+      return existing.id;
+    }
+    state.issues = [...new Set([...state.issues, existing.id])];
+    writeState(state);
+    good(`#${number} is already declared as "${existing.id}" - now linked to ${state.branch}`);
     return existing.id;
   }
-  const id = uniqueSlug(slugify(remote.title.replace(/^\[[^\]]+\]:\s*/, '')), new Set(registry.map((i) => i.id)));
+  const id = uniqueSlug(
+    slugify(remote.title.replace(/^\[[^\]]+\]:\s*/, '')),
+    new Set([...registry.map((i) => i.id), ...archivedIds()])
+  );
   writeIssue(
     {
       id,
@@ -653,6 +684,10 @@ const cmdIssueSync = async () => {
 const cmdIssueCheck = async () => {
   await requireToken('flow issue check');
   const registry = readRegistry();
+  if (!registry.length) {
+    good('issues: nothing declared - the registry holds no open work.');
+    return;
+  }
   const { problems } = await reconcile(registry, { apply: false });
   if (problems.length) {
     bad(`issues: ${problems.length} problem(s):`);
@@ -661,6 +696,68 @@ const cmdIssueCheck = async () => {
     return;
   }
   good(`issues: ${registry.length} declared issue(s) consistent with GitHub.`);
+};
+
+/**
+ * Move closed issues out of the registry.
+ *
+ * The queue is what `flow issue check` spends one API call per declared issue
+ * on, what `flow pr` reads to build `Closes #n`, and what a reader opens to see
+ * what is in flight. A closed ticket is none of those things - it is history,
+ * and it belongs one directory down.
+ *
+ * `.numbers.json` is deliberately left alone: it is what stops an id being
+ * handed out twice, and the id keeps owning its number long after the file
+ * moves. `flow issue new` refuses to reuse an archived id for the same reason.
+ */
+const cmdIssueArchive = async (ids) => {
+  await requireToken('flow issue archive');
+  const registry = readRegistry();
+  const numbers = readNumbers();
+  const already = new Set(archivedIds());
+  const wanted = ids.length ? ids : registry.map((i) => i.id);
+  const moved = [];
+  const kept = [];
+
+  for (const id of wanted) {
+    const issue = registry.find((i) => i.id === id);
+    if (!issue) {
+      kept.push(`${id}: ${already.has(id) ? 'already archived' : 'no declared file'}`);
+      continue;
+    }
+    const number = numbers[id];
+    // Verified, not assumed: `isPullRequest` first, because GitHub shares one
+    // numbering, and an id mapped to a pull request is a bug worth reporting.
+    if (number) {
+      const remote = await getIssue(number);
+      if (isPullRequest(remote)) {
+        kept.push(`${id}: #${number} is a pull request, not an issue`);
+        continue;
+      }
+      if (remote.state !== 'closed') {
+        kept.push(`${id}: #${number} is still open`);
+        continue;
+      }
+    }
+    const where = archiveFile(issue.file);
+    moved.push(id);
+    good(`${where}${number ? `  -> #${number}` : '  (never synced)'}`);
+  }
+
+  // The branch scratch file points at declared issues; an archived id has no
+  // file any more, and leaving it there is the accumulation `maintain` reports.
+  const state = readState();
+  const forgotten = state.issues.filter((id) => moved.includes(id));
+  if (forgotten.length) {
+    state.issues = state.issues.filter((id) => !moved.includes(id));
+    writeState(state);
+    info(`forgotten ${forgotten.length} archived id(s) from the scratch state of ${state.branch}`);
+  }
+
+  for (const k of kept) warn(k);
+  if (!moved.length && !kept.length) info('nothing to archive: no issue is declared.');
+  else info(`${moved.length} archived, ${kept.length} left in place.`);
+  if (kept.length) process.exitCode = 1;
 };
 
 // --- pull request ----------------------------------------------------------
@@ -1122,6 +1219,7 @@ const USAGE = `flow - the contribution cycle
   flow issue link <n>         adopt an issue that already exists on GitHub
   flow issue sync             create/update the declared issues on GitHub
   flow issue check            read-only verification (run by CI)
+  flow issue archive [id...]  move closed issues into .github/issues/archive
 
   flow release                declare the bump and the summary
   flow release sync           regenerate .changeset/release.md
@@ -1166,6 +1264,8 @@ const main = async () => {
           return cmdIssueSync();
         case 'check':
           return cmdIssueCheck();
+        case 'archive':
+          return cmdIssueArchive(args.slice(2));
       }
       break;
     case 'release':
