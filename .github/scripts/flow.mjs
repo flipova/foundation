@@ -28,6 +28,8 @@ import { join } from 'node:path';
 
 import {
   ROOT,
+  OWNER,
+  REPO,
   api,
   currentBranch,
   ensurePullRequest,
@@ -280,9 +282,20 @@ const cmdCommit = async () => {
 
 const cmdPush = () => {
   const branch = currentBranch();
-  const upstream = gitTry(`git rev-parse --abbrev-ref --symbolic-full-name @{u}`);
-  git(upstream ? 'git push' : `git push -u origin ${branch}`);
-  good(`pushed ${branch}`);
+  const upstream = gitTry('git rev-parse --abbrev-ref --symbolic-full-name @{u}');
+  // A branch cut from a remote one (`git checkout -b x origin/main`) inherits
+  // `origin/main` as its upstream, and a bare `git push` then refuses because
+  // the upstream name does not match the branch. Only reuse an upstream that
+  // actually points at this branch.
+  const usable = upstream === `origin/${branch}`;
+  try {
+    git(usable ? 'git push' : `git push -u origin ${branch}`);
+  } catch (e) {
+    bad(`push failed: ${String(e.stderr ?? e.message).split('\n')[0]}`);
+    process.exitCode = 1;
+    return;
+  }
+  good(`pushed ${branch}${usable ? '' : '  (upstream set)'}`);
 };
 
 // --- issues ----------------------------------------------------------------
@@ -501,11 +514,21 @@ const cmdPr = async () => {
   if (declaration.bump !== 'none' && declaration.summary) {
     sections.push(`## What this changes\n\n${declaration.summary}`);
   }
-  const { pr, created } = await ensurePullRequest({ title, body: sections.join('\n\n') });
+  const opened = await ensurePullRequest({ title, body: sections.join('\n\n') }).catch((e) => {
+    if (/\/pulls -> 422/.test(e.message)) {
+      bad('GitHub refused the pull request: the branch is not on the remote yet - run `flow push` first');
+    } else {
+      bad(e.message.split('\n')[0]);
+    }
+    process.exitCode = 1;
+    return null;
+  });
+  if (!opened) return;
+  const { pr, created } = opened;
   state.title = title;
   writeState(state);
   good(`${created ? 'opened' : 'updated'} #${pr.number}: ${title}`);
-  info(`https://github.com/${process.env.GITHUB_REPOSITORY_OWNER ?? 'flipova'}/${process.env.GITHUB_REPOSITORY_NAME ?? 'foundation'}/pull/${pr.number}`);
+  info(`https://github.com/${OWNER}/${REPO}/pull/${pr.number}`);
 };
 
 const cmdStatus = async () => {
