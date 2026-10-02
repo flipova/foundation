@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-oidc-guard-ran-in-the-job-that
+title: "The OIDC guard ran in the job that cannot have id-token"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  Trusted publishing failed at the preflight, which has no id-token: write and never will.
+  
+  ## Steps to reproduce
+  
+  1.

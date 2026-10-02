@@ -120,12 +120,11 @@ jobs:
           else
             echo "mode=oidc" >> "$GITHUB_OUTPUT"
             echo "Authentication: trusted publishing (OIDC), no token."
-            if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
-              echo "::error::Trusted publishing needs 'id-token: write' on this job."
-              echo "::error::Without it GitHub issues no OIDC token and npm has nothing to authenticate with."
-              echo "::error::Either add that permission, or restore the NPM_PUBLISH_TOKEN secret."
-              exit 1
-            fi
+            # The OIDC capability is NOT checked here. `id-token: write` is only
+            # granted to the job that publishes, and ACTIONS_ID_TOKEN_REQUEST_URL
+            # only exists there - so checking it in this job always fails, and
+            # widening this job's permissions to make it pass would be wrong.
+            # The guard lives in the changesets job, where the token is used.
           fi
 
       - name: Decide the release path
@@ -313,6 +312,22 @@ jobs:
           # wheel turns a missing one into a clear, short error here instead of
           # a long compile failure later in the job.
           python -m pip install --only-binary=:all: -r design/tools/requirements.txt
+
+      # `id-token: write` is granted to THIS job and to no other, so this is the
+      # only place the OIDC capability can be observed. Checked here rather than
+      # in the preflight, which cannot see it - see the note in the preflight's
+      # authentication step.
+      - name: Check that trusted publishing is available
+        if: needs.preflight.outputs.auth_mode == 'oidc'
+        run: |
+          set -euo pipefail
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "::error::Trusted publishing needs 'id-token: write' on this job, and this job does not have it."
+            echo "::error::Without it GitHub issues no OIDC token and npm has nothing to authenticate with."
+            echo "::error::Either add the permission to the changesets job, or restore the NPM_PUBLISH_TOKEN secret."
+            exit 1
+          fi
+          echo "OIDC is available; npm will exchange it for a short-lived registry token."
 
       # Trusted publishing needs npm 11.5.1+ (11.21+ for dist-tags) and Node
       # 22.14+. `actions/setup-node` gives us Node 22.x but keeps the npm that
