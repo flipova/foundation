@@ -27,10 +27,48 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+  # `actions/labeler` fails outright on an unknown label, so a label deleted by
+  # hand would break every pull request. `.github/labels.yml` is the source of
+  # truth: this check names what is missing and how to recreate it.
+  labels:
+    name: Automation labels present
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify the labels the automation relies on
+        run: node .github/scripts/labels.mjs --check
+
+  # `.github/issues/*.yml` declares the tracker inside the repository. This keeps
+  # the declared issues and GitHub in step: a deleted, renamed or relabelled
+  # issue is reported here by name, instead of silently breaking the linkage the
+  # pull request checks rely on.
+  issues:
+    name: Issue registry in sync
+    runs-on: ubuntu-latest
+    permissions:
+      issues: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify the declared issues exist and match GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/issues.mjs --check
+
   size:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      issues: read
     steps:
       - uses: actions/checkout@v4
       - uses: codelytv/pr-size-labeler@v1
