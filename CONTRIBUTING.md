@@ -224,9 +224,25 @@ To switch to trusted publishing:
 
 ```bash
 npm install -g npm@latest
+npm login                                     # interactive; 2FA is required
+
 npm trust list @flipova/foundation
-npm trust github-actions @flipova/foundation --help     # the exact flags
-npm trust github-actions @flipova/foundation --allow-publish
+npm trust github @flipova/foundation \
+  --file release.yml \
+  --repository flipova/foundation \
+  --allow-publish
+```
+
+`--file` is the workflow filename only, not a path: it must match the workflow
+that actually contains the publish, which here is `.github/workflows/release.yml`.
+`--repository` is `owner/repo`. `--environment` is only needed if you use a
+GitHub environment.
+
+To remove it again:
+
+```bash
+npm trust list @flipova/foundation        # gives the id
+npm trust revoke @flipova/foundation --id <id>
 ```
 
 Then **delete the `NPM_PUBLISH_TOKEN` secret** — its absence is what selects the
@@ -234,8 +250,9 @@ mode. Keep it a moment if you prefer: leaving it in place only means the token
 path is still taken.
 
 npm requires npm **11.5.1+**, Node **22.14+**, and 2FA enabled on your account.
-The trusted publisher can only be configured as a logged-in human: `npm trust`
-rejects bypass-2FA tokens, because creating one is an account-governance action.
+`npm trust` is interactive by design: it rejects bypass-2FA tokens, because
+creating a trusted publisher is an account-governance action, and legacy
+username/password credentials do not work either. `npm login` is the way in.
 
 `id-token: write` is what makes it work; without it GitHub issues no OIDC token,
 and the workflow says so by name before publishing.
