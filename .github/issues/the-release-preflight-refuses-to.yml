@@ -1,0 +1,39 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-release-preflight-refuses-to
+title: "The release preflight refuses to publish after a squash-merged version PR"
+labels:
+  - ci
+  - bug
+body: |
+  The preflight read `git log -1 --format=%s` and required the subject to be
+  `chore: version packages`. That is wrong twice over, and both were found by
+  merging for real rather than by reading the workflow.
+
+  **First**: on a repository that merges pull requests the tip is always a merge
+  subject. Replacing the tip check with a pickaxe found the right commit for
+  2.0.1 and 2.0.2, so it looked fixed.
+
+  **Second**: the version pull request can be merged with a squash. A squash
+  replaces `chore: version packages` with the pull request title, so the pickaxe
+  now finds the right commit and reports the wrong subject. 2.0.3 was refused with:
+
+  ```
+  Error: Refusing to publish.
+  Error: "version": "2.0.3" was written by
+         'Merge pull request #76 from flipova/changeset-release/main',
+         not by a changesets version commit.
+  ```
+
+  ## Fix
+
+  The gate is now the changelog entry, not a commit subject. `changeset version`
+  always writes `## <version>` for the version it produced; a hand-bumped
+  `package.json` does not. That survives every merge strategy.
+
+  The pickaxe stays, as a diagnostic line in the job summary: useful context,
+  useless as a gate.
+
+  ## Validation
+
+  Checked against the real state of `main`: 2.0.3 has a changelog entry and would
+  publish; 9.9.9 has none and is refused.
