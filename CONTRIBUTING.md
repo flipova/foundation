@@ -188,10 +188,25 @@ The workflows pin Python 3.12 and install with `--only-binary=:all:`. Keep that
 pin when touching them, and never widen `lxml` past 6 without checking a wheel
 exists for the pinned interpreter.
 
+**Publishing fails with `EOTP`: "This operation requires a one-time password"**
+The token is valid - npm authenticated it - but it is a **classic** token, and
+the account has 2FA on "authorization and writes", so npm will only publish
+interactively. No npm command reveals this before publishing, which is why the
+preflight can pass and the publish still fail.
+
+Create an **automation** token (npmjs.com → Access Tokens → Generate New Token →
+**Automation**, scoped to publish on `@flipova`) and replace the
+`NPM_PUBLISH_TOKEN` secret. An automation token bypasses 2FA, so no OTP is ever
+requested.
+
 **Publishing fails with `E404 Not Found`**
-The package exists, so npm is hiding an authentication failure. Use an npm
-**automation** token (Read & Write, scope `@flipova`), not a classic one and not a
-GitHub Packages token. The preflight names the cause before it uploads.
+The package exists, so npm is hiding a permission failure: no write access to the
+scope, or a token from another registry (a GitHub Packages token fails exactly
+like this).
+
+Both of these, and `E401`, `E403` and `E409`, are now translated by
+`release:ci` into the action that fixes them, so a failed publish no longer
+ends in a wall of npm output.
 
 ## Command reference
 

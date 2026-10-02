@@ -55,6 +55,7 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "release": "npm run build && npm run typecheck && changeset publish",
+    "release:ci": "node .github/scripts/publish.mjs",
     "version": "changeset version",
     "version:bump": "changeset version && node .github/scripts/flow.mjs release reset && npm run design:doc",
     "prepublishOnly": "npm run build && npm run typecheck",

@@ -8,10 +8,12 @@ name: Release
 # Nothing is published from an ordinary commit on main: the preflight below
 # refuses it. The only exception is an explicit, reasoned hotfix dispatch.
 #
-# On publish, the token must be an npm automation token with write access to
-# the @flipova scope. A wrong/expired token makes npm answer "E404 Not Found"
-# on the PUT, which is why the preflight authenticates BEFORE anything is
-# attempted and explains the fix in the log.
+# On publish, the token must be an npm automation token (or a granular token with
+# "bypass 2FA") with write access to the @flipova scope. A wrong/expired token
+# makes npm answer "E404 Not Found" on the PUT, and a classic token on a
+# 2FA-enabled account is refused with "EOTP". No npm command distinguishes the
+# two before publishing, so the preflight says so out loud, and `release:ci`
+# translates the error into the exact fix.
 
 on:
   push:
@@ -199,6 +201,22 @@ jobs:
           fi
           echo "About to publish ${name}@${version}."
 
+          # The one thing this preflight cannot check, stated plainly rather than
+          # left for a maintainer to rediscover after a full build.
+          #
+          # npm offers no command that tells a classic token from an automation
+          # one: `npm whoami` and `npm access get status` both succeed with
+          # either. The difference only appears when publishing, as EOTP, because
+          # a classic token needs a one-time password whenever the account has
+          # 2FA on "authorization and writes". An automation token bypasses 2FA.
+          echo "::notice::Publishing needs an npm automation token (bypass 2FA). A classic token authenticates fine above and is then refused with EOTP."
+          {
+            echo ""
+            echo "> Publishing needs an npm **automation** token, or a granular token with *bypass 2FA*."
+            echo "> A classic token passes \`npm whoami\` and \`npm access get status\` above, then npm"
+            echo "> refuses the publish with \`EOTP\` because the account has 2FA on writes."
+          } >> "$GITHUB_STEP_SUMMARY"
+
   changesets:
     name: Version PR / Publish
     needs: preflight
@@ -253,7 +271,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: npm run version:bump
-          publish: npm run release
+          publish: npm run release:ci
           title: "chore: version packages"
           commit: "chore: version packages"
         env:

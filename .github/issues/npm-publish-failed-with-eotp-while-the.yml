@@ -1,0 +1,49 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: npm-publish-failed-with-eotp-while-the
+title: "npm publish failed with EOTP while the preflight passed"
+labels:
+  []
+body: |
+  The publish of 2.0.2 failed with `EOTP`, after a preflight that passed.
+
+  ```
+  🦋  error an error occurred while publishing @flipova/foundation: EOTP
+      This operation requires a one-time password from your authenticator.
+  ```
+
+  ## Why the preflight could not catch it
+
+  The preflight runs `npm whoami` and `npm access get status`. **Both succeed**
+  with a classic token: it authenticates, and it can read. npm then refuses the
+  actual publish with `EOTP`, because the account has 2FA set to "authorization
+  and writes" - npm's default - and a classic token only publishes interactively.
+
+  npm's own rule, from the 2FA documentation:
+
+  > Publishing to npm requires either: Two-factor authentication (2FA) enabled on
+  > your account, OR a granular access token with bypass 2FA enabled.
+
+  No npm command distinguishes the two token types before publishing. So this
+  cannot be pre-checked; it can only be explained.
+
+  ## Fix
+
+  Create an **automation** token (npmjs.com -> Access Tokens -> Generate New
+  Token -> **Automation**, scoped to publish on `@flipova`) and replace the
+  `NPM_PUBLISH_TOKEN` secret. An automation token bypasses 2FA, so no OTP is
+  ever requested.
+
+  ## Also here
+
+  - `release:ci` wraps `npm run release` and translates the npm failure into the
+    action that fixes it, as a GitHub annotation. `EOTP`, `E401`, `E403`, `E409`
+    and `E404` each name their cause and their fix; an unrecognised failure still
+    says so instead of being dressed up.
+  - the preflight now states the token requirement as a notice and in the job
+    summary, rather than leaving it to be rediscovered after a full build.
+
+  ## Validation
+
+  The classifier was exercised against the real `EOTP` output and against
+  `E401`, `E403`, `E409`, `E404` and an unknown code, without touching the
+  registry: importing the classifier does not publish.
