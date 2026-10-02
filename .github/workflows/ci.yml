@@ -92,11 +92,31 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # The declaration is the one place the release decision is written down, and
+      # both gates now read it. `bump: none` means "this change is not a release",
+      # and it is the only spelling of that the repository accepts: an empty
+      # changeset file is refused by `flow release check`, because a `none` bump
+      # means there must be none.
+      #
+      # Without this step the two gates disagree on exactly the pull requests that
+      # are documented as needing no release - a dev script added to
+      # `package.json`, say - and there is then no way to pass both.
+      - name: Read the release declaration
+        id: declared
+        if: github.event_name == 'pull_request'
+        run: |
+          # `origin/<base>` rather than the base sha: the step above already
+          # depends on that ref being fetched, and a sha is not a ref.
+          raw="$(git show "origin/${{ github.base_ref }}:.github/flow/release.yml" 2>/dev/null || true)"
+          bump="$(printf '%s\n' "$raw" | sed -nE "s/^[[:space:]]*bump:[[:space:]]*[\"']?([^\"'[:space:]]+)[\"']?[[:space:]]*$/\1/p" | head -1)"
+          # Unknown, not none: a missing or unreadable declaration must keep the
+          # requirement rather than quietly excuse it.
+          echo "bump=${bump:-unknown}" >> "$GITHUB_OUTPUT"
+          echo "declared bump: ${bump:-unknown}"
+
       # A change to the published surface must come with a version decision.
       # `--since` uses the pull request base sha rather than a branch name, so
       # the check never depends on a remote-tracking ref being fetched.
-      # If it fails, label the pull request `changeset:major|minor|patch|none`
-      # and changeset-guard.yml writes the changeset for you.
       #
       # The changesets release pull request is exempt: it *consumes* the
       # changesets (they are deleted by design) and its own release decision is
@@ -105,6 +125,7 @@ jobs:
         if: >-
           github.event_name == 'pull_request' &&
           steps.surface.outputs.changed == 'true' &&
+          steps.declared.outputs.bump != 'none' &&
           !startsWith(github.event.pull_request.head.ref, 'changeset-release/') &&
           github.event.pull_request.title != 'chore: version packages'
         env:
