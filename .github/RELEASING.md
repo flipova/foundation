@@ -14,6 +14,33 @@ and then with a preflight that could not recognise its own version. They will
 never be published: npm does not let a version be added after a later one
 exists. Consumers can only install 2.0.4 and later.
 
+## The chain
+
+A publish happens on exactly one event: the Release workflow runs on `main` and
+decides this version belongs on the registry.
+
+```text
+npm run flow release
+  writes .changeset/release.md
+        |
+        |  merge the work into main
+        v
+  Release run #1
+    |-- changesets pending ---> open "chore: version packages"     (no publish)
+    |-- version already on npm ---> nothing to do                  (no publish)
+    `-- otherwise ---> gate: is "## <version>" in CHANGELOG.md?
+                          |-- no  ---> refuse, with an ::error::
+                          `-- yes ---> npm publish
+        |
+        |  merge "chore: version packages" into main
+        v
+  Release run #2 ---> gate ---> npm publish
+```
+
+Two merges, two runs, one publish. Nothing publishes from an ordinary commit,
+which is also why a green run proves less than it looks like it does: two of
+those four paths end green without publishing anything.
+
 ## The two modes
 
 The release workflow picks its authentication from one thing: whether the
@@ -94,6 +121,35 @@ already merged.
 
 If the version is already on the registry, the preflight reports nothing to do
 and exits cleanly.
+
+## Reading a run
+
+A green tick does not say whether a publish happened. A run that published and a
+run that decided there was nothing to publish are both green, and for a while
+that is exactly how 2.0.1 to 2.0.3 stayed unnoticed. Three places say it:
+
+- **The Checks tab.** Every path through the preflight emits
+  `::notice title=Release decision::<what it decided>`, so the reason is on the
+  run itself: `publishing 2.0.5`, `already on npm - nothing to publish`,
+  `2 change(s) pending: the 'chore: version packages' pull request will be
+  opened`, `hotfix: publishing without the changelog gate`.
+- **The run summary.** Under the preflight table, one bold
+  `**Decision:** ...` line with the same sentence.
+- **Locally, without opening GitHub:**
+
+  ```bash
+  npm run flow -- release status
+  ```
+
+  which prints the branch, the declaration, the pending changesets, the version
+  npm actually has (and when it was published), whether `## <version>` exists in
+  `CHANGELOG.md` - the gate itself, not an opinion about it - the last three
+  Release runs (naming the step a failure died in), and one verdict line saying
+  what is going to happen next. `npm run flow status` carries a compact npm
+  line: `2.0.4 published - in step`, or `2.0.4 is NOT published`.
+
+The workflow's own `will_publish` output is the machine-readable form of the
+same decision; it is what gates the steps allowed to touch the registry.
 
 ## When a publish fails
 

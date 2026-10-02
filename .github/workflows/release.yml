@@ -159,29 +159,38 @@ jobs:
             echo ""
           } >> "$GITHUB_STEP_SUMMARY"
 
+          # Every branch below announces the same three things: the path it
+          # picked, whether that path publishes, and one line a reader sees in
+          # the Checks tab without opening the log. Before this existed, a green
+          # run that had decided "nothing to publish" looked exactly like a
+          # green run that published - which is how 2.0.1 to 2.0.3 stayed quiet.
+          decide() {
+            echo "path=$1" >> "$GITHUB_OUTPUT"
+            echo "will_publish=$2" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Release decision::$3"
+            { echo "**Decision:** $3"; echo ""; } >> "$GITHUB_STEP_SUMMARY"
+          }
+
           if [ "$HOTFIX" = "true" ]; then
             if [ -z "$REASON" ]; then
               echo "::error::hotfix = true requires the 'reason' input."
               exit 1
             fi
             echo "Hotfix path accepted (reason: $REASON)."
-            echo "path=hotfix" >> "$GITHUB_OUTPUT"
-            echo "will_publish=true" >> "$GITHUB_OUTPUT"
+            decide hotfix true "hotfix: publishing ${name}@${version} without the changelog gate."
             exit 0
           fi
 
           # Already on the registry: nothing to do, and that is not a failure.
           if npm view "$name@$version" version >/dev/null 2>&1; then
             echo "$name@$version is already published - nothing to do."
-            echo "path=already-published" >> "$GITHUB_OUTPUT"
-            echo "will_publish=false" >> "$GITHUB_OUTPUT"
+            decide already-published false "${name}@${version} is already on npm - nothing to publish."
             exit 0
           fi
 
           if [ "$pending" -gt 0 ]; then
             echo "Changesets pending ($pending) -> the Version Packages PR will be opened/updated. No publish here."
-            echo "path=version-pr" >> "$GITHUB_OUTPUT"
-            echo "will_publish=false" >> "$GITHUB_OUTPUT"
+            decide version-pr false "$pending change(s) pending: the 'chore: version packages' pull request will be opened or updated. No publish here."
             exit 0
           fi
 
@@ -207,8 +216,7 @@ jobs:
             exit 1
           fi
 
-          echo "path=version-pr" >> "$GITHUB_OUTPUT"
-          echo "will_publish=true" >> "$GITHUB_OUTPUT"
+          decide version-pr true "CHANGELOG.md has '## ${version}' - publishing ${name}@${version}."
 
       # Fail BEFORE touching the registry, with an actionable message instead of
       # a bare E404 at the end of the publish.

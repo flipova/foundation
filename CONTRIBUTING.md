@@ -6,10 +6,16 @@
 npm run flow
 ```
 
-It walks, in order: the issue, the release decision, the branch, the checks, the
-commit, the push, the pull request, and the link back to the issue. It skips
-whatever is already done, so running it twice is safe and running it after you
-have made your changes is the expected way to use it.
+In a terminal it opens a dashboard - branch, issue, release, npm, working tree,
+pull request - and an **arrow-key menu**: run the whole cycle, or take one step
+at a time (`↑`/`↓` to move, `Enter` to choose, `q` to leave).
+
+Pick "run the cycle" and it walks, in order: the issue, the release decision,
+the branch, the checks, the commit, the push, the pull request, and the link
+back to the issue. It skips whatever is already done, so running it twice is
+safe and running it after you have made your changes is the expected way to use
+it. With no terminal there is no menu - the cycle simply runs, which is what
+keeps `npm run flow` usable in a pipe and in CI.
 
 You make four decisions. Everything else is the tool's problem.
 
@@ -41,10 +47,34 @@ it picks up at step 4, because the first three are already recorded for the
 branch.
 
 ```bash
-npm run flow            # the cycle
-npm run flow status     # where am I: branch, issue, release, working tree, PR
+npm run flow            # the menu; with no terminal, the cycle in order
+npm run flow status     # where am I: branch, issue, release, npm, working tree, PR
 npm run flow verify     # just the checks
 ```
+
+## From a merge to npm
+
+Two merges, two runs of the Release workflow, one publish:
+
+```text
+declare it            merge the work           merge "chore: version packages"
+flow release     ->   into main            ->  into main
+.changeset/           Release run #1           Release run #2  ->  npm publish
+release.md            declares the bump        gate: "## <version>" is in CHANGELOG.md
+                      opens the version PR
+```
+
+Nothing publishes from an ordinary commit, and a run that decides *not* to
+publish still ends green. Which of those places the chain is at is one command:
+
+```bash
+npm run flow -- release status
+```
+
+It reads the declaration, the pending changesets, what npm actually holds, and
+the last three Release runs - and ends with one line saying what happens next.
+`.github/RELEASING.md` is the full runbook: authentication, the gate, and what
+to do when a publish fails.
 
 ## When the issue already exists
 
@@ -94,7 +124,7 @@ GITHUB_TOKEN=<a fine-grained PAT: issues:write, pull-requests:write> npm run flo
 
 ## Scripting it
 
-Every step takes flags, so the wizard is a front end over the same functions
+Every step takes flags, so the menu is a front end over the same functions
 rather than a second code path - and with no terminal each prompt falls back to
 its documented default instead of blocking.
 
@@ -307,8 +337,8 @@ adding it cannot move the release or trip the changeset guard.
 
 | Command | Does |
 | --- | --- |
-| `npm run flow` | the cycle, interactively |
-| `npm run flow status` | branch, issue, release, working tree, pull request |
+| `npm run flow` | the menu: a dashboard, then the cycle one step at a time |
+| `npm run flow status` | branch, issue, release, npm, working tree, pull request |
 | `npm run flow verify` | changeset, generated files, registries, types |
 | `npm run flow -- issue list` | the registry and its GitHub numbers |
 | `npm run flow -- issue new` | declare an issue locally |
@@ -320,6 +350,7 @@ adding it cannot move the release or trip the changeset guard.
 | `npm run flow -- release reset` | end the cycle (also run by `version:bump`) |
 | `npm run flow -- release consolidate` | fold old changesets into the single one |
 | `npm run flow -- release check` | drift between the declaration and the changeset (CI) |
+| `npm run flow -- release status` | does npm have this version? what did Release decide? |
 | `npm run flow -- branch [name]` | create and switch |
 | `npm run flow -- commit` | commit with the `Issues:` trailer |
 | `npm run flow -- push` | push and set the upstream |

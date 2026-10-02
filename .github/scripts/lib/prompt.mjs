@@ -39,6 +39,156 @@ export async function ask(question, { default: def = '', hint } = {}) {
   return answer || def;
 }
 
+/**
+ * The menu: arrow keys, one block, repainted in place.
+ *
+ * `select` above stays exactly as it is and is what a pipe, a CI log or a run
+ * without a terminal gets - a prompt that needs a terminal to be readable
+ * breaks in precisely the places that matter most. This is the other half: for
+ * the human at a real terminal, ↑/↓ move, Enter picks, `q` or Esc walks away,
+ * and `1`-`9` still jump straight to a row, so everything the numbered list
+ * did still works.
+ *
+ * Everything is repaint-driven - the block is cleared and rewritten on every
+ * key - so the transcript keeps one menu instead of a trail of duplicates. The
+ * input and the output are injectable, because a menu with no way to drive it
+ * without a real terminal is a menu nothing can test.
+ *
+ * Returns the chosen entry, or `undefined` when the user walked away.
+ */
+async function keyMenu({ question, choices, defaultIndex, hint, reader, input, output }) {
+  return new Promise((resolve) => {
+    let index = Math.min(Math.max(defaultIndex, 0), choices.length - 1);
+    let painted = 0; // how many lines of the block are currently on screen
+    const width = () => output.columns ?? process.stdout.columns ?? 80;
+
+    const block = () => {
+      const room = Math.max(20, width() - 8);
+      const cut = (s) => (s.length > room ? `${s.slice(0, room - 3)}...` : s);
+      const lines = ['', `  ${question}`];
+      if (hint) lines.push(`  \x1b[2m${hint}\x1b[0m`);
+      lines.push('');
+      choices.forEach((c, i) => {
+        const label = cut(c.label ?? String(c));
+        lines.push(i === index ? `  \x1b[7m▸ ${label}\x1b[0m` : `    ${label}`);
+      });
+      lines.push('');
+      lines.push('  \x1b[2m↑/↓ move   Enter select   q quit\x1b[0m');
+      return lines;
+    };
+
+    // Back to the first line of the block, then erase to the end of the screen:
+    // one list, always current, whatever the terminal did in between.
+    const rewind = (linesUp) => {
+      if (linesUp > 0) output.write(`\x1b[${linesUp}A`);
+      output.write('\r\x1b[J');
+    };
+
+    const paint = () => {
+      const lines = block();
+      if (painted) rewind(painted - 1);
+      output.write(lines.join('\r\n'));
+      painted = lines.length;
+    };
+
+    // `enter` is not cosmetic: `readline` echoes the Enter that chose a row as a
+    // newline, putting the cursor a line *below* the block, while `q` or a digit
+    // is echoed on the block's last line. Without that difference the repaint
+    // starts one line off and eats the row above the menu.
+    const stop = (picked, enter = false) => {
+      input.removeListener('keypress', onKey);
+      // Anything typed that we did not consume would be read by the next
+      // question asked on this same interface.
+      try {
+        reader.line = '';
+        reader.cursor = 0;
+      } catch {
+        /* the line buffer is an implementation detail, not a contract */
+      }
+      if (painted) rewind(enter ? painted : painted - 1);
+      output.write(`${block().join('\r\n')}\r\n`);
+      resolve(picked);
+    };
+
+    const move = (delta) => {
+      index = (index + delta + choices.length) % choices.length;
+      paint();
+    };
+
+    function onKey(str, key) {
+      const name = key?.name;
+      const plain = !key?.ctrl && !key?.meta;
+      if (key?.ctrl && name === 'c') {
+        process.exitCode = 130;
+        stop(undefined);
+        return;
+      }
+      if (name === 'up' || (plain && (str === 'k' || str === 'p'))) return move(-1);
+      if (name === 'down' || (plain && (str === 'j' || str === 'n'))) return move(1);
+      if (name === 'home') {
+        index = 0;
+        return paint();
+      }
+      if (name === 'end') {
+        index = choices.length - 1;
+        return paint();
+      }
+      if (name === 'return' || name === 'enter') return stop(choices[index], true);
+      if (name === 'escape' || (plain && str === 'q')) return stop(undefined);
+      const n = Number(str);
+      if (plain && Number.isInteger(n) && n >= 1 && n <= choices.length) {
+        index = n - 1;
+        return stop(choices[index]);
+      }
+      // A stray character must not stay painted over the menu, and must not sit
+      // in the line buffer the next question will read.
+      try {
+        reader.line = '';
+        reader.cursor = 0;
+      } catch {
+        /* ditto */
+      }
+      paint();
+    }
+
+    // `readline` treats ↑/↓ as history navigation and repaints the last answer
+    // over the block. A menu does not need history; `ask` repopulates it.
+    try {
+      reader.history = [];
+    } catch {
+      /* not every reader keeps history */
+    }
+    // On the *input*, not on the reader: that is where `readline` emits
+    // `keypress`, and where it registered its own handler first - so the keys
+    // it consumed (Enter, the echo of a typed character) are already applied
+    // by the time this runs.
+    input.on('keypress', onKey);
+    paint();
+  });
+}
+
+export async function menu(
+  question,
+  choices,
+  { defaultIndex = 0, hint, input = stdin, output = stdout, rl: given, interactive } = {}
+) {
+  if (!choices.length) return undefined;
+  const live = interactive ?? Boolean(input.isTTY && output.isTTY);
+  const reader = given ?? iface();
+  // A reader that is not in terminal mode never emits `keypress`: without this
+  // guard the menu would wait for keys no terminal is going to send.
+  if (!live || !reader.terminal) return select(question, choices, { defaultIndex, hint });
+  return keyMenu({
+    question,
+    choices,
+    defaultIndex,
+    hint,
+    reader,
+    input,
+    output,
+  });
+}
+
 export async function select(question, choices, { defaultIndex = 0, hint } = {}) {
   if (!choices.length) return undefined;
   out(`\n${question}`);
