@@ -1,0 +1,7 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: publishing-works-record-the-registry
+title: "Publishing works: record the registry state in the runbook"
+labels:
+  []
+body: |
+  2.0.4 is on npm through trusted publishing; the runbook still described the blocked state.
