@@ -260,6 +260,49 @@ and the workflow says so by name before publishing.
 The whole procedure - `npm trust`, the flags, the switch, the pending versions,
 and a table of publish errors - is in [`.github/RELEASING.md`](.github/RELEASING.md).
 
+## What has accumulated
+
+`flow` moves a cycle forward and never looks back: it declares the issue, cuts
+the branch, commits, pushes, opens the pull request, and finally deletes the
+branches whose work reached `main`. Everything the cycle leaves *around* itself
+is nobody's job. `maintain` is that job.
+
+```bash
+node .github/scripts/maintain.mjs list
+```
+
+Four sections, all read-only: `state` (the records this clone holds - the
+scratch file, `.numbers.json`, strays in `.git`), `issues` (the registry against
+the tracker), `prs`, and `branches`. Every finding is one of three things:
+
+- **`+`** nothing is wrong. The line exists so a clean run is visible.
+- **`!`** an accumulation `maintain fix` repairs on its own: a scratch file
+  describing a branch that no longer exists, a commit message git has already
+  read, an open issue that is an exact duplicate of a declared one.
+- **`-`** something a person has to decide about, which `fix` never touches: an
+  open issue nothing declares, a merged branch left on the remote, a number
+  whose file is gone.
+
+Two boundaries worth knowing:
+
+- **Records, not refs.** `maintain` never deletes a branch. Which branches may
+  go is `flow clean`'s policy, and re-deriving that policy here is how two
+  commands end up disagreeing about what is safe to delete. The `branches`
+  section reports and points; `flow clean` acts.
+- **It degrades honestly.** Without `GITHUB_TOKEN`/`GH_TOKEN` the GitHub
+  sections say they were not read rather than pretending to be complete, and
+  `fix` still tidies the clone while listing what it skipped. `fix` exits
+  non-zero when it found something it could not repair.
+
+```bash
+node .github/scripts/maintain.mjs fix          # asks first
+node .github/scripts/maintain.mjs fix --yes    # does not
+node .github/scripts/maintain.mjs issues --json
+```
+
+It runs outside the cycle on purpose: nothing in `package.json` points at it, so
+adding it cannot move the release or trip the changeset guard.
+
 ## Command reference
 
 | Command | Does |
@@ -282,6 +325,8 @@ and a table of publish errors - is in [`.github/RELEASING.md`](.github/RELEASING
 | `npm run flow -- push` | push and set the upstream |
 | `npm run flow -- pr [title]` | open the pull request |
 | `npm run flow -- link [pr]` | write `Closes #n` into the pull request |
+| `node .github/scripts/maintain.mjs list` | what has accumulated, read-only |
+| `node .github/scripts/maintain.mjs fix` | apply the repairs `list` found |
 
 Labels are managed separately, because they are maintenance rather than part of
 a cycle:
