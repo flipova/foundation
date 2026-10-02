@@ -92,7 +92,21 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # a change to the published surface must come with a version decision
+      # A change to the published surface must come with a version decision.
+      # `--since` uses the pull request base sha rather than a branch name, so
+      # the check never depends on a remote-tracking ref being fetched.
+      # If it fails, label the pull request `changeset:major|minor|patch|none`
+      # and changeset-guard.yml writes the changeset for you.
+      #
+      # The changesets release pull request is exempt: it *consumes* the
+      # changesets (they are deleted by design) and its own release decision is
+      # the version bump it carries.
       - name: Require a changeset
-        if: github.event_name == 'pull_request' && steps.surface.outputs.changed == 'true'
-        run: npx changeset status --since=origin/main
+        if: >-
+          github.event_name == 'pull_request' &&
+          steps.surface.outputs.changed == 'true' &&
+          !startsWith(github.event.pull_request.head.ref, 'changeset-release/') &&
+          github.event.pull_request.title != 'chore: version packages'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: npx changeset status --since="$BASE_SHA"

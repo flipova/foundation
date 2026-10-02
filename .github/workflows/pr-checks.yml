@@ -27,6 +27,22 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+  # `actions/labeler` fails outright on an unknown label, so a label deleted by
+  # hand would break every pull request. `.github/labels.yml` is the source of
+  # truth: this check names what is missing and how to recreate it.
+  labels:
+    name: Automation labels present
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify the labels the automation relies on
+        run: node .github/scripts/labels.mjs --check
+
   size:
     runs-on: ubuntu-latest
     permissions:

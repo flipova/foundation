@@ -1,6 +1,8 @@
 ## Linked issue
 
-<!-- Required. Use "Closes #123" so the issue closes when this merges. -->
+<!-- Required: add one of "Closes #12", "Fixes #12" or "Refs #12".
+     The CI check fails without it. For a trivial change that genuinely needs
+     no issue (typo, formatting), label the PR "no-issue" instead. -->
 Closes #
 
 ## What

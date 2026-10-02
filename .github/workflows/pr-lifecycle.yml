@@ -1,0 +1,246 @@
+name: PR Lifecycle
+
+# Collaboration guard rails for a repository where several people work in
+# parallel. Nothing here touches the code: it only keeps pull requests
+# mergeable and traceable.
+#
+#   1. linkage  - a pull request must reference an issue (hard check)
+#   2. sync     - a branch that falls behind the base is updated automatically,
+#                 but only when it merges cleanly, only for branches of this
+#                 repository (never a fork), and never on a conflicting branch
+#   3. status   - one single, always up-to-date status comment (no spam)
+#   4. automerge- auto-merge (squash) once the branch is mergeable and every
+#                 check is green, so pull requests queue instead of colliding.
+#                 Repository-side required reviews still apply.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited, ready_for_review, labeled, unlabeled]
+
+concurrency:
+  group: pr-lifecycle-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  lifecycle:
+    name: Linkage, sync, status and auto-merge
+    runs-on: ubuntu-latest
+    steps:
+      # The repository is checked out, never the pull request code: this job
+      # only runs git plumbing and GitHub API calls, so it is safe to grant it
+      # write access.
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Collect the pull request state
+        id: ctx
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const ev = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+            const pr = ev.pull_request;
+            const body = pr.body || '';
+
+            const match = body.match(
+              /\b(clos(?:e|es|ed)|fix(?:es|ed)?|resolv(?:e|es|ed)|refs?)\s+(#\d+(?:\s*,\s*#\d+)*)/i
+            );
+            const linked = match ? match[2].replace(/\s+/g, ' ').trim() : '';
+            const isFork = pr.head.repo.full_name !== ev.repository.full_name;
+            const mergeable = pr.mergeable || 'unknown';
+            const hasConflicts = pr.mergeable === 'conflicts';
+
+            let behind = '0';
+            if (!isFork && !hasConflicts) {
+              try {
+                behind = execSync(
+                  `git rev-list --count "origin/${pr.base.ref}..origin/${pr.head.ref}"`,
+                  { encoding: 'utf8' }
+                ).trim();
+              } catch (error) {
+                core.info(`could not compute the distance to the base: ${error.message}`);
+                behind = '0';
+              }
+            }
+
+            core.setOutput('linked', linked);
+            core.setOutput('is_fork', String(isFork));
+            core.setOutput('mergeable', mergeable);
+            core.setOutput('has_conflicts', String(hasConflicts));
+            core.setOutput('behind', behind);
+
+      - name: Report linkage and conflicts
+        env:
+          LINKED: ${{ steps.ctx.outputs.linked }}
+          MERGEABLE: ${{ steps.ctx.outputs.mergeable }}
+          HAS_CONFLICTS: ${{ steps.ctx.outputs.has_conflicts }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ "$HAS_CONFLICTS" = "true" ]; then
+            echo "::error::This pull request conflicts with the base branch. Resolve it locally (git fetch origin && git merge origin/main), or wait for the sync step once the branches agree."
+            exit 1
+          fi
+
+          # A changesets release pull request carries no issue reference: it is
+          # bot-managed and its release decision is the version bump it contains.
+          # It is recognised by name AND by shape, so the exemption never depends
+          # on a naming convention: it deletes the changesets it applied, adds
+          # none, and bumps the version.
+          if [[ "$HEAD_REF" == changeset-release/* || "$PR_TITLE" == "chore: version packages" ]]; then
+            echo "Changesets release pull request (by name): the issue linkage rule does not apply."
+            exit 0
+          fi
+          cs_added=$(git diff --name-status "$BASE_SHA" HEAD -- .changeset | grep -c '^A' || true)
+          cs_deleted=$(git diff --name-status "$BASE_SHA" HEAD -- .changeset | grep -c '^D' || true)
+          version_bumped=$(git diff "$BASE_SHA" HEAD -- package.json | grep -cE '^\+\s*"version":' || true)
+          if [ "$cs_added" -eq 0 ] && [ "$cs_deleted" -gt 0 ] && [ "$version_bumped" -gt 0 ]; then
+            echo "Changesets release pull request (by shape: $cs_deleted changeset(s) consumed, version bumped): the issue linkage rule does not apply."
+            exit 0
+          fi
+
+          if [ -z "$LINKED" ]; then
+            if [[ "$LABELS" == *"no-issue"* ]]; then
+              echo "No issue linked, but the pull request carries the 'no-issue' label: allowed (trivial change)."
+              exit 0
+            fi
+            echo "::error::No issue linked on #${PR_NUMBER}. Open an issue (or pick an existing one) and add 'Closes #<n>' to this pull request's description. For a genuinely trivial change (typo, formatting), label it 'no-issue'."
+            exit 1
+          fi
+          echo "Linked to $LINKED (mergeable: $MERGEABLE)"
+
+      - name: Update the branch when it is behind the base
+        if: steps.ctx.outputs.is_fork == 'false' && steps.ctx.outputs.has_conflicts == 'false' && steps.ctx.outputs.behind != '0' && steps.ctx.outputs.mergeable != 'unknown'
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git merge-base --is-ancestor "origin/$BASE" "origin/$HEAD"; then
+            echo "Already up to date with $BASE."
+            exit 0
+          fi
+          echo "Merging $BASE into $HEAD (no conflict detected)."
+          if ! git merge --no-edit --no-ff "origin/$BASE" -m "Merge $BASE into $HEAD"; then
+            git merge --abort || true
+            echo "::notice::The automatic update hit a conflict; a human resolves it."
+            exit 0
+          fi
+          git push origin "HEAD:$HEAD"
+          echo "::notice::Branch updated with $BASE."
+
+      - name: Publish or refresh the status comment, and enable auto-merge
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+            const ev = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8'));
+            const pr = ev.pull_request;
+            const n = pr.number;
+            const owner = ev.repository.owner.login;
+            const repo = ev.repository.name;
+            const isFork = pr.head.repo.full_name !== ev.repository.full_name;
+            const mergeable = pr.mergeable || 'unknown';
+            const hasConflicts = pr.mergeable === 'conflicts';
+            const body = pr.body || '';
+            const match = body.match(
+              /\b(clos(?:e|es|ed)|fix(?:es|ed)?|resolv(?:e|es|ed)|refs?)\s+(#\d+(?:\s*,\s*#\d+)*)/i
+            );
+            const linked = match ? match[2].replace(/\s+/g, ' ').trim() : 'none';
+
+            let behind = '0';
+            if (!isFork) {
+              try {
+                behind = execSync(
+                  `git rev-list --count "origin/${pr.base.ref}..origin/${pr.head.ref}"`,
+                  { encoding: 'utf8' }
+                ).trim();
+              } catch (error) {
+                behind = '0';
+              }
+            }
+
+            const { data: suites } = await github.rest.checks.listSuitesForRef({
+              owner, repo, ref: pr.head.sha
+            });
+            const all = suites.check_suites || [];
+            const failing = all.filter(s =>
+              ['failure', 'timed_out', 'cancelled'].includes(s.conclusion));
+            const pending = all.filter(s => s.status !== 'completed');
+            const checks = failing.length
+              ? `**${failing.length} failing**`
+              : pending.length
+                ? `${pending.length} pending`
+                : all.length
+                  ? 'all green'
+                  : 'none reported';
+
+            const notes = [];
+            if (isFork) notes.push('Fork pull request: the branch is not auto-updated.');
+            if (hasConflicts) notes.push('**Conflict** with the base branch: resolve it locally.');
+            if (linked === 'none') {
+              const trivial = (pr.labels || []).some(l => l.name === 'no-issue');
+              notes.push(trivial
+                ? 'No issue linked, but the `no-issue` label is set: allowed (trivial change).'
+                : `No issue linked: open or pick one, then add \`Closes #<n>\` to the description (or label \`no-issue\` if trivial).`);
+            }
+            if (failing.length || pending.length) notes.push(`Checks: ${checks}.`);
+
+            const marker = '<!-- foundation:pr-status -->';
+            const comment = [
+              marker,
+              '### Pull request status',
+              '',
+              '| | |',
+              '|---|---|',
+              `| Linked issue | ${linked} |`,
+              `| Mergeable | ${mergeable} |`,
+              `| Behind \`${pr.base.ref}\` | ${behind} commit(s) |`,
+              `| Checks | ${checks} |`,
+              '',
+              notes.length ? notes.map(x => `- ${x}`).join('\n') : 'Nothing to do: ready for review.',
+              '',
+              '<sub>Maintained by `pr-lifecycle.yml`. Do not edit this comment.</sub>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number: n, per_page: 100
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: comment });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: n, body: comment });
+            }
+
+            const allGreen = all.length > 0
+              && all.every(s => s.status === 'completed' && s.conclusion === 'success');
+            if (isFork || hasConflicts || linked === 'none' || !allGreen) return;
+            try {
+              await github.graphql(`
+                mutation ($id: ID!) {
+                  enablePullRequestAutoMerge(input: { pullRequestId: $id, mergeMethod: SQUASH }) {
+                    pullRequest { number }
+                  }
+                }`, { id: pr.node_id });
+              core.info(`Auto-merge (squash) enabled for #${n}.`);
+            } catch (error) {
+              core.info(`Auto-merge not enabled: ${error.message}`);
+            }
