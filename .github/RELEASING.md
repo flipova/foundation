@@ -4,8 +4,15 @@ This is the runbook for getting a version onto npm. It is written for a human
 doing it once, not for the workflow - the workflow is documented in its own
 header, and the everyday contribution process is in `CONTRIBUTING.md`.
 
-Current state: **main is 2.0.2, npm has 1.14.0.** Nothing in the 2.x line has
-been published yet.
+Current state: **2.0.4 is on npm** (`latest`), published through trusted
+publishing with no token secret in the repository.
+
+The 2.x line was previously unpublished - the registry jumped from 1.14.0
+straight to 2.0.4. Versions 2.0.0, 2.0.1, 2.0.2 and 2.0.3 exist in the changelog
+but were never on the registry, because every publish was refused with `EOTP`
+and then with a preflight that could not recognise its own version. They will
+never be published: npm does not let a version be added after a later one
+exists. Consumers can only install 2.0.4 and later.
 
 ## The two modes
 
@@ -134,7 +141,22 @@ what is left after that date, and npm's own recommendation
 
 ## Versions and the registry
 
-The registry has 1.14.0; `main` is 2.0.2. The changelog therefore lists 2.0.0
-and 2.0.1, which were never published. Consumers can only install 2.0.2 and
-later. Unpublishing those two entries from the changelog is a judgement call,
-not a tooling problem.
+The registry holds 1.14.0, then 2.0.4. The changelog also lists 2.0.0, 2.0.1,
+2.0.2 and 2.0.3, which were never published: each publish was refused, by `EOTP`
+first and then by a preflight that could not recognise the version it had just
+produced. npm will not accept a version once a later one exists, so those four
+can never be filled in. Consumers can install 2.0.4 and later, and that is
+stated in the installation page rather than left to be discovered.
+
+## Two guards that are deliberately not guards
+
+**The commit subject.** The preflight once required `chore: version packages`
+and then required the commit that wrote the version to have that subject. Both
+were wrong, and both were found by merging for real: a merge commit changes the
+tip's subject, and a squash merge replaces it. The gate is now the changelog
+entry, which `changeset version` always writes and nothing else does. The
+pickaxe stays in the job summary as a diagnostic.
+
+**`npm whoami`.** It cannot validate trusted publishing, so it runs only in
+token mode. In OIDC mode the preflight checks that `id-token: write` is present
+and stops there, because the publish itself is the only real check.
