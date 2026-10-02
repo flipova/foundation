@@ -1,6 +1,6 @@
 {
   "name": "@flipova/foundation",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "gluestack-ui components for React Native (iOS, Android) and Web, with a registry-driven theming pipeline (XML tokens/themes to gluestack config + Tailwind theme)",
   "author": "Flipova",
   "license": "MIT",
