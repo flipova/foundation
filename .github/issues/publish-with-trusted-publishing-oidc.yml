@@ -1,0 +1,44 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: publish-with-trusted-publishing-oidc
+title: "Publish with trusted publishing (OIDC) instead of a long-lived token"
+labels:
+  - enhancement
+body: |
+  ## Problem
+
+  Publishing depends on a long-lived `NPM_PUBLISH_TOKEN`, and npm is closing
+  that door: "the ability to publish new package versions directly with a
+  granular access token will be removed in **January 2027**". npm's own
+  recommendation is trusted publishing.
+
+  Trusted publishing removes the secret entirely. GitHub signs an OIDC token for
+  the workflow, npm exchanges it for a short-lived registry token, and nothing
+  long-lived is stored anywhere.
+
+  ## Proposed outcome
+
+  The release workflow publishes with OIDC when no token secret is set, and keeps
+  the token as a fallback. Nothing to reconfigure when the secret is deleted.
+
+  - `id-token: write` on the publishing job, and `packages: write` dropped: the
+    package goes to npmjs.org, never to GitHub Packages. A job-level block
+    replaces the workflow-level one, so the permissions are restated there.
+  - `npm install -g npm@latest` before the publish. Trusted publishing needs npm
+    11.5.1+ and Node 22.14+, and `actions/setup-node` keeps the npm bundled with
+    Node 22 - which is 10.9.x, where the OIDC exchange does not exist and the
+    failure says nothing about the npm version.
+  - the `.npmrc` is written by the workflow, not by `changesets/action`. The
+    action only creates one when it finds none, so writing it first is what
+    decides the authentication - and an `_authToken` line would take precedence
+    over OIDC and break it. In OIDC mode the file carries the registry and no
+    credential at all.
+  - the preflight stops running `npm whoami` and `npm access` in OIDC mode. npm
+    is explicit that neither is a check of trusted publishing permissions and
+    that both still require traditional authentication, so they would fail a run
+    that would have published perfectly.
+  - a missing `id-token: write` is reported by name instead of surfacing as an
+    opaque publish error.
+
+  ## Public API impact
+
+  none (internal)

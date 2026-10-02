@@ -8,12 +8,20 @@ name: Release
 # Nothing is published from an ordinary commit on main: the preflight below
 # refuses it. The only exception is an explicit, reasoned hotfix dispatch.
 #
-# On publish, the token must be an npm automation token (or a granular token with
-# "bypass 2FA") with write access to the @flipova scope. A wrong/expired token
-# makes npm answer "E404 Not Found" on the PUT, and a classic token on a
-# 2FA-enabled account is refused with "EOTP". No npm command distinguishes the
-# two before publishing, so the preflight says so out loud, and `release:ci`
-# translates the error into the exact fix.
+# On publish, authentication is either:
+#
+#   - trusted publishing (OIDC), when no NPM_PUBLISH_TOKEN secret is set. npm
+#     exchanges the workflow's OIDC identity for a short-lived registry token:
+#     no secret to rotate, and no two-factor prompt. This is the mode npm
+#     recommends, and the one that survives the January 2027 removal of direct
+#     publishing with bypass-2FA tokens.
+#   - the NPM_PUBLISH_TOKEN secret, kept as a fallback during the transition.
+#     It must be an npm automation token: a classic token authenticates and can
+#     read, then is refused at publish with EOTP when the account has 2FA on
+#     writes. No npm command reveals that before publishing.
+#
+# npm states that `npm whoami` and `npm access` are not a check of trusted
+# publishing permissions, so the preflight runs them only in token mode.
 
 on:
   push:
@@ -49,6 +57,7 @@ jobs:
     outputs:
       will_publish: ${{ steps.plan.outputs.will_publish }}
       path: ${{ steps.plan.outputs.path }}
+      auth_mode: ${{ steps.auth.outputs.mode }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -88,6 +97,36 @@ jobs:
           npm run design:verify
           npm run design:gen -- --check
           npm run typecheck
+
+      # Which authentication the publish will use.
+      #
+      # `oidc` when there is no token secret: npm exchanges the workflow's OIDC
+      # identity, through GitHub, for a short-lived registry token. `token`
+      # otherwise.
+      #
+      # The two need different checks. npm is explicit that `npm whoami` and
+      # `npm access` are *not* a check of trusted publishing permissions, and that
+      # they still require traditional authentication - so running them in OIDC
+      # mode would fail a run that would have published perfectly.
+      - name: Decide the authentication mode
+        id: auth
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${NPM_TOKEN}" ]; then
+            echo "mode=token" >> "$GITHUB_OUTPUT"
+            echo "Authentication: the NPM_PUBLISH_TOKEN secret."
+          else
+            echo "mode=oidc" >> "$GITHUB_OUTPUT"
+            echo "Authentication: trusted publishing (OIDC), no token."
+            if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+              echo "::error::Trusted publishing needs 'id-token: write' on this job."
+              echo "::error::Without it GitHub issues no OIDC token and npm has nothing to authenticate with."
+              echo "::error::Either add that permission, or restore the NPM_PUBLISH_TOKEN secret."
+              exit 1
+            fi
+          fi
 
       - name: Decide the release path
         id: plan
@@ -173,20 +212,48 @@ jobs:
         if: steps.plan.outputs.will_publish == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          AUTH_MODE: ${{ steps.auth.outputs.mode }}
         run: |
           set -euo pipefail
           name="$(node -p "require('./package.json').name")"
           version="$(node -p "require('./package.json').version")"
-          {
-            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
-            echo "always-auth=true" >> .npmrc
-            echo "registry=${REGISTRY}" >> .npmrc
-          }
-          if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "::error::Secret NPM_PUBLISH_TOKEN is empty."
-            echo "::error::Create an npm automation token (Access: Read & Write, scope @flipova) and store it in the repository secret NPM_PUBLISH_TOKEN."
-            exit 1
+          # The .npmrc is written here, before changesets/action runs.
+          #
+          # The action only creates one when it finds none, so this file is what
+          # decides the authentication. An `_authToken` line takes precedence
+          # over OIDC and breaks it, so in OIDC mode the file carries the
+          # registry and no credential at all.
+          if [ "$AUTH_MODE" = "token" ]; then
+            {
+              echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}"
+              echo "always-auth=true"
+              echo "registry=${REGISTRY}"
+            } > .npmrc
+          else
+            echo "registry=${REGISTRY}" > .npmrc
           fi
+
+          if [ "$AUTH_MODE" = "oidc" ]; then
+            echo "::notice::Publishing ${name}@${version} with trusted publishing (OIDC); no token is configured."
+            echo "::notice::npm whoami and npm access are not a check of trusted publishing permissions, so they are deliberately skipped."
+            {
+              echo ""
+              echo "### Authentication"
+              echo ""
+              echo "| | |"
+              echo "|---|---|"
+              echo "| mode | \`oidc\` (trusted publishing, no token) |"
+              echo "| package | \`$name\` |"
+              echo "| version | \`$version\` |"
+              echo ""
+              echo "> npm states that \`npm whoami\` and \`npm access\` are not a check of trusted"
+              echo "> publishing permissions, and still require traditional authentication."
+              echo "> The publish itself is the only real check."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "About to publish ${name}@${version} with OIDC."
+            exit 0
+          fi
+
           if ! who="$(npm whoami --registry="${REGISTRY}" 2>&1)"; then
             echo "::error::npm authentication failed: ${who}"
             echo "::error::NPM_PUBLISH_TOKEN is most likely not an npm token (a GitHub Packages token fails exactly like this), expired, or a classic token - npm now requires an automation token."
@@ -201,26 +268,17 @@ jobs:
           fi
           echo "About to publish ${name}@${version}."
 
-          # The one thing this preflight cannot check, stated plainly rather than
-          # left for a maintainer to rediscover after a full build.
-          #
-          # npm offers no command that tells a classic token from an automation
-          # one: `npm whoami` and `npm access get status` both succeed with
-          # either. The difference only appears when publishing, as EOTP, because
-          # a classic token needs a one-time password whenever the account has
-          # 2FA on "authorization and writes". An automation token bypasses 2FA.
-          echo "::notice::Publishing needs an npm automation token (bypass 2FA). A classic token authenticates fine above and is then refused with EOTP."
-          {
-            echo ""
-            echo "> Publishing needs an npm **automation** token, or a granular token with *bypass 2FA*."
-            echo "> A classic token passes \`npm whoami\` and \`npm access get status\` above, then npm"
-            echo "> refuses the publish with \`EOTP\` because the account has 2FA on writes."
-          } >> "$GITHUB_STEP_SUMMARY"
-
   changesets:
     name: Version PR / Publish
     needs: preflight
     runs-on: ubuntu-latest
+    # A job-level block REPLACES the workflow-level one, so it has to repeat what
+    # this job needs. `packages: write` is dropped on purpose: this package is
+    # published to npmjs.org, never to GitHub Packages.
+    permissions:
+      contents: write          # commit the version bump and open the version PR
+      pull-requests: write     # create or update the version PR
+      id-token: write          # trusted publishing: GitHub signs the OIDC token
     outputs:
       published: ${{ steps.changesets.outputs.published }}
       version: ${{ steps.changesets.outputs.version }}
@@ -256,15 +314,36 @@ jobs:
           # a long compile failure later in the job.
           python -m pip install --only-binary=:all: -r design/tools/requirements.txt
 
+      # Trusted publishing needs npm 11.5.1+ (11.21+ for dist-tags) and Node
+      # 22.14+. `actions/setup-node` gives us Node 22.x but keeps the npm that
+      # ships with it, which is 10.9.x - old enough that the OIDC exchange does
+      # not exist and the publish fails with an authentication error that says
+      # nothing about the npm version.
+      - name: Upgrade npm for trusted publishing
+        if: needs.preflight.outputs.auth_mode == 'oidc'
+        run: |
+          npm install -g npm@latest
+          echo "npm $(npm -v)"
+
+      # changesets/action only writes a .npmrc when it finds none, so this file
+      # decides the authentication. An `_authToken` line would take precedence
+      # over OIDC, so in OIDC mode it carries the registry and no credential.
       - name: Configure registry authentication
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          AUTH_MODE: ${{ needs.preflight.outputs.auth_mode }}
         run: |
-          {
-            echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}"
-            echo "always-auth=true"
-            echo "registry=${REGISTRY}"
-          } >> .npmrc
+          set -euo pipefail
+          if [ "$AUTH_MODE" = "token" ]; then
+            {
+              echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}"
+              echo "always-auth=true"
+              echo "registry=${REGISTRY}"
+            } > .npmrc
+          else
+            echo "registry=${REGISTRY}" > .npmrc
+          fi
+          cat .npmrc | sed 's/^/  /'
 
       - name: Create Release PR or Publish
         id: changesets
@@ -276,4 +355,7 @@ jobs:
           commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The switch between the two modes. The action only reads it to build a
+          # .npmrc, and the step above has already written one, so nothing here
+          # decides the credentials - the absence of this secret does.
           NPM_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
