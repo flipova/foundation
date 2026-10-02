@@ -1,0 +1,25 @@
+id: release-process
+title: "Release process: one version, mandatory version -> publish path, fail fast"
+labels:
+  - ci
+  - config
+body: |
+  Make the release path non-bypassable and make a wrong publish fail early with
+  an actionable message instead of an opaque registry error.
+
+  ## Scope
+  - the root `package.json` is the single version: `design/manifest.xml` no longer
+    stores a copy and the XSD rejects `<version>` in `MetaType`, so a second copy
+    cannot reappear;
+  - `npm run version:bump` (`changeset version` + `design:doc`) makes the
+    "chore: version packages" pull request bump `package.json`,
+    `docs/package.json` and the site version atomically;
+  - a release preflight decides the path: a commit on `main` that is neither a
+    pending changeset nor `chore: version packages` cannot publish, and a version
+    already on the registry is not re-published;
+  - the preflight authenticates against the registry and checks write access, so
+    the npm `E404` names its cause (missing, expired, classic, or wrong-registry
+    token) instead of failing at the end of the publish;
+  - a `hotfix` dispatch with a mandatory `reason` is the only way to skip the
+    version pull request, and it still runs the quality gates;
+  - CI runs a design registry gate on every pull request and on `main`.

@@ -202,6 +202,44 @@ as an unrelated `actions/labeler` failure.
 | `paths` | `registry` `tokens` `theme` `components` `config` `ci` `docs` | applied automatically from the files a pull request touches |
 | no `paths` | `changeset:major` `changeset:minor` `changeset:patch` `changeset:none` `no-issue` | applied by hand to tell a bot what to do |
 
+### Managing issues locally
+
+Issues are declared **in the repository**, not only in the GitHub UI, so they can
+be reviewed like any other source. `.github/issues/<id>.yml` holds one issue per
+file:
+
+```yaml
+id: registry-driven-theming
+title: "Registry-driven theming pipeline: XML tokens/themes drive gluestack + Tailwind"
+labels: [registry, tokens, theme]
+body: |
+  ...
+```
+
+The `id` is a stable slug, never reused. GitHub numbers are recorded in
+`.github/issues/.numbers.json` (committed like a lockfile) and are the only link
+between the local file and the real issue.
+
+```bash
+node .github/scripts/issues.mjs --list              # registry + numbers
+node .github/scripts/issues.mjs --sync              # create / fix drift
+node .github/scripts/issues.mjs --check             # read-only (run by CI)
+node .github/scripts/issues.mjs --link <pr> <ids…>  # inject "Closes #n" in a PR
+```
+
+`--link` resolves local ids and rewrites the pull request description, so a
+branch never has to carry a number by hand. It refuses to write a `Closes`
+reference to a **pull request**: GitHub shares one numbering between issues and
+pull requests, so the number must be an issue. Ids can also come from a
+trailer in the branch commits:
+
+```
+Issues: registry-driven-theming, release-process
+```
+
+`PR Checks` runs `--check` on every pull request, so a deleted, renamed or
+relabelled issue is reported by name instead of breaking the linkage silently.
+
 ### Linking a pull request to its issue
 
 `pr-lifecycle.yml` reads the **description of the pull request** - not the

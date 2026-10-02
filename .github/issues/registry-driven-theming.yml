@@ -1,0 +1,34 @@
+# Registry-driven theming pipeline (v2)
+#
+# One file = one issue. This is the local source of truth; `issues.mjs --sync`
+# creates/updates the matching GitHub issue and records its number in
+# `.github/issues/.numbers.json`. See CONTRIBUTING -> Managing issues locally.
+
+id: registry-driven-theming
+title: "Registry-driven theming pipeline: XML tokens/themes drive gluestack + Tailwind"
+labels:
+  - registry
+  - tokens
+  - theme
+body: |
+  Replace the design system by a single registry-driven pipeline:
+
+  `design/tokens.xml` + `design/themes.xml`
+  -> `components/ui/gluestack-ui-provider/config.ts`  (colour vars, light/dark)
+  -> `components/ui/gluestack-ui-provider/tokens.js`  (the whole Tailwind theme)
+
+  ## Scope
+  - theme roles are the gluestack CSS variable names (`primary-foreground`, ...),
+    emitted as space-separated RGB triplets so `bg-primary/50` keeps working;
+  - `tailwind.config.js` holds **no** design value, it only wires
+    `extend: tokens.theme`;
+  - remove the `uiElement`/`uiHook` generator, the generated `foundation/**` tree,
+    the showroom and the generated test suites; `schema.xsd` only declares
+    `foundationRegistry`, `documentation`, `tokens`, `themes`;
+  - expose the theme as the typed `@flipova/foundation/tokens` export;
+  - trim the documentation, the XML editor and the toolchain to that scope.
+
+  ## Validation
+  - `npm pack` + a consumer smoke project: 17/17 token utilities compile from
+    the published tarball through the package name;
+  - ruff, the linter, the checker and the design pipeline all green.
