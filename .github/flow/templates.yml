@@ -1,0 +1,61 @@
+# Issue templates for `flow issue new`.
+#
+# The registry inside the repository is the source of truth, so these mirror the
+# GitHub issue forms in `.github/ISSUE_TEMPLATE/`: the same questions, asked
+# when the file is written instead of in a browser form. `{{summary}}` is
+# replaced by what you type.
+templates:
+  feature:
+    title: "[Feature]: "
+    labels:
+      - enhancement
+    body: |
+      ## Problem
+
+      {{summary}}
+
+      ## Proposed outcome
+
+      What the result should look like: the registry entry you would add, the
+      utility you would use.
+
+      ## Public API impact
+
+      none (internal) / additive (minor) / breaking (major)
+  bug:
+    title: "[Bug]: "
+    labels:
+      - bug
+    body: |
+      ## Foundation version
+
+      <!-- version installed from npm, or `main` for a local checkout -->
+
+      ## Affected layer
+
+      theming / gluestack components / CLI / documentation / build / other
+
+      ## What happens
+
+      {{summary}}
+
+      ## Steps to reproduce
+
+      1.
+  chore:
+    title: ""
+    labels:
+      - ci
+    body: |
+      ## Scope
+
+      {{summary}}
+
+      ## Validation
+
+      What proves it works.
+  blank:
+    title: ""
+    labels: []
+    body: |
+      {{summary}}

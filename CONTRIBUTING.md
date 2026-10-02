@@ -202,6 +202,61 @@ as an unrelated `actions/labeler` failure.
 | `paths` | `registry` `tokens` `theme` `components` `config` `ci` `docs` | applied automatically from the files a pull request touches |
 | no `paths` | `changeset:major` `changeset:minor` `changeset:patch` `changeset:none` `no-issue` | applied by hand to tell a bot what to do |
 
+### The cycle, end to end
+
+`npm run flow` walks the whole contribution cycle in order and skips whatever is
+already done:
+
+```bash
+npm run flow                  # issue -> release -> branch -> commit -> push -> pr -> link
+npm run flow status           # branch, issue, release and pull request at a glance
+```
+
+Every step is a command you can run on its own:
+
+```bash
+npm run flow -- issue list           # the registry and its GitHub numbers
+npm run flow -- issue new            # declare an issue locally, from a template or blank
+npm run flow -- issue link <n>       # adopt an issue that already exists on GitHub
+npm run flow -- issue sync           # create/update the declared issues on GitHub
+npm run flow -- issue check          # read-only verification (run by CI)
+npm run flow -- release              # declare the bump and the summary
+npm run flow -- release sync         # regenerate .changeset/release.md
+npm run flow -- release check        # drift between the declaration and the changeset (CI)
+npm run flow -- release consolidate  # fold every changeset into the single one
+npm run flow -- branch <name>
+npm run flow -- commit               # commits with the `Issues:` trailer
+npm run flow -- push
+npm run flow -- pr [title]
+npm run flow -- link [pr] [ids...]   # write `Closes #n` into the pull request
+```
+
+The interactive parts fall back to their documented defaults when there is no
+terminal, so the same command is safe in a pipeline and never blocks on a prompt.
+
+Everything that talks to GitHub needs a token: `GITHUB_TOKEN` or `GH_TOKEN`
+locally, `secrets.GITHUB_TOKEN` in Actions.
+
+### The changeset
+
+There is exactly **one** changeset, and it is generated. The declaration is
+`.github/flow/release.yml`; `.changeset/release.md` is generated from it and is
+the only file changesets reads.
+
+```yaml
+bump: patch          # major | minor | patch | none
+summary: |-
+  ...
+```
+
+Never edit `.changeset/release.md` and never add a second changeset file:
+`flow release check` fails on both. This is also why the pull request template
+asks for a *release decision* (the bump) rather than for a changeset file - the
+guard turns that decision into the file, and the declaration stays reviewable.
+
+`flow release consolidate` folds changesets written by an older version of the
+tooling into the single declaration, keeping the highest bump.
+
 ### Managing issues locally
 
 Issues are declared **in the repository**, not only in the GitHub UI, so they can
@@ -220,25 +275,25 @@ The `id` is a stable slug, never reused. GitHub numbers are recorded in
 `.github/issues/.numbers.json` (committed like a lockfile) and are the only link
 between the local file and the real issue.
 
-```bash
-node .github/scripts/issues.mjs --list              # registry + numbers
-node .github/scripts/issues.mjs --sync              # create / fix drift
-node .github/scripts/issues.mjs --check             # read-only (run by CI)
-node .github/scripts/issues.mjs --link <pr> <ids…>  # inject "Closes #n" in a PR
-```
+`flow issue link <n>` adopts an issue that already exists on the tracker: it
+mirrors the title, the labels and the body into a local file and records the
+number, so an issue raised in the browser is just as reviewable as one declared
+here. A linked issue is never at risk of a duplicate.
 
-`--link` resolves local ids and rewrites the pull request description, so a
-branch never has to carry a number by hand. It refuses to write a `Closes`
+`flow link` resolves the local ids and rewrites the pull request description, so
+a branch never has to carry a number by hand. It refuses to write a `Closes`
 reference to a **pull request**: GitHub shares one numbering between issues and
-pull requests, so the number must be an issue. Ids can also come from a
-trailer in the branch commits:
+pull requests, so the number must be an issue. Ids can also come from a trailer
+in the branch commits, which is what `flow commit` writes:
 
 ```
 Issues: registry-driven-theming, release-process
 ```
 
-`PR Checks` runs `--check` on every pull request, so a deleted, renamed or
-relabelled issue is reported by name instead of breaking the linkage silently.
+`PR Checks` runs `flow issue check` and `flow release check` on every pull
+request, so a deleted, renamed or relabelled issue - or a changeset that no
+longer matches its declaration - is reported by name instead of breaking the
+release silently.
 
 ### Linking a pull request to its issue
 

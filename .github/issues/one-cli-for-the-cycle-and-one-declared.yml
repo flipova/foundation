@@ -1,0 +1,37 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: one-cli-for-the-cycle-and-one-declared
+title: One CLI for the cycle, and one declared changeset
+labels:
+  - ci
+body: |-
+  ## Scope
+
+  Drive issue, changeset, branch, commit, push and pull request from a single
+  tool, so the cycle cannot be half-done.
+
+  - `node .github/scripts/flow.mjs` runs the cycle in order and skips what is
+    already done. Every step is also a standalone command, and every step is
+    scriptable (`--title`, `--bump`, `--summary`, `--template`, `--subject`), so
+    the wizard is a front end over the same functions rather than a second code
+    path. Without a terminal, a prompt falls back to its documented default
+    instead of blocking.
+  - one changeset, declared once: `.github/flow/release.yml` is canonical and
+    `.changeset/release.md` is generated from it. `release check` fails on drift
+    or on a second changeset file; `release consolidate` folds the thirteen
+    files written by the older tooling into one and names the ones it cannot
+    read.
+  - `flow issue new` declares an issue locally from a template or blank;
+    `flow issue link <n>` adopts one that already exists on GitHub.
+  - `.gitattributes` normalises line endings, because a generated file compared
+    byte for byte against its source otherwise looks out of date on Windows only.
+  - the five labels left over from the removed architecture are deleted.
+
+  ## Validation
+
+  - `flow release check` green; `changeset status` reads the single changeset and
+    proposes a patch.
+  - `flow issue check` green against the real tracker.
+  - `npm run design:pipeline` green.
+  - every flag path exercised without a terminal, including the failure paths
+    (unknown template, unknown bump, a `Closes` reference aimed at a pull
+    request).

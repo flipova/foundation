@@ -1,6 +1,6 @@
 # Registry-driven theming pipeline (v2)
 #
-# One file = one issue. This is the local source of truth; `issues.mjs --sync`
+# One file = one issue. This is the local source of truth; `flow issue sync`
 # creates/updates the matching GitHub issue and records its number in
 # `.github/issues/.numbers.json`. See CONTRIBUTING -> Managing issues locally.
 
