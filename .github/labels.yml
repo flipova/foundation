@@ -1,6 +1,6 @@
 # Labels used by the repository automation - the single source of truth.
 #
-# `.github/scripts/labels.mjs` reads this file to:
+# `flow labels` (the script behind it: .github/scripts/labels.mjs) reads it to:
 #   --check      verify every label exists AND `.github/labeler.yml` is up to date
 #   --sync-labeler  regenerate `.github/labeler.yml` from the `paths` below
 #   --create     create the labels missing in the repository
@@ -13,10 +13,10 @@
 # `paths` is optional: a label without paths is applied by hand.
 # colors: GitHub hex, without the leading '#'.
 #
-#   node .github/scripts/labels.mjs --list
-#   node .github/scripts/labels.mjs --check
-#   node .github/scripts/labels.mjs --sync-labeler
-#   GITHUB_TOKEN=<pat> node .github/scripts/labels.mjs --create
+#   flow labels --list
+#   flow labels --check
+#   flow labels --sync-labeler
+#   GITHUB_TOKEN=<pat> flow labels --create
 
 labels:
   # --- applied automatically from the files a pull request touches -----------

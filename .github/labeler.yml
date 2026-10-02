@@ -1,6 +1,6 @@
 # GENERATED FILE - do not edit by hand.
 # Source of truth: .github/labels.yml (the `paths` of each label).
-# Regenerate with: node .github/scripts/labels.mjs --sync-labeler
+# Regenerate with: flow labels --sync-labeler
 
 "registry":
   - changed-files:

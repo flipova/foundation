@@ -21,6 +21,11 @@
  *   flow link [pr]            write `Closes #n` into the pull request
  *   flow pr                   open the pull request
  *
+ * The sibling tools that live next door, reachable the same way:
+ *
+ *   flow maintain [what]      what the cycle leaves behind: list, fix, issues, prs
+ *   flow labels [--check]     the label registry and the labeler generated from it
+ *
  * Every step is also usable on its own, and the menu is a front end over those
  * same functions rather than a second code path. With no terminal there is no
  * menu at all: the cycle runs in order, as it always did, because a wizard that
@@ -437,8 +442,15 @@ const cmdBranch = async () => {
     process.exitCode = 2;
     return;
   }
-  git(`git switch -c ${name}`);
+  // Read before the switch. `readState` is branch-scoped - it discards a file that
+  // describes a different branch - and `currentBranch` answers for the branch
+  // that is checked out now. Asking either of them after `git switch -c` asks
+  // about the branch that was just created, which is how this looked correct and
+  // carried nothing.
+  const from = currentBranch();
   const state = readState();
+  git(`git switch -c ${name}`);
+
   // Issues declared on `main` are work that exists nowhere else yet, and the new
   // branch is cut from this same working tree, so they belong to it. Issues
   // declared on another branch do not travel: that branch keeps them, and this
@@ -448,7 +460,7 @@ const cmdBranch = async () => {
   // step 1 and `branch` at step 3, and until now step 3 threw step 1 away
   // silently - so a cycle followed in order ended on "no issue declared for this
   // branch", with the scratch file as the only place the link still existed.
-  const carried = state.branch === 'main' ? state.issues : [];
+  const carried = from === 'main' ? state.issues : [];
   writeState({ ...state, branch: name, issues: carried });
   if (carried.length) info(`carried ${carried.length} issue(s) declared on main`);
   good(`on ${name}`);
@@ -622,20 +634,18 @@ const cmdIssueLink = async (number) => {
     process.exitCode = 2;
     return null;
   }
-  await requireToken('flow issue link');
-  const remote = await getIssue(number);
-  if (isPullRequest(remote)) {
-    bad(`#${number} is a pull request. GitHub shares one numbering, so only an issue can be closed.`);
-    process.exitCode = 2;
-    return null;
-  }
   const registry = readRegistry();
   const numbers = readNumbers();
+
+  // Already declared *and* numbered here, so re-tying this branch to it needs
+  // nothing but the local registry - no token, no request. The tracker call
+  // comes after, because adopting an issue nobody declared locally does need it.
+  //
+  // Declared is not the same as linked to *this* branch, and a branch that lost
+  // the association had no way back short of editing the scratch file by hand.
+  // Typing the number is the request; honour it either way.
   const existing = registry.find((i) => numbers[i.id] === number);
   if (existing) {
-    // Declared is not the same as linked to *this* branch, and a branch that
-    // lost the association had no way back short of editing the scratch file by
-    // hand. Typing the number is the request; honour it either way.
     const state = readState();
     if (state.issues.includes(existing.id)) {
       info(`#${number} is already declared locally as "${existing.id}".`);
@@ -643,8 +653,16 @@ const cmdIssueLink = async (number) => {
     }
     state.issues = [...new Set([...state.issues, existing.id])];
     writeState(state);
-    good(`#${number} is already declared as "${existing.id}" - now linked to ${state.branch}`);
+    good(`#${number} is already declared as "${existing.id}" - now linked to ${state.branch || currentBranch()}`);
     return existing.id;
+  }
+
+  await requireToken('flow issue link');
+  const remote = await getIssue(number);
+  if (isPullRequest(remote)) {
+    bad(`#${number} is a pull request. GitHub shares one numbering, so only an issue can be closed.`);
+    process.exitCode = 2;
+    return null;
   }
   const id = uniqueSlug(
     slugify(remote.title.replace(/^\[[^\]]+\]:\s*/, '')),
@@ -1070,6 +1088,54 @@ const cmdStatus = async () => {
   if (pr) info(`pull request #${pr.number}  ${pr.title}`);
 };
 
+/**
+ * Everything typed after a tool name, verbatim.
+ *
+ * `args` holds positionals only - flow parses flags for itself - so a
+ * passthrough cannot be built from it. `--sync-labeler` would arrive at the
+ * child as nothing at all, and `--title x` would arrive as `--title` alone with
+ * the value swallowed, because a parser that has never heard of a flag cannot
+ * know whether the next token belongs to it.
+ */
+const passthrough = (name) => {
+  const at = argv.indexOf(name);
+  return at === -1 ? [] : argv.slice(at + 1);
+};
+
+/**
+ * Run one of the sibling tools in `.github/scripts/` as a flow command.
+ *
+ * `maintain` and `labels` were reachable only as long paths typed by hand, which
+ * is the exact problem this CLI exists to solve for the cycle - and the reason
+ * they were easy to forget is also the reason they were never found. They stay
+ * separate programs: each owns its own arguments, its own exit code and its own
+ * reporting, so flow forwards both instead of wrapping them in a second parser
+ * that would have to be kept in step with the first.
+ *
+ * `publish.mjs` is deliberately absent. It publishes to npm, it runs from
+ * `release.yml` through `npm run release:ci`, and a menu entry that can publish
+ * is a foot-gun wearing a shortcut.
+ */
+const cmdTool = (name, rest) => {
+  const script = join(ROOT, '.github', 'scripts', `${name}.mjs`);
+  if (!existsSync(script)) {
+    bad(`no tool at .github/scripts/${name}.mjs`);
+    process.exitCode = 2;
+    return;
+  }
+  // The menu holds stdin in raw mode through its own readline, and a child that
+  // asks a question would fight it for every keypress. Closing first hands the
+  // terminal back; the next prompt opens a fresh interface.
+  prompt.close();
+  const run = spawnSync(process.execPath, [script, ...rest], { cwd: ROOT, stdio: 'inherit' });
+  if (run.error) {
+    bad(`${name}: ${run.error.message}`);
+    process.exitCode = 1;
+    return;
+  }
+  process.exitCode = run.status ?? 1;
+};
+
 // --- the menu --------------------------------------------------------------
 /**
  * The cycle, in order, skipping whatever is already done. The order is the
@@ -1151,6 +1217,8 @@ const MENU = [
   { label: 'open the pull request', value: 'pr' },
   { label: 'merge it', value: 'merge' },
   { label: 'clean up the branches', value: 'clean' },
+  { label: 'what has accumulated (maintain)', value: 'maintain' },
+  { label: 'the label registry', value: 'labels' },
   { label: 'help', value: 'help' },
   { label: 'quit', value: 'quit' },
 ];
@@ -1197,6 +1265,12 @@ const cmdWizard = async () => {
       case 'clean':
         await cmdClean();
         break;
+      case 'maintain':
+        cmdTool('maintain', ['list']);
+        break;
+      case 'labels':
+        cmdTool('labels', ['--list']);
+        break;
       case 'help':
         process.stdout.write(USAGE);
         break;
@@ -1235,6 +1309,9 @@ const USAGE = `flow - the contribution cycle
   flow pr [title]             open the pull request
   flow merge [pr]             merge it, once the checks are green
   flow clean                  delete the branches whose work is on main
+
+  flow maintain [what]        what the cycle leaves behind (also: npm run maintain)
+  flow labels [--check]       the label registry and the labeler generated from it
 `;
 
 const main = async () => {
@@ -1298,6 +1375,9 @@ const main = async () => {
       return cmdMerge();
     case 'clean':
       return cmdClean();
+    case 'maintain':
+    case 'labels':
+      return cmdTool(args[0], passthrough(args[0]));
     default:
       break;
   }
