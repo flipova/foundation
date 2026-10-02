@@ -257,6 +257,9 @@ username/password credentials do not work either. `npm login` is the way in.
 `id-token: write` is what makes it work; without it GitHub issues no OIDC token,
 and the workflow says so by name before publishing.
 
+The whole procedure - `npm trust`, the flags, the switch, the pending versions,
+and a table of publish errors - is in [`.github/RELEASING.md`](.github/RELEASING.md).
+
 ## Command reference
 
 | Command | Does |
