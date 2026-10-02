@@ -607,10 +607,16 @@ const main = async () => {
   process.exitCode = 2;
 };
 
-main().catch((e) => {
-  bad(e.message);
-  process.exitCode = 1;
-});
+// The readline interface in prompt keeps stdin referenced: once an
+// interactive `confirm` has created it, the process would otherwise sit there
+// after `main` returns and never exit. `flow` closes it the same way at the end
+// of its wizard.
+main()
+  .catch((e) => {
+    bad(e.message);
+    process.exitCode = 1;
+  })
+  .finally(() => prompt.close());
 
 
 

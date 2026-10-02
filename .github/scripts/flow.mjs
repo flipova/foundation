@@ -922,8 +922,13 @@ const main = async () => {
   process.exitCode = 2;
 };
 
-main().catch((e) => {
-  bad(e.message);
-  process.exitCode = 1;
-});
+// Same reason as maintain: prompt's readline keeps stdin referenced, so any
+// command that asked a question would sit here after `main` returns. The wizard
+// already closes it; every other prompt in this file relies on this line.
+main()
+  .catch((e) => {
+    bad(e.message);
+    process.exitCode = 1;
+  })
+  .finally(() => prompt.close());
 
