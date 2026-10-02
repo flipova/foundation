@@ -4,7 +4,7 @@ This is the runbook for getting a version onto npm. It is written for a human
 doing it once, not for the workflow - the workflow is documented in its own
 header, and the everyday contribution process is in `CONTRIBUTING.md`.
 
-Current state: **2.0.4 is on npm** (`latest`), published through trusted
+Current state: **2.0.5 is on npm** (`latest`), published through trusted
 publishing with no token secret in the repository.
 
 The 2.x line was previously unpublished - the registry jumped from 1.14.0
@@ -146,7 +146,7 @@ that is exactly how 2.0.1 to 2.0.3 stayed unnoticed. Three places say it:
   `CHANGELOG.md` - the gate itself, not an opinion about it - the last three
   Release runs (naming the step a failure died in), and one verdict line saying
   what is going to happen next. `npm run flow status` carries a compact npm
-  line: `2.0.4 published - in step`, or `2.0.4 is NOT published`.
+  line: `2.0.5 published - in step`, or `2.0.5 is NOT published`.
 
 The workflow's own `will_publish` output is the machine-readable form of the
 same decision; it is what gates the steps allowed to touch the registry.
@@ -197,12 +197,13 @@ what is left after that date, and npm's own recommendation
 
 ## Versions and the registry
 
-The registry holds 1.14.0, then 2.0.4. The changelog also lists 2.0.0, 2.0.1,
-2.0.2 and 2.0.3, which were never published: each publish was refused, by `EOTP`
-first and then by a preflight that could not recognise the version it had just
-produced. npm will not accept a version once a later one exists, so those four
-can never be filled in. Consumers can install 2.0.4 and later, and that is
-stated in the installation page rather than left to be discovered.
+The registry holds 1.14.0, then 2.0.4, then 2.0.5. The changelog also lists
+2.0.0, 2.0.1, 2.0.2 and 2.0.3, which were never published: each publish was
+refused, by `EOTP` first and then by a preflight that could not recognise the
+version it had just produced. npm will not accept a version once a later one
+exists, so those four can never be filled in. Consumers can install 2.0.4 and
+later, and that is stated in the installation page rather than left to be
+discovered.
 
 ## Two guards that are deliberately not guards
 
