@@ -1,0 +1,13 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: a-maintenance-command-for-what-the
+title: "A maintenance command for what the cycle leaves behind"
+labels:
+  - ci
+body: |
+  ## Scope
+  
+  The cycle moves forward and never looks back, so records pile up around it: issues open on GitHub that no file in .github/issues/ declares, stale per-branch scratch state, number mappings whose file is gone, and stray files left in .git by every commit. Nothing lists them, and nothing but flow clean touches refs - so a maintainer has no single command that says what has accumulated and clears the part that is safe to clear.
+  
+  ## Validation
+  
+  What proves it works.

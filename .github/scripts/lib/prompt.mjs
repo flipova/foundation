@@ -7,11 +7,16 @@
  * that guesses.
  */
 import { stdin, stdout } from 'node:process';
+import { createInterface } from 'node:readline';
 
 export const isInteractive = () => Boolean(stdin.isTTY && stdout.isTTY);
 
 let rl = null;
-const iface = () => (rl ??= stdin.createInterface({ input: stdin, output: stdout }));
+// `readline.createInterface`, not `stdin.createInterface`: Node never defines
+// the latter on a stream, so every interactive prompt died with
+// "stdin.createInterface is not a function" while the non-interactive path -
+// the one CI and pipes take - never touched this line and never noticed.
+const iface = () => (rl ??= createInterface({ input: stdin, output: stdout }));
 
 export function close() {
   rl?.close();
@@ -26,7 +31,11 @@ export async function ask(question, { default: def = '', hint } = {}) {
     out(`  ${question}${suffix} -> ${def || '(none)'}`);
     return def;
   }
-  const answer = (await iface().question(`${question}${suffix}: `)).trim();
+  // `question` resolves undefined when the input closes - EOF, Ctrl-D, a pipe
+  // that ends - and a reader that trims it unguarded crashes precisely when
+  // there is nobody left to answer. Falling back to the default is what the
+  // header of this file promises.
+  const answer = (await iface().question(`${question}${suffix}: `))?.trim() ?? '';
   return answer || def;
 }
 
@@ -40,7 +49,7 @@ export async function select(question, choices, { defaultIndex = 0, hint } = {})
     return choices[defaultIndex];
   }
   for (;;) {
-    const raw = (await iface().question(`  [1-${choices.length}] (${defaultIndex + 1}): `)).trim();
+    const raw = (await iface().question(`  [1-${choices.length}] (${defaultIndex + 1}): `))?.trim() ?? '';
     if (!raw) return choices[defaultIndex];
     const n = Number(raw);
     if (Number.isInteger(n) && n >= 1 && n <= choices.length) return choices[n - 1];
@@ -54,7 +63,7 @@ export async function multiSelect(question, choices, { hint } = {}) {
   choices.forEach((c, i) => out(`  ${i + 1}) ${c.label ?? c}`));
   if (hint) out(`  ${hint}`);
   if (!isInteractive()) return choices;
-  const raw = (await iface().question('  comma-separated, empty for all: ')).trim();
+  const raw = (await iface().question('  comma-separated, empty for all: '))?.trim() ?? '';
   if (!raw) return choices;
   const wanted = raw
     .split(',')
@@ -69,7 +78,7 @@ export async function confirm(question, { default: def = true } = {}) {
     out(`  ${question}${suffix} -> ${def}`);
     return def;
   }
-  const raw = (await iface().question(`${question}${suffix}: `)).trim().toLowerCase();
+  const raw = ((await iface().question(`${question}${suffix}: `)) ?? '').trim().toLowerCase();
   if (!raw) return def;
   return raw === 'y' || raw === 'yes';
 }
