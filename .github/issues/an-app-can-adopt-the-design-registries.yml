@@ -1,0 +1,18 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: an-app-can-adopt-the-design-registries
+title: "an app can adopt the design registries and own its own branding"
+labels:
+  - enhancement
+body: |
+  ## Problem
+  
+  flipova-design only wired the app to the package theme, so rebranding meant forking the whole registry tree by hand. The new flipova-design adopt copies the registries (manifest, schema, tokens, themes, documentation, canonical index) into design/ without the toolchain, which stays in node_modules, rewrites the manifest outputs to theme/config.ts and theme/tokens.js, and creates theme/provider.tsx. The package now exports createGluestackUIProvider(theme) so an app can mount a provider built from its own generated theme, while GluestackUIProvider stays the package theme for apps that never adopt. design.js also stopped deriving the Python sources from the registry directory, which meant a project copy without tools/ had no generator at all.
+  
+  ## Proposed outcome
+  
+  What the result should look like: the registry entry you would add, the
+  utility you would use.
+  
+  ## Public API impact
+  
+  none (internal) / additive (minor) / breaking (major)

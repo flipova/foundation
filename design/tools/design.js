@@ -43,7 +43,12 @@ const TOOLS_DIR = __dirname;
 const DESIGN_DIR = process.env.FOUNDATION_DESIGN_DIR
   ? path.resolve(process.env.FOUNDATION_DESIGN_DIR)
   : path.join(TOOLS_DIR, '..');
-const SOURCES_DIR = path.join(DESIGN_DIR, 'tools', 'sources');
+// The tools always come from the package that runs them. `DESIGN_DIR` is the
+// registry root, and an app that adopts the registries owns them without owning
+// the toolchain: deriving the sources from it meant `sources/` had to be copied
+// too, which is the duplication the CLI exists to avoid - and a copy without
+// `tools/` simply had no generator to run.
+const SOURCES_DIR = path.join(TOOLS_DIR, 'sources');
 const REPO_ROOT = process.env.FOUNDATION_PROJECT_ROOT
   ? path.resolve(process.env.FOUNDATION_PROJECT_ROOT)
   : path.join(DESIGN_DIR, '..');
