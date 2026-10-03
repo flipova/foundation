@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: the-optional-expo-glass-effect-peer-is
+title: "the optional expo-glass-effect peer is pinned above the supported Expo SDK"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  expo-glass-effect was declared as an optional peer at >=57.0.0 while the package requires expo >=55.0.0, so any fresh resolution on Expo SDK 55 fails with ERESOLVE (installed 55.0.10). The range now starts at 55.0.0, matching the expo peer and the runtime guards in components/ui/liquid-glass.
+  
+  ## Steps to reproduce
+  
+  1.
