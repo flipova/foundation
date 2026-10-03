@@ -1098,7 +1098,13 @@ const cmdClean = async () => {
     const gone = await api(`/git/refs/heads/${b}`, { method: 'DELETE' })
       .then(() => true)
       .catch(() => false);
-    if (gone) good(`deleted origin/${b}`);
+    if (!gone) continue;
+    // Drop the remote-tracking ref with it. The fetch at the top of this command
+    // happens *before* these deletions, so nothing prunes them afterwards - and
+    // `maintain`, which reads `refs/remotes/origin`, reported the branches this
+    // command had just deleted as still sitting on the remote.
+    gitTry(`git update-ref -d refs/remotes/origin/${b}`);
+    good(`deleted origin/${b}`);
   }
   info(`remote: ${prunable.length} of ${remotes.length} candidate(s)`);
   if (!done.length && !prunable.length) info('nothing to clean');
