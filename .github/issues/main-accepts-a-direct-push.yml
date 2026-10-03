@@ -1,0 +1,52 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: main-accepts-a-direct-push
+title: "main accepts a direct push"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  `main` - a local checkout. This is a repository setting rather than code, so no
+  published version carries it.
+  
+  ## Affected layer
+  
+  CLI - the repository's own policy, and what `maintain` says about it
+  
+  ## What happens
+  
+  `main` had no branch protection at all: `git push origin main` was accepted,
+  including from an administrator, so the cycle CONTRIBUTING describes could be
+  skipped silently - and it was, three times in one session, for housekeeping
+  that carries no changelog entry.
+
+  Two gates here make that easy to do by accident and invisible when it happens.
+  `changeset-guard` refuses a pull request that adds no changeset whenever the
+  declaration on its base is not `none`, so once a bump is declared that is
+  *every* pull request until the release lands; and `flow release check` is green
+  with `bump: none`, so the one spelling that satisfies the guard is also the one
+  that carries no version.
+
+  `main` now requires a pull request, with administrators subject to it, so there
+  is no bypass to remember to switch off. Verified by pushing a real empty
+  commit: refused with "Changes must be made through a pull request" and
+  "(protected branch hook declined)", `origin/main` unmoved.
+
+  The hotfix path stays open without any direct push - it is the reasoned
+  `release.yml` dispatch (`hotfix = true` plus a reason) described in
+  RELEASING.md, together with an ordinary pull request.
+
+  Required status checks are deliberately NOT part of it: the version pull
+  request is opened by `GITHUB_TOKEN`, which does not trigger `pull_request`
+  workflows, so it never carries a check run, and requiring one would make every
+  release unmergeable.
+
+  `maintain` reports whether the rule is in place, so a repository setting cannot
+  be lost without anyone noticing.
+  
+  ## Steps to reproduce
+  
+  1. `git branch tmp/probe main && git commit --allow-empty -m probe`
+  2. `git push origin tmp/probe:main` - accepted; `main` now carries a commit no
+     pull request ever described.
+  3. After the change, the same push is refused and `origin/main` does not move.

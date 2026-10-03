@@ -133,6 +133,51 @@ const KEEP_REFS = new Set(['main', 'changeset-release/main']);
 /** Works on both `main` and `origin/main`. */
 const keptRef = (ref) => KEEP_REFS.has(String(ref).replace(/^origin\//, ''));
 
+/**
+ * The rule `main` is held to, in one place.
+ *
+ * A pull request is required and administrators are subject to it, so there is
+ * no bypass to remember to switch off, and no "it was only a hotfix" the
+ * repository cannot see. Required status checks are deliberately absent: the
+ * version pull request is opened by `GITHUB_TOKEN`, which does not trigger
+ * `pull_request` workflows, so it never carries a check run - requiring one
+ * would make every release unmergeable.
+ */
+const BRANCH_POLICY = {
+  required_status_checks: null,
+  enforce_admins: true,
+  required_pull_request_reviews: {
+    dismissal_restrictions: { users: [], teams: [] },
+    dismiss_stale_reviews: false,
+    require_code_owner_reviews: false,
+    required_approving_review_count: 0,
+    bypass_pull_request_allowances: { users: [], teams: [], apps: [] },
+  },
+  restrictions: null,
+  required_linear_history: false,
+  allow_force_pushes: false,
+  allow_deletions: false,
+  required_conversation_resolution: false,
+  lock_branch: false,
+  allow_fork_syncing: true,
+};
+
+/** What `main` is protected with, or null when it is not protected at all. */
+const branchPolicy = async () => {
+  try {
+    return await api('/branches/main/protection');
+  } catch {
+    return null;
+  }
+};
+
+const requirePullRequest = () =>
+  api('/branches/main/protection', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(BRANCH_POLICY),
+  }).then(() => null);
+
 const MARK = { ok: '\x1b[32m+\x1b[0m', fix: '\x1b[33m!\x1b[0m', note: '\x1b[2m-\x1b[0m' };
 
 const report = (heading, rows) => {
@@ -471,7 +516,7 @@ const sectionPrs = async () => {
 };
 
 // --- branches --------------------------------------------------------------
-const sectionBranches = () => {
+const sectionBranches = async () => {
   const heading = 'branches - the refs (repairs belong to `flow clean`)';
   const rows = [];
   const here = currentBranch();
@@ -505,6 +550,28 @@ const sectionBranches = () => {
           .join(', ')} - \`flow clean\` deletes them`
       )
     );
+  }
+
+  // The rule itself, rather than a ref. A branch protection can be switched off
+  // in a browser, which leaves no trace in the repository and nothing for the
+  // cycle to notice - so it is reported here like any other accumulation.
+  if (!token()) {
+    rows.push(row('note', 'no GITHUB_TOKEN/GH_TOKEN, so the rule on `main` was not read'));
+  } else {
+    const policy = await branchPolicy();
+    const enforce = (message) =>
+      row(
+        'fix',
+        message,
+        repair('require a pull request before merging on `main`', requirePullRequest, { remote: true })
+      );
+    if (!policy?.required_pull_request_reviews) {
+      rows.push(enforce('`main` accepts a direct push - a commit can land with no pull request'));
+    } else if (!policy.enforce_admins?.enabled) {
+      rows.push(enforce('`main` requires a pull request, but an administrator can push straight to it'));
+    } else {
+      rows.push(row('ok', 'main    requires a pull request before merging, administrators included'));
+    }
   }
 
   return { heading, rows };

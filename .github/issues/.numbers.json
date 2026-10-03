@@ -26,5 +26,6 @@
   "an-app-can-adopt-the-design-registries": 115,
   "usegluestackcolors-read-the-package": 118,
   "an-app-can-declare-its-own-theme": 121,
-  "flow-acted-on-the-help-flag-and-cleaned": 122
+  "flow-acted-on-the-help-flag-and-cleaned": 122,
+  "main-accepts-a-direct-push": 126
 }

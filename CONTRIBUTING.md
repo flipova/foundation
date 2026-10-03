@@ -52,6 +52,39 @@ npm run flow status     # where am I: branch, issue, release, npm, working tree,
 npm run flow verify     # just the checks
 ```
 
+## Pushing to `main`
+
+`main` requires a pull request, and GitHub enforces it for everybody: there is
+no bypass to remember to switch off, and a direct push comes back as
+
+```text
+remote: - Changes must be made through a pull request.
+! [remote rejected] main (protected branch hook declined)
+```
+
+So a cycle always ends at step 7, and `flow commit` is never pointed at `main` on
+purpose. Two commands report where things stand:
+
+```bash
+npm run flow status                      # the branch, and its pull request
+node .github/scripts/maintain.mjs branches   # `main` requires a pull request
+```
+
+A hotfix is not an exception to this rule, and does not need to be. It is an
+ordinary pull request - merged with `npm run flow -- merge --force` if it has to
+land over a failing check - plus the reasoned dispatch that publishes it without
+waiting for the version pull request, in
+[`.github/RELEASING.md`](.github/RELEASING.md). The refusal exists to make that
+decision visible, not to stop it.
+
+Required status checks are deliberately **not** part of this. The version pull
+request is opened by `GITHUB_TOKEN`, which does not trigger `pull_request`
+workflows, so it never carries a check run - requiring one would make every
+release unmergeable. `flow merge` already refuses to merge a red pull request.
+
+Turning the rule off (Settings -> Branches) is possible; it is itself a change
+that belongs in a pull request whenever it can be one.
+
 ## From a merge to npm
 
 Two merges, two runs of the Release workflow, one publish:
@@ -124,6 +157,10 @@ Anything that talks to GitHub needs one:
 ```bash
 GITHUB_TOKEN=<a fine-grained PAT: issues:write, pull-requests:write> npm run flow
 ```
+
+`administration:write` is needed only by `maintain fix`, which puts the
+"requires a pull request" rule on `main` back when it finds it missing. Every
+other command works with the two permissions above.
 
 `GH_TOKEN` works too. In Actions, `secrets.GITHUB_TOKEN` is injected for you.
 
