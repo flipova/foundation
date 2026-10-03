@@ -8,21 +8,28 @@
  */
 import { stdin, stdout } from 'node:process';
 import { createInterface } from 'node:readline';
-import { createInterface as createQuestionReader } from 'node:readline/promises';
 
 export const isInteractive = () => Boolean(stdin.isTTY && stdout.isTTY);
 
+// One interface, for the menu and for the questions alike.
+//
+// Two interfaces on the same stdin install two keypress decoders and each of them
+// echoes what the other echoed, so a single keystroke came back twice: typing 4
+// showed 44, and "my title" came back as "mmyy  ttiittllee". That is why the
+// questions do not use `node:readline/promises`: it would be that second reader.
+//
+// They also cannot use the return value of `readline.Interface.question()`: it
+// is the callback form, and since Node 22 it returns `undefined` instead of a
+// promise, which every caller read as "answered with nothing" - that is, the
+// default. So the callback is wrapped in a promise here, which works on every
+// Node version.
 let rl = null;
+
 // `readline.createInterface`, not `stdin.createInterface`: Node never defines
 // the latter on a stream, so every interactive prompt died with
 // "stdin.createInterface is not a function" while the non-interactive path -
 // the one CI and pipes take - never touched this line and never noticed.
 const iface = () => {
-  // The menu closes its reader when it is done, and it closes this very
-  // instance. A closed interface answers `question()` with `undefined` and
-  // resolves immediately, so every prompt after a menu returned its default
-  // without waiting: the wizard asked nothing and ran the cycle end to end.
-  // Recreating the interface here is what makes the prompts ask again.
   if (rl?.closed) rl = null;
   return (rl ??= createInterface({ input: stdin, output: stdout }));
 };
@@ -32,25 +39,14 @@ export function close() {
   rl = null;
 }
 
-// Ask one question, then hand the terminal back.
-//
-// The reader is `node:readline/promises`, and that import is the fix: the
-// callback form, `readline.Interface.question()`, returns `undefined` on Node
-// 22 and later - only the promises build returns a promise. The prompts awaited
-// the callback form and read that `undefined` as "answered with nothing", which
-// every caller resolves to its default, so a question never waited for an answer
-// and the wizard ran all eight steps in a row. It worked on Node 18, which is
-// why nothing about the code looks wrong.
-//
-// The menu keeps the callback interface: it reads raw keypresses and never asks.
-const readOnce = async (question) => {
-  const reader = createQuestionReader({ input: stdin, output: stdout });
-  try {
-    return ((await reader.question(question)) ?? '').trim();
-  } finally {
-    reader.close();
-  }
-};
+// `question` resolves undefined when the input closes - EOF, Ctrl-D, a pipe
+// that ends - and a reader that trims it unguarded crashes precisely when there
+// is nobody left to answer. Falling back to the default is what the header of
+// this file promises.
+const readOnce = async (question) =>
+  ((await new Promise((resolve) => {
+    iface().question(question, resolve);
+  })) ?? '').trim();
 
 const out = (s = '') => stdout.write(`${s}\n`);
 
