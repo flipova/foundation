@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: flow-wrote-an-empty-issue-and-claimed-a
+title: "flow wrote an empty issue and claimed a push that never happened"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  Running npm run flow with no terminal (or pressing Enter at every prompt) wrote .github/issues/issue.yml titled '[Feature]: ' with an empty body: a template title is only a prefix, and the empty remainder still passed the guard. flow push then reported 'pushed main' on a branch already in step with its upstream, and flow branch proposed 'main' as its own default. The cycle now announces it is running without a terminal, refuses a title that carries no text of its own, refuses an empty branch name, and reports 'nothing to push' instead of claiming a push.
+  
+  ## Steps to reproduce
+  
+  1.
