@@ -66,6 +66,16 @@ const args = argv.filter((a) => !a.startsWith('--'));
 const has = (f) => flags.has(`--${f}`);
 
 /**
+ * `--help` is asked for, not obeyed.
+ *
+ * `flags` holds every `--x` and `args` holds none of them, so the dispatcher
+ * below never sees `--help` as a command - which sent `maintain fix --help`
+ * into repair mode, offering to apply the repairs it was asked to describe, and
+ * answered a bare `maintain --help` with the whole inventory.
+ */
+const wantsHelp = () => has('help') || has('h');
+
+/**
  * Every page of a list endpoint.
  *
  * The repository is already past 70 pull requests. The day either list crosses
@@ -615,6 +625,11 @@ const USAGE = `maintain - what has piled up, and the repairs that are safe
 
 const main = async () => {
   const [command = 'list'] = args;
+  // Before the switch: no command may run to satisfy a request for its usage.
+  if (wantsHelp()) {
+    process.stdout.write(USAGE);
+    return;
+  }
   switch (command) {
     case 'list':
     case 'all':
