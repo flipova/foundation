@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0
+
+### Minor Changes
+
+- f614759: Themes can be declared as light/dark variant pairs in design/themes.xml, and the provider takes a variant prop that is resolved against mode at runtime.
+
 ## 2.2.1
 
 ### Patch Changes
