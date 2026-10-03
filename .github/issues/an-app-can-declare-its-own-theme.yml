@@ -1,0 +1,18 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: an-app-can-declare-its-own-theme
+title: "An app can declare its own theme variants and choose one at runtime"
+labels:
+  - enhancement
+body: |
+  ## Problem
+  
+  The registry only ever described one light/dark pair, so an app that shipped its own branding had to trade its palette against dark mode. Themes can now be declared as variant pairs and the provider resolves (variant, mode) to a theme id at runtime.
+  
+  ## Proposed outcome
+  
+  What the result should look like: the registry entry you would add, the
+  utility you would use.
+  
+  ## Public API impact
+  
+  none (internal) / additive (minor) / breaking (major)
