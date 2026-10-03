@@ -1,5 +1,6 @@
 import { useColorScheme } from 'nativewind';
 import { colors } from './config';
+import { useMountedColors } from './theme-context';
 
 /**
  * Convert CSS variable name to camelCase
@@ -40,12 +41,15 @@ function rgbToHex(rgbString: string): string {
  */
 export function useGluestackColors(): Record<string, string> {
   const { colorScheme } = useColorScheme();
-  const theme = colors[colorScheme || 'light'];
+  // The mounted theme wins: an app that adopted the registries and built its own
+  // provider must read its own colours, not the ones shipped with the package.
+  const theme = useMountedColors() ?? colors;
+  const palette = theme[colorScheme || 'light'];
 
   // Dynamically convert all CSS variables to camelCase hex colors
   const result: Record<string, string> = {};
 
-  Object.entries(theme).forEach(([key, value]) => {
+  Object.entries(palette).forEach(([key, value]) => {
     const camelKey = toCamelCase(key);
     result[camelKey] = rgbToHex(value as string);
   });
