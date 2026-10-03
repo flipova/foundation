@@ -1,0 +1,50 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: flow-acted-on-the-help-flag-and-cleaned
+title: "flow acted on the help flag and cleaned before it could finish"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  `main` - a local checkout. The packaged 2.2.1 does not ship `.github/scripts`, so
+  the CLI here is what the clone has.
+  
+  ## Affected layer
+  
+  CLI - `.github/scripts/flow.mjs`, and the same parse in `.github/scripts/maintain.mjs`
+  
+  ## What happens
+  
+  `flow issue archive --help` archived every closed issue. The parser sends every
+  `--x` into `flags`, so `args` can never hold `--help`: the `case '--help'` in
+  the dispatcher was unreachable dead code, and a flag nobody had taught it was
+  quietly obeyed instead of answered. The same shape made `maintain fix --help`
+  apply the repairs it was asked to describe.
+
+  `flow clean` deleted the merged local branches *before* `requireToken` refused
+  the run, so a token-less tidy came back as a failure with half its work
+  already done and none of it undone. It judged "merged" against the local
+  `main`, which lags `origin/main` between pulls, so it stopped short and only a
+  second run - after the fetch at the end of the first - finished the job.
+
+  `flow status` reported `[changeset missing - flow release sync]` while the
+  declaration said `bump: none`, where a missing changeset is the *required*
+  state and `flow release check` was already green: one tool asking for the
+  repair another had just verified.
+
+  The help flags are now answered from the raw flags before any command runs,
+  and the usage is narrowed to the command that was asked about. `flow clean`
+  takes its token first, then fetches and prunes, then judges against the
+  refreshed remote. `flow status` only asks for a changeset when a bump is
+  declared.
+  
+  ## Steps to reproduce
+  
+  1. `node .github/scripts/flow.mjs issue archive --help` archives every closed
+     issue instead of printing the one line that documents the command.
+  2. `node .github/scripts/maintain.mjs fix --help` repairs, and reports that it
+     did.
+  3. `node .github/scripts/flow.mjs clean` with no `GITHUB_TOKEN`: the local
+     branches go, then the run fails asking for the token.
+  4. `node .github/scripts/flow.mjs status` with `bump: none`: it says the
+     changeset is missing, while `flow release check` is green about it.

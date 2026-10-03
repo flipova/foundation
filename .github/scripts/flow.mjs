@@ -133,6 +133,16 @@ for (let i = 0; i < argv.length; i += 1) {
 
 const opt = (name, fallback = undefined) => flags[name] ?? fallback;
 
+/**
+ * `--help` is a flag, not a command.
+ *
+ * The loop above files every `--x` under `flags`, so `args` can never hold
+ * `--help` - which made the `case '--help'` in the dispatcher below unreachable,
+ * and turned `flow issue archive --help` into a real archive of every closed
+ * issue. A flag nobody taught the parser has to be answered, never obeyed.
+ */
+const wantsHelp = () => flags.help === true || flags.h === true;
+
 const { ask, select, confirm, step, info, warn, bad, good } = prompt;
 
 // --- per-branch scratch state (gitignored) ----------------------------------
@@ -1041,18 +1051,31 @@ const cmdClean = async () => {
   const keep = new Set(['main', 'changeset-release/main']);
   const here = currentBranch();
 
+  // Token first. This command deletes local refs *and* remote ones, and only the
+  // remote half needs the API - so asking for the token where it is first used
+  // meant a token-less run came back as a failure with the merged local branches
+  // already gone, and nothing in the message saying so.
+  await requireToken('flow clean');
+
+  // Fetch before judging. `--is-ancestor <branch> main` answers about the
+  // *local* `main`, which lags `origin/main` between pulls, so a run that was
+  // otherwise correct stopped short of everything merged since the last one and
+  // finished only on a second run - after the fetch at the end of the first.
+  // Asking the refreshed remote is the same question put to a current answer.
+  gitTry('git fetch --prune origin');
+  const base = gitTry('git rev-parse --verify origin/main') ? 'origin/main' : 'main';
+
   const locals = git('git for-each-ref --format=%(refname:short) refs/heads')
     .split('\n')
     .map((b) => b.trim())
     .filter((b) => b && !keep.has(b) && b !== here);
-  const done = locals.filter((b) => gitTry(`git merge-base --is-ancestor ${b} main`) !== null);
+  const done = locals.filter((b) => gitTry(`git merge-base --is-ancestor ${b} ${base}`) !== null);
   for (const b of done) {
     git(`git branch -D ${b}`);
     good(`deleted local ${b}`);
   }
   info(`local: ${done.length} merged of ${locals.length} candidate(s)`);
 
-  await requireToken('flow clean');
   const closed = await api('/pulls?state=closed&per_page=100');
   const mergedRefs = new Set(closed.filter((p) => p.merged_at).map((p) => p.head.ref));
 
@@ -1061,7 +1084,7 @@ const cmdClean = async () => {
     .map((b) => b.trim().replace(/^origin\//, ''))
     .filter((b) => b && !keep.has(b) && b !== 'HEAD' && b !== here);
   const prunable = remotes.filter(
-    (b) => mergedRefs.has(b) || gitTry(`git merge-base --is-ancestor origin/${b} main`) !== null
+    (b) => mergedRefs.has(b) || gitTry(`git merge-base --is-ancestor origin/${b} ${base}`) !== null
   );
   for (const b of prunable) {
     const gone = await api(`/git/refs/heads/${b}`, { method: 'DELETE' })
@@ -1070,7 +1093,6 @@ const cmdClean = async () => {
     if (gone) good(`deleted origin/${b}`);
   }
   info(`remote: ${prunable.length} of ${remotes.length} candidate(s)`);
-  gitTry('git fetch --prune origin');
   if (!done.length && !prunable.length) info('nothing to clean');
 };
 
@@ -1091,8 +1113,23 @@ const cmdStatus = async () => {
         : '(none declared for this branch)'
     }`
   );
+  // Only one of the two states is a problem, and which one is not a matter of
+  // taste: `checkDrift` requires the changeset to be *absent* when the bump is
+  // none, so a `none` declaration with no changeset is the healthy pair - and
+  // the most common one, because a cycle that declares nothing is the normal
+  // state between releases. Warning "missing" there sent the reader to
+  // `flow release sync` to repair what `flow release check` had just called
+  // correct, which is two tools disagreeing about an empty `.changeset/`.
+  const needsChangeset = declaration.bump !== 'none';
+  const inStep = needsChangeset === existsSync(CHANGESET);
   info(
-    `release      bump: ${declaration.bump}${existsSync(CHANGESET) ? '' : '   [changeset missing - flow release sync]'}`
+    `release      bump: ${declaration.bump}${
+      inStep
+        ? ''
+        : needsChangeset
+        ? '   [changeset missing - flow release sync]'
+        : '   [stray .changeset/release.md - flow release reset]'
+    }`
   );
   const pkg = pkgJson();
   const npm = await npmState(pkg.name);
@@ -1364,8 +1401,28 @@ const USAGE = `flow - the contribution cycle
   flow labels [--check]       the label registry and the labeler generated from it
 `;
 
+/**
+ * The usage, narrowed to the command that was asked about.
+ *
+ * USAGE stays the single source of truth: `flow issue archive --help` prints the
+ * one line that documents it rather than the whole page, and a command with no
+ * line of its own falls back to the page.
+ */
+const usageFor = (group, sub) => {
+  if (!group) return USAGE;
+  const path = sub ? `${group} ${sub}` : group;
+  const lines = USAGE.split('\n').filter((l) => l.trimStart().startsWith(`flow ${path}`));
+  return lines.length ? `${lines.join('\n')}\n` : USAGE;
+};
+
 const main = async () => {
   const [group, sub] = args;
+  // Answered before the switch: no command may run to satisfy a request for its
+  // own usage, which is the whole point of a help flag.
+  if (wantsHelp()) {
+    process.stdout.write(usageFor(group, sub));
+    return;
+  }
   switch (group) {
     case undefined:
     case 'wizard':
@@ -1375,8 +1432,8 @@ const main = async () => {
     case 'verify':
       return cmdVerify();
     case 'help':
-    case '--help':
-      process.stdout.write(USAGE);
+      // `flow help issue archive` narrows exactly the way `--help` does.
+      process.stdout.write(usageFor(args[1], args[2]));
       return;
     case 'issue':
       switch (sub) {
