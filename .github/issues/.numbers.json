@@ -24,5 +24,6 @@
   "every-flow-prompt-took-its-default": 111,
   "every-keystroke-was-echoed-twice": 113,
   "an-app-can-adopt-the-design-registries": 115,
-  "usegluestackcolors-read-the-package": 118
+  "usegluestackcolors-read-the-package": 118,
+  "flow-acted-on-the-help-flag-and-cleaned": 122
 }
