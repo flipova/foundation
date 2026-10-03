@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: every-keystroke-was-echoed-twice
+title: "every keystroke was echoed twice because two readline readers shared stdin"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  The questions were given a node:readline/promises reader while the menu kept the callback one, and two interfaces on the same stdin install two keypress decoders that each echo what the other echoed: typing 4 showed 44, and my title came back as mmyy  ttiittllee. The whole prompt layer now shares a single interface, and the questions use question(query, callback) wrapped in a promise rather than its return value, which also keeps them working on Node 22 and later where that return value is undefined. prompt.repro.mjs counts the echoes and fails while they are doubled.
+  
+  ## Steps to reproduce
+  
+  1.

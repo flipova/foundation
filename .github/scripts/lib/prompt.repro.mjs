@@ -44,15 +44,58 @@ input.read();
 const readerBefore = prompt.isInteractive();
 
 // A prompt that asks never resolves until it is answered.
+const firstAsk = prompt.ask('Title', { default: 'should-wait' });
 const asked = await Promise.race([
-  prompt.ask('Title', { default: 'should-wait' }).then((value) => ({ answered: value })),
+  firstAsk.then((value) => ({ answered: value })),
   new Promise((resolve) => setTimeout(() => resolve({ pending: true }), 400)),
 ]);
 
 const verdict = asked.pending
   ? 'ASKED - it is waiting for an answer'
   : `ANSWERED WITHOUT ASKING -> "${asked.answered}"`;
+
+// Let it go before asking again: a reader takes one question at a time, and the
+// pending one is the whole point of the check above.
+if (asked.pending) {
+  input.write('my title\n');
+  await firstAsk;
+}
+
+// A reader takes one question at a time, and the prompts are sequential, so the
+// fake terminal is also how the echo is counted: two readers alive at once each
+// echo what the other echoed, which is how typing 4 showed 44.
+//
+// The keystroke is a character that appears nowhere in the prompt or the labels,
+// so every occurrence of it in the output is an echo and nothing else.
+let written = '';
+output.on('data', (chunk) => {
+  written += chunk.toString();
+});
+output.resume();
+
+const KEY = '7';
+const countOf = (needle, haystack) => haystack.split(needle).length - 1;
+const second = prompt.select('Pick one', [
+  { label: 'alpha', value: 'alpha' },
+  { label: 'beta', value: 'beta' },
+]);
+await new Promise((resolve) => setTimeout(resolve, 40));
+
+// The keystroke goes in without Enter on purpose: the echo happens as it is
+// typed, and the question stays pending, so nothing else can put that character
+// in the output.
+const before = written;
+input.write(KEY);
+await new Promise((resolve) => setTimeout(resolve, 60));
+const echoed = countOf(KEY, written.slice(before.length));
+
+input.write('\n');
+await new Promise((resolve) => setTimeout(resolve, 40));
+
+const echoOk = echoed === 1;
+if (!echoOk) realWrite(`captured      : ${JSON.stringify(written.slice(before.length))}\n`);
 realWrite(`\ninteractive     : ${readerBefore}\n`);
 realWrite(`menu choice     : ${choice?.value}\n`);
 realWrite(`prompt after menu: ${verdict}\n`);
-process.exit(asked.pending ? 0 : 1);
+realWrite(`keystroke echoes : ${echoed} (expected 1)\n`);
+process.exit(asked.pending && echoOk ? 0 : 1);
