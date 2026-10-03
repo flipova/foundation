@@ -6,13 +6,20 @@ labels:
 body: |
   ## Problem
   
-  The registry only ever described one light/dark pair, so an app that shipped its own branding had to trade its palette against dark mode. Themes can now be declared as variant pairs and the provider resolves (variant, mode) to a theme id at runtime.
+  The registry only ever described one light/dark pair, so an app that shipped
+  its own branding had to trade its palette against dark mode: there was no way
+  to mount a brand palette without giving up whatever `mode` had selected.
   
   ## Proposed outcome
   
-  What the result should look like: the registry entry you would add, the
-  utility you would use.
+  `design/themes.xml` declares a `variant` attribute on a theme, so a variant is
+  a light/dark *pair* rather than a single scheme. The provider takes a `variant`
+  prop and resolves `(variant, mode)` to a theme id at runtime: `resolveThemeId`
+  is that resolution, exported so a host can mirror it, and `useMountedTheme`
+  reports the id that is actually mounted.
   
   ## Public API impact
   
-  none (internal) / additive (minor) / breaking (major)
+  additive (minor) - an optional `variant` prop, the `ThemeVariant` type, and the
+  `resolveThemeId` / `useMountedTheme` exports. A provider that passes only
+  `mode` behaves exactly as before.

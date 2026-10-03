@@ -99,13 +99,65 @@ def theme_role_ids(man: ManifestModel) -> list[str]:
     return reference
 
 
+_JS_IDENT = re.compile(r"^[A-Za-z_$][A-Za-z0-9_$]*$")
+
+
+def _js_key(name: str) -> str:
+    """Quote an object key unless it is a bare JS identifier.
+
+    A theme id is free-form ("spring-light", "high-contrast"), but `spring-light`
+    is not a valid unquoted object key: emitting it bare produces a syntax error.
+    """
+    return name if _JS_IDENT.match(name) else "'" + name.replace("'", "\\'") + "'"
+
+
+def theme_variants(man: ManifestModel) -> list[tuple[str, str, str]]:
+    """[(variant, mode, theme_id), ...] in themes.xml order.
+
+    A variant is a light/dark PAIR, so the runtime can resolve a (variant, mode)
+    request to a theme id. The table is emitted rather than rebuilt at runtime so
+    a theme id never has to follow a naming convention: a variant may be spelled
+    `spring` with themes `spring-light`/`spring-dark`, or anything else at all.
+    """
+    themes_path = man.ctx.catalog_files.get("themes")
+    if themes_path is None or not themes_path.exists():
+        raise SystemExit("manifest: no themes catalog file found")
+    root = etree.parse(str(themes_path)).getroot()
+    out: list[tuple[str, str, str]] = []
+    for theme in root.findall(q("items") + "/" + q("theme")):
+        tid = (theme.get("id") or "").strip()
+        mode = (theme.get("mode") or "").strip()
+        variant = (theme.get("variant") or "default").strip() or "default"
+        out.append((variant, mode, tid))
+    return out
+
+
+def _render_variant_table(variants: list[tuple[str, str, str]]) -> list[str]:
+    """`export const variants = { spring: { light: 'spring-light', ... } }`."""
+    ordered: dict[str, list[tuple[str, str]]] = {}
+    for variant, mode, tid in variants:
+        entries = ordered.setdefault(variant, [])
+        if any(m == mode for m, _ in entries):
+            raise SystemExit(
+                f"theme variant {variant!r} declares the mode {mode!r} twice: "
+                "a variant is a light/dark pair, so it has exactly one theme per mode"
+            )
+        entries.append((mode, tid))
+    lines = ["export const variants = {"]
+    for variant in sorted(ordered):
+        pairs = ", ".join(f"{_js_key(mode)}: '{tid}'" for mode, tid in sorted(ordered[variant]))
+        lines.append(f"  {_js_key(variant)}: {{ {pairs} }},")
+    lines.append("};")
+    return lines
+
+
 def render_gluestack_config(man: ManifestModel) -> str:
     themes = theme_role_colours(man)
     lines = list(_HEADER)
     lines.append("// Raw color values (space-separated RGB) - edit design/themes.xml and regenerate")
     lines.append("export const colors = {")
     for tid, roles in themes:
-        lines.append(f"  {tid}: {{")
+        lines.append(f"  {_js_key(tid)}: {{")
         for rid, triplet in roles:
             lines.append(f"    '--{rid}': '{triplet}',")
         lines.append("  },")
@@ -114,6 +166,12 @@ def render_gluestack_config(man: ManifestModel) -> str:
     lines.append("// Config for nativewind vars() - used by the provider")
     lines.append("export const config = {")
     for tid, _ in themes:
-        lines.append(f"  {tid}: vars(colors.{tid}),")
+        # Bracket access, always: a quoted key ("spring-light") is not valid
+        # after a dot, so `colors.something` would only work by luck.
+        lines.append(f"  {_js_key(tid)}: vars(colors['{tid}']),")
     lines.append("};")
+    lines.append("")
+    lines.append("// Theme variants: variant -> mode -> theme id, from the `variant` attribute in")
+    lines.append("// design/themes.xml. `default` holds the base light/dark pair.")
+    lines.extend(_render_variant_table(theme_variants(man)))
     return "\n".join(lines) + "\n"

@@ -240,6 +240,7 @@ Contenu textuel simple, extension de `string`.
 |---|---|---|---|
 | `id` | `string` | required | Theme id (e.g. "light", "dark"). Uniqueness enforced by constraint. |
 | `mode` | `string` | required | Theme mode (e.g. "light", "dark"). |
+| `variant` | `string` | optional | Variant this theme belongs to (e.g. "default", "spring"). A variant is a coherent light/dark PAIR, so a themed product can offer several palettes ("spring-light"/"spring-dark", "autumn-light"/"autumn-dark") that all respond to the same light/dark mode. Defaults to "default" when absent, which keeps the bare "light"/"dark" ids working unchanged. |
 
 | Élément | Occurrences | Type | Description |
 |---|---|---|---|

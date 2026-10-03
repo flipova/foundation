@@ -5,5 +5,7 @@
 # the declaration and what changesets actually reads cannot disagree.
 #
 # bump: major | minor | patch | none   (none = nothing to release)
-bump: none
-summary: ''
+bump: minor
+summary: >-
+  Themes can be declared as light/dark variant pairs in design/themes.xml, and the provider takes a
+  variant prop that is resolved against mode at runtime.

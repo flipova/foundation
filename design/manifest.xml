@@ -85,6 +85,8 @@
         <register name="themes">
             <item>light</item>
             <item>dark</item>
+            <item>spring-light</item>
+            <item>spring-dark</item>
         </register>
     </index>
 </foundationRegistry>

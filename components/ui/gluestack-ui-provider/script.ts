@@ -1,4 +1,4 @@
-export const script = (mode: string) => {
+export const script = (mode: string, themeId: string, modeClass: string) => {
   const documentElement = document.documentElement;
 
   function getSystemColorMode() {
@@ -9,10 +9,17 @@ export const script = (mode: string) => {
 
   try {
     const isSystem = mode === 'system';
-    const theme = isSystem ? getSystemColorMode() : mode;
-    documentElement.classList.remove(theme === 'light' ? 'dark' : 'light');
-    documentElement.classList.add(theme);
-    documentElement.style.colorScheme = theme;
+    const resolved = isSystem ? getSystemColorMode() : mode;
+    // `data-theme` carries the variant pair (spring-light, spring-dark, ...);
+    // the light/dark CLASS is kept alongside it so Tailwind's dark: variants
+    // keep working while a seasonal palette is mounted.
+    documentElement.setAttribute('data-theme', themeId);
+    documentElement.classList.remove('light', 'dark', modeClass);
+    documentElement.classList.add(resolved);
+    if (themeId !== resolved) {
+      documentElement.classList.add(modeClass);
+    }
+    documentElement.style.colorScheme = resolved;
   } catch (e) {
     console.error(e);
   }
