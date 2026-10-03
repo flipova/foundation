@@ -5,19 +5,7 @@
 # the declaration and what changesets actually reads cannot disagree.
 #
 # bump: major | minor | patch | none   (none = nothing to release)
-bump: minor
+bump: patch
 summary: >-
-  flipova-design no longer copies the registries into the consumer project: it drives the toolchain
-  already installed in node_modules/@flipova/foundation/design
-
-  init/inject inject only the app-level files (tailwind.config.js, postcss.config.js, globals.css)
-  plus the design:* npm scripts, and never overwrite what exists unless --force
-
-  new where prints the resolved registries and artifacts, inject replays the wiring without the
-  toolchain
-
-  a project design/manifest.xml stays supported as an explicit fork, and gen then writes into the
-  project
-
-  design.js honours FOUNDATION_VENV and FOUNDATION_DOCS_OUT, and probes the project venv or any
-  python on PATH that can import lxml
+  align the optional expo-glass-effect peer with the expo peer: >=55.0.0 instead of >=57.0.0, so an
+  Expo SDK 55 app can resolve the tree
