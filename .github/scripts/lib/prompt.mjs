@@ -8,6 +8,7 @@
  */
 import { stdin, stdout } from 'node:process';
 import { createInterface } from 'node:readline';
+import { createInterface as createQuestionReader } from 'node:readline/promises';
 
 export const isInteractive = () => Boolean(stdin.isTTY && stdout.isTTY);
 
@@ -16,12 +17,40 @@ let rl = null;
 // the latter on a stream, so every interactive prompt died with
 // "stdin.createInterface is not a function" while the non-interactive path -
 // the one CI and pipes take - never touched this line and never noticed.
-const iface = () => (rl ??= createInterface({ input: stdin, output: stdout }));
+const iface = () => {
+  // The menu closes its reader when it is done, and it closes this very
+  // instance. A closed interface answers `question()` with `undefined` and
+  // resolves immediately, so every prompt after a menu returned its default
+  // without waiting: the wizard asked nothing and ran the cycle end to end.
+  // Recreating the interface here is what makes the prompts ask again.
+  if (rl?.closed) rl = null;
+  return (rl ??= createInterface({ input: stdin, output: stdout }));
+};
 
 export function close() {
   rl?.close();
   rl = null;
 }
+
+// Ask one question, then hand the terminal back.
+//
+// The reader is `node:readline/promises`, and that import is the fix: the
+// callback form, `readline.Interface.question()`, returns `undefined` on Node
+// 22 and later - only the promises build returns a promise. The prompts awaited
+// the callback form and read that `undefined` as "answered with nothing", which
+// every caller resolves to its default, so a question never waited for an answer
+// and the wizard ran all eight steps in a row. It worked on Node 18, which is
+// why nothing about the code looks wrong.
+//
+// The menu keeps the callback interface: it reads raw keypresses and never asks.
+const readOnce = async (question) => {
+  const reader = createQuestionReader({ input: stdin, output: stdout });
+  try {
+    return ((await reader.question(question)) ?? '').trim();
+  } finally {
+    reader.close();
+  }
+};
 
 const out = (s = '') => stdout.write(`${s}\n`);
 
@@ -35,8 +64,7 @@ export async function ask(question, { default: def = '', hint } = {}) {
   // that ends - and a reader that trims it unguarded crashes precisely when
   // there is nobody left to answer. Falling back to the default is what the
   // header of this file promises.
-  const answer = (await iface().question(`${question}${suffix}: `))?.trim() ?? '';
-  return answer || def;
+  return (await readOnce(`${question}${suffix}: `)) || def;
 }
 
 /**
@@ -199,7 +227,7 @@ export async function select(question, choices, { defaultIndex = 0, hint } = {})
     return choices[defaultIndex];
   }
   for (;;) {
-    const raw = (await iface().question(`  [1-${choices.length}] (${defaultIndex + 1}): `))?.trim() ?? '';
+    const raw = await readOnce(`  [1-${choices.length}] (${defaultIndex + 1}): `);
     if (!raw) return choices[defaultIndex];
     const n = Number(raw);
     if (Number.isInteger(n) && n >= 1 && n <= choices.length) return choices[n - 1];
@@ -213,7 +241,7 @@ export async function multiSelect(question, choices, { hint } = {}) {
   choices.forEach((c, i) => out(`  ${i + 1}) ${c.label ?? c}`));
   if (hint) out(`  ${hint}`);
   if (!isInteractive()) return choices;
-  const raw = (await iface().question('  comma-separated, empty for all: '))?.trim() ?? '';
+  const raw = await readOnce('  comma-separated, empty for all: ');
   if (!raw) return choices;
   const wanted = raw
     .split(',')
@@ -228,7 +256,7 @@ export async function confirm(question, { default: def = true } = {}) {
     out(`  ${question}${suffix} -> ${def}`);
     return def;
   }
-  const raw = ((await iface().question(`${question}${suffix}: `)) ?? '').trim().toLowerCase();
+  const raw = (await readOnce(`${question}${suffix}: `)).toLowerCase();
   if (!raw) return def;
   return raw === 'y' || raw === 'yes';
 }
