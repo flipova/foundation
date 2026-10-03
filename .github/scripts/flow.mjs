@@ -362,6 +362,14 @@ const failedStep = async (runId) => {
 const cmdReleaseStatus = async () => {
   const declaration = readDeclaration();
   const { found, broken } = readChangesets();
+  // What `changeset version` will consume. `release.md` is the canonical single
+  // changeset, and `readChangesets` deliberately skips it - that reader exists to
+  // surface the strays - so the count answered "none pending" for the ordinary
+  // state, a declared bump with its generated file in place. The verdict below
+  // then reported an error for exactly the state `flow release check` had just
+  // called correct: the same two tools disagreeing about `.changeset/` that the
+  // `status` line was fixed for.
+  const pending = [...(existsSync(CHANGESET) ? ['release.md'] : []), ...found.map((f) => f.file)];
   const pkg = pkgJson();
   const local = pkg.version;
   const state = await npmState(pkg.name);
@@ -371,9 +379,9 @@ const cmdReleaseStatus = async () => {
     `declaration  bump: ${declaration.bump}${declaration.summary ? ` - ${declaration.summary.split('\n')[0]}` : ''}`
   );
   info(
-    `changesets   ${found.length ? `${found.length} pending: ${found.map((f) => f.file).join(', ')}` : 'none pending'}${
-      broken.length ? `   [${broken.length} unreadable]` : ''
-    }`
+    `changesets   ${
+      pending.length ? `${pending.length} pending: ${pending.join(', ')}` : 'none pending'
+    }${broken.length ? `   [${broken.length} unreadable]` : ''}`
   );
   info(`package      ${local}`);
 
@@ -423,8 +431,8 @@ const cmdReleaseStatus = async () => {
     if (state.error)
       return ['wait', `npm could not be reached (${state.error}) - cannot tell whether ${local} is published`];
     if (!state.versions[local]) return ['bad', `${local} is not on npm - a Release run still owes that publish`];
-    if (found.length)
-      return ['wait', `${found.length} change(s) declared - merging "chore: version packages" is what publishes next`];
+    if (pending.length)
+      return ['wait', `${pending.length} change(s) declared - merging "chore: version packages" is what publishes next`];
     if (declaration.bump !== 'none')
       return [
         'bad',
