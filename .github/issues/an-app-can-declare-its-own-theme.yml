@@ -1,0 +1,25 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: an-app-can-declare-its-own-theme
+title: "An app can declare its own theme variants and choose one at runtime"
+labels:
+  - enhancement
+body: |
+  ## Problem
+  
+  The registry only ever described one light/dark pair, so an app that shipped
+  its own branding had to trade its palette against dark mode: there was no way
+  to mount a brand palette without giving up whatever `mode` had selected.
+  
+  ## Proposed outcome
+  
+  `design/themes.xml` declares a `variant` attribute on a theme, so a variant is
+  a light/dark *pair* rather than a single scheme. The provider takes a `variant`
+  prop and resolves `(variant, mode)` to a theme id at runtime: `resolveThemeId`
+  is that resolution, exported so a host can mirror it, and `useMountedTheme`
+  reports the id that is actually mounted.
+  
+  ## Public API impact
+  
+  additive (minor) - an optional `variant` prop, the `ThemeVariant` type, and the
+  `resolveThemeId` / `useMountedTheme` exports. A provider that passes only
+  `mode` behaves exactly as before.

@@ -5,6 +5,8 @@
 # entries (register/id) — canonical sort by (register, id)
 themes/dark
 themes/light
+themes/spring-dark
+themes/spring-light
 tokens/breakpoints
 tokens/color
 tokens/duration
@@ -22,6 +24,7 @@ tokens/zIndex
 
 ## references (resolved, never dangling)
 $ref.tokens.color.black -> #000000
+$ref.tokens.color.error.400 -> #F87171
 $ref.tokens.color.error.500 -> #EF4444
 $ref.tokens.color.error.600 -> #DC2626
 $ref.tokens.color.gray.50 -> #FAFAFA
@@ -32,6 +35,7 @@ $ref.tokens.color.gray.600 -> #52525B
 $ref.tokens.color.gray.700 -> #3F3F46
 $ref.tokens.color.gray.800 -> #27272A
 $ref.tokens.color.gray.900 -> #18181B
+$ref.tokens.color.info.400 -> #38BDF8
 $ref.tokens.color.info.500 -> #0EA5E9
 $ref.tokens.color.info.600 -> #0284C7
 $ref.tokens.color.neutral.900 -> #262626
@@ -43,11 +47,21 @@ $ref.tokens.color.primary.600 -> #2563EB
 $ref.tokens.color.primary.900 -> #1E3A8A
 $ref.tokens.color.secondary.500 -> #64748B
 $ref.tokens.color.secondary.600 -> #475569
+$ref.tokens.color.success.50 -> #F0FDF4
+$ref.tokens.color.success.100 -> #DCFCE7
+$ref.tokens.color.success.200 -> #BBF7D0
+$ref.tokens.color.success.300 -> #86EFAC
+$ref.tokens.color.success.400 -> #4ADE80
 $ref.tokens.color.success.500 -> #22C55E
 $ref.tokens.color.success.600 -> #16A34A
+$ref.tokens.color.success.700 -> #15803D
+$ref.tokens.color.success.800 -> #166534
+$ref.tokens.color.success.900 -> #14532D
+$ref.tokens.color.success.950 -> #052E16
+$ref.tokens.color.warning.400 -> #FBBF24
 $ref.tokens.color.warning.500 -> #F59E0B
 $ref.tokens.color.warning.600 -> #D97706
 $ref.tokens.color.white -> #FFFFFF
 
 ## sha256
-a6278c2bf241fbb45ffa7e7ce58f8d9d362e08b536751fdac5e976cbe445842c
+b330516c315d00effb781f75e1229580352989b12c7131a1b6265869e3b5a9f1

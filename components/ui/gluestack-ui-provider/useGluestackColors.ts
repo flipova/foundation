@@ -1,6 +1,6 @@
 import { useColorScheme } from 'nativewind';
 import { colors } from './config';
-import { useMountedColors } from './theme-context';
+import { useMountedColors, useMountedTheme } from './theme-context';
 
 /**
  * Convert CSS variable name to camelCase
@@ -44,7 +44,18 @@ export function useGluestackColors(): Record<string, string> {
   // The mounted theme wins: an app that adopted the registries and built its own
   // provider must read its own colours, not the ones shipped with the package.
   const theme = useMountedColors() ?? colors;
-  const palette = theme[colorScheme || 'light'];
+  const mounted = useMountedTheme();
+  // The provider resolves the active theme id (a variant pair such as
+  // `spring-dark`). Falling back to the raw scheme keeps a tree with no mounted
+  // provider working, and an unknown id must not hand `Object.entries` undefined.
+  // `theme` is the generated literal object, so index it through a widened view:
+  // the active id is only known at runtime.
+  const palettes = theme as Record<string, Record<string, string>>;
+  const palette =
+    palettes[mounted?.themeId ?? ''] ??
+    palettes[colorScheme || 'light'] ??
+    palettes[mounted?.themeIds[0] ?? ''] ??
+    {};
 
   // Dynamically convert all CSS variables to camelCase hex colors
   const result: Record<string, string> = {};
