@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: usegluestackcolors-read-the-package
+title: "useGluestackColors read the package colours even when the app mounted its own theme"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  createGluestackUIProvider mounted the vars of the theme it was built with, but useGluestackColors closed over the config this package generates, so anything reading colours through it kept getting the package palette and an adopted branding stayed cosmetic. The provider now publishes its colours in a context and the hook reads the mounted theme first, falling back to the package colours when the package provider is the one in the tree.
+  
+  ## Steps to reproduce
+  
+  1.

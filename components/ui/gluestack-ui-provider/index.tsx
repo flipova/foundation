@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { config } from './config';
+import { config, colors } from './config';
 import { View, ViewProps } from 'react-native';
 import { OverlayProvider } from '@gluestack-ui/core/overlay/creator';
 import { ToastProvider } from '@gluestack-ui/core/toast/creator';
@@ -8,6 +8,9 @@ import {
   useGluestackColors as useGluestackColorsHook,
   useCalendarTheme as useCalendarThemeHook,
 } from './useGluestackColors';
+import { ThemeContext } from './theme-context';
+
+export { ThemeContext, useMountedColors } from './theme-context';
 
 export type ModeType = 'light' | 'dark' | 'system';
 
@@ -16,6 +19,16 @@ export type ModeType = 'light' | 'dark' | 'system';
  * the file an app regenerates from its own registries is accepted as it is.
  */
 export type GluestackThemeConfig = Record<string, Record<string, string>>;
+
+/**
+ * What a provider is built from: the `colors` the generated theme exports, and
+ * optionally the matching `vars()` config. Passing the whole module works:
+ * `createGluestackUIProvider({ colors, config })`.
+ */
+export interface GluestackTheme {
+  colors: GluestackThemeConfig;
+  config?: Record<string, unknown>;
+}
 
 // Re-export color hooks
 export const useGluestackColors = useGluestackColorsHook;
@@ -36,7 +49,8 @@ export interface GluestackUIProviderProps {
  * the result here. The exported `GluestackUIProvider` is this factory applied to
  * the package's own theme, so nothing changes for an app that did not adopt.
  */
-export function createGluestackUIProvider(theme: GluestackThemeConfig) {
+export function createGluestackUIProvider(theme: GluestackTheme) {
+  const vars = theme.config ?? theme.colors;
   return function ThemedProvider({
     mode = 'light',
     ...props
@@ -51,17 +65,19 @@ export function createGluestackUIProvider(theme: GluestackThemeConfig) {
     return (
       <View
         style={[
-          theme[colorScheme!],
+          (vars as Record<string, unknown>)[colorScheme!] as ViewProps['style'],
           { flex: 1, height: '100%', width: '100%' },
           props.style,
         ]}
       >
-        <OverlayProvider>
-          <ToastProvider>{props.children}</ToastProvider>
-        </OverlayProvider>
+        <ThemeContext.Provider value={theme.colors}>
+          <OverlayProvider>
+            <ToastProvider>{props.children}</ToastProvider>
+          </OverlayProvider>
+        </ThemeContext.Provider>
       </View>
     );
   };
 }
 
-export const GluestackUIProvider = createGluestackUIProvider(config);
+export const GluestackUIProvider = createGluestackUIProvider({ colors, config });
