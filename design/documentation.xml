@@ -51,9 +51,66 @@ cannot own:
 Use `npx flipova-design where` at any time to print the resolved paths, and
 `npx flipova-design inject` to re-run only the injection.
 
-If you deliberately want to fork the registries, create your own
-`design/manifest.xml`: it then becomes the source of truth for that project and
-the generated artifacts land in the project instead of in `node_modules`.
+If you deliberately want to own the design system - your own branding, your own
+scales and roles - run:
+
+```bash
+npx flipova-design adopt
+```
+
+It copies the **registries only** (`manifest.xml`, `schema.xsd`, `tokens.xml`,
+`themes.xml`, `documentation.xml`, `canonical.index.txt`) into `design/`. The
+toolchain stays in `node_modules`: the package keeps generating, validating and
+building, and only the source of truth moves to the app.
+
+`adopt` also rewrites the manifest outputs to `theme/config.ts` and
+`theme/tokens.js`, and creates `theme/provider.tsx`.
+
+### Wire your own theme into the app
+
+Two artifacts, two consumers:
+
+```js
+// tailwind.config.js
+const tokens = require('./theme/tokens');
+
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./app/**/*.{tsx,ts,jsx,js}'],
+  presets: [require('nativewind/preset')],
+  important: 'html',
+  theme: { extend: tokens.theme },
+};
+```
+
+```tsx
+// theme/provider.tsx - created by `adopt`
+import { createGluestackUIProvider } from '@flipova/foundation/ui';
+import { config } from './config';
+
+export const AppThemeProvider = createGluestackUIProvider(config);
+```
+
+`createGluestackUIProvider` is the same provider the package exports, built
+around *your* theme. `GluestackUIProvider` is that factory applied to the
+package's own theme, so an app that never adopts anything keeps working
+unchanged.
+
+From then on the normal pipeline applies to your branding, on your files:
+
+```bash
+npm run design:gen      # design/*.xml -> theme/config.ts + theme/tokens.js
+npm run design:verify   # the registries are in step with the artifacts
+npm run design:check    # determinism rules + XSD, on YOUR registries
+npm run design:lint
+```
+
+`npx flipova-design where` always says which side is in charge:
+
+```
+registries   …/my-app/design  (adopted by this project)
+artifacts    …/my-app/theme  (owned by this project)
+```
 
 ## Wire the theme into your Tailwind config
 
