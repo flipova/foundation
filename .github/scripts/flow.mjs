@@ -432,22 +432,29 @@ const cmdReleaseStatus = async () => {
 // --- git -------------------------------------------------------------------
 const cmdBranch = async () => {
   const given = args[1] ?? opt('name') ?? (opt('topic') ? slugify(opt('topic')) : undefined);
+  // Read before anything else. `readState` is branch-scoped - it discards a file
+  // that describes a different branch - and `currentBranch` answers for the
+  // branch that is checked out now. Asking either of them after `git switch -c`
+  // asks about the branch that was just created, which is how this looked correct
+  // and carried nothing.
+  const from = currentBranch();
   const name =
     given ??
     (await ask('Branch name', {
-      default: slugify(await ask('What is it about?', { default: currentBranch() })),
+      // Never `main`: the current branch is the natural default everywhere else,
+      // and here it would only ever answer "branch main already exists".
+      default: slugify(await ask('What is it about?', { default: from === 'main' ? '' : from })),
     }));
   if (gitTry(`git rev-parse --verify ${name}`)) {
     bad(`branch ${name} already exists - switch to it, or pick another name`);
     process.exitCode = 2;
     return;
   }
-  // Read before the switch. `readState` is branch-scoped - it discards a file that
-  // describes a different branch - and `currentBranch` answers for the branch
-  // that is checked out now. Asking either of them after `git switch -c` asks
-  // about the branch that was just created, which is how this looked correct and
-  // carried nothing.
-  const from = currentBranch();
+  if (!name) {
+    bad('a branch needs a name');
+    process.exitCode = 2;
+    return;
+  }
   const state = readState();
   git(`git switch -c ${name}`);
 
@@ -534,6 +541,14 @@ const cmdPush = () => {
   // the upstream name does not match the branch. Only reuse an upstream that
   // actually points at this branch.
   const usable = upstream === `origin/${branch}`;
+  // Reporting "pushed" for a branch that was already in step is a lie the cycle
+  // then acts on: it made a `flow push` step look like progress when there was
+  // nothing to send.
+  const ahead = Number(gitTry(`git rev-list --count @{u}..HEAD`)?.trim() ?? 0);
+  if (upstream && ahead === 0) {
+    info(`${branch} is already in step with ${upstream} - nothing to push`);
+    return;
+  }
   try {
     git(usable ? 'git push' : `git push -u origin ${branch}`);
   } catch (e) {
@@ -597,6 +612,17 @@ const cmdIssueNew = async () => {
     process.exitCode = 2;
     return null;
   }
+  // A template title is a prefix ("[Feature]: "), so pressing Enter on the
+  // prompt yields a truthy string whose informative part is empty. Writing that
+  // out produced `issue.yml` with the title `"[Feature]: "` and an empty body -
+  // a file that passes every later check because it is well formed and means
+  // nothing. The prefix is not a title.
+  const bare = title.replace(/^\[[^\]]+\]:\s*/, '').trim();
+  if (!bare) {
+    bad(`"${title}" is only the template prefix - an issue needs a title of its own`);
+    process.exitCode = 2;
+    return null;
+  }
   const summary =
     opt('summary') ??
     (await ask('One-line summary (the rest of the body is yours to edit)', {
@@ -609,7 +635,6 @@ const cmdIssueNew = async () => {
         .filter(Boolean)
     : template.labels ?? [];
 
-  const bare = title.replace(/^\[[^\]]+\]:\s*/, '');
   const id = uniqueSlug(slugify(bare), taken);
   const file = writeIssue(
     {
@@ -1149,6 +1174,14 @@ const runCycle = async () => {
   const total = 8;
   const branch = currentBranch();
   const state = readState();
+
+  // Without a terminal every prompt takes its documented default, which is the
+  // right behaviour in a pipeline and a trap behind a human who expected to be
+  // asked. Say which one this run is, once, before anything is written.
+  if (!prompt.isInteractive()) {
+    warn('no terminal: every prompt below takes its default, nothing is asked');
+    info('run the steps one by one (flow issue new, flow release, ...) to answer them');
+  }
 
   step(1, total, 'issue');
   if (state.issues.length) {
