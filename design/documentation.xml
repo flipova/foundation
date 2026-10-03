@@ -37,14 +37,29 @@ npm install gluestack-ui
 npx flipova-design init
 ```
 
-`npx flipova-design init` creates the project-local `design/` workspace and the
-gluestack source tree.
+The registries are **not** copied into your project. They live in the installed
+package (`node_modules/@flipova/foundation/design`) together with the whole
+toolchain, and the CLI drives them from there. `init` only injects what a package
+cannot own:
+
+- `tailwind.config.js`, `postcss.config.js` and `globals.css`, created only when
+  missing (an existing file is never overwritten unless you pass `--force`);
+- the `design:*` npm scripts in your `package.json`, so the pipeline is
+  reachable as `npm run design:gen`, `design:lint`, `design:check`, ... ;
+- a short recap of what to do next.
+
+Use `npx flipova-design where` at any time to print the resolved paths, and
+`npx flipova-design inject` to re-run only the injection.
+
+If you deliberately want to fork the registries, create your own
+`design/manifest.xml`: it then becomes the source of truth for that project and
+the generated artifacts land in the project instead of in `node_modules`.
 
 ## Wire the theme into your Tailwind config
 
 `tailwind.config.js`, `globals.css` and `postcss.config.js` are app-level files,
-so the package does not ship them: create yours and pull the generated theme in.
-The whole design system is one generated Tailwind theme, published as
+so the package does not ship them: `init` injects them, and the whole design
+system is one generated Tailwind theme, published as
 `@flipova/foundation/tokens`.
 
 ```js
@@ -105,11 +120,19 @@ no variable.
 
 ## Optional virtual environment
 
+A `python3` (or `python`) that can import `lxml` is enough; the tooling probes
+`PATH` for one. To pin the dependencies instead, create a venv anywhere and point
+`FOUNDATION_VENV` at it:
+
 ```bash
 python3 -m venv design/tools/.venv
-design/tools/.venv/bin/pip install -r design/tools/requirements.txt   # Linux/macOS
-design/tools/.venv/Scripts/python -m pip install -r design/tools/requirements.txt   # Windows
+design/tools/.venv/bin/pip install -r node_modules/@flipova/foundation/design/tools/requirements.txt   # Linux/macOS
+design/tools/.venv/Scripts/python -m pip install -r node_modules/@flipova/foundation/design/tools/requirements.txt   # Windows
 ```
+
+Resolution order: `$FOUNDATION_PYTHON`, then `$FOUNDATION_VENV`, then
+`design/tools/.venv`, then the first `python3`/`python` on `PATH` able to import
+`lxml`.
 
 ## Verify the install
 
@@ -117,7 +140,7 @@ design/tools/.venv/Scripts/python -m pip install -r design/tools/requirements.tx
 npx flipova-design lint
 ```
 
-A clean clone reports zero errors. Continue with **Quick Start**.
+A clean install reports zero errors. Continue with **Quick Start**.
 ]]>                </content>
         </article>
         <article id="quick-start" title="Quick Start" slug="getting-started/quick-start">

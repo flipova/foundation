@@ -1,0 +1,18 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: flipova-design-drives-the-installed
+title: "flipova-design drives the installed package instead of copying the registries"
+labels:
+  - enhancement
+body: |
+  ## Problem
+  
+  npx flipova-design init copied the whole design/ tree into the consumer project, duplicating the registries, the schema, the Python sources and the platform wrappers. The CLI must drive the toolchain that already lives in node_modules/@flipova/foundation/design, and only inject what a package cannot own (tailwind.config.js, postcss.config.js, globals.css and the design:* npm scripts). A project design/manifest.xml stays available as an explicit fork.
+  
+  ## Proposed outcome
+  
+  What the result should look like: the registry entry you would add, the
+  utility you would use.
+  
+  ## Public API impact
+  
+  none (internal) / additive (minor) / breaking (major)

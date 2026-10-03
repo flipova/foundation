@@ -53,7 +53,31 @@ npm install gluestack-ui
 npx flipova-design init
 ```
 
-Then wire the generated theme into your Tailwind config (app-level files are not
+`init` **does not copy the registries into your project**. The XML registries and
+the whole toolchain stay in `node_modules/@flipova/foundation/design`, and the
+command only injects the app-level wiring that the package cannot own:
+
+- `tailwind.config.js`, `postcss.config.js`, `globals.css` - created only when
+  missing (never overwritten unless `--force`);
+- the `design:*` npm scripts in your `package.json` (`design:gen`, `design:lint`,
+  `design:check`, `design:verify`, `design:canonical`, `design:doc`,
+  `design:pipeline`).
+
+| Command | What it does |
+| :--- | :--- |
+| `npx flipova-design where` | print the resolved registries/artifacts paths |
+| `npx flipova-design inject` | re-run the injection only |
+| `npx flipova-design gen [--check]` | compile the registries into `config.ts` + `tokens.js` |
+| `npx flipova-design lint` | XSD-validate the registries |
+
+`gen` writes into the resolved output root, i.e. straight into the installed
+package (`node_modules/@flipova/foundation/components/ui/gluestack-ui-provider`),
+so the artifacts consumed by `@flipova/foundation/tokens` and
+`@flipova/foundation/ui` are always the ones the pipeline produced. Add your own
+`design/manifest.xml` in the project only when you deliberately want to fork the
+registries: it then takes over as the source and the outputs land in the project.
+
+The generated theme is wired into your Tailwind config (app-level files are not
 shipped by the package):
 
 ```js
@@ -65,15 +89,17 @@ module.exports = {
 };
 ```
 
-and mount the provider once at the root:
+and the provider is mounted once at the root:
 
 ```tsx
 import { GluestackUIProvider } from '@flipova/foundation/ui';
 // <GluestackUIProvider mode="system"> ... </GluestackUIProvider>
 ```
 
-Full setup, including the required `--font-sans` / `--font-heading` variables:
-see the documentation site.
+The design tooling needs Python 3.8+ with `lxml` (`design/tools/requirements.txt`).
+Resolution order: `$FOUNDATION_PYTHON`, then `$FOUNDATION_VENV`, then
+`design/tools/.venv`, then any `python3`/`python` on `PATH` that can import
+`lxml`.
 
 ## Documentation
 

@@ -18,8 +18,15 @@
  *
  * Python resolution order:
  *   1. $FOUNDATION_PYTHON (explicit override)
- *   2. design/tools/.venv (Scripts/python.exe on Windows, bin/python otherwise)
- *   3. `python3` then `python` on PATH
+ *   2. $FOUNDATION_VENV, else design/tools/.venv
+ *      (Scripts/python.exe on Windows, bin/python otherwise)
+ *   3. `python3` then `python` on PATH, when `lxml` is importable
+ *
+ * Environment:
+ *   FOUNDATION_DESIGN_DIR     registry root (defaults to design/ next to tools/)
+ *   FOUNDATION_PROJECT_ROOT   output root for the generated artifacts
+ *   FOUNDATION_DOCS_OUT       docs output root (defaults to <root>/docs/generated)
+ *   FOUNDATION_VENV           venv directory holding the design dependencies
  *
  * Examples:
  *   node design/tools/design.js gen --check
@@ -44,7 +51,9 @@ const REPO_ROOT = process.env.FOUNDATION_PROJECT_ROOT
 const MANIFEST = path.join(DESIGN_DIR, 'manifest.xml');
 const SCHEMA = path.join(DESIGN_DIR, 'schema.xsd');
 const DOCUMENTATION = path.join(DESIGN_DIR, 'documentation.xml');
-const DOCS_OUT = path.join(REPO_ROOT, 'docs', 'generated');
+const DOCS_OUT = process.env.FOUNDATION_DOCS_OUT
+  ? path.resolve(process.env.FOUNDATION_DOCS_OUT)
+  : path.join(REPO_ROOT, 'docs', 'generated');
 
 const TARGETS = {
   gen: {
@@ -91,12 +100,18 @@ const TARGETS = {
 function findPython() {
   if (process.env.FOUNDATION_PYTHON) return process.env.FOUNDATION_PYTHON;
 
-  const venvDir = path.join(TOOLS_DIR, '.venv');
-  const venvCandidates = process.platform === 'win32'
-    ? [path.join(venvDir, 'Scripts', 'python.exe')]
-    : [path.join(venvDir, 'bin', 'python3'), path.join(venvDir, 'bin', 'python')];
-  for (const candidate of venvCandidates) {
-    if (fs.existsSync(candidate)) return candidate;
+  const venvDirs = [];
+  if (process.env.FOUNDATION_VENV) venvDirs.push(path.resolve(process.env.FOUNDATION_VENV));
+  venvDirs.push(path.join(TOOLS_DIR, '.venv'));
+  if (REPO_ROOT !== DESIGN_DIR) venvDirs.push(path.join(REPO_ROOT, 'design', 'tools', '.venv'));
+
+  for (const dir of venvDirs) {
+    const candidates = process.platform === 'win32'
+      ? [path.join(dir, 'Scripts', 'python.exe')]
+      : [path.join(dir, 'bin', 'python3'), path.join(dir, 'bin', 'python')];
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate)) return candidate;
+    }
   }
 
   const pathExes = process.platform === 'win32'
