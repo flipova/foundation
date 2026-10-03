@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: npm-run-flow-ran-the-whole-cycle-with
+title: "npm run flow ran the whole cycle with the defaults when npm swallowed the TTY"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  cmdWizard fell back to runCycle() whenever process.stdin.isTTY was false, and an npm run under Windows often does not propagate the terminal on stdin. The result was the cycle running end to end unattended: it wrote an issue, changed the release declaration, tried to branch and pushed. The wizard now refuses without a terminal and prints the equivalent step-by-step commands; the individual steps keep working in a pipe because they take their answers as flags.
+  
+  ## Steps to reproduce
+  
+  1.

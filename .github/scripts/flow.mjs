@@ -1260,11 +1260,28 @@ const MENU = [
  * The front end: a dashboard, then an arrow-key menu over those same functions.
  *
  * It loops, because a tool that exits after one action is a tool you re-run
- * eight times. With no terminal it is not a menu at all - it runs the cycle in
- * order, which is what keeps `npm run flow` usable in a pipe and in CI.
+ * eight times. With no terminal it refuses rather than guessing: a pipeline, a
+ * CI job and an `npm run` whose stdin lost the TTY must not mutate the
+ * repository just because nobody was there to answer. Every step it would have
+ * driven is a command in its own right, and those take flags and run anywhere.
  */
 const cmdWizard = async () => {
-  if (!prompt.isInteractive()) return runCycle();
+  if (!prompt.isInteractive()) {
+    bad('no terminal: the cycle asks questions, so it will not run here');
+    info('');
+    info('the steps, each one usable on its own and in a pipe:');
+    info('  flow issue new --template bug|feature|chore|blank --title "..." --summary "..."');
+    info('  flow release --bump patch|minor|major|none --summary "..."');
+    info('  flow branch <name>');
+    info('  flow verify');
+    info('  flow commit --subject "..." [--body-file <file>]');
+    info('  flow push');
+    info('  flow issue sync && flow pr && flow link && flow merge');
+    info('');
+    info('read-only from anywhere: flow status, flow verify, flow issue list, flow release status');
+    process.exitCode = 2;
+    return;
+  }
 
   for (;;) {
     info('');
