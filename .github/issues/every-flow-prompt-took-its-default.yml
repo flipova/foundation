@@ -1,0 +1,21 @@
+# Declared locally. `flow issue sync` creates it on GitHub and records the number.
+id: every-flow-prompt-took-its-default
+title: "every flow prompt took its default because question() returns undefined on Node 22+"
+labels:
+  - bug
+body: |
+  ## Foundation version
+  
+  <!-- version installed from npm, or `main` for a local checkout -->
+  
+  ## Affected layer
+  
+  theming / gluestack components / CLI / documentation / build / other
+  
+  ## What happens
+  
+  The prompts awaited readline.Interface.question() from node:readline, which is the callback form: since Node 22 it returns undefined instead of a promise. Every ask, select and confirm therefore resolved immediately with no answer, which every caller resolves to its default, so the wizard asked nothing and ran the whole cycle. Only node:readline/promises returns a promise. The prompts now use that reader, each question gets its own reader closed straight after, and the menu keeps the callback interface because it reads raw keypresses. prompt.repro.mjs reproduces the failure without a terminal.
+  
+  ## Steps to reproduce
+  
+  1.
