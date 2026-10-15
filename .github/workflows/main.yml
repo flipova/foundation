@@ -9,10 +9,10 @@
 # le paquet publié au versionnement (`flipova version tag vX.Y.Z`).
 #
 # Prérequis (une fois, côté npm) :
-#   npm trust github <@scope/paquet> --file main.yml \
-#     --repository <org>/<depot> --allow-publish
+#   npm trust github @flipova/foundation --file main.yml \
+#     --repository flipova/foundation --allow-publish
 #
-# Template fourni par le starter flipova ; copié dans le dépôt puis adapté librement.
+# Adapté du template flipova pour @flipova/foundation.
 name: main
 
 on:
@@ -26,6 +26,9 @@ concurrency:
   group: main-${{ github.ref }}
   cancel-in-progress: false   # une publication ne se coupe pas
 
+permissions:
+  contents: read
+
 env:
   AMONT: staging
 
@@ -34,6 +37,7 @@ jobs:
     name: promotion (source autorisée)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: La source doit etre l'amont autorise (ou un hotfix)
         run: |
@@ -51,23 +55,32 @@ jobs:
   qualite:
     name: qualite (main)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run lint --if-present
-      - run: npm run typecheck --if-present
-      - run: npm test --if-present
-      - run: npm run build --if-present
+      - name: installation
+        run: npm ci
+      - name: lint
+        run: npm run lint --if-present
+      - name: typecheck
+        run: npm run typecheck
+      - name: tests
+        run: npm test
+      - name: build
+        run: npm run build
+      - name: registre de design a jour (artefacts generes)
+        run: npm run design:gen:check
 
   publier:
     name: publication npm
     needs: qualite
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: production
     permissions:
       contents: write
@@ -79,7 +92,8 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
           cache: npm
-      - run: npm ci
+      - name: installation
+        run: npm ci
 
       - name: Rattacher le tag a la version du paquet
         run: |
@@ -103,7 +117,8 @@ jobs:
             echo "publiee=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - run: npm run build --if-present
+      - name: build
+        run: npm run build
 
       - name: Publication npm (OIDC, sans token)
         if: steps.etat.outputs.publiee == 'false'

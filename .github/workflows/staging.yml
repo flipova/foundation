@@ -1,10 +1,10 @@
-# Pipeline — branche staging : tests plus larges.
+# Pipeline — branche staging : validation large avant la release.
 #
 # Promotion VERROUILLÉE : la seule source autorisée vers `staging` est `dev`
 # (ou une branche `hotfix/*`). Tout le reste est refusé.
-#   dev  →  staging  →  main
 #
-# Template fourni par le starter flipova ; copié dans le dépôt puis adapté librement.
+# Adapté du template flipova pour @flipova/foundation : on ajoute ici les
+# garde-fous lourds (registre de design complet, documentation, paquet npm).
 name: staging
 
 on:
@@ -17,6 +17,9 @@ concurrency:
   group: staging-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   # Branche amont autorisée à promouvoir vers cette branche. `hotfix/*` est toujours permis.
   AMONT: dev
@@ -26,6 +29,7 @@ jobs:
     name: promotion (source autorisée)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: La source doit etre l'amont autorise (ou un hotfix)
         run: |
@@ -43,14 +47,37 @@ jobs:
   qualite:
     name: qualite (staging)
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run lint --if-present
-      - run: npm run typecheck --if-present
-      - run: npm test --if-present
-      - run: npm run build --if-present
+      - name: installation
+        run: npm ci
+      - name: lint
+        run: npm run lint --if-present
+      - name: typecheck
+        run: npm run typecheck
+      - name: tests
+        run: npm test
+      - name: build
+        run: npm run build
+
+      - name: pipeline de design complet (gen + check + verify + lint + doc)
+        run: npm run design:pipeline
+
+      - name: documentation (Docusaurus)
+        run: npm --prefix docs ci && npm --prefix docs run build
+
+      - name: paquet npm publiable (contenu du tarball)
+        run: npm pack --dry-run
+
+      - name: dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+          if-no-files-found: error
