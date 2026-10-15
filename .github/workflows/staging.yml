@@ -1,0 +1,14 @@
+# Branche staging — la logique vient de la base partagée flipova.
+name: staging
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+
+jobs:
+  pipeline:
+    uses: flipova/flipova/.github/workflows/pipeline.yml@main
+    with:
+      environnement: staging

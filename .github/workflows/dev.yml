@@ -1,0 +1,14 @@
+# Branche dev — la logique vient de la base partagée flipova.
+name: dev
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  pipeline:
+    uses: flipova/flipova/.github/workflows/pipeline.yml@main
+    with:
+      environnement: dev

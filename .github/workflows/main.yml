@@ -1,0 +1,13 @@
+# Branche main — production : la qualité puis la publication npm.
+name: main
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  pipeline:
+    uses: flipova/flipova/.github/workflows/pipeline.yml@main
+    with:
+      environnement: production
+      publier: true

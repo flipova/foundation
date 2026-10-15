@@ -1,9 +1,0 @@
-# The single changeset for this cycle.
-#
-# `flow release` writes this file and generates `.changeset/release.md` from
-# it. `flow release check` (run by CI) reports any drift between the two, so
-# the declaration and what changesets actually reads cannot disagree.
-#
-# bump: major | minor | patch | none   (none = nothing to release)
-bump: none
-summary: ''
