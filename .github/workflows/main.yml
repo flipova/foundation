@@ -95,14 +95,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: npm
       - name: installation
         run: npm ci
 
-      - name: npm recent (le trusted publishing OIDC exige npm >= 11.5.1)
+      - name: npm recent + registre (le trusted publishing OIDC exige npm >= 11.5.1)
         run: |
           npm install -g npm@latest
+          npm config set registry https://registry.npmjs.org/   # sinon setup-node ecrit un "always-auth" obsolete
           npm --version
 
       - name: Rattacher le tag au versionnement (si le depot est versionne)
@@ -125,8 +125,15 @@ jobs:
       - name: Livrer (script « deploy » du depot)
         run: |
           if [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.deploy ? 0 : 1)" 2>/dev/null; then
-            echo "::notice::livraison via « npm run deploy »"
-            if ! npm run deploy; then
+            version=$(node -p "require('./package.json').version")
+            case "$version" in
+              *-alpha*) tag=alpha ;;
+              *-beta*)  tag=beta ;;
+              *-rc*)    tag=rc ;;
+              *)        tag=latest ;;
+            esac
+            echo "::notice::livraison via « npm run deploy -- --tag $tag »"
+            if ! npm run deploy -- --tag "$tag"; then
               echo "::error::la livraison a echoue. Si le journal ci-dessus contient ENEEDAUTH, le registre n'a pas de « trusted publisher » OIDC declare pour ce depot. Remede :"
               echo "::error::  npm trust github ${{ github.repository }} --file main.yml --allow-publish"
               echo "::error::  (ou : npmjs.com > paquet > Settings > Trusted Publisher > GitHub Actions)"
