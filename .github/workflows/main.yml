@@ -1,4 +1,8 @@
-# Pipeline — branche main : qualité à chaque push, publication npm sur tag vX.Y.Z.
+# Pipeline — branche main : release (qualité + publication npm).
+#
+# Promotion VERROUILLÉE : la seule source autorisée vers `main` est `staging`
+# (ou une branche `hotfix/*`). Tout le reste est refusé.
+#   dev  →  staging  →  main
 #
 # Publication par « trusted publishing » npm (OIDC) : aucun token, aucun secret.
 # Le tag DOIT correspondre à la version de package.json — c'est ce qui rattache
@@ -6,19 +10,46 @@
 #
 # Prérequis (une fois, côté npm) :
 #   npm trust github <@scope/paquet> --file main.yml \
-#     --repository <org>/<dépôt> --allow-publish
+#     --repository <org>/<depot> --allow-publish
 #
-# Template fourni par le starter flipova ; adapte librement à ce dépôt.
+# Template fourni par le starter flipova ; copié dans le dépôt puis adapté librement.
 name: main
 
 on:
   push:
     branches: [main]
     tags: ['v*']
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: main-${{ github.ref }}
+  cancel-in-progress: false   # une publication ne se coupe pas
+
+env:
+  AMONT: staging
 
 jobs:
+  promotion:
+    name: promotion (source autorisée)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: La source doit etre l'amont autorise (ou un hotfix)
+        run: |
+          source="${GITHUB_HEAD_REF}"
+          cible="${GITHUB_BASE_REF}"
+          echo "source=$source  cible=$cible  amont=${AMONT}"
+          case "$source" in
+            "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
+            *)
+              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
+              exit 1
+              ;;
+          esac
+
   qualite:
-    name: qualite
+    name: qualite (main)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,24 +81,24 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: Rattacher le tag à la version du paquet
+      - name: Rattacher le tag a la version du paquet
         run: |
           paquet=$(node -p "require('./package.json').version")
           tag="${GITHUB_REF_NAME#v}"
           echo "package.json=$paquet  tag=$tag"
           if [ "$paquet" != "$tag" ]; then
-            echo "::error::le tag ($tag) ne correspond pas à la version du paquet ($paquet)"
+            echo "::error::le tag ($tag) ne correspond pas a la version du paquet ($paquet)"
             exit 1
           fi
 
-      - name: La version est-elle déjà publiée ?
+      - name: La version est-elle deja publiee ?
         id: etat
         run: |
           nom=$(node -p "require('./package.json').name")
           version=$(node -p "require('./package.json').version")
           if npm view "$nom@$version" version >/dev/null 2>&1; then
             echo "publiee=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::$nom@$version est déjà sur le registre — publication ignorée"
+            echo "::notice::$nom@$version est deja sur le registre — publication ignoree"
           else
             echo "publiee=false" >> "$GITHUB_OUTPUT"
           fi
@@ -78,7 +109,7 @@ jobs:
         if: steps.etat.outputs.publiee == 'false'
         run: npm publish --provenance --access public
 
-      - name: Release GitHub (pré-release si alpha/beta/rc)
+      - name: Release GitHub (pre-release si alpha/beta/rc)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -87,7 +118,7 @@ jobs:
             *) drapeau="" ;;
           esac
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            echo "release ${GITHUB_REF_NAME} déjà présente"
+            echo "release ${GITHUB_REF_NAME} deja presente"
           else
             gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes $drapeau
           fi

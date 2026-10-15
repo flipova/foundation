@@ -1,5 +1,10 @@
-# Pipeline — branche staging (tests plus larges).
-# Template fourni par le starter flipova, copié dans le dépôt puis adapté librement.
+# Pipeline — branche staging : tests plus larges.
+#
+# Promotion VERROUILLÉE : la seule source autorisée vers `staging` est `dev`
+# (ou une branche `hotfix/*`). Tout le reste est refusé.
+#   dev  →  staging  →  main
+#
+# Template fourni par le starter flipova ; copié dans le dépôt puis adapté librement.
 name: staging
 
 on:
@@ -8,8 +13,35 @@ on:
   pull_request:
     branches: [staging]
 
+concurrency:
+  group: staging-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Branche amont autorisée à promouvoir vers cette branche. `hotfix/*` est toujours permis.
+  AMONT: dev
+
 jobs:
+  promotion:
+    name: promotion (source autorisée)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: La source doit etre l'amont autorise (ou un hotfix)
+        run: |
+          source="${GITHUB_HEAD_REF}"
+          cible="${GITHUB_BASE_REF}"
+          echo "source=$source  cible=$cible  amont=${AMONT}"
+          case "$source" in
+            "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
+            *)
+              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
+              exit 1
+              ;;
+          esac
+
   qualite:
+    name: qualite (staging)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
