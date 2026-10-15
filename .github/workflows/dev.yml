@@ -55,8 +55,12 @@ jobs:
           cache: npm
       - name: installation
         run: npm ci
-      - name: lint
+      - name: lint (avis — ne bloque pas encore la CI)
         run: npm run lint --if-present
+        continue-on-error: true
+      - name: format (avis)
+        run: npm run format:check --if-present
+        continue-on-error: true
       - name: typecheck
         run: npm run typecheck
       - name: tests

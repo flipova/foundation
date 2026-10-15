@@ -1,0 +1,11 @@
+dist
+node_modules
+coverage
+docs/build
+docs/.docusaurus
+docs/generated
+design/tools/sources
+design/canonical.index.txt
+CHANGELOG.md
+package-lock.json
+docs/package-lock.json
