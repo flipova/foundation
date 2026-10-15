@@ -65,8 +65,15 @@ jobs:
       - name: build
         run: npm run build
 
+      - name: python (outils du registre de design)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: pipeline de design complet (gen + check + verify + lint + doc)
-        run: npm run design:pipeline
+        run: |
+          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
+          npm run design:pipeline
 
       - name: documentation (Docusaurus)
         run: npm --prefix docs ci && npm --prefix docs run build

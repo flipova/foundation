@@ -20,6 +20,25 @@ permissions:
   contents: read
 
 jobs:
+  promotion:
+    name: promotion (branche de travail)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Les modifs passent par une branche dediee (jamais dev/staging/main en direct)
+        run: |
+          source="${GITHUB_HEAD_REF}"
+          cible="${GITHUB_BASE_REF}"
+          echo "source=$source  cible=$cible"
+          case "$source" in
+            dev|staging|main|master)
+              echo "::error::« $source » ne peut pas viser $cible : ouvre une branche de travail (feature/*, fix/*, chore/*, hotfix/*)"
+              exit 1
+              ;;
+            *) echo "::notice::$source -> $cible accepte" ;;
+          esac
+
   qualite:
     name: qualite (node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -44,5 +63,11 @@ jobs:
         run: npm test
       - name: build
         run: npm run build
+      - name: python (outils du registre de design)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: registre de design a jour (artefacts generes)
-        run: npm run design:gen:check
+        run: |
+          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
+          npm run design:gen:check

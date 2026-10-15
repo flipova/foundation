@@ -72,8 +72,14 @@ jobs:
         run: npm test
       - name: build
         run: npm run build
+      - name: python (outils du registre de design)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: registre de design a jour (artefacts generes)
-        run: npm run design:gen:check
+        run: |
+          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
+          npm run design:gen:check
 
   publier:
     name: publication npm
