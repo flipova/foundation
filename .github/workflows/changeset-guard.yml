@@ -44,7 +44,7 @@ jobs:
           persist-credentials: true
 
       - name: Inspect and, if possible, create the changeset
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
