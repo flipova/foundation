@@ -6,6 +6,11 @@ docs/.docusaurus
 docs/generated
 design/tools/sources
 design/canonical.index.txt
+# Artefacts GÉNÉRÉS par design/tools/sources/generate.py : leur format est celui
+# du générateur, et `design:gen:check` (CI) vérifie qu'ils n'ont pas bougé.
+# Prettier ne doit donc jamais les reformater, sinon les deux gardes s'opposent.
+components/ui/gluestack-ui-provider/config.ts
+components/ui/gluestack-ui-provider/tokens.js
 CHANGELOG.md
 package-lock.json
 docs/package-lock.json
