@@ -1,4 +1,5 @@
-# Branche main — production : la qualité puis la publication npm.
+# Pipeline — branche main (release) : qualité puis publication npm.
+# Template fourni par le starter flipova, copié dans le dépôt puis adapté librement.
 name: main
 
 on:
@@ -6,8 +7,34 @@ on:
     branches: [main]
 
 jobs:
-  pipeline:
-    uses: flipova/flipova/.github/workflows/pipeline.yml@main
-    with:
-      environnement: production
-      publier: true
+  qualite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npm run typecheck --if-present
+      - run: npm test --if-present
+      - run: npm run build --if-present
+
+  publier:
+    needs: qualite
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm publish --provenance --access public

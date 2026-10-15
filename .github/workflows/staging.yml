@@ -1,4 +1,5 @@
-# Branche staging — la logique vient de la base partagée flipova.
+# Pipeline — branche staging (tests plus larges).
+# Template fourni par le starter flipova, copié dans le dépôt puis adapté librement.
 name: staging
 
 on:
@@ -8,7 +9,16 @@ on:
     branches: [staging]
 
 jobs:
-  pipeline:
-    uses: flipova/flipova/.github/workflows/pipeline.yml@main
-    with:
-      environnement: staging
+  qualite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint --if-present
+      - run: npm run typecheck --if-present
+      - run: npm test --if-present
+      - run: npm run build --if-present
