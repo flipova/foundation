@@ -143,7 +143,7 @@ jobs:
     name: Age out unattended threads
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v11
         with:
           days-before-issue-stale: 60
           days-before-issue-close: 30
