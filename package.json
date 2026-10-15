@@ -143,7 +143,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@expo/html-elements": "^0.12.5",
     "@gluestack-ui/core": "^4.0.0-alpha.0",
-    "@gluestack-ui/utils": "^4.0.0-alpha.0",
+    "@gluestack-ui/utils": "^5.0.6",
     "@gluestack/ui-next-adapter": "^4.0.0-alpha.0",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@legendapp/motion": "^2.5.3",
