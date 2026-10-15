@@ -141,7 +141,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@expo/html-elements": "^0.12.5",
+    "@expo/html-elements": "^57.0.0",
     "@gluestack-ui/core": "^4.0.0-alpha.0",
     "@gluestack-ui/utils": "^4.0.0-alpha.0",
     "@gluestack/ui-next-adapter": "^4.0.0-alpha.0",
