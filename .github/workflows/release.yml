@@ -10,28 +10,25 @@
 #   dev  →  staging  →  main
 #
 # Adapté du template flipova pour @flipova/foundation.
-name: main
+name: release
 
 on:
   push:
-    branches: [main]
+    branches: [main, alpha, beta, rc]
     tags: ['v*']
   pull_request:
-    branches: [main]
+    branches: [main, alpha, beta, rc]
 
 concurrency:
-  group: main-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: false # une livraison ne se coupe pas
 
 permissions:
   contents: read
 
-env:
-  AMONT: staging
-
 jobs:
   promotion:
-    name: promotion (source autorisée)
+    name: promotion (source autorisee)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -40,17 +37,25 @@ jobs:
         run: |
           source="${GITHUB_HEAD_REF}"
           cible="${GITHUB_BASE_REF}"
-          echo "source=$source  cible=$cible  amont=${AMONT}"
-          case "$source" in
-            "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
-            *)
-              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
-              exit 1
-              ;;
+          case "$cible" in
+            alpha) amont="dev" ;;
+            beta)  amont="alpha" ;;
+            rc)    amont="beta" ;;
+            main)  amont="rc staging" ;;
+            *)     amont="" ;;
           esac
+          echo "source=$source  cible=$cible  amont=$amont"
+          for ok in $amont; do
+            if [ "$source" = "$ok" ]; then echo "::notice::$source -> $cible accepte"; exit 0; fi
+          done
+          case "$source" in
+            hotfix/*) echo "::notice::hotfix $source -> $cible accepte"; exit 0 ;;
+          esac
+          echo "::error::« $source » ne peut pas viser $cible : passe d'abord par « $amont », ou ouvre une branche hotfix/*"
+          exit 1
 
   qualite:
-    name: qualite (main)
+    name: qualite (${{ github.base_ref || github.ref_name }})
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
