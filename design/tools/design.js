@@ -83,8 +83,7 @@ const TARGETS = {
   },
   doc: {
     script: 'docgen.py',
-    args: ['--manifest', MANIFEST, '--documentation', DOCUMENTATION,
-           '--root', REPO_ROOT, '--out', DOCS_OUT],
+    args: ['--manifest', MANIFEST, '--documentation', DOCUMENTATION, '--root', REPO_ROOT, '--out', DOCS_OUT],
   },
   pipeline: {
     script: null,
@@ -111,22 +110,23 @@ function findPython() {
   if (REPO_ROOT !== DESIGN_DIR) venvDirs.push(path.join(REPO_ROOT, 'design', 'tools', '.venv'));
 
   for (const dir of venvDirs) {
-    const candidates = process.platform === 'win32'
-      ? [path.join(dir, 'Scripts', 'python.exe')]
-      : [path.join(dir, 'bin', 'python3'), path.join(dir, 'bin', 'python')];
+    const candidates =
+      process.platform === 'win32'
+        ? [path.join(dir, 'Scripts', 'python.exe')]
+        : [path.join(dir, 'bin', 'python3'), path.join(dir, 'bin', 'python')];
     for (const candidate of candidates) {
       if (fs.existsSync(candidate)) return candidate;
     }
   }
 
-  const pathExes = process.platform === 'win32'
-    ? ['python.exe', 'python3.exe']
-    : ['python3', 'python'];
+  const pathExes = process.platform === 'win32' ? ['python.exe', 'python3.exe'] : ['python3', 'python'];
   for (const exe of pathExes) {
     try {
       const probe = spawnSync(exe, ['-c', 'import lxml.etree'], { stdio: 'ignore' });
       if (probe.status === 0) return exe;
-    } catch (_) { /* not on PATH */ }
+    } catch (_) {
+      /* not on PATH */
+    }
   }
   return null;
 }
@@ -136,8 +136,10 @@ function main() {
   const spec = TARGETS[target];
   if (!spec) {
     process.stderr.write(
-      'Unknown target: %s\nAvailable targets: %s\n'.replace('%s', String(target))
-        .replace('%s', Object.keys(TARGETS).join(', ')));
+      'Unknown target: %s\nAvailable targets: %s\n'
+        .replace('%s', String(target))
+        .replace('%s', Object.keys(TARGETS).join(', ')),
+    );
     process.exit(2);
   }
 
@@ -170,7 +172,8 @@ function main() {
   if (!python) {
     process.stderr.write(
       'No suitable Python found. Create the project venv or set FOUNDATION_PYTHON.\n' +
-      '  C:/opt/Python38-32/python3.exe -m venv --without-pip --system-site-packages design/tools/.venv\n');
+        '  C:/opt/Python38-32/python3.exe -m venv --without-pip --system-site-packages design/tools/.venv\n',
+    );
     process.exit(2);
   }
 

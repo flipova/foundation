@@ -3,7 +3,7 @@ import {
   GlassContainer as ExpoGlassContainer,
   GlassView as ExpoGlassView,
   type GlassContainerProps,
-  type GlassViewProps
+  type GlassViewProps,
 } from 'expo-glass-effect';
 
 import { cssInterop } from 'nativewind';
@@ -25,10 +25,10 @@ type IGlassContainerProps = GlassContainerProps & {
   className?: string;
 };
 
-export const GlassView = React.forwardRef<
-  React.ComponentRef<typeof ExpoGlassView>,
-  IGlassViewProps
->(function GlassView({ className, ...props }, ref) {
+export const GlassView = React.forwardRef<React.ComponentRef<typeof ExpoGlassView>, IGlassViewProps>(function GlassView(
+  { className, ...props },
+  ref,
+) {
   return (
     <ExpoGlassView
       ref={ref}
@@ -41,29 +41,23 @@ export const GlassView = React.forwardRef<
 
 GlassView.displayName = 'GlassView';
 
-export const GlassContainer = React.forwardRef<
-  React.ComponentRef<typeof ExpoGlassContainer>,
-  IGlassContainerProps
->(function GlassContainer({ className, ...props }, ref) {
-  return (
-    <ExpoGlassContainer
-      ref={ref}
-      {...props}
-      // @ts-ignore - className support via cssInterop
-      className={glassContainerStyle({ className })}
-    />
-  );
-});
+export const GlassContainer = React.forwardRef<React.ComponentRef<typeof ExpoGlassContainer>, IGlassContainerProps>(
+  function GlassContainer({ className, ...props }, ref) {
+    return (
+      <ExpoGlassContainer
+        ref={ref}
+        {...props}
+        // @ts-ignore - className support via cssInterop
+        className={glassContainerStyle({ className })}
+      />
+    );
+  },
+);
 
 GlassContainer.displayName = 'GlassContainer';
 
 export { isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
-export type {
-  GlassColorScheme,
-  GlassContainerProps,
-  GlassStyle,
-  GlassViewProps
-} from 'expo-glass-effect';
+export type { GlassColorScheme, GlassContainerProps, GlassStyle, GlassViewProps } from 'expo-glass-effect';
 
 cssInterop(ExpoGlassView, {
   className: 'style',

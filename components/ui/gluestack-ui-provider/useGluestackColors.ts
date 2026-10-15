@@ -24,8 +24,7 @@ function rgbToHex(rgbString: string): string {
     return isNaN(num) ? 0 : num;
   });
 
-  const toHex = (n: number) =>
-    Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
+  const toHex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
@@ -52,10 +51,7 @@ export function useGluestackColors(): Record<string, string> {
   // the active id is only known at runtime.
   const palettes = theme as Record<string, Record<string, string>>;
   const palette =
-    palettes[mounted?.themeId ?? ''] ??
-    palettes[colorScheme || 'light'] ??
-    palettes[mounted?.themeIds[0] ?? ''] ??
-    {};
+    palettes[mounted?.themeId ?? ''] ?? palettes[colorScheme || 'light'] ?? palettes[mounted?.themeIds[0] ?? ''] ?? {};
 
   // Dynamically convert all CSS variables to camelCase hex colors
   const result: Record<string, string> = {};

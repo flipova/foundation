@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --ifm-font-family-base: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --ifm-heading-font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --ifm-font-family-monospace: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  
+  --ifm-font-family-base: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-heading-font-family: 'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
   /* Primary Brand Accent Color: #000091 (Deep Navy Blue) */
   --ifm-color-primary: #000091;
   --ifm-color-primary-dark: #000078;
@@ -44,7 +44,14 @@
 }
 
 /* Force Uniform Background across HTML, body, and main containers */
-html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
+html,
+body,
+#__docusaurus,
+.main-wrapper,
+.navbar,
+footer,
+.footer,
+main {
   background-color: var(--ifm-background-color) !important;
   font-family: var(--ifm-font-family-base);
 }
@@ -221,7 +228,9 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   border: 1px solid var(--ifm-toc-border-color);
   border-radius: 16px;
   padding: 1.75rem;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
   display: flex;
   flex-direction: column;
 }
@@ -339,11 +348,15 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   background-color: var(--ifm-background-surface-color) !important;
   overflow: hidden;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 [data-theme='dark'] .theme-code-block {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Header bar with language label + copy button */
@@ -411,7 +424,11 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   background-color: var(--ifm-background-surface-color);
   color: var(--ifm-color-content-secondary);
   opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    opacity 0.2s ease,
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
   cursor: pointer;
   z-index: 2;
 }
@@ -473,7 +490,10 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   border: 1px solid var(--ifm-toc-border-color);
   background-color: var(--ifm-background-surface-color);
   color: var(--ifm-color-content-secondary);
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
   cursor: pointer;
 }
 
@@ -515,7 +535,9 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   font-size: 0.85rem;
   border-radius: 8px;
   padding: 0.45rem 0.75rem;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -728,7 +750,9 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
   color: var(--ifm-color-content-secondary);
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
   font-family: 'Lexend', sans-serif;
 }
 
@@ -911,4 +935,3 @@ html, body, #__docusaurus, .main-wrapper, .navbar, footer, .footer, main {
 .link:hover {
   text-decoration: underline;
 }
-

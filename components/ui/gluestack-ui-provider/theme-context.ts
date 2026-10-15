@@ -44,7 +44,7 @@ export const useMountedTheme = (): MountedTheme | null => useContext(MountedThem
 export function resolveThemeId(
   variants: Record<string, Record<string, string>> | undefined,
   variant: string | undefined,
-  mode: string
+  mode: string,
 ): string {
   const mapped = variant ? variants?.[variant]?.[mode] : undefined;
   return mapped ?? mode;

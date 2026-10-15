@@ -24,7 +24,7 @@ on:
 
 concurrency:
   group: main-${{ github.ref }}
-  cancel-in-progress: false   # une publication ne se coupe pas
+  cancel-in-progress: false # une publication ne se coupe pas
 
 permissions:
   contents: read

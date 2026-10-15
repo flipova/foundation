@@ -11,11 +11,9 @@ import { UIIcon } from '@gluestack-ui/core/icon/creator';
 const SCOPE = 'Radio';
 
 const UIRadio = createRadio({
-  Root: (Platform.OS === 'web'
-    ? withStyleContext(View, SCOPE)
-    : withStyleContext(Pressable, SCOPE)) as ReturnType<
-      typeof withStyleContext<typeof Pressable>
-    >,
+  Root: (Platform.OS === 'web' ? withStyleContext(View, SCOPE) : withStyleContext(Pressable, SCOPE)) as ReturnType<
+    typeof withStyleContext<typeof Pressable>
+  >,
   Group: View,
   Icon: UIIcon,
   Indicator: View,
@@ -77,11 +75,11 @@ const radioLabelStyle = tva({
   parentVariants: {
     size: {
       '2xs': 'text-2xs',
-      'xs': 'text-xs',
-      'sm': 'text-sm',
-      'md': 'text-base',
-      'lg': 'text-lg',
-      'xl': 'text-xl',
+      xs: 'text-xs',
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
+      xl: 'text-xl',
       '2xl': 'text-2xl',
       '3xl': 'text-3xl',
       '4xl': 'text-4xl',
@@ -91,61 +89,44 @@ const radioLabelStyle = tva({
   },
 });
 
-type IRadioProps = Omit<React.ComponentProps<typeof UIRadio>, 'context'> &
-  VariantProps<typeof radioStyle>;
-const Radio = React.forwardRef<React.ComponentRef<typeof UIRadio>, IRadioProps>(
-  function Radio({ className, size = 'md', ...props }, ref) {
+type IRadioProps = Omit<React.ComponentProps<typeof UIRadio>, 'context'> & VariantProps<typeof radioStyle>;
+const Radio = React.forwardRef<React.ComponentRef<typeof UIRadio>, IRadioProps>(function Radio(
+  { className, size = 'md', ...props },
+  ref,
+) {
+  return <UIRadio className={radioStyle({ class: className, size })} {...props} ref={ref} context={{ size }} />;
+});
+
+type IRadioGroupProps = React.ComponentProps<typeof UIRadio.Group> & VariantProps<typeof radioGroupStyle>;
+const RadioGroup = React.forwardRef<React.ComponentRef<typeof UIRadio.Group>, IRadioGroupProps>(function RadioGroup(
+  { className, ...props },
+  ref,
+) {
+  return <UIRadio.Group className={radioGroupStyle({ class: className })} {...props} ref={ref} />;
+});
+
+type IRadioIndicatorProps = React.ComponentProps<typeof UIRadio.Indicator> & VariantProps<typeof radioIndicatorStyle>;
+const RadioIndicator = React.forwardRef<React.ComponentRef<typeof UIRadio.Indicator>, IRadioIndicatorProps>(
+  function RadioIndicator({ className, ...props }, ref) {
+    const { size } = useStyleContext(SCOPE);
     return (
-      <UIRadio
-        className={radioStyle({ class: className, size })}
-        {...props}
+      <UIRadio.Indicator
+        className={radioIndicatorStyle({
+          parentVariants: { size },
+          class: className,
+        })}
         ref={ref}
-        context={{ size }}
+        {...props}
       />
     );
-  }
+  },
 );
 
-type IRadioGroupProps = React.ComponentProps<typeof UIRadio.Group> &
-  VariantProps<typeof radioGroupStyle>;
-const RadioGroup = React.forwardRef<
-  React.ComponentRef<typeof UIRadio.Group>,
-  IRadioGroupProps
->(function RadioGroup({ className, ...props }, ref) {
-  return (
-    <UIRadio.Group
-      className={radioGroupStyle({ class: className })}
-      {...props}
-      ref={ref}
-    />
-  );
-});
-
-type IRadioIndicatorProps = React.ComponentProps<typeof UIRadio.Indicator> &
-  VariantProps<typeof radioIndicatorStyle>;
-const RadioIndicator = React.forwardRef<
-  React.ComponentRef<typeof UIRadio.Indicator>,
-  IRadioIndicatorProps
->(function RadioIndicator({ className, ...props }, ref) {
-  const { size } = useStyleContext(SCOPE);
-  return (
-    <UIRadio.Indicator
-      className={radioIndicatorStyle({
-        parentVariants: { size },
-        class: className,
-      })}
-      ref={ref}
-      {...props}
-    />
-  );
-});
-
-type IRadioLabelProps = React.ComponentProps<typeof UIRadio.Label> &
-  VariantProps<typeof radioIndicatorStyle>;
-const RadioLabel = React.forwardRef<
-  React.ComponentRef<typeof UIRadio.Label>,
-  IRadioLabelProps
->(function RadioLabel({ className, ...props }, ref) {
+type IRadioLabelProps = React.ComponentProps<typeof UIRadio.Label> & VariantProps<typeof radioIndicatorStyle>;
+const RadioLabel = React.forwardRef<React.ComponentRef<typeof UIRadio.Label>, IRadioLabelProps>(function RadioLabel(
+  { className, ...props },
+  ref,
+) {
   const { size } = useStyleContext(SCOPE);
   return (
     <UIRadio.Label
@@ -164,32 +145,16 @@ type IRadioIconProps = React.ComponentProps<typeof UIRadio.Icon> &
     height?: number;
     width?: number;
   };
-const RadioIcon = React.forwardRef<
-  React.ComponentRef<typeof UIRadio.Icon>,
-  IRadioIconProps
->(function RadioIcon({ className, size, ...props }, ref) {
+const RadioIcon = React.forwardRef<React.ComponentRef<typeof UIRadio.Icon>, IRadioIconProps>(function RadioIcon(
+  { className, size, ...props },
+  ref,
+) {
   const { size: parentSize } = useStyleContext(SCOPE);
 
   if (typeof size === 'number') {
-    return (
-      <UIRadio.Icon
-        ref={ref}
-        {...props}
-        className={radioIconStyle({ class: className })}
-        size={size}
-      />
-    );
-  } else if (
-    (props.height !== undefined || props.width !== undefined) &&
-    size === undefined
-  ) {
-    return (
-      <UIRadio.Icon
-        ref={ref}
-        {...props}
-        className={radioIconStyle({ class: className })}
-      />
-    );
+    return <UIRadio.Icon ref={ref} {...props} className={radioIconStyle({ class: className })} size={size} />;
+  } else if ((props.height !== undefined || props.width !== undefined) && size === undefined) {
+    return <UIRadio.Icon ref={ref} {...props} className={radioIconStyle({ class: className })} />;
   }
 
   return (
@@ -206,7 +171,6 @@ const RadioIcon = React.forwardRef<
     />
   );
 });
-
 
 Radio.displayName = 'Radio';
 RadioGroup.displayName = 'RadioGroup';

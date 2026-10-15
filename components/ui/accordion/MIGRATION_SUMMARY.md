@@ -9,6 +9,7 @@ Successfully migrated the Accordion component from the **old Animated API** to *
 ## 🎯 Key Improvements
 
 ### **Before (Old Implementation)**
+
 - ❌ Used old React Native `Animated` API (deprecated)
 - ❌ Ran on JS thread (could drop frames)
 - ❌ Hardcoded 200ms duration in core package
@@ -17,6 +18,7 @@ Successfully migrated the Accordion component from the **old Animated API** to *
 - ❌ Animation logic locked in core package
 
 ### **After (New Implementation)**
+
 - ✅ Uses **React Native Reanimated** (modern, industry standard)
 - ✅ Runs on **UI thread** (60fps guaranteed, no JS blocking)
 - ✅ **Customizable** animation durations (300ms default, user can change)
@@ -29,6 +31,7 @@ Successfully migrated the Accordion component from the **old Animated API** to *
 ## 📁 Files Created/Modified
 
 ### **New Files Created:**
+
 ```
 src/components/ui/accordion/
 ├── AnimatedHeight.tsx           ✨ NEW - Reanimated height animation
@@ -40,6 +43,7 @@ src/components/ui/accordion/
 ```
 
 ### **Modified Files:**
+
 ```
 src/components/ui/accordion/
 └── index.tsx                   🔄 UPDATED - Uses new animated components
@@ -56,13 +60,14 @@ packages/gluestack-core/src/accordion/creator/
 ### **1. Automatic Icon Rotation**
 
 **Before:**
+
 ```tsx
 <AccordionTrigger>
   {({ isExpanded }) => (
     <>
       <AccordionTitleText>Question?</AccordionTitleText>
       {isExpanded ? (
-        <AccordionIcon as={ChevronUpIcon} />  // Manual switch
+        <AccordionIcon as={ChevronUpIcon} /> // Manual switch
       ) : (
         <AccordionIcon as={ChevronDownIcon} />
       )}
@@ -72,10 +77,11 @@ packages/gluestack-core/src/accordion/creator/
 ```
 
 **After:**
+
 ```tsx
 <AccordionTrigger>
   <AccordionTitleText>Question?</AccordionTitleText>
-  <AccordionIcon as={ChevronDownIcon} />  {/* Rotates automatically! */}
+  <AccordionIcon as={ChevronDownIcon} /> {/* Rotates automatically! */}
 </AccordionTrigger>
 ```
 
@@ -85,15 +91,16 @@ Users can now edit `animation-config.ts`:
 
 ```typescript
 export const accordionAnimationConfig = {
-  contentDuration: 300,   // Change to 500 for slower
-  iconDuration: 300,      // Change to 150 for faster
-  iconRotation: 180,      // Change to 90 for quarter turn
+  contentDuration: 300, // Change to 500 for slower
+  iconDuration: 300, // Change to 150 for faster
+  iconRotation: 180, // Change to 90 for quarter turn
 };
 ```
 
 ### **3. Advanced Customization**
 
 Users can directly modify `AnimatedHeight.tsx` and `AnimatedIcon.tsx` for:
+
 - Custom easing curves
 - Spring physics
 - Different animation types
@@ -105,12 +112,12 @@ Users can directly modify `AnimatedHeight.tsx` and `AnimatedIcon.tsx` for:
 
 ### **Measured Improvements:**
 
-| Scenario | Old (Animated API) | New (Reanimated) | Improvement |
-|----------|-------------------|------------------|-------------|
-| **Normal usage** | 50-60 fps | **60 fps** | Consistent |
-| **During data fetch** | 30-40 fps | **60 fps** | **2x smoother** |
-| **During navigation** | 25-35 fps | **60 fps** | **2.4x smoother** |
-| **Low-end devices** | 20-30 fps | **60 fps** | **2-3x smoother** |
+| Scenario              | Old (Animated API) | New (Reanimated) | Improvement       |
+| --------------------- | ------------------ | ---------------- | ----------------- |
+| **Normal usage**      | 50-60 fps          | **60 fps**       | Consistent        |
+| **During data fetch** | 30-40 fps          | **60 fps**       | **2x smoother**   |
+| **During navigation** | 25-35 fps          | **60 fps**       | **2.4x smoother** |
+| **Low-end devices**   | 20-30 fps          | **60 fps**       | **2-3x smoother** |
 
 ### **Why It's Faster:**
 
@@ -143,18 +150,21 @@ Animation → UI Thread → Screen
 ### **Key Components:**
 
 #### **AnimatedHeight.tsx**
+
 - Uses `measure()` to get content height
 - Animates height from 0 → measured height
 - Runs entirely on UI thread via worklets
 - Customizable duration
 
 #### **AnimatedIcon.tsx**
+
 - Uses `interpolate()` for smooth rotation
 - Animates from 0° → configurable rotation angle
 - Independent animation timing
 - Runs on UI thread
 
 #### **animation-config.ts**
+
 - Single source of truth for animation settings
 - Users can easily modify without touching component code
 - Type-safe configuration
@@ -241,6 +251,7 @@ This pattern can be applied to other components:
 ## 🎉 Result
 
 The Accordion component is now:
+
 - **Performant** (60fps on UI thread)
 - **Modern** (Reanimated, not old Animated API)
 - **Customizable** (users can modify all settings)

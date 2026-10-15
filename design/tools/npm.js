@@ -273,7 +273,7 @@ function adopt(force) {
   process.stdout.write('\nNext steps:\n');
   process.stdout.write('  1. edit design/tokens.xml and design/themes.xml - that is now your design system\n');
   process.stdout.write('  2. npm run design:gen        -> theme/config.ts + theme/tokens.js\n');
-  process.stdout.write('  3. tailwind.config.js        -> require(\'./theme/tokens\')\n');
+  process.stdout.write("  3. tailwind.config.js        -> require('./theme/tokens')\n");
   process.stdout.write('  4. wrap the app in <AppThemeProvider mode="system"> from ./theme/provider\n');
   process.stdout.write('  5. npm run design:verify     -> the registries are in step with the artifacts\n');
 }
@@ -335,7 +335,8 @@ function main() {
   }
   if (command === undefined) {
     process.stderr.write(
-      'Usage: npx flipova-design <init|inject|adopt|where|gen|check|verify|canonical|lint|doc|edit|run|pipeline>\n');
+      'Usage: npx flipova-design <init|inject|adopt|where|gen|check|verify|canonical|lint|doc|edit|run|pipeline>\n',
+    );
     process.exit(2);
   }
   runTool(command, args);

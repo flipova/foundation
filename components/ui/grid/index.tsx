@@ -1,18 +1,9 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useMemo,
-  forwardRef,
-} from 'react';
+import React, { useState, createContext, useContext, useMemo, forwardRef } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { View, Dimensions, Platform, ViewProps } from 'react-native';
 import { gridStyle, gridItemStyle } from './styles';
 import { cssInterop } from 'nativewind';
-import {
-  useBreakpointValue,
-  getBreakPointValue,
-} from '@gluestack-ui/utils/hooks';
+import { useBreakpointValue, getBreakPointValue } from '@gluestack-ui/utils/hooks';
 const { width: DEVICE_WIDTH } = Dimensions.get('window');
 const GridContext = createContext<any>({});
 function arrangeChildrenIntoRows({
@@ -40,9 +31,7 @@ function arrangeChildrenIntoRows({
       // if current row is not full, add colSpan to current row
       currentRowTotalColSpan += colSpan;
     }
-    rowItemsCount[currentRow] = rowItemsCount[currentRow]
-      ? [...rowItemsCount[currentRow], i]
-      : [i];
+    rowItemsCount[currentRow] = rowItemsCount[currentRow] ? [...rowItemsCount[currentRow], i] : [i];
   }
   return rowItemsCount;
 }
@@ -64,11 +53,7 @@ function generateResponsiveNumColumns({ gridClass }: { gridClass: string }) {
   });
   return result;
 }
-function generateResponsiveColSpans({
-  gridItemClassName,
-}: {
-  gridItemClassName: string;
-}) {
+function generateResponsiveColSpans({ gridItemClassName }: { gridItemClassName: string }) {
   const gridClassNamePattern = /\b(?:\w+:)?col-span-?\d+\b/g;
   const colSpan: any = gridItemClassName?.match(gridClassNamePattern);
   if (!colSpan) {
@@ -104,83 +89,79 @@ type IGridProps = ViewProps &
       className: string;
     };
   };
-const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(
-  function Grid({ className, _extra, children, ...props }, ref) {
-    const [calculatedWidth, setCalculatedWidth] = useState<number | null>(null);
-    const gridClass = _extra?.className;
-    const obj = generateResponsiveNumColumns({ gridClass });
-    const responsiveNumColumns: any = useBreakpointValue(obj);
-    const itemsPerRow = useMemo(() => {
-      // get the colSpan of each child
-      const colSpanArr = React.Children.map(children, (child: any) => {
-        const gridItemClassName = child?.props?._extra?.className;
-        const colSpan2 = getBreakPointValue(
-          generateResponsiveColSpans({ gridItemClassName }),
-          DEVICE_WIDTH
-        );
-        const colSpan = colSpan2 ? colSpan2 : 1;
-        if (colSpan > responsiveNumColumns) {
-          return responsiveNumColumns;
-        }
-        return colSpan;
-      });
-      const childrenArray = React.Children.toArray(children);
-      const rowItemsCount = arrangeChildrenIntoRows({
-        childrenArray,
-        colSpanArr,
-        numColumns: responsiveNumColumns,
-      });
-      return rowItemsCount;
-    }, [responsiveNumColumns, children]);
-    const childrenWithProps = React.Children.map(children, (child, index) => {
-      if (React.isValidElement(child)) {
-        return React.cloneElement(child, { key: index, index: index } as any);
+const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(function Grid(
+  { className, _extra, children, ...props },
+  ref,
+) {
+  const [calculatedWidth, setCalculatedWidth] = useState<number | null>(null);
+  const gridClass = _extra?.className;
+  const obj = generateResponsiveNumColumns({ gridClass });
+  const responsiveNumColumns: any = useBreakpointValue(obj);
+  const itemsPerRow = useMemo(() => {
+    // get the colSpan of each child
+    const colSpanArr = React.Children.map(children, (child: any) => {
+      const gridItemClassName = child?.props?._extra?.className;
+      const colSpan2 = getBreakPointValue(generateResponsiveColSpans({ gridItemClassName }), DEVICE_WIDTH);
+      const colSpan = colSpan2 ? colSpan2 : 1;
+      if (colSpan > responsiveNumColumns) {
+        return responsiveNumColumns;
       }
-      return child;
+      return colSpan;
     });
-    const gridClassMerged = `${Platform.select({
-      web: gridClass ?? '',
-    })}`;
-    const contextValue = useMemo(() => {
-      return {
-        calculatedWidth,
-        numColumns: responsiveNumColumns,
-        itemsPerRow,
-        flexDirection: props?.flexDirection || 'row',
-        gap: props?.gap || 0,
-        columnGap: props?.columnGap || 0,
-      };
-    }, [calculatedWidth, itemsPerRow, responsiveNumColumns, props]);
-    const borderLeftWidth = props?.borderLeftWidth || props?.borderWidth || 0;
-    const borderRightWidth = props?.borderRightWidth || props?.borderWidth || 0;
-    const borderWidthToSubtract = borderLeftWidth + borderRightWidth;
-    return (
-      <GridContext.Provider value={contextValue}>
-        <View
-          ref={ref}
-          className={gridStyle({
-            class: className + ' ' + gridClassMerged,
-          })}
-          onLayout={(event) => {
-            const paddingLeftToSubtract =
-              props?.paddingStart || props?.paddingLeft || props?.padding || 0;
-            const paddingRightToSubtract =
-              props?.paddingEnd || props?.paddingRight || props?.padding || 0;
-            const gridWidth =
-              Math.floor(event.nativeEvent.layout.width) -
-              paddingLeftToSubtract -
-              paddingRightToSubtract -
-              borderWidthToSubtract;
-            setCalculatedWidth(gridWidth);
-          }}
-          {...props}
-        >
-          {calculatedWidth && childrenWithProps}
-        </View>
-      </GridContext.Provider>
-    );
-  }
-);
+    const childrenArray = React.Children.toArray(children);
+    const rowItemsCount = arrangeChildrenIntoRows({
+      childrenArray,
+      colSpanArr,
+      numColumns: responsiveNumColumns,
+    });
+    return rowItemsCount;
+  }, [responsiveNumColumns, children]);
+  const childrenWithProps = React.Children.map(children, (child, index) => {
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, { key: index, index: index } as any);
+    }
+    return child;
+  });
+  const gridClassMerged = `${Platform.select({
+    web: gridClass ?? '',
+  })}`;
+  const contextValue = useMemo(() => {
+    return {
+      calculatedWidth,
+      numColumns: responsiveNumColumns,
+      itemsPerRow,
+      flexDirection: props?.flexDirection || 'row',
+      gap: props?.gap || 0,
+      columnGap: props?.columnGap || 0,
+    };
+  }, [calculatedWidth, itemsPerRow, responsiveNumColumns, props]);
+  const borderLeftWidth = props?.borderLeftWidth || props?.borderWidth || 0;
+  const borderRightWidth = props?.borderRightWidth || props?.borderWidth || 0;
+  const borderWidthToSubtract = borderLeftWidth + borderRightWidth;
+  return (
+    <GridContext.Provider value={contextValue}>
+      <View
+        ref={ref}
+        className={gridStyle({
+          class: className + ' ' + gridClassMerged,
+        })}
+        onLayout={(event) => {
+          const paddingLeftToSubtract = props?.paddingStart || props?.paddingLeft || props?.padding || 0;
+          const paddingRightToSubtract = props?.paddingEnd || props?.paddingRight || props?.padding || 0;
+          const gridWidth =
+            Math.floor(event.nativeEvent.layout.width) -
+            paddingLeftToSubtract -
+            paddingRightToSubtract -
+            borderWidthToSubtract;
+          setCalculatedWidth(gridWidth);
+        }}
+        {...props}
+      >
+        {calculatedWidth && childrenWithProps}
+      </View>
+    </GridContext.Provider>
+  );
+});
 cssInterop(Grid, {
   className: {
     target: 'style',
@@ -207,77 +188,59 @@ type IGridItemProps = ViewProps &
       className: string;
     };
   };
-const GridItem = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(
-  function GridItem({ className, _extra, ...props }, ref) {
-    const {
-      calculatedWidth,
-      numColumns,
-      itemsPerRow,
-      flexDirection,
-      gap,
-      columnGap,
-    } = useContext(GridContext);
-    const gridItemClass = _extra?.className;
-    const responsiveColSpan = (useBreakpointValue(
-      generateResponsiveColSpans({ gridItemClassName: gridItemClass })
-    ) ?? 1) as number;
-    const flexBasisValue = useMemo(() => {
-      if (!calculatedWidth || !numColumns || responsiveColSpan <= 0) {
-        return 'auto';
-      }
-      if (flexDirection?.includes('column')) {
-        return 'auto';
-      }
-      // Find which row this item is in
-      const row = Object.keys(itemsPerRow).find((key) => {
-        return itemsPerRow[key].includes(props?.index);
-      });
-      if (!row) {
-        return 'auto';
-      }
-      const rowColsCount = itemsPerRow[row]?.length || 1;
-      const space = columnGap || gap || 0;
-      // Calculate available width accounting for gaps
-      const totalGapWidth = space * (rowColsCount - 1);
-      const availableWidth = calculatedWidth - totalGapWidth;
-      // Calculate the width for this item based on its column span
-      const itemWidth = (availableWidth * responsiveColSpan) / numColumns;
-      // Return the width directly instead of percentage for better native compatibility
-      return Math.max(0, Math.floor(itemWidth));
-    }, [
-      calculatedWidth,
-      responsiveColSpan,
-      numColumns,
-      columnGap,
-      gap,
-      flexDirection,
-      itemsPerRow,
-      props?.index,
-    ]);
-    return (
-      <View
-        ref={ref}
-        // @ts-expect-error : internal implementation for r-19/react-native-web
-        gridItemClass={gridItemClass}
-        className={gridItemStyle({
-          class: className,
-        })}
-        {...props}
-        style={[
-          {
-            width:
-              typeof flexBasisValue === 'number' ? flexBasisValue : undefined,
-            flexBasis:
-              typeof flexBasisValue === 'string' ? flexBasisValue : undefined,
-            flexShrink: 0,
-            flexGrow: 0,
-          },
-          props.style,
-        ]}
-      />
-    );
-  }
-);
+const GridItem = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(function GridItem(
+  { className, _extra, ...props },
+  ref,
+) {
+  const { calculatedWidth, numColumns, itemsPerRow, flexDirection, gap, columnGap } = useContext(GridContext);
+  const gridItemClass = _extra?.className;
+  const responsiveColSpan = (useBreakpointValue(generateResponsiveColSpans({ gridItemClassName: gridItemClass })) ??
+    1) as number;
+  const flexBasisValue = useMemo(() => {
+    if (!calculatedWidth || !numColumns || responsiveColSpan <= 0) {
+      return 'auto';
+    }
+    if (flexDirection?.includes('column')) {
+      return 'auto';
+    }
+    // Find which row this item is in
+    const row = Object.keys(itemsPerRow).find((key) => {
+      return itemsPerRow[key].includes(props?.index);
+    });
+    if (!row) {
+      return 'auto';
+    }
+    const rowColsCount = itemsPerRow[row]?.length || 1;
+    const space = columnGap || gap || 0;
+    // Calculate available width accounting for gaps
+    const totalGapWidth = space * (rowColsCount - 1);
+    const availableWidth = calculatedWidth - totalGapWidth;
+    // Calculate the width for this item based on its column span
+    const itemWidth = (availableWidth * responsiveColSpan) / numColumns;
+    // Return the width directly instead of percentage for better native compatibility
+    return Math.max(0, Math.floor(itemWidth));
+  }, [calculatedWidth, responsiveColSpan, numColumns, columnGap, gap, flexDirection, itemsPerRow, props?.index]);
+  return (
+    <View
+      ref={ref}
+      // @ts-expect-error : internal implementation for r-19/react-native-web
+      gridItemClass={gridItemClass}
+      className={gridItemStyle({
+        class: className,
+      })}
+      {...props}
+      style={[
+        {
+          width: typeof flexBasisValue === 'number' ? flexBasisValue : undefined,
+          flexBasis: typeof flexBasisValue === 'string' ? flexBasisValue : undefined,
+          flexShrink: 0,
+          flexGrow: 0,
+        },
+        props.style,
+      ]}
+    />
+  );
+});
 Grid.displayName = 'Grid';
 GridItem.displayName = 'GridItem';
 export { Grid, GridItem };

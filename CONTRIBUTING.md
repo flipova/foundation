@@ -19,28 +19,28 @@ keeps `npm run flow` usable in a pipe and in CI.
 
 You make four decisions. Everything else is the tool's problem.
 
-| You decide | Flow asks you for |
-| --- | --- |
-| what the issue is | a title, and a template (`feature`, `bug`, `chore`, or blank) |
-| whether this is a release, and which bump | `major`, `minor`, `patch`, or `none` |
-| what the change says | one line, which becomes the changelog entry |
-| the commit subject | one line |
+| You decide                                | Flow asks you for                                             |
+| ----------------------------------------- | ------------------------------------------------------------- |
+| what the issue is                         | a title, and a template (`feature`, `bug`, `chore`, or blank) |
+| whether this is a release, and which bump | `major`, `minor`, `patch`, or `none`                          |
+| what the change says                      | one line, which becomes the changelog entry                   |
+| the commit subject                        | one line                                                      |
 
 The `Issues:` trailer, the `Closes #n` line, the branch, the version file, the
 labels - all generated, never typed.
 
 ## The eight steps
 
-| # | Step | What happens |
-| --- | --- | --- |
-| 1 | `issue` | declares `.github/issues/<id>.yml` locally, from a template or blank. Or `link` adopts an issue that already exists on GitHub. |
-| 2 | `release` | you pick the bump and the summary; flow writes `.github/flow/release.yml` and generates `.changeset/release.md` from it |
-| 3 | `branch` | creates and switches to a branch off `main`, carrying any issue declared on `main` with it |
-| 4 | `verify` | changeset drift, generated files against the registries, registry validation, types |
-| 5 | `commit` | `git add -A`, then a commit whose subject you give and whose `Issues:` trailer flow derives |
-| 6 | `push` | pushes and sets the upstream |
-| 7 | `pr` | opens the pull request with the linked issues and the changelog entry as its body |
-| 8 | `link` | writes `Closes #n` into the pull request description, resolving the numbers for you |
+| #   | Step      | What happens                                                                                                                   |
+| --- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | `issue`   | declares `.github/issues/<id>.yml` locally, from a template or blank. Or `link` adopts an issue that already exists on GitHub. |
+| 2   | `release` | you pick the bump and the summary; flow writes `.github/flow/release.yml` and generates `.changeset/release.md` from it        |
+| 3   | `branch`  | creates and switches to a branch off `main`, carrying any issue declared on `main` with it                                     |
+| 4   | `verify`  | changeset drift, generated files against the registries, registry validation, types                                            |
+| 5   | `commit`  | `git add -A`, then a commit whose subject you give and whose `Issues:` trailer flow derives                                    |
+| 6   | `push`    | pushes and sets the upstream                                                                                                   |
+| 7   | `pr`      | opens the pull request with the linked issues and the changelog entry as its body                                              |
+| 8   | `link`    | writes `Closes #n` into the pull request description, resolving the numbers for you                                            |
 
 Steps 1 to 3 happen before you write code. Do the work. Run `npm run flow` again:
 it picks up at step 4, because the first three are already recorded for the
@@ -97,7 +97,7 @@ release.md            declares the bump        gate: "## <version>" is in CHANGE
                       opens the version PR
 ```
 
-Nothing publishes from an ordinary commit, and a run that decides *not* to
+Nothing publishes from an ordinary commit, and a run that decides _not_ to
 publish still ends green. Which of those places the chain is at is one command:
 
 ```bash
@@ -146,7 +146,7 @@ a surprising message is recognisable.
   description and the paths that trigger it. `.github/labeler.yml` is generated
   from it and checked for drift. Edit the first, never the second.
 - **The version PR.** Merging into `main` opens `chore: version packages`;
-  merging *that* publishes. Nothing publishes from an ordinary commit.
+  merging _that_ publishes. Nothing publishes from an ordinary commit.
 - **Generated files.** Never hand-edit them. `flow verify` fails if they drift
   from the registries.
 
@@ -183,14 +183,14 @@ npm run flow -- pr --title "..." && npm run flow -- link
 `type(scope): description`. The type tells a reader what kind of change this is,
 and it usually matches the bump you chose.
 
-| Type | Bump | Use when |
-| --- | --- | --- |
-| `feat` | `minor` | new capability |
-| `feat!` | `major` | breaking change to the public API |
-| `fix` | `patch` | bug fix |
-| `docs` | `none` | documentation |
-| `refactor` | `none` | restructuring, no behaviour change |
-| `chore` | `none` | tooling and maintenance |
+| Type       | Bump    | Use when                           |
+| ---------- | ------- | ---------------------------------- |
+| `feat`     | `minor` | new capability                     |
+| `feat!`    | `major` | breaking change to the public API  |
+| `fix`      | `patch` | bug fix                            |
+| `docs`     | `none`  | documentation                      |
+| `refactor` | `none`  | restructuring, no behaviour change |
+| `chore`    | `none`  | tooling and maintenance            |
 
 ## Working in this repository
 
@@ -285,12 +285,12 @@ ends in a wall of npm output.
 Two modes, chosen by whether the `NPM_PUBLISH_TOKEN` secret exists. No
 configuration change is needed to move between them.
 
-| | `oidc` — trusted publishing | `token` — the secret |
-| --- | --- | --- |
-| selected when | no `NPM_PUBLISH_TOKEN` secret | the secret is set |
-| credential | GitHub signs an OIDC token, npm exchanges it for a short-lived one | a long-lived npm token |
-| `npm whoami` / `npm access` in the preflight | skipped — npm says they are not a check | run |
-| npm CLI on the runner | upgraded to `latest` | as shipped with Node |
+|                                              | `oidc` — trusted publishing                                        | `token` — the secret   |
+| -------------------------------------------- | ------------------------------------------------------------------ | ---------------------- |
+| selected when                                | no `NPM_PUBLISH_TOKEN` secret                                      | the secret is set      |
+| credential                                   | GitHub signs an OIDC token, npm exchanges it for a short-lived one | a long-lived npm token |
+| `npm whoami` / `npm access` in the preflight | skipped — npm says they are not a check                            | run                    |
+| npm CLI on the runner                        | upgraded to `latest`                                               | as shipped with Node   |
 
 To switch to trusted publishing:
 
@@ -336,7 +336,7 @@ and a table of publish errors - is in [`.github/RELEASING.md`](.github/RELEASING
 
 `flow` moves a cycle forward and never looks back: it declares the issue, cuts
 the branch, commits, pushes, opens the pull request, and finally deletes the
-branches whose work reached `main`. Everything the cycle leaves *around* itself
+branches whose work reached `main`. Everything the cycle leaves _around_ itself
 is nobody's job. `maintain` is that job.
 
 ```bash
@@ -381,31 +381,31 @@ publishes.
 
 ## Command reference
 
-| Command | Does |
-| --- | --- |
-| `npm run flow` | the menu: a dashboard, then the cycle one step at a time |
-| `npm run flow status` | branch, issue, release, npm, working tree, pull request |
-| `npm run flow verify` | changeset, generated files, registries, types |
-| `npm run flow -- issue list` | the registry and its GitHub numbers |
-| `npm run flow -- issue new` | declare an issue locally |
-| `npm run flow -- issue link <n>` | adopt an existing GitHub issue |
-| `npm run flow -- issue sync` | create/update the declared issues on GitHub |
-| `npm run flow -- issue check` | read-only verification (run by CI) |
-| `npm run flow -- issue archive [id...]` | move closed issues to `.github/issues/archive/` |
-| `npm run flow -- release` | declare the bump and the summary |
-| `npm run flow -- release sync` | regenerate `.changeset/release.md` |
-| `npm run flow -- release reset` | end the cycle (also run by `version:bump`) |
-| `npm run flow -- release consolidate` | fold old changesets into the single one |
-| `npm run flow -- release check` | drift between the declaration and the changeset (CI) |
-| `npm run flow -- release status` | does npm have this version? what did Release decide? |
-| `npm run flow -- branch [name]` | create and switch |
-| `npm run flow -- commit` | commit with the `Issues:` trailer |
-| `npm run flow -- push` | push and set the upstream |
-| `npm run flow -- pr [title]` | open the pull request |
-| `npm run flow -- link [pr]` | write `Closes #n` into the pull request |
-| `flow maintain [list\|fix\|issues\|prs\|branches]` | what has accumulated, and `fix` applies what it may |
-| `npm run maintain list` | the same inventory, for a shell that does not know `flow` |
-| `flow labels [--list\|--check\|--sync-labeler\|--create]` | the label registry and the labeler generated from it |
+| Command                                                   | Does                                                      |
+| --------------------------------------------------------- | --------------------------------------------------------- |
+| `npm run flow`                                            | the menu: a dashboard, then the cycle one step at a time  |
+| `npm run flow status`                                     | branch, issue, release, npm, working tree, pull request   |
+| `npm run flow verify`                                     | changeset, generated files, registries, types             |
+| `npm run flow -- issue list`                              | the registry and its GitHub numbers                       |
+| `npm run flow -- issue new`                               | declare an issue locally                                  |
+| `npm run flow -- issue link <n>`                          | adopt an existing GitHub issue                            |
+| `npm run flow -- issue sync`                              | create/update the declared issues on GitHub               |
+| `npm run flow -- issue check`                             | read-only verification (run by CI)                        |
+| `npm run flow -- issue archive [id...]`                   | move closed issues to `.github/issues/archive/`           |
+| `npm run flow -- release`                                 | declare the bump and the summary                          |
+| `npm run flow -- release sync`                            | regenerate `.changeset/release.md`                        |
+| `npm run flow -- release reset`                           | end the cycle (also run by `version:bump`)                |
+| `npm run flow -- release consolidate`                     | fold old changesets into the single one                   |
+| `npm run flow -- release check`                           | drift between the declaration and the changeset (CI)      |
+| `npm run flow -- release status`                          | does npm have this version? what did Release decide?      |
+| `npm run flow -- branch [name]`                           | create and switch                                         |
+| `npm run flow -- commit`                                  | commit with the `Issues:` trailer                         |
+| `npm run flow -- push`                                    | push and set the upstream                                 |
+| `npm run flow -- pr [title]`                              | open the pull request                                     |
+| `npm run flow -- link [pr]`                               | write `Closes #n` into the pull request                   |
+| `flow maintain [list\|fix\|issues\|prs\|branches]`        | what has accumulated, and `fix` applies what it may       |
+| `npm run maintain list`                                   | the same inventory, for a shell that does not know `flow` |
+| `flow labels [--list\|--check\|--sync-labeler\|--create]` | the label registry and the labeler generated from it      |
 
 Labels are managed separately, because they are maintenance rather than part of
 a cycle:

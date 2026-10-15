@@ -8,19 +8,8 @@ type IHeadingProps = VariantProps<typeof headingStyle> &
 
 const MappedHeading = memo(
   forwardRef<HTMLHeadingElement, IHeadingProps>(function MappedHeading(
-    {
-      size,
-      className,
-      isTruncated,
-      bold,
-      underline,
-      strikeThrough,
-      sub,
-      italic,
-      highlight,
-      ...props
-    },
-    ref
+    { size, className, isTruncated, bold, underline, strikeThrough, sub, italic, highlight, ...props },
+    ref,
   ) {
     switch (size) {
       case '5xl':
@@ -153,23 +142,15 @@ const MappedHeading = memo(
           />
         );
     }
-  })
+  }),
 );
 
 const Heading = memo(
   forwardRef<HTMLHeadingElement, IHeadingProps>(function Heading(
     { className, size = 'lg', as: AsComp, ...props },
-    ref
+    ref,
   ) {
-    const {
-      isTruncated,
-      bold,
-      underline,
-      strikeThrough,
-      sub,
-      italic,
-      highlight,
-    } = props;
+    const { isTruncated, bold, underline, strikeThrough, sub, italic, highlight } = props;
 
     if (AsComp) {
       return (
@@ -191,10 +172,8 @@ const Heading = memo(
       );
     }
 
-    return (
-      <MappedHeading className={className} size={size} ref={ref} {...props} />
-    );
-  })
+    return <MappedHeading className={className} size={size} ref={ref} {...props} />;
+  }),
 );
 
 Heading.displayName = 'Heading';

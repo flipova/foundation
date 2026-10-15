@@ -70,7 +70,20 @@ export function DateTimePickerProvider({
       isOpen,
       setIsOpen,
     }),
-    [value, onChange, mode, minimumDate, maximumDate, locale, timeZoneOffsetInMinutes, is24Hour, disabled, placeholder, format, isOpen]
+    [
+      value,
+      onChange,
+      mode,
+      minimumDate,
+      maximumDate,
+      locale,
+      timeZoneOffsetInMinutes,
+      is24Hour,
+      disabled,
+      placeholder,
+      format,
+      isOpen,
+    ],
   );
 
   return <DateTimePickerContext.Provider value={contextValue}>{children}</DateTimePickerContext.Provider>;

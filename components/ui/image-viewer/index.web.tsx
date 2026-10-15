@@ -79,79 +79,67 @@ const useImageViewerContext = () => {
 };
 
 // Main ImageViewer Component
-const ImageViewer = React.forwardRef<HTMLDivElement, ImageViewerProps>(
-  function ImageViewer(
-    {
+const ImageViewer = React.forwardRef<HTMLDivElement, ImageViewerProps>(function ImageViewer(
+  { images, defaultOpen = false, isOpen: controlledIsOpen, onOpenChange, onIndexChange, initialIndex = 0, children },
+  ref,
+) {
+  const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(defaultOpen);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  const isControlled = controlledIsOpen !== undefined;
+  const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen;
+
+  useEffect(() => {
+    onIndexChange?.(currentIndex);
+  }, [currentIndex, onIndexChange]);
+
+  const open = useCallback(() => {
+    if (!isControlled) {
+      setUncontrolledIsOpen(true);
+    }
+    onOpenChange?.(true);
+  }, [isControlled, onOpenChange]);
+
+  const close = useCallback(() => {
+    if (!isControlled) {
+      setUncontrolledIsOpen(false);
+    }
+    onOpenChange?.(false);
+  }, [isControlled, onOpenChange]);
+
+  const goNext = useCallback(() => {
+    setCurrentIndex((prev) => Math.min(prev + 1, images.length - 1));
+  }, [images.length]);
+
+  const goPrevious = useCallback(() => {
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
+  }, []);
+
+  const contextValue = React.useMemo(
+    () => ({
       images,
-      defaultOpen = false,
-      isOpen: controlledIsOpen,
-      onOpenChange,
-      onIndexChange,
-      initialIndex = 0,
-      children,
-    },
-    ref
-  ) {
-    const [uncontrolledIsOpen, setUncontrolledIsOpen] = useState(defaultOpen);
-    const [currentIndex, setCurrentIndex] = useState(initialIndex);
+      currentIndex,
+      isOpen,
+      open,
+      close,
+      goNext,
+      goPrevious,
+    }),
+    [images, currentIndex, isOpen, open, close, goNext, goPrevious],
+  );
 
-    const isControlled = controlledIsOpen !== undefined;
-    const isOpen = isControlled ? controlledIsOpen : uncontrolledIsOpen;
-
-    useEffect(() => {
-      onIndexChange?.(currentIndex);
-    }, [currentIndex, onIndexChange]);
-
-    const open = useCallback(() => {
-      if (!isControlled) {
-        setUncontrolledIsOpen(true);
-      }
-      onOpenChange?.(true);
-    }, [isControlled, onOpenChange]);
-
-    const close = useCallback(() => {
-      if (!isControlled) {
-        setUncontrolledIsOpen(false);
-      }
-      onOpenChange?.(false);
-    }, [isControlled, onOpenChange]);
-
-    const goNext = useCallback(() => {
-      setCurrentIndex((prev) => Math.min(prev + 1, images.length - 1));
-    }, [images.length]);
-
-    const goPrevious = useCallback(() => {
-      setCurrentIndex((prev) => Math.max(prev - 1, 0));
-    }, []);
-
-    const contextValue = React.useMemo(
-      () => ({
-        images,
-        currentIndex,
-        isOpen,
-        open,
-        close,
-        goNext,
-        goPrevious,
-      }),
-      [images, currentIndex, isOpen, open, close, goNext, goPrevious]
-    );
-
-    return (
-      <div ref={ref} className="w-full">
-        <ImageViewerContext.Provider value={contextValue}>
-          {children}
-        </ImageViewerContext.Provider>
-      </div>
-    );
-  }
-);
+  return (
+    <div ref={ref} className="w-full">
+      <ImageViewerContext.Provider value={contextValue}>{children}</ImageViewerContext.Provider>
+    </div>
+  );
+});
 
 // Trigger Component
-const ImageViewerTrigger = React.forwardRef<
-  HTMLDivElement,
-  ImageViewerTriggerProps
->(function ImageViewerTrigger({ children, onPress, ...props }, ref) {
+const ImageViewerTrigger = React.forwardRef<HTMLDivElement, ImageViewerTriggerProps>(function ImageViewerTrigger(
+  { children, onPress, ...props },
+  ref,
+) {
   const { open } = useImageViewerContext();
 
   const handlePress = useCallback(() => {
@@ -168,10 +156,10 @@ const ImageViewerTrigger = React.forwardRef<
 
 // Content Component (Uses gluestack Overlay for proper portal rendering)
 // Context provider is placed INSIDE the Overlay so portaled content has access
-const ImageViewerContent = React.forwardRef<
-  HTMLDivElement,
-  { children?: React.ReactNode }
->(function ImageViewerContent({ children }, ref) {
+const ImageViewerContent = React.forwardRef<HTMLDivElement, { children?: React.ReactNode }>(function ImageViewerContent(
+  { children },
+  ref,
+) {
   const context = useImageViewerContext();
   const { images, currentIndex, isOpen, close, goNext, goPrevious } = context;
   const currentImage = images[currentIndex];
@@ -196,11 +184,7 @@ const ImageViewerContent = React.forwardRef<
   }, [isOpen, close, goNext, goPrevious]);
 
   return (
-    <Overlay
-      isOpen={isOpen}
-      onRequestClose={close}
-      isKeyboardDismissable={true}
-    >
+    <Overlay isOpen={isOpen} onRequestClose={close} isKeyboardDismissable={true}>
       <ImageViewerContext.Provider value={context}>
         <div className={imageViewerModalStyle({})}>
           <div ref={ref} className={imageViewerContentStyle({})}>
@@ -220,30 +204,29 @@ const ImageViewerContent = React.forwardRef<
 });
 
 // Close Button Component
-const ImageViewerCloseButton = React.forwardRef<
-  HTMLButtonElement,
-  { className?: string }
->(function ImageViewerCloseButton({ className, ...props }, ref) {
-  const { close } = useImageViewerContext();
+const ImageViewerCloseButton = React.forwardRef<HTMLButtonElement, { className?: string }>(
+  function ImageViewerCloseButton({ className, ...props }, ref) {
+    const { close } = useImageViewerContext();
 
-  return (
-    <button
-      ref={ref}
-      onClick={close}
-      className={imageViewerCloseButtonStyle({ class: className })}
-      aria-label="Close image viewer"
-      {...props}
-    >
-      ✕
-    </button>
-  );
-});
+    return (
+      <button
+        ref={ref}
+        onClick={close}
+        className={imageViewerCloseButtonStyle({ class: className })}
+        aria-label="Close image viewer"
+        {...props}
+      >
+        ✕
+      </button>
+    );
+  },
+);
 
 // Navigation Component
-const ImageViewerNavigation = React.forwardRef<
-  HTMLDivElement,
-  { className?: string }
->(function ImageViewerNavigation({ className }, ref) {
+const ImageViewerNavigation = React.forwardRef<HTMLDivElement, { className?: string }>(function ImageViewerNavigation(
+  { className },
+  ref,
+) {
   const { goPrevious, goNext, currentIndex, images } = useImageViewerContext();
 
   const canGoPrevious = currentIndex > 0;
@@ -252,21 +235,13 @@ const ImageViewerNavigation = React.forwardRef<
   return (
     <div ref={ref} className={imageViewerNavigationStyle({ class: className })}>
       {canGoPrevious && (
-        <button
-          onClick={goPrevious}
-          className={imageViewerNavButtonStyle({})}
-          aria-label="Previous image"
-        >
+        <button onClick={goPrevious} className={imageViewerNavButtonStyle({})} aria-label="Previous image">
           ‹
         </button>
       )}
       <div className="flex-1" />
       {canGoNext && (
-        <button
-          onClick={goNext}
-          className={imageViewerNavButtonStyle({})}
-          aria-label="Next image"
-        >
+        <button onClick={goNext} className={imageViewerNavButtonStyle({})} aria-label="Next image">
           ›
         </button>
       )}
@@ -275,10 +250,10 @@ const ImageViewerNavigation = React.forwardRef<
 });
 
 // Counter Component
-const ImageViewerCounter = React.forwardRef<
-  HTMLDivElement,
-  { className?: string }
->(function ImageViewerCounter({ className }, ref) {
+const ImageViewerCounter = React.forwardRef<HTMLDivElement, { className?: string }>(function ImageViewerCounter(
+  { className },
+  ref,
+) {
   const { currentIndex, images } = useImageViewerContext();
 
   return (

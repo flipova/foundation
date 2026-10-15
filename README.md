@@ -11,8 +11,9 @@ registry-driven theming pipeline.
 The design pipeline has a single function:
 
 > **`design/tokens.xml` + `design/themes.xml`**
-> * -> `components/ui/gluestack-ui-provider/config.ts` (gluestack / nativewind colour vars)
-> * -> `components/ui/gluestack-ui-provider/tokens.js` (Tailwind/nativewind token theme)
+>
+> - -> `components/ui/gluestack-ui-provider/config.ts` (gluestack / nativewind colour vars)
+> - -> `components/ui/gluestack-ui-provider/tokens.js` (Tailwind/nativewind token theme)
 
 Role ids in `themes.xml` are the gluestack CSS variable names (dash-prefixed at
 generation time), so the design registry and the runtime theme config always
@@ -30,16 +31,16 @@ the Tailwind/nativewind theme.
 npm run design:pipeline   # gen + check + verify + lint + doc
 ```
 
-| Script | What it does |
-| :--- | :--- |
-| `npm run design:gen` | compile tokens/themes into `config.ts` + `tokens.js` |
-| `npm run design:gen:check` | verify regeneration is a no-op (drift check) |
-| `npm run design:check` | determinism rules + XSD pass + ruff |
-| `npm run design:verify` | verify the committed canonical index |
-| `npm run design:canonical` | re-emit `design/canonical.index.txt` |
-| `npm run design:lint` | XSD-validate every design XML |
-| `npm run design:doc` | regenerate the docs site (`docs/generated`) |
-| `npm run design:edit` | open the XSD-driven XML editor |
+| Script                     | What it does                                         |
+| :------------------------- | :--------------------------------------------------- |
+| `npm run design:gen`       | compile tokens/themes into `config.ts` + `tokens.js` |
+| `npm run design:gen:check` | verify regeneration is a no-op (drift check)         |
+| `npm run design:check`     | determinism rules + XSD pass + ruff                  |
+| `npm run design:verify`    | verify the committed canonical index                 |
+| `npm run design:canonical` | re-emit `design/canonical.index.txt`                 |
+| `npm run design:lint`      | XSD-validate every design XML                        |
+| `npm run design:doc`       | regenerate the docs site (`docs/generated`)          |
+| `npm run design:edit`      | open the XSD-driven XML editor                       |
 
 Never hand-edit the generated `config.ts`, `tokens.js` or `docs/generated/**` -
 the next run overwrites them. And never add a design value to
@@ -63,13 +64,13 @@ command only injects the app-level wiring that the package cannot own:
   `design:check`, `design:verify`, `design:canonical`, `design:doc`,
   `design:pipeline`).
 
-| Command | What it does |
-| :--- | :--- |
-| `npx flipova-design where` | print the resolved registries/artifacts paths |
-| `npx flipova-design inject` | re-run the injection only |
-| `npx flipova-design adopt` | copy the registries into the project and own them |
+| Command                            | What it does                                          |
+| :--------------------------------- | :---------------------------------------------------- |
+| `npx flipova-design where`         | print the resolved registries/artifacts paths         |
+| `npx flipova-design inject`        | re-run the injection only                             |
+| `npx flipova-design adopt`         | copy the registries into the project and own them     |
 | `npx flipova-design gen [--check]` | compile the registries into `config.ts` + `tokens.js` |
-| `npx flipova-design lint` | XSD-validate the registries |
+| `npx flipova-design lint`          | XSD-validate the registries                           |
 
 `gen` writes into the resolved output root, i.e. straight into the installed
 package (`node_modules/@flipova/foundation/components/ui/gluestack-ui-provider`),

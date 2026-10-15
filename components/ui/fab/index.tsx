@@ -3,10 +3,7 @@ import React from 'react';
 import { createFab } from '@gluestack-ui/core/fab/creator';
 import { Pressable, Text } from 'react-native';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
-import {
-  withStyleContext,
-  useStyleContext,
-} from '@gluestack-ui/utils/nativewind-utils';
+import { withStyleContext, useStyleContext } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { UIIcon } from '@gluestack-ui/core/icon/creator';
@@ -67,11 +64,9 @@ const fabLabelStyle = tva({
       true: 'line-through',
     },
     size: {
-
-      'sm': 'text-sm',
-      'md': 'text-base',
-      'lg': 'text-lg',
-
+      sm: 'text-sm',
+      md: 'text-base',
+      lg: 'text-lg',
     },
     sub: {
       true: 'text-xs',
@@ -96,49 +91,27 @@ const fabIconStyle = tva({
   base: 'text-primary-foreground/90 fill-none',
   variants: {
     size: {
-      'sm': 'h-3.5 w-3.5',
-      'md': 'h-4 w-4',
-      'lg': 'h-5 w-5',
+      sm: 'h-3.5 w-3.5',
+      md: 'h-4 w-4',
+      lg: 'h-5 w-5',
     },
   },
 });
 
-type IFabProps = Omit<React.ComponentPropsWithoutRef<typeof UIFab>, 'context'> &
-  VariantProps<typeof fabStyle>;
+type IFabProps = Omit<React.ComponentPropsWithoutRef<typeof UIFab>, 'context'> & VariantProps<typeof fabStyle>;
 
-const Fab = React.forwardRef<React.ComponentRef<typeof UIFab>, IFabProps>(
-  function Fab(
-    { size = 'md', placement = 'bottom right', className, ...props },
-    ref
-  ) {
-    return (
-      <UIFab
-        ref={ref}
-        {...props}
-        className={fabStyle({ size, placement, class: className })}
-        context={{ size }}
-      />
-    );
-  }
-);
+const Fab = React.forwardRef<React.ComponentRef<typeof UIFab>, IFabProps>(function Fab(
+  { size = 'md', placement = 'bottom right', className, ...props },
+  ref,
+) {
+  return <UIFab ref={ref} {...props} className={fabStyle({ size, placement, class: className })} context={{ size }} />;
+});
 
-type IFabLabelProps = React.ComponentPropsWithoutRef<typeof UIFab.Label> &
-  VariantProps<typeof fabLabelStyle>;
+type IFabLabelProps = React.ComponentPropsWithoutRef<typeof UIFab.Label> & VariantProps<typeof fabLabelStyle>;
 
-const FabLabel = React.forwardRef<
-  React.ComponentRef<typeof UIFab.Label>,
-  IFabLabelProps
->(function FabLabel(
-  {
-    size,
-    isTruncated = false,
-    bold = false,
-    underline = false,
-    strikeThrough = false,
-    className,
-    ...props
-  },
-  ref
+const FabLabel = React.forwardRef<React.ComponentRef<typeof UIFab.Label>, IFabLabelProps>(function FabLabel(
+  { size, isTruncated = false, bold = false, underline = false, strikeThrough = false, className, ...props },
+  ref,
 ) {
   const { size: parentSize } = useStyleContext(SCOPE);
   return (
@@ -166,32 +139,16 @@ type IFabIconProps = React.ComponentPropsWithoutRef<typeof UIFab.Icon> &
     width?: number;
   };
 
-const FabIcon = React.forwardRef<
-  React.ComponentRef<typeof UIFab.Icon>,
-  IFabIconProps
->(function FabIcon({ size, className, ...props }, ref) {
+const FabIcon = React.forwardRef<React.ComponentRef<typeof UIFab.Icon>, IFabIconProps>(function FabIcon(
+  { size, className, ...props },
+  ref,
+) {
   const { size: parentSize } = useStyleContext(SCOPE);
 
   if (typeof size === 'number') {
-    return (
-      <UIFab.Icon
-        ref={ref}
-        {...props}
-        className={fabIconStyle({ class: className })}
-        size={size}
-      />
-    );
-  } else if (
-    (props.height !== undefined || props.width !== undefined) &&
-    size === undefined
-  ) {
-    return (
-      <UIFab.Icon
-        ref={ref}
-        {...props}
-        className={fabIconStyle({ class: className })}
-      />
-    );
+    return <UIFab.Icon ref={ref} {...props} className={fabIconStyle({ class: className })} size={size} />;
+  } else if ((props.height !== undefined || props.width !== undefined) && size === undefined) {
+    return <UIFab.Icon ref={ref} {...props} className={fabIconStyle({ class: className })} />;
   }
   return (
     <UIFab.Icon

@@ -54,7 +54,7 @@ export function createTabs({
 }: CreateTabsConfig) {
   const Tabs = React.forwardRef<any, any>(function Tabs(
     { value, defaultValue, onValueChange, orientation = 'horizontal', children, ...props },
-    ref
+    ref,
   ) {
     const [uncontrolledKey, setUncontrolledKey] = React.useState<string | undefined>(defaultValue);
     const selectedKey = value !== undefined ? value : uncontrolledKey;
@@ -69,18 +69,24 @@ export function createTabs({
         if (value === undefined) setUncontrolledKey(key);
         onValueChange?.(key);
       },
-      [value, onValueChange]
+      [value, onValueChange],
     );
 
-    const registerTriggerLayout = React.useCallback((key: string, layout: LayoutData) => {
-      triggerLayouts.set(key, layout);
-      forceRender();
-    }, [triggerLayouts]);
+    const registerTriggerLayout = React.useCallback(
+      (key: string, layout: LayoutData) => {
+        triggerLayouts.set(key, layout);
+        forceRender();
+      },
+      [triggerLayouts],
+    );
 
-    const registerContentLayout = React.useCallback((key: string, layout: LayoutData) => {
-      contentLayouts.set(key, layout);
-      forceRender();
-    }, [contentLayouts]);
+    const registerContentLayout = React.useCallback(
+      (key: string, layout: LayoutData) => {
+        contentLayouts.set(key, layout);
+        forceRender();
+      },
+      [contentLayouts],
+    );
 
     const contextValue = React.useMemo<TabsContextValue>(
       () => ({
@@ -95,7 +101,16 @@ export function createTabs({
         registerTriggerLayout,
         registerContentLayout,
       }),
-      [orientation, selectedKey, setSelectedKey, scrollOffset, triggerLayouts, contentLayouts, registerTriggerLayout, registerContentLayout]
+      [
+        orientation,
+        selectedKey,
+        setSelectedKey,
+        scrollOffset,
+        triggerLayouts,
+        contentLayouts,
+        registerTriggerLayout,
+        registerContentLayout,
+      ],
     );
 
     return (
@@ -117,7 +132,7 @@ export function createTabs({
 
   const TabsTriggerBase = React.forwardRef<any, any>(function TabsTriggerBase(
     { value, disabled, onPress, onLayout, ...props },
-    ref
+    ref,
   ) {
     const context = React.useContext(TabsContext);
     const isSelected = context?.selectedKey === value;
@@ -128,7 +143,7 @@ export function createTabs({
         context?.registerTriggerLayout(value, { x, y, width, height });
         onLayout?.(event);
       },
-      [context, value, onLayout]
+      [context, value, onLayout],
     );
 
     const handlePress = React.useCallback(
@@ -136,7 +151,7 @@ export function createTabs({
         if (!disabled) context?.setSelectedKey(value);
         onPress?.(event);
       },
-      [context, disabled, value, onPress]
+      [context, disabled, value, onPress],
     );
 
     return (
@@ -153,7 +168,7 @@ export function createTabs({
 
   const TabsContentBase = React.forwardRef<any, any>(function TabsContentBase(
     { value, style, onLayout, ...props },
-    ref
+    ref,
   ) {
     const context = React.useContext(TabsContext);
     const isSelected = context?.selectedKey === value;
@@ -164,17 +179,10 @@ export function createTabs({
         context?.registerContentLayout(value, { x, y, width, height });
         onLayout?.(event);
       },
-      [context, value, onLayout]
+      [context, value, onLayout],
     );
 
-    return (
-      <Content
-        ref={ref}
-        onLayout={handleLayout}
-        style={[style, !isSelected && { display: 'none' }]}
-        {...props}
-      />
-    );
+    return <Content ref={ref} onLayout={handleLayout} style={[style, !isSelected && { display: 'none' }]} {...props} />;
   });
 
   const TabsContentWrapperBase = React.forwardRef<any, any>(function TabsContentWrapperBase(props, ref) {

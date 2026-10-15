@@ -48,15 +48,27 @@ export interface ICalendarProps {
 const DAY_MS = 86400000;
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_LABELS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 function stripTime(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 function isSameDay(a?: Date, b?: Date) {
-  return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
+  );
 }
 function startOfMonthDate(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -96,7 +108,10 @@ function getWeekNumber(date: Date) {
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
   return Math.ceil(((d.getTime() - yearStart.getTime()) / DAY_MS + 1) / 7);
 }
-function isDateDisabled(date: Date, props: Pick<ICalendarProps, 'minimumDate' | 'maximumDate' | 'disabledDates' | 'disabled'>) {
+function isDateDisabled(
+  date: Date,
+  props: Pick<ICalendarProps, 'minimumDate' | 'maximumDate' | 'disabledDates' | 'disabled'>,
+) {
   if (props.disabled) return true;
   if (props.minimumDate && stripTime(date) < stripTime(props.minimumDate)) return true;
   if (props.maximumDate && stripTime(date) > stripTime(props.maximumDate)) return true;
@@ -129,8 +144,22 @@ export interface CreateCalendarConfig {
 
 export function createCalendar(slots: CreateCalendarConfig) {
   const {
-    Root, Header, HeaderPrevButton, HeaderNextButton, HeaderMonthSelect, HeaderYearSelect,
-    WeekDaysHeader, WeekDay, Body, Grid, Week, Day, DayText, DayIndicator, WeekNumber, Footer,
+    Root,
+    Header,
+    HeaderPrevButton,
+    HeaderNextButton,
+    HeaderMonthSelect,
+    HeaderYearSelect,
+    WeekDaysHeader,
+    WeekDay,
+    Body,
+    Grid,
+    Week,
+    Day,
+    DayText,
+    DayIndicator,
+    WeekNumber,
+    Footer,
   } = slots;
 
   const Calendar = React.forwardRef<any, ICalendarProps & { className?: string }>(function Calendar(props, ref) {
@@ -162,7 +191,8 @@ export function createCalendar(slots: CreateCalendarConfig) {
       if (defaultMonth) return startOfMonthDate(defaultMonth);
       if (mode === 'single' && currentValue instanceof Date) return startOfMonthDate(currentValue);
       if (mode === 'range' && currentValue?.from) return startOfMonthDate(currentValue.from);
-      if (mode === 'multiple' && Array.isArray(currentValue) && currentValue[0]) return startOfMonthDate(currentValue[0]);
+      if (mode === 'multiple' && Array.isArray(currentValue) && currentValue[0])
+        return startOfMonthDate(currentValue[0]);
       return startOfMonthDate(new Date());
     });
     const displayedMonth = controlledMonth ? startOfMonthDate(controlledMonth) : uncontrolledMonth;
@@ -172,7 +202,7 @@ export function createCalendar(slots: CreateCalendarConfig) {
         if (!controlledMonth) setUncontrolledMonth(next);
         onMonthChange?.(next);
       },
-      [controlledMonth, onMonthChange]
+      [controlledMonth, onMonthChange],
     );
 
     const setValue = React.useCallback(
@@ -180,7 +210,7 @@ export function createCalendar(slots: CreateCalendarConfig) {
         if (value === undefined) setUncontrolledValue(next);
         onValueChange?.(next);
       },
-      [value, onValueChange]
+      [value, onValueChange],
     );
 
     const handleDayPress = React.useCallback(
@@ -204,13 +234,13 @@ export function createCalendar(slots: CreateCalendarConfig) {
           setValue(date);
         }
       },
-      [mode, currentValue, setValue, minimumDate, maximumDate, disabledDates, disabled]
+      [mode, currentValue, setValue, minimumDate, maximumDate, disabledDates, disabled],
     );
 
     const weeks = React.useMemo(() => buildMonthGrid(displayedMonth, weekStartsOn), [displayedMonth, weekStartsOn]);
     const weekDayLabels = React.useMemo(
       () => Array.from({ length: 7 }, (_, i) => WEEKDAY_LABELS[(weekStartsOn + i) % 7]),
-      [weekStartsOn]
+      [weekStartsOn],
     );
     const today = React.useMemo(() => new Date(), []);
 
@@ -241,11 +271,19 @@ export function createCalendar(slots: CreateCalendarConfig) {
           const isRangeStart = !!range?.from && isSameDay(date, range.from);
           const isRangeEnd = !!range?.to && isSameDay(date, range.to);
           const isInRange = !!range?.from && !!range?.to && date > stripTime(range.from) && date < stripTime(range.to);
-          return { isSelected: isRangeStart || isRangeEnd, isToday, isDisabled, isOutsideMonth, isInRange, isRangeStart, isRangeEnd };
+          return {
+            isSelected: isRangeStart || isRangeEnd,
+            isToday,
+            isDisabled,
+            isOutsideMonth,
+            isInRange,
+            isRangeStart,
+            isRangeEnd,
+          };
         }
         return { isSelected: isSameDay(currentValue as Date | undefined, date), isToday, isDisabled, isOutsideMonth };
       },
-      [mode, currentValue, displayedMonth, today, minimumDate, maximumDate, disabledDates, disabled]
+      [mode, currentValue, displayedMonth, today, minimumDate, maximumDate, disabledDates, disabled],
     );
 
     return (
@@ -289,23 +327,24 @@ export function createCalendar(slots: CreateCalendarConfig) {
                 {week.map((date) => {
                   const state = resolveDayState(date);
                   const dayMarkers = markers?.filter((m: CalendarMarker) => isSameDay(m.date, date)) ?? [];
-                  const dataState = state.isRangeStart && state.isRangeEnd
-                    ? 'selected'
-                    : state.isRangeStart
-                      ? 'range-start'
-                      : state.isRangeEnd
-                        ? 'range-end'
-                        : state.isInRange
-                          ? 'range-middle'
-                          : state.isSelected
-                            ? 'selected'
-                            : state.isToday
-                              ? 'today'
-                              : state.isDisabled
-                                ? 'disabled'
-                                : state.isOutsideMonth
-                                  ? 'outside-month'
-                                  : 'default';
+                  const dataState =
+                    state.isRangeStart && state.isRangeEnd
+                      ? 'selected'
+                      : state.isRangeStart
+                        ? 'range-start'
+                        : state.isRangeEnd
+                          ? 'range-end'
+                          : state.isInRange
+                            ? 'range-middle'
+                            : state.isSelected
+                              ? 'selected'
+                              : state.isToday
+                                ? 'today'
+                                : state.isDisabled
+                                  ? 'disabled'
+                                  : state.isOutsideMonth
+                                    ? 'outside-month'
+                                    : 'default';
 
                   return (
                     <Day

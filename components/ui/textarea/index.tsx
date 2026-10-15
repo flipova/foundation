@@ -3,10 +3,7 @@ import React from 'react';
 import { createTextarea } from '@gluestack-ui/core/textarea/creator';
 import { View, TextInput } from 'react-native';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
-import {
-  withStyleContext,
-  useStyleContext,
-} from '@gluestack-ui/utils/nativewind-utils';
+import { withStyleContext, useStyleContext } from '@gluestack-ui/utils/nativewind-utils';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 
 const SCOPE = 'TEXTAREA';
@@ -44,49 +41,38 @@ const textareaInputStyle = tva({
   },
 });
 
-type ITextareaProps = React.ComponentProps<typeof UITextarea> &
-  VariantProps<typeof textareaStyle>;
+type ITextareaProps = React.ComponentProps<typeof UITextarea> & VariantProps<typeof textareaStyle>;
 
-const Textarea = React.forwardRef<
-  React.ComponentRef<typeof UITextarea>,
-  ITextareaProps
->(function Textarea(
+const Textarea = React.forwardRef<React.ComponentRef<typeof UITextarea>, ITextareaProps>(function Textarea(
   { className, variant = 'default', size = 'md', ...props },
-  ref
+  ref,
 ) {
   return (
-    <UITextarea
-      ref={ref}
-      {...props}
-      className={textareaStyle({ variant, class: className })}
-      context={{ size }}
-    />
+    <UITextarea ref={ref} {...props} className={textareaStyle({ variant, class: className })} context={{ size }} />
   );
 });
 
-type ITextareaInputProps = React.ComponentProps<typeof UITextarea.Input> &
-  VariantProps<typeof textareaInputStyle>;
+type ITextareaInputProps = React.ComponentProps<typeof UITextarea.Input> & VariantProps<typeof textareaInputStyle>;
 
-const TextareaInput = React.forwardRef<
-  React.ComponentRef<typeof UITextarea.Input>,
-  ITextareaInputProps
->(function TextareaInput({ className, ...props }, ref) {
-  const { size: parentSize } = useStyleContext(SCOPE);
+const TextareaInput = React.forwardRef<React.ComponentRef<typeof UITextarea.Input>, ITextareaInputProps>(
+  function TextareaInput({ className, ...props }, ref) {
+    const { size: parentSize } = useStyleContext(SCOPE);
 
-  return (
-    <UITextarea.Input
-      ref={ref}
-      {...props}
-      textAlignVertical="top"
-      className={textareaInputStyle({
-        parentVariants: {
-          size: parentSize,
-        },
-        class: className,
-      })}
-    />
-  );
-});
+    return (
+      <UITextarea.Input
+        ref={ref}
+        {...props}
+        textAlignVertical="top"
+        className={textareaInputStyle({
+          parentVariants: {
+            size: parentSize,
+          },
+          class: className,
+        })}
+      />
+    );
+  },
+);
 
 Textarea.displayName = 'Textarea';
 TextareaInput.displayName = 'TextareaInput';

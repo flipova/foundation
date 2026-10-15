@@ -3,10 +3,7 @@ import React from 'react';
 import { createProgress } from '@gluestack-ui/core/progress/creator';
 import { View } from 'react-native';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
-import {
-  withStyleContext,
-  useStyleContext,
-} from '@gluestack-ui/utils/nativewind-utils';
+import { withStyleContext, useStyleContext } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 
@@ -39,17 +36,13 @@ const progressFilledTrackStyle = tva({
   },
 });
 
-type IProgressProps = VariantProps<typeof progressStyle> &
-  React.ComponentProps<typeof UIProgress>;
+type IProgressProps = VariantProps<typeof progressStyle> & React.ComponentProps<typeof UIProgress>;
 type IProgressFilledTrackProps = VariantProps<typeof progressFilledTrackStyle> &
   React.ComponentProps<typeof UIProgress.FilledTrack>;
 
-const Progress = React.forwardRef<
-  React.ComponentRef<typeof UIProgress>,
-  IProgressProps
->(function Progress(
+const Progress = React.forwardRef<React.ComponentRef<typeof UIProgress>, IProgressProps>(function Progress(
   { className, orientation = 'horizontal', ...props },
-  ref
+  ref,
 ) {
   return (
     <UIProgress

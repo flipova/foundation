@@ -21,25 +21,11 @@ interface TabsAnimatedIndicatorProps {
   className?: string;
   style?: any;
 }
-Platform.OS === 'web' ? cssInterop(Animated.View,{className:{target:'style'}}) : Animated.View
+Platform.OS === 'web' ? cssInterop(Animated.View, { className: { target: 'style' } }) : Animated.View;
 const isWeb = Platform.OS === 'web';
 
-export const TabsAnimatedIndicator = React.forwardRef<
-  any,
-  TabsAnimatedIndicatorProps
->(
-  (
-    {
-      selectedKey,
-      orientation,
-      triggerLayouts,
-      scrollOffset = 0,
-      animatedScrollOffset,
-      className,
-      style,
-    },
-    ref
-  ) => {
+export const TabsAnimatedIndicator = React.forwardRef<any, TabsAnimatedIndicatorProps>(
+  ({ selectedKey, orientation, triggerLayouts, scrollOffset = 0, animatedScrollOffset, className, style }, ref) => {
     const animatedX = useSharedValue(0);
     const animatedY = useSharedValue(0);
     const animatedWidth = useSharedValue(0);
@@ -62,9 +48,7 @@ export const TabsAnimatedIndicator = React.forwardRef<
         if (layout && layout.width > 0) {
           // Determine if this is the first time we're setting values
           const isFirstRender = !hasLayout;
-          const duration = isFirstRender
-            ? 0
-            : tabsAnimationConfig.indicatorDuration;
+          const duration = isFirstRender ? 0 : tabsAnimationConfig.indicatorDuration;
 
           // Store the absolute x position (not adjusted for scroll)
           animatedX.value = withDelay(
@@ -72,7 +56,7 @@ export const TabsAnimatedIndicator = React.forwardRef<
             withTiming(layout.x, {
               duration: duration,
               easing: Easing.ease,
-            })
+            }),
           );
           animatedY.value = withTiming(layout.y, {
             duration: duration,
@@ -92,26 +76,14 @@ export const TabsAnimatedIndicator = React.forwardRef<
           }
         }
       }
-    }, [
-      selectedKey,
-      triggerLayouts,
-      hasLayout,
-      animatedX,
-      animatedY,
-      animatedWidth,
-      animatedHeight,
-    ]);
+    }, [selectedKey, triggerLayouts, hasLayout, animatedX, animatedY, animatedWidth, animatedHeight]);
 
     const animatedStyle = useAnimatedStyle(() => {
       'worklet';
 
-      const scrollOffsetValue = animatedScrollOffset
-        ? animatedScrollOffset.value
-        : scrollOffsetShared.value;
+      const scrollOffsetValue = animatedScrollOffset ? animatedScrollOffset.value : scrollOffsetShared.value;
 
-      const xPos = orientation === 'horizontal'
-        ? animatedX.value - scrollOffsetValue
-        : animatedX.value;
+      const xPos = orientation === 'horizontal' ? animatedX.value - scrollOffsetValue : animatedX.value;
 
       // Web: react-native-reanimated does not reliably flush the transform
       // array to a CSS transform string, so use left/top instead.
@@ -149,12 +121,12 @@ export const TabsAnimatedIndicator = React.forwardRef<
           style,
           {
             position: 'absolute',
-            zIndex:1,
+            zIndex: 1,
           },
         ]}
       />
     );
-  }
+  },
 );
 
 TabsAnimatedIndicator.displayName = 'TabsAnimatedIndicator';

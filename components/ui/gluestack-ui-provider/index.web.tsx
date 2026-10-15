@@ -20,8 +20,7 @@ const createStyle = (styleTagId: string) => {
   return style;
 };
 
-export const useSafeLayoutEffect =
-  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+export const useSafeLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export function GluestackUIProvider({
   mode = 'light',
@@ -41,15 +40,12 @@ export function GluestackUIProvider({
   let cssVariablesWithMode = ``;
   let variantCss = ``;
   themeIds.forEach((configKey) => {
-    const cssVariables = Object.keys(
-      config[configKey as keyof typeof config]
-    ).reduce((acc: string, curr: string) => {
+    const cssVariables = Object.keys(config[configKey as keyof typeof config]).reduce((acc: string, curr: string) => {
       acc += `${curr}:${config[configKey as keyof typeof config][curr]}; `;
       return acc;
     }, '');
     if (isDefaultId(configKey)) {
-      cssVariablesWithMode +=
-        configKey === 'dark' ? `\n .dark {\n ` : `\n:root {\n`;
+      cssVariablesWithMode += configKey === 'dark' ? `\n .dark {\n ` : `\n:root {\n`;
       cssVariablesWithMode += `${cssVariables} \n}`;
     } else {
       variantCss += `\n[data-theme='${configKey}'] {\n${cssVariables} \n}`;
@@ -59,10 +55,13 @@ export function GluestackUIProvider({
 
   setFlushStyles(cssVariablesWithMode);
 
-  const handleMediaQuery = React.useCallback((e: MediaQueryListEvent) => {
-    const resolved = e.matches ? 'dark' : 'light';
-    script(resolved, resolveThemeId(variants, variant, resolved), resolved);
-  }, [variant]);
+  const handleMediaQuery = React.useCallback(
+    (e: MediaQueryListEvent) => {
+      const resolved = e.matches ? 'dark' : 'light';
+      script(resolved, resolveThemeId(variants, variant, resolved), resolved);
+    },
+    [variant],
+  );
 
   // The script keeps the light/dark class AND the variant class/attribute in step.
   const activeMode = mode === 'system' ? 'light' : mode;

@@ -27,10 +27,7 @@ interface DateTimePickerProps {
   style?: any;
 }
 
-const DateTimePicker = React.forwardRef<
-  React.ComponentRef<typeof View>,
-  DateTimePickerProps
->(function DateTimePicker(
+const DateTimePicker = React.forwardRef<React.ComponentRef<typeof View>, DateTimePickerProps>(function DateTimePicker(
   {
     value,
     onChange,
@@ -42,13 +39,11 @@ const DateTimePicker = React.forwardRef<
     className,
     style,
   },
-  ref
+  ref,
 ) {
   const [isOpen, setIsOpen] = useState(false);
   const [tempDate, setTempDate] = useState<Date | undefined>(value);
-  const [tempTime, setTempTime] = useState(
-    value ? formatTimeForInput(value) : ''
-  );
+  const [tempTime, setTempTime] = useState(value ? formatTimeForInput(value) : '');
 
   const handleDateSelect = useCallback(
     (date: Date) => {
@@ -58,15 +53,12 @@ const DateTimePicker = React.forwardRef<
         setIsOpen(false);
       }
     },
-    [mode, onChange]
+    [mode, onChange],
   );
 
-  const handleTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTempTime(e.target.value);
-    },
-    []
-  );
+  const handleTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempTime(e.target.value);
+  }, []);
 
   const handleConfirm = useCallback(() => {
     if (mode === 'time' && tempTime) {
@@ -103,10 +95,7 @@ const DateTimePicker = React.forwardRef<
   return (
     <View ref={ref} className={`relative ${className || ''}`} style={style}>
       {/* Trigger Input */}
-      <Pressable
-        onPress={() => !disabled && setIsOpen(true)}
-        className="w-full"
-      >
+      <Pressable onPress={() => !disabled && setIsOpen(true)} className="w-full">
         <View className="flex-row items-center border border-border rounded-md px-3 py-2 bg-background">
           <TextInput
             value={displayValue || placeholder}
@@ -148,16 +137,10 @@ const DateTimePicker = React.forwardRef<
 
           {/* Actions */}
           <View className="flex-row justify-end gap-2">
-            <Pressable
-              onPress={handleCancel}
-              className="px-4 py-2 rounded bg-muted"
-            >
+            <Pressable onPress={handleCancel} className="px-4 py-2 rounded bg-muted">
               <span className="text-muted-foreground text-sm">Cancel</span>
             </Pressable>
-            <Pressable
-              onPress={handleConfirm}
-              className="px-4 py-2 rounded bg-primary"
-            >
+            <Pressable onPress={handleConfirm} className="px-4 py-2 rounded bg-primary">
               <span className="text-primary-foreground text-sm">Confirm</span>
             </Pressable>
           </View>
@@ -208,10 +191,5 @@ const DateTimePickerIcon = React.forwardRef<
   return <PrimitiveIcon ref={ref} {...props} />;
 });
 
-export {
-  DateTimePicker,
-  DateTimePickerTrigger,
-  DateTimePickerInput,
-  DateTimePickerIcon,
-};
+export { DateTimePicker, DateTimePickerTrigger, DateTimePickerInput, DateTimePickerIcon };
 export type { DateTimePickerProps, DateTimePickerMode };

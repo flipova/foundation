@@ -36,66 +36,38 @@ const avatarImageStyle = tva({
   base: 'h-full w-full rounded-full absolute',
 });
 
-type IAvatarProps = Omit<
-  React.ComponentPropsWithoutRef<typeof UIAvatar>,
-  'context'
-> &
-  VariantProps<typeof avatarStyle>;
+type IAvatarProps = Omit<React.ComponentPropsWithoutRef<typeof UIAvatar>, 'context'> & VariantProps<typeof avatarStyle>;
 
-const Avatar = React.forwardRef<
-  React.ComponentRef<typeof UIAvatar>,
-  IAvatarProps
->(function Avatar({ className, ...props }, ref) {
-  return (
-    <UIAvatar
-      ref={ref}
-      {...props}
-      className={avatarStyle({ class: className })}
-      context={{}}
-    />
-  );
+const Avatar = React.forwardRef<React.ComponentRef<typeof UIAvatar>, IAvatarProps>(function Avatar(
+  { className, ...props },
+  ref,
+) {
+  return <UIAvatar ref={ref} {...props} className={avatarStyle({ class: className })} context={{}} />;
 });
 
-type IAvatarBadgeProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Badge> &
-  VariantProps<typeof avatarBadgeStyle>;
+type IAvatarBadgeProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Badge> & VariantProps<typeof avatarBadgeStyle>;
 
-const AvatarBadge = React.forwardRef<
-  React.ComponentRef<typeof UIAvatar.Badge>,
-  IAvatarBadgeProps
->(function AvatarBadge({ className, ...props }, ref) {
-  return (
-    <UIAvatar.Badge
-      ref={ref}
-      {...props}
-      className={avatarBadgeStyle({ class: className })}
-    />
-  );
+const AvatarBadge = React.forwardRef<React.ComponentRef<typeof UIAvatar.Badge>, IAvatarBadgeProps>(function AvatarBadge(
+  { className, ...props },
+  ref,
+) {
+  return <UIAvatar.Badge ref={ref} {...props} className={avatarBadgeStyle({ class: className })} />;
 });
 
-type IAvatarFallbackTextProps = React.ComponentPropsWithoutRef<
-  typeof UIAvatar.FallbackText
-> &
+type IAvatarFallbackTextProps = React.ComponentPropsWithoutRef<typeof UIAvatar.FallbackText> &
   VariantProps<typeof avatarFallbackTextStyle>;
-const AvatarFallbackText = React.forwardRef<
-  React.ComponentRef<typeof UIAvatar.FallbackText>,
-  IAvatarFallbackTextProps
->(function AvatarFallbackText({ className, ...props }, ref) {
-  return (
-    <UIAvatar.FallbackText
-      ref={ref}
-      {...props}
-      className={avatarFallbackTextStyle({ class: className })}
-    />
-  );
-});
+const AvatarFallbackText = React.forwardRef<React.ComponentRef<typeof UIAvatar.FallbackText>, IAvatarFallbackTextProps>(
+  function AvatarFallbackText({ className, ...props }, ref) {
+    return <UIAvatar.FallbackText ref={ref} {...props} className={avatarFallbackTextStyle({ class: className })} />;
+  },
+);
 
-type IAvatarImageProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Image> &
-  VariantProps<typeof avatarImageStyle>;
+type IAvatarImageProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Image> & VariantProps<typeof avatarImageStyle>;
 
-const AvatarImage = React.forwardRef<
-  React.ComponentRef<typeof UIAvatar.Image>,
-  IAvatarImageProps
->(function AvatarImage({ className, ...props }, ref) {
+const AvatarImage = React.forwardRef<React.ComponentRef<typeof UIAvatar.Image>, IAvatarImageProps>(function AvatarImage(
+  { className, ...props },
+  ref,
+) {
   return (
     <UIAvatar.Image
       ref={ref}
@@ -108,13 +80,12 @@ const AvatarImage = React.forwardRef<
   );
 });
 
-type IAvatarGroupProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Group> &
-  VariantProps<typeof avatarGroupStyle>;
+type IAvatarGroupProps = React.ComponentPropsWithoutRef<typeof UIAvatar.Group> & VariantProps<typeof avatarGroupStyle>;
 
-const AvatarGroup = React.forwardRef<
-  React.ComponentRef<typeof UIAvatar.Group>,
-  IAvatarGroupProps
->(function AvatarGroup({ className, ...props }, ref) {
+const AvatarGroup = React.forwardRef<React.ComponentRef<typeof UIAvatar.Group>, IAvatarGroupProps>(function AvatarGroup(
+  { className, ...props },
+  ref,
+) {
   return (
     <UIAvatar.Group
       ref={ref}
@@ -129,11 +100,4 @@ const AvatarGroup = React.forwardRef<
 // Alias for shadcn compatibility
 const AvatarFallback = AvatarFallbackText;
 
-export {
-  Avatar,
-  AvatarBadge,
-  AvatarFallback,
-  AvatarFallbackText,
-  AvatarGroup,
-  AvatarImage,
-};
+export { Avatar, AvatarBadge, AvatarFallback, AvatarFallbackText, AvatarGroup, AvatarImage };

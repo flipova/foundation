@@ -28,18 +28,15 @@ export function BasicAccordionExample() {
       <AccordionItem value="item-1">
         <AccordionHeader>
           <AccordionTrigger>
-            <AccordionTitleText>
-              How do I place an order?
-            </AccordionTitleText>
+            <AccordionTitleText>How do I place an order?</AccordionTitleText>
             {/* Icon automatically rotates 180° when expanded! */}
             <AccordionIcon as={ChevronDownIcon} />
           </AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
           <AccordionContentText>
-            To place an order, simply select the products you want, proceed to
-            checkout, provide shipping and payment information, and finalize
-            your purchase.
+            To place an order, simply select the products you want, proceed to checkout, provide shipping and payment
+            information, and finalize your purchase.
           </AccordionContentText>
         </AccordionContent>
       </AccordionItem>
@@ -47,16 +44,14 @@ export function BasicAccordionExample() {
       <AccordionItem value="item-2">
         <AccordionHeader>
           <AccordionTrigger>
-            <AccordionTitleText>
-              What payment methods do you accept?
-            </AccordionTitleText>
+            <AccordionTitleText>What payment methods do you accept?</AccordionTitleText>
             <AccordionIcon as={ChevronDownIcon} />
           </AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
           <AccordionContentText>
-            We accept all major credit cards, including Visa, Mastercard, and
-            American Express. We also support payments through PayPal.
+            We accept all major credit cards, including Visa, Mastercard, and American Express. We also support payments
+            through PayPal.
           </AccordionContentText>
         </AccordionContent>
       </AccordionItem>
@@ -76,11 +71,7 @@ export function OldApproach() {
         <>
           <AccordionTitleText>Question?</AccordionTitleText>
           {/* Had to manually switch icons */}
-          {isExpanded ? (
-            <AccordionIcon as={ChevronUpIcon} />
-          ) : (
-            <AccordionIcon as={ChevronDownIcon} />
-          )}
+          {isExpanded ? <AccordionIcon as={ChevronUpIcon} /> : <AccordionIcon as={ChevronDownIcon} />}
         </>
       )}
     </AccordionTrigger>
@@ -107,9 +98,7 @@ export function ManualControlExample() {
     <AccordionTrigger>
       {({ isExpanded }) => (
         <>
-          <AccordionTitleText>
-            {isExpanded ? 'Click to collapse' : 'Click to expand'}
-          </AccordionTitleText>
+          <AccordionTitleText>{isExpanded ? 'Click to collapse' : 'Click to expand'}</AccordionTitleText>
           {/* Icon still rotates automatically */}
           <AccordionIcon as={ChevronDownIcon} />
         </>
@@ -133,9 +122,7 @@ export function MultipleAccordionsExample() {
           </AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
-          <AccordionContentText>
-            60fps animations, icon rotation, fully customizable.
-          </AccordionContentText>
+          <AccordionContentText>60fps animations, icon rotation, fully customizable.</AccordionContentText>
         </AccordionContent>
       </AccordionItem>
 
@@ -147,9 +134,7 @@ export function MultipleAccordionsExample() {
           </AccordionTrigger>
         </AccordionHeader>
         <AccordionContent>
-          <AccordionContentText>
-            Runs on UI thread using React Native Reanimated.
-          </AccordionContentText>
+          <AccordionContentText>Runs on UI thread using React Native Reanimated.</AccordionContentText>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

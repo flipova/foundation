@@ -10,13 +10,7 @@ import {
 } from './useGluestackColors';
 import { ThemeContext, MountedThemeContext, resolveThemeId } from './theme-context';
 
-export {
-  ThemeContext,
-  MountedThemeContext,
-  useMountedColors,
-  useMountedTheme,
-  resolveThemeId,
-} from './theme-context';
+export { ThemeContext, MountedThemeContext, useMountedColors, useMountedTheme, resolveThemeId } from './theme-context';
 
 export type ModeType = 'light' | 'dark' | 'system';
 
@@ -67,11 +61,7 @@ export function createGluestackUIProvider(theme: GluestackTheme) {
   const variantMap = theme.variants;
   const themeIds = Object.keys(vars);
 
-  return function ThemedProvider({
-    mode = 'light',
-    variant,
-    ...props
-  }: GluestackUIProviderProps) {
+  return function ThemedProvider({ mode = 'light', variant, ...props }: GluestackUIProviderProps) {
     const { colorScheme, setColorScheme } = useColorScheme();
 
     useEffect(() => {
@@ -82,13 +72,9 @@ export function createGluestackUIProvider(theme: GluestackTheme) {
     // Nativewind only reports light/dark, so `system` resolves through it while a
     // named mode is taken as-is; either way the VARIANT picks the pair. Falling
     // back to the mode keeps a theme set without variants working untouched.
-    const resolvedMode =
-      mode === 'system' ? colorScheme ?? 'light' : mode;
+    const resolvedMode = mode === 'system' ? (colorScheme ?? 'light') : mode;
     const themeId = resolveThemeId(variantMap, variant, resolvedMode);
-    const mountedTheme = React.useMemo(
-      () => ({ themeId, themeIds }),
-      [themeId, themeIds]
-    );
+    const mountedTheme = React.useMemo(() => ({ themeId, themeIds }), [themeId, themeIds]);
 
     return (
       <View

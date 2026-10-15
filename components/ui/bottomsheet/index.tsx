@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { FocusScope } from '@gluestack-ui/utils/aria';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
 import GorhomBottomSheet, {
@@ -70,10 +70,10 @@ type BottomSheetContextValue = {
 const BottomSheetContext = createContext<BottomSheetContextValue>({
   visible: false,
   bottomSheetRef: { current: null! },
-  handleClose: () => { },
-  handleNaturalClose: () => { },
-  handleOpen: () => { },
-  snapToIndex: () => { },
+  handleClose: () => {},
+  handleNaturalClose: () => {},
+  handleOpen: () => {},
+  snapToIndex: () => {},
   currentIndex: -1,
 });
 
@@ -107,7 +107,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, IBottomSheetRootProps>(
         setCurrentIndex(targetIndex);
         onOpen?.();
       },
-      [defaultSnapIndex, onOpen]
+      [defaultSnapIndex, onOpen],
     );
 
     // Triggers the close animation only — state updates happen via onChange chain
@@ -146,7 +146,7 @@ export const BottomSheet = forwardRef<BottomSheetRef, IBottomSheetRootProps>(
         expand,
         collapse,
       }),
-      [handleOpen, handleClose, snapToIndex, expand, collapse]
+      [handleOpen, handleClose, snapToIndex, expand, collapse],
     );
 
     const contextValue = useMemo(
@@ -159,23 +159,16 @@ export const BottomSheet = forwardRef<BottomSheetRef, IBottomSheetRootProps>(
         snapToIndex,
         currentIndex,
       }),
-      [visible, handleClose, handleNaturalClose, handleOpen, snapToIndex, currentIndex]
+      [visible, handleClose, handleNaturalClose, handleOpen, snapToIndex, currentIndex],
     );
 
-    return (
-      <BottomSheetContext.Provider value={contextValue}>
-        {children}
-      </BottomSheetContext.Provider>
-    );
-  }
+    return <BottomSheetContext.Provider value={contextValue}>{children}</BottomSheetContext.Provider>;
+  },
 );
 
 BottomSheet.displayName = 'BottomSheet';
 
-type IBottomSheetPortalProps = Omit<
-  React.ComponentProps<typeof GorhomBottomSheet>,
-  'ref'
-> & {
+type IBottomSheetPortalProps = Omit<React.ComponentProps<typeof GorhomBottomSheet>, 'ref'> & {
   snapPoints: (string | number)[];
   className?: string;
   backgroundClassName?: string;
@@ -209,7 +202,7 @@ export const BottomSheetPortal = ({
         handleNaturalClose();
       }
     },
-    [handleNaturalClose, onChange]
+    [handleNaturalClose, onChange],
   );
 
   return (
@@ -284,9 +277,7 @@ export const BottomSheetBackdrop = ({
   );
 };
 
-type IBottomSheetHandleProps = React.ComponentProps<
-  typeof GorhomBottomSheetHandle
-> & {
+type IBottomSheetHandleProps = React.ComponentProps<typeof GorhomBottomSheetHandle> & {
   className?: string;
   indicatorClassName?: string;
 };
@@ -308,18 +299,12 @@ export const BottomSheetDragIndicator = ({
   );
 };
 
-type IBottomSheetContentProps = React.ComponentProps<
-  typeof GorhomBottomSheetView
-> & {
+type IBottomSheetContentProps = React.ComponentProps<typeof GorhomBottomSheetView> & {
   className?: string;
   focusScope?: boolean;
 };
 
-export const BottomSheetContent = ({
-  className,
-  focusScope = true,
-  ...props
-}: IBottomSheetContentProps) => {
+export const BottomSheetContent = ({ className, focusScope = true, ...props }: IBottomSheetContentProps) => {
   const { handleClose, visible } = useContext(BottomSheetContext);
 
   const keyDownHandlers = useMemo(() => {
@@ -357,18 +342,12 @@ export const BottomSheetContent = ({
   );
 };
 
-type IBottomSheetFooterProps = React.ComponentProps<
-  typeof GorhomBottomSheetFooter
-> & {
+type IBottomSheetFooterProps = React.ComponentProps<typeof GorhomBottomSheetFooter> & {
   className?: string;
   children?: React.ReactNode;
 };
 
-export const BottomSheetFooter = ({
-  className,
-  children,
-  ...props
-}: IBottomSheetFooterProps) => {
+export const BottomSheetFooter = ({ className, children, ...props }: IBottomSheetFooterProps) => {
   return (
     <GorhomBottomSheetFooter {...props}>
       <View
@@ -386,12 +365,7 @@ type IBottomSheetItemProps = PressableProps & {
   closeOnSelect?: boolean;
 };
 
-export const BottomSheetItem = ({
-  children,
-  className,
-  closeOnSelect = true,
-  ...props
-}: IBottomSheetItemProps) => {
+export const BottomSheetItem = ({ children, className, closeOnSelect = true, ...props }: IBottomSheetItemProps) => {
   const { handleClose } = useContext(BottomSheetContext);
 
   return (
@@ -416,17 +390,11 @@ type IBottomSheetItemTextProps = TextProps & {
   className?: string;
 };
 
-export const BottomSheetItemText = ({
-  className,
-  ...props
-}: IBottomSheetItemTextProps) => {
+export const BottomSheetItemText = ({ className, ...props }: IBottomSheetItemTextProps) => {
   return <Text {...props} className={bottomSheetItemTextStyle({ className })} />;
 };
 
-export const BottomSheetTextInput = ({
-  className,
-  ...props
-}: TextInputProps) => {
+export const BottomSheetTextInput = ({ className, ...props }: TextInputProps) => {
   return <GorhomBottomSheetInput {...props} className={bottomSheetTextInputStyle({ className })} />;
 };
 // Scrollable components with className support

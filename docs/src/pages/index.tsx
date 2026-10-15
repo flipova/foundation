@@ -44,8 +44,8 @@ export default function Home(): JSX.Element {
             </h1>
 
             <p className="hero-subtitle">
-              An agnostic, deterministic architecture delivering 46+ reactive components, 
-              20+ layout primitives, and a unified token system.
+              An agnostic, deterministic architecture delivering 46+ reactive components, 20+ layout primitives, and a
+              unified token system.
             </p>
 
             {/* Action Buttons */}
@@ -80,7 +80,8 @@ export default function Home(): JSX.Element {
                 </div>
                 <h3>Tokens & Theme System</h3>
                 <p>
-                  Adaptable spacing scales, harmonized typography, and dynamic dark/light theme switching via token injection.
+                  Adaptable spacing scales, harmonized typography, and dynamic dark/light theme switching via token
+                  injection.
                 </p>
                 <Link to="/docs/theming/tokens" className="card-link">
                   <span>View Tokens</span>
@@ -95,7 +96,8 @@ export default function Home(): JSX.Element {
                 </div>
                 <h3>46+ Core Components</h3>
                 <p>
-                  Production-ready buttons, inputs, modals, loaders, cards, and media controls crafted for maximum fluidity.
+                  Production-ready buttons, inputs, modals, loaders, cards, and media controls crafted for maximum
+                  fluidity.
                 </p>
                 <Link to="/docs/theming/overview" className="card-link">
                   <span>Explore Components</span>
@@ -139,9 +141,7 @@ export default function Home(): JSX.Element {
                   <Zap className="w-5 h-5" />
                 </div>
                 <h3>Zero Extra Dependencies</h3>
-                <p>
-                  Minimal bundle footprint, strict TypeScript typing, and autonomous CLI executable generation.
-                </p>
+                <p>Minimal bundle footprint, strict TypeScript typing, and autonomous CLI executable generation.</p>
                 <Link to="/docs/schema-reference/schema" className="card-link">
                   <span>API Specs</span>
                   <ChevronRight className="w-4 h-4" />
@@ -154,9 +154,7 @@ export default function Home(): JSX.Element {
                   <Shield className="w-5 h-5" />
                 </div>
                 <h3>Agnostic Documentation</h3>
-                <p>
-                  100% deterministically generated documentation straight from the XML registries and the manifest.
-                </p>
+                <p>100% deterministically generated documentation straight from the XML registries and the manifest.</p>
                 <Link to="/docs/tools/overview" className="card-link">
                   <span>Metadata Registry</span>
                   <ChevronRight className="w-4 h-4" />

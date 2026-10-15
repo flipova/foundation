@@ -4,10 +4,7 @@ import { Pressable } from 'react-native';
 import { View } from 'react-native';
 import React from 'react';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
-import {
-  withStyleContext,
-  useStyleContext,
-} from '@gluestack-ui/utils/nativewind-utils';
+import { withStyleContext, useStyleContext } from '@gluestack-ui/utils/nativewind-utils';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
 
@@ -77,20 +74,11 @@ const sliderFilledTrackStyle = tva({
   },
 });
 
-type ISliderProps = React.ComponentProps<typeof UISlider> &
-  VariantProps<typeof sliderStyle>;
+type ISliderProps = React.ComponentProps<typeof UISlider> & VariantProps<typeof sliderStyle>;
 
-const Slider = React.forwardRef<
-  React.ComponentRef<typeof UISlider>,
-  ISliderProps
->(function Slider(
-  {
-    className,
-    orientation = 'horizontal',
-    isReversed = false,
-    ...props
-  },
-  ref
+const Slider = React.forwardRef<React.ComponentRef<typeof UISlider>, ISliderProps>(function Slider(
+  { className, orientation = 'horizontal', isReversed = false, ...props },
+  ref,
 ) {
   return (
     <UISlider
@@ -108,13 +96,12 @@ const Slider = React.forwardRef<
   );
 });
 
-type ISliderThumbProps = React.ComponentProps<typeof UISlider.Thumb> &
-  VariantProps<typeof sliderThumbStyle>;
+type ISliderThumbProps = React.ComponentProps<typeof UISlider.Thumb> & VariantProps<typeof sliderThumbStyle>;
 
-const SliderThumb = React.forwardRef<
-  React.ComponentRef<typeof UISlider.Thumb>,
-  ISliderThumbProps
->(function SliderThumb({ className, ...props }, ref) {
+const SliderThumb = React.forwardRef<React.ComponentRef<typeof UISlider.Thumb>, ISliderThumbProps>(function SliderThumb(
+  { className, ...props },
+  ref,
+) {
   return (
     <UISlider.Thumb
       ref={ref}
@@ -126,17 +113,13 @@ const SliderThumb = React.forwardRef<
   );
 });
 
-type ISliderTrackProps = React.ComponentProps<typeof UISlider.Track> &
-  VariantProps<typeof sliderTrackStyle>;
+type ISliderTrackProps = React.ComponentProps<typeof UISlider.Track> & VariantProps<typeof sliderTrackStyle>;
 
-const SliderTrack = React.forwardRef<
-  React.ComponentRef<typeof UISlider.Track>,
-  ISliderTrackProps
->(function SliderTrack({ className, ...props }, ref) {
-  const {
-    orientation: parentOrientation,
-    isReversed,
-  } = useStyleContext(SCOPE);
+const SliderTrack = React.forwardRef<React.ComponentRef<typeof UISlider.Track>, ISliderTrackProps>(function SliderTrack(
+  { className, ...props },
+  ref,
+) {
+  const { orientation: parentOrientation, isReversed } = useStyleContext(SCOPE);
 
   return (
     <UISlider.Track
@@ -153,29 +136,26 @@ const SliderTrack = React.forwardRef<
   );
 });
 
-type ISliderFilledTrackProps = React.ComponentProps<
-  typeof UISlider.FilledTrack
-> &
+type ISliderFilledTrackProps = React.ComponentProps<typeof UISlider.FilledTrack> &
   VariantProps<typeof sliderFilledTrackStyle>;
 
-const SliderFilledTrack = React.forwardRef<
-  React.ComponentRef<typeof UISlider.FilledTrack>,
-  ISliderFilledTrackProps
->(function SliderFilledTrack({ className, ...props }, ref) {
-  const { orientation: parentOrientation } = useStyleContext(SCOPE);
+const SliderFilledTrack = React.forwardRef<React.ComponentRef<typeof UISlider.FilledTrack>, ISliderFilledTrackProps>(
+  function SliderFilledTrack({ className, ...props }, ref) {
+    const { orientation: parentOrientation } = useStyleContext(SCOPE);
 
-  return (
-    <UISlider.FilledTrack
-      ref={ref}
-      {...props}
-      className={sliderFilledTrackStyle({
-        parentVariants: {
-          orientation: parentOrientation,
-        },
-        class: className,
-      })}
-    />
-  );
-});
+    return (
+      <UISlider.FilledTrack
+        ref={ref}
+        {...props}
+        className={sliderFilledTrackStyle({
+          parentVariants: {
+            orientation: parentOrientation,
+          },
+          class: className,
+        })}
+      />
+    );
+  },
+);
 
 export { Slider, SliderThumb, SliderTrack, SliderFilledTrack };

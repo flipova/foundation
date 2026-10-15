@@ -1,6 +1,4 @@
 {
-    "typescript.autoClosingTags": false,
-    "xml.catalogs": [
-        "./.vscode/xml-catalog.xml"
-    ]
+  "typescript.autoClosingTags": false,
+  "xml.catalogs": ["./.vscode/xml-catalog.xml"]
 }

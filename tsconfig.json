@@ -22,10 +22,5 @@
     }
   },
   "include": ["index.ts", "components", "scripts", "nativewind-env.d.ts"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.example.ts",
-    "**/USAGE_EXAMPLE.tsx"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.example.ts", "**/USAGE_EXAMPLE.tsx"]
 }

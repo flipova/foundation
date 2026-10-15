@@ -17,51 +17,30 @@ type ISkeletonTextProps = React.ComponentProps<typeof View> &
     startColor?: string;
   };
 
-const Skeleton = forwardRef<React.ComponentRef<typeof View>, ISkeletonProps>(
-  function Skeleton(
-    {
-      className,
-      variant,
-      children,
-      startColor = 'bg-accent',
-      isLoaded = false,
-      speed = 4,
-      ...props
-    },
-    ref
-  ) {
-    if (!isLoaded) {
-      return (
-        <View
-          className={`animate-pulse ${startColor} ${skeletonStyle({
-            variant,
-            speed: speed as 1 | 2 | 3 | 4,
-            class: className,
-          })}`}
-          {...props}
-          ref={ref}
-        />
-      );
-    } else {
-      return children;
-    }
+const Skeleton = forwardRef<React.ComponentRef<typeof View>, ISkeletonProps>(function Skeleton(
+  { className, variant, children, startColor = 'bg-accent', isLoaded = false, speed = 4, ...props },
+  ref,
+) {
+  if (!isLoaded) {
+    return (
+      <View
+        className={`animate-pulse ${startColor} ${skeletonStyle({
+          variant,
+          speed: speed as 1 | 2 | 3 | 4,
+          class: className,
+        })}`}
+        {...props}
+        ref={ref}
+      />
+    );
+  } else {
+    return children;
   }
-);
+});
 
-const SkeletonText = forwardRef<
-  React.ComponentRef<typeof View>,
-  ISkeletonTextProps
->(function SkeletonText(
-  {
-    className,
-    _lines,
-    isLoaded = false,
-    startColor = 'bg-accent',
-    gap = 2,
-    children,
-    ...props
-  },
-  ref
+const SkeletonText = forwardRef<React.ComponentRef<typeof View>, ISkeletonTextProps>(function SkeletonText(
+  { className, _lines, isLoaded = false, startColor = 'bg-accent', gap = 2, children, ...props },
+  ref,
 ) {
   if (!isLoaded) {
     if (_lines) {

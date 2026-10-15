@@ -56,8 +56,7 @@ const menuItemLabelStyle = tva({
 
 const BackdropPressable = React.forwardRef<
   React.ComponentRef<typeof Pressable>,
-  React.ComponentPropsWithoutRef<typeof Pressable> &
-  VariantProps<typeof menuBackdropStyle>
+  React.ComponentPropsWithoutRef<typeof Pressable> & VariantProps<typeof menuBackdropStyle>
 >(function BackdropPressable({ className, ...props }, ref) {
   return (
     <Pressable
@@ -74,10 +73,10 @@ type IMenuItemProps = VariantProps<typeof menuItemStyle> & {
   className?: string;
 } & React.ComponentPropsWithoutRef<typeof Pressable>;
 
-const Item = React.forwardRef<
-  React.ComponentRef<typeof Pressable>,
-  IMenuItemProps
->(function Item({ className, ...props }, ref) {
+const Item = React.forwardRef<React.ComponentRef<typeof Pressable>, IMenuItemProps>(function Item(
+  { className, ...props },
+  ref,
+) {
   return (
     <Pressable
       ref={ref}
@@ -91,21 +90,12 @@ const Item = React.forwardRef<
 
 const Separator = React.forwardRef<
   React.ComponentRef<typeof View>,
-  React.ComponentPropsWithoutRef<typeof View> &
-  VariantProps<typeof menuSeparatorStyle>
+  React.ComponentPropsWithoutRef<typeof View> & VariantProps<typeof menuSeparatorStyle>
 >(function Separator({ className, ...props }, ref) {
-  return (
-    <View
-      ref={ref}
-      className={menuSeparatorStyle({ class: className })}
-      {...props}
-    />
-  );
+  return <View ref={ref} className={menuSeparatorStyle({ class: className })} {...props} />;
 });
 
 cssInterop(AnimatedView, { className: 'style' });
-
-
 
 export const UIMenu = createMenu({
   Root: AnimatedView,
@@ -115,67 +105,55 @@ export const UIMenu = createMenu({
   Separator: Separator,
 });
 
-
-type IMenuProps = React.ComponentProps<typeof UIMenu> &
-  VariantProps<typeof menuStyle> & { className?: string };
+type IMenuProps = React.ComponentProps<typeof UIMenu> & VariantProps<typeof menuStyle> & { className?: string };
 type IMenuItemLabelProps = React.ComponentProps<typeof UIMenu.ItemLabel> &
   VariantProps<typeof menuItemLabelStyle> & { className?: string };
 
-const Menu = React.forwardRef<React.ComponentRef<typeof UIMenu>, IMenuProps>(
-  function Menu({ className, ...props }, ref) {
-    return (
-      <UIMenu
-        entering={ZoomIn.duration(150).withInitialValues({
-          transform: [{ scale: 0.9 }],
-          opacity: 0,
-        })}
-        exiting={FadeOut.duration(150)}
-        ref={ref}
-        className={menuStyle({
-          class: className,
-        })}
-        {...props}
-      />
-    );
-  }
-);
-
-const MenuItem = UIMenu.Item;
-
-const MenuItemLabel = React.forwardRef<
-  React.ComponentRef<typeof UIMenu.ItemLabel>,
-  IMenuItemLabelProps
->(function MenuItemLabel(
-  {
-    className,
-    isTruncated,
-    bold,
-    underline,
-    strikeThrough,
-    sub,
-    italic,
-    highlight,
-    ...props
-  },
-  ref
+const Menu = React.forwardRef<React.ComponentRef<typeof UIMenu>, IMenuProps>(function Menu(
+  { className, ...props },
+  ref,
 ) {
   return (
-    <UIMenu.ItemLabel
+    <UIMenu
+      entering={ZoomIn.duration(150).withInitialValues({
+        transform: [{ scale: 0.9 }],
+        opacity: 0,
+      })}
+      exiting={FadeOut.duration(150)}
       ref={ref}
-      className={menuItemLabelStyle({
-        isTruncated: isTruncated as boolean,
-        bold: bold as boolean,
-        underline: underline as boolean,
-        strikeThrough: strikeThrough as boolean,
-        sub: sub as boolean,
-        italic: italic as boolean,
-        highlight: highlight as boolean,
+      className={menuStyle({
         class: className,
       })}
       {...props}
     />
   );
 });
+
+const MenuItem = UIMenu.Item;
+
+const MenuItemLabel = React.forwardRef<React.ComponentRef<typeof UIMenu.ItemLabel>, IMenuItemLabelProps>(
+  function MenuItemLabel(
+    { className, isTruncated, bold, underline, strikeThrough, sub, italic, highlight, ...props },
+    ref,
+  ) {
+    return (
+      <UIMenu.ItemLabel
+        ref={ref}
+        className={menuItemLabelStyle({
+          isTruncated: isTruncated as boolean,
+          bold: bold as boolean,
+          underline: underline as boolean,
+          strikeThrough: strikeThrough as boolean,
+          sub: sub as boolean,
+          italic: italic as boolean,
+          highlight: highlight as boolean,
+          class: className,
+        })}
+        {...props}
+      />
+    );
+  },
+);
 
 const MenuSeparator = UIMenu.Separator;
 
