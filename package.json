@@ -55,6 +55,7 @@
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run typecheck",
+    "deploy": "npm view $npm_package_name@$npm_package_version version >/dev/null 2>&1 || npm publish --provenance --access public",
     "docs": "npm run design:doc",
     "docs:build": "npm --prefix docs run build",
     "test": "vitest run",

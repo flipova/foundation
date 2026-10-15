@@ -1,18 +1,15 @@
-﻿# Pipeline â€” branche main : release (qualitÃ© + publication npm).
+# Pipeline — branche main : PRODUCTION (livraison du livrable du dépôt).
 #
-# Promotion VERROUILLÃ‰E : la seule source autorisÃ©e vers `main` est `staging`
-# (ou une branche `hotfix/*`). Tout le reste est refusÃ©.
-#   dev  â†’  staging  â†’  main
+# `main` n'est PAS réservé aux paquets npm : c'est la branche de PRODUCTION.
+# Tout ce qui est publié, déployé ou livré passe par ici, sur tag `v*`.
+# Pour @flipova/foundation le livrable EST le paquet npm — il est déclaré dans
+# le script `deploy` de package.json ; la CI ne fait que l'appeler.
 #
-# Publication par Â« trusted publishing Â» npm (OIDC) : aucun token, aucun secret.
-# Le tag DOIT correspondre Ã  la version de package.json â€” c'est ce qui rattache
-# le paquet publiÃ© au versionnement (`flipova version tag vX.Y.Z`).
+# Promotion VERROUILLÉE : la seule source autorisée vers `main` est `staging`
+# (ou une branche `hotfix/*`). Tout le reste est refusé.
+#   dev  →  staging  →  main
 #
-# PrÃ©requis (une fois, cÃ´tÃ© npm) :
-#   npm trust github @flipova/foundation --file main.yml \
-#     --repository flipova/foundation --allow-publish
-#
-# AdaptÃ© du template flipova pour @flipova/foundation.
+# Adapté du template flipova pour @flipova/foundation.
 name: main
 
 on:
@@ -24,7 +21,7 @@ on:
 
 concurrency:
   group: main-${{ github.ref }}
-  cancel-in-progress: false # une publication ne se coupe pas
+  cancel-in-progress: false # une livraison ne se coupe pas
 
 permissions:
   contents: read
@@ -34,7 +31,7 @@ env:
 
 jobs:
   promotion:
-    name: promotion (source autorisÃ©e)
+    name: promotion (source autorisée)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -47,7 +44,7 @@ jobs:
           case "$source" in
             "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
             *)
-              echo "::error::Â« $source Â» ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
+              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
               exit 1
               ;;
           esac
@@ -83,8 +80,8 @@ jobs:
           if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
           npm run design:gen:check
 
-  publier:
-    name: publication npm
+  livrer:
+    name: livraison (production)
     needs: qualite
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
@@ -92,45 +89,41 @@ jobs:
     environment: production
     permissions:
       contents: write
-      id-token: write
+      id-token: write # OIDC : trusted publishing npm, sans token ni secret
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: npm
       - name: installation
         run: npm ci
 
-      - name: Rattacher le tag a la version du paquet
+      - name: Rattacher le tag au versionnement (si le depot est versionne)
         run: |
-          paquet=$(node -p "require('./package.json').version")
-          tag="${GITHUB_REF_NAME#v}"
-          echo "package.json=$paquet  tag=$tag"
-          if [ "$paquet" != "$tag" ]; then
-            echo "::error::le tag ($tag) ne correspond pas a la version du paquet ($paquet)"
-            exit 1
-          fi
-
-      - name: La version est-elle deja publiee ?
-        id: etat
-        run: |
-          nom=$(node -p "require('./package.json').name")
-          version=$(node -p "require('./package.json').version")
-          if npm view "$nom@$version" version >/dev/null 2>&1; then
-            echo "publiee=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::$nom@$version est deja sur le registre â€” publication ignoree"
+          if [ -f package.json ] && node -e "process.exit(require('./package.json').version ? 0 : 1)" 2>/dev/null; then
+            version=$(node -p "require('./package.json').version")
+            tag="${GITHUB_REF_NAME#v}"
+            echo "version du depot=$version  tag=$tag"
+            if [ "$version" != "$tag" ]; then
+              echo "::error::le tag ($tag) ne correspond pas a la version du depot ($version)"
+              exit 1
+            fi
           else
-            echo "publiee=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::depot non versionne — controle tag <-> version ignore"
           fi
 
       - name: build
         run: npm run build
 
-      - name: Publication npm (OIDC, sans token)
-        if: steps.etat.outputs.publiee == 'false'
-        run: npm publish --provenance --access public
+      - name: Livrer (script « deploy » du depot)
+        run: |
+          if [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.deploy ? 0 : 1)" 2>/dev/null; then
+            echo "::notice::livraison via « npm run deploy »"
+            npm run deploy
+          else
+            echo "::notice::aucun script « deploy » — rien a livrer (release GitHub uniquement)"
+          fi
 
       - name: Release GitHub (pre-release si alpha/beta/rc)
         env:
