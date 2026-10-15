@@ -1,0 +1,249 @@
+name: Shared - Test & Build (auto-détection de la stack)
+
+# Détecte la stack à la racine (ou dans working_directory) et exécute lint/test/build
+# standards. Rien de détecté -> notice, pas d'échec. Pour un besoin spécifique,
+# ajoute un workflow local appelé en plus dans l'orchestrateur.
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        type: string
+        default: "."
+      run_build:
+        description: "Exécuter aussi le build"
+        type: boolean
+        default: true
+      node_version:
+        type: string
+        default: "lts/*"
+      python_version:
+        type: string
+        default: "3.x"
+      java_version:
+        type: string
+        default: "21"
+      dotnet_version:
+        type: string
+        default: "8.0.x"
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  detect:
+    name: Détection de la stack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      node: ${{ steps.d.outputs.node }}
+      python: ${{ steps.d.outputs.python }}
+      go: ${{ steps.d.outputs.go }}
+      rust: ${{ steps.d.outputs.rust }}
+      java: ${{ steps.d.outputs.java }}
+      java_cache: ${{ steps.d.outputs.java_cache }}
+      dotnet: ${{ steps.d.outputs.dotnet }}
+      make: ${{ steps.d.outputs.make }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: d
+        working-directory: ${{ inputs.working_directory }}
+        run: |
+          set -euo pipefail
+          o() { echo "$1=$2" >> "$GITHUB_OUTPUT"; }
+          found=0
+          [ -f package.json ] && { o node true; found=1; } || o node false
+          { [ -f pyproject.toml ] || [ -f requirements.txt ] || [ -f setup.py ]; } && { o python true; found=1; } || o python false
+          [ -f go.mod ] && { o go true; found=1; } || o go false
+          [ -f Cargo.toml ] && { o rust true; found=1; } || o rust false
+          if [ -f pom.xml ]; then o java true; o java_cache maven; found=1
+          elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then o java true; o java_cache gradle; found=1
+          else o java false; o java_cache ""; fi
+          if [ -n "$(find . -maxdepth 2 \( -name '*.sln' -o -name '*.csproj' \) -print -quit)" ]; then o dotnet true; found=1; else o dotnet false; fi
+          if [ "$found" = 0 ] && [ -f Makefile ] && grep -qE '^test:' Makefile; then o make true; found=1; else o make false; fi
+          if [ "$found" = 0 ]; then
+            echo "::notice title=Test skipped::aucune stack reconnue (Node, Python, Go, Rust, Java, .NET, Makefile) dans '${{ inputs.working_directory }}' : tests/build ignorés"
+          fi
+
+  node:
+    name: Node.js
+    needs: detect
+    if: needs.detect.outputs.node == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: ${{ inputs.node_version }}
+      - name: Installer, lint, test, build
+        env:
+          RUN_BUILD: ${{ inputs.run_build }}
+        run: |
+          set -euo pipefail
+          if [ -f pnpm-lock.yaml ]; then corepack enable; pnpm install --frozen-lockfile; RUN="pnpm run"
+          elif [ -f yarn.lock ]; then corepack enable; yarn install --immutable; RUN="yarn run"
+          elif [ -f package-lock.json ]; then npm ci; RUN="npm run"
+          else echo "::warning title=Node::aucun lockfile : installation non reproductible"; npm install; RUN="npm run"; fi
+          steps="lint test"; [ "$RUN_BUILD" = true ] && steps="$steps build"
+          for s in $steps; do
+            if jq -e --arg s "$s" '.scripts[$s] // empty' package.json >/dev/null; then
+              echo "::group::$s"; $RUN "$s"; echo "::endgroup::"
+            else
+              echo "::notice title=Node::script '$s' absent de package.json : ignoré"
+            fi
+          done
+
+  python:
+    name: Python
+    needs: detect
+    if: needs.detect.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ inputs.python_version }}
+          cache: pip
+          cache-dependency-path: |
+            **/requirements*.txt
+            **/pyproject.toml
+      - name: Installer et tester
+        run: |
+          set -euo pipefail
+          python -m pip install --upgrade pip
+          [ -f requirements.txt ] && pip install -r requirements.txt
+          if [ -f pyproject.toml ] || [ -f setup.py ]; then pip install -e ".[test]" 2>/dev/null || pip install -e . || echo "::warning title=Python::installation du paquet impossible"; fi
+          if [ -d tests ] || [ -d test ] || ls test_*.py >/dev/null 2>&1; then
+            pip install pytest
+            pytest
+          else
+            echo "::notice title=Python::aucun test détecté (tests/, test/, test_*.py) : ignoré"
+          fi
+
+  go:
+    name: Go
+    needs: detect
+    if: needs.detect.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version-file: ${{ inputs.working_directory }}/go.mod
+      - run: go vet ./...
+      - run: go test ./...
+      - if: inputs.run_build
+        run: go build ./...
+
+  rust:
+    name: Rust
+    needs: detect
+    if: needs.detect.outputs.rust == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+        with:
+          workspaces: ${{ inputs.working_directory }}
+      - run: cargo test --locked
+      - if: inputs.run_build
+        run: cargo build --locked
+
+  java:
+    name: Java (${{ needs.detect.outputs.java_cache }})
+    needs: detect
+    if: needs.detect.outputs.java == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java_version }}
+          cache: ${{ needs.detect.outputs.java_cache }}
+      - name: Build et tests
+        run: |
+          set -euo pipefail
+          if [ -f pom.xml ]; then
+            if [ -x ./mvnw ]; then ./mvnw -B verify; else mvn -B verify; fi
+          else
+            if [ -f ./gradlew ]; then chmod +x ./gradlew; ./gradlew build; else gradle build; fi
+          fi
+
+  dotnet:
+    name: .NET
+    needs: detect
+    if: needs.detect.outputs.dotnet == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: ${{ inputs.dotnet_version }}
+      - run: dotnet restore
+      - run: dotnet build --no-restore
+      - run: dotnet test --no-build
+
+  make:
+    name: Makefile (fallback)
+    needs: detect
+    if: needs.detect.outputs.make == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ${{ inputs.working_directory }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - run: make test

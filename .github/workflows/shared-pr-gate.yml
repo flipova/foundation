@@ -1,0 +1,113 @@
+name: Shared - PR Gate
+
+# Conventions avant dev : titre Conventional Commits, nom de branche, description, issue liée.
+on:
+  workflow_call:
+    inputs:
+      require_linked_issue:
+        description: "true = erreur si aucune issue liée ; false = simple warning"
+        type: boolean
+        default: false
+      require_description:
+        description: "true = erreur si description vide ; false = warning"
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  pr-title:
+    name: PR title convention
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Valider le titre (Conventional Commits)
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          requireScope: false
+          ignoreLabels: |
+            skip-title-check
+
+  branch-name:
+    name: Branch naming convention
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Valider la branche source
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          case "$HEAD_REF" in
+            dev|staging|main)
+              echo "::notice title=Branch::PR de promotion ($HEAD_REF -> $BASE_REF), convention de nom non applicable"
+              exit 0 ;;
+            dependabot/*|renovate/*)
+              echo "::notice title=Branch::branche d'outil ($HEAD_REF), convention de nom non applicable"
+              exit 0 ;;
+          esac
+          if [[ ! "$HEAD_REF" =~ ^(feature|fix|hotfix|docs|refactor|chore|test|build|ci|perf|release)/[a-z0-9]+([._/-][a-z0-9]+)*$ ]]; then
+            echo "::error title=Branch name::'$HEAD_REF' invalide. Attendu : feature/xxx, fix/xxx, hotfix/xxx, docs/xxx, refactor/xxx, chore/xxx, test/xxx, build/xxx, ci/xxx, perf/xxx, release/x.y.z"
+            exit 1
+          fi
+          echo "Branche '$HEAD_REF' valide."
+
+  pr-content:
+    name: PR content checks
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Description et issue liée
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          REQUIRE_ISSUE: ${{ inputs.require_linked_issue }}
+          REQUIRE_DESC: ${{ inputs.require_description }}
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = (pr.body || '').trim();
+            const head = pr.head.ref;
+            const exempt =
+              ['dev', 'staging', 'main'].includes(head) ||
+              /^(chore|ci|docs|build|dependabot|renovate)/.test(head) ||
+              pr.user.type === 'Bot';
+
+            // Description
+            if (body.length < 20) {
+              const msg = 'La description de la PR est vide ou trop courte (< 20 caractères).';
+              if (process.env.REQUIRE_DESC === 'true' && !exempt) core.setFailed(msg);
+              else if (!exempt) core.warning(msg, { title: 'PR description' });
+              else core.notice('Description non exigée pour cette PR.', { title: 'PR description' });
+            }
+
+            // Issue liée
+            const kw = '(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?|refs?|related to)';
+            const ref = '(?:#\\d+|[\\w.-]+\\/[\\w.-]+#\\d+|https:\\/\\/github\\.com\\/[\\w.-]+\\/[\\w.-]+\\/issues\\/\\d+)';
+            const linked = new RegExp(`\\b${kw}\\s+${ref}`, 'i').test(body);
+            if (linked) {
+              core.info('Issue liée détectée dans la description.');
+            } else if (exempt) {
+              core.notice('Aucune issue liée (PR exemptée : promotion, bot ou maintenance).', { title: 'Linked issue' });
+            } else {
+              const msg = 'Aucune issue liée. Ajoute "Closes #123" (ou "Refs #123") dans la description.';
+              if (process.env.REQUIRE_ISSUE === 'true') core.setFailed(msg);
+              else core.warning(msg, { title: 'Linked issue' });
+            }

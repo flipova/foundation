@@ -1,0 +1,35 @@
+name: PR automation
+
+# pull_request_target : contexte privilégié pour labelliser/assigner les PR de forks.
+# SÉCURITÉ : ce workflow ne doit JAMAIS faire de checkout du code de la PR ni l'exécuter.
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+  pull_request:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+  automation:
+    if: github.event_name == 'pull_request_target'
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: read
+    uses: ./.github/workflows/shared-pr-automation.yml
+    secrets:
+      PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}
+
+  cleanup:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    permissions:
+      # Le job partagé de nettoyage supprime des branches (contents: write) et le
+      # job de promotion a besoin de pull-requests/issues : les deux vivent dans le
+      # même fichier partagé, donc l'appelant doit couvrir l'union.
+      contents: write
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/shared-branch-flow.yml
+    with:
+      action: cleanup

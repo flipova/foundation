@@ -1,0 +1,167 @@
+﻿name: Shared - Build (conteneur, optionnel)
+
+# Si aucun Dockerfile : ignorÃ© avec notice. Sinon : build local -> scan Trivy -> (push multi-arch + attestation).
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: "Version SemVer (sans prÃ©fixe)"
+        type: string
+        required: true
+      push:
+        description: "Publier l'image dans le registre"
+        type: boolean
+        default: false
+      dockerfile:
+        type: string
+        default: "Dockerfile"
+      context:
+        type: string
+        default: "."
+      registry:
+        type: string
+        default: "ghcr.io"
+      image_name:
+        description: "Nom d'image (dÃ©faut : <registry>/<owner>/<repo> en minuscules)"
+        type: string
+        default: ""
+      platforms:
+        description: "Plateformes de l'image publiÃ©e"
+        type: string
+        default: "linux/amd64"
+      scan:
+        type: boolean
+        default: true
+      scan_blocking:
+        type: boolean
+        default: true
+      severity:
+        type: string
+        default: "HIGH,CRITICAL"
+    outputs:
+      built:
+        value: ${{ jobs.build.outputs.built }}
+      image:
+        value: ${{ jobs.build.outputs.image }}
+      digest:
+        value: ${{ jobs.build.outputs.digest }}
+
+permissions: {}
+
+jobs:
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      built: ${{ steps.chk.outputs.found }}
+      image: ${{ steps.name.outputs.image }}
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Dockerfile prÃ©sent ?
+        id: chk
+        shell: bash
+        env:
+          DOCKERFILE: ${{ inputs.dockerfile }}
+          CONTEXT: ${{ inputs.context }}
+        run: |
+          if [ -f "$CONTEXT/$DOCKERFILE" ] || [ -f "$DOCKERFILE" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Build skipped::aucun $DOCKERFILE : build de conteneur ignorÃ©"
+          fi
+
+      - name: Nom d'image
+        id: name
+        if: steps.chk.outputs.found == 'true'
+        shell: bash
+        env:
+          REGISTRY: ${{ inputs.registry }}
+          IMAGE_NAME: ${{ inputs.image_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -n "$IMAGE_NAME" ]; then img="$IMAGE_NAME"; else img="${REGISTRY}/${REPO,,}"; fi
+          echo "image=$img" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        if: steps.chk.outputs.found == 'true'
+
+      - name: MÃ©tadonnÃ©es (tags, labels OCI)
+        id: meta
+        if: steps.chk.outputs.found == 'true'
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ steps.name.outputs.image }}
+          tags: |
+            type=raw,value=${{ inputs.version }}
+            type=raw,value=latest,enable=${{ !contains(inputs.version, '-') }}
+            type=sha,format=short
+
+      - name: Build local (pour scan)
+        if: steps.chk.outputs.found == 'true'
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.context }}/${{ inputs.dockerfile }}
+          load: true
+          push: false
+          tags: local/scan:ci
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Scan Trivy de l'image
+        if: steps.chk.outputs.found == 'true' && inputs.scan
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
+        env:
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2
+        with:
+          image-ref: local/scan:ci
+          severity: ${{ inputs.severity }}
+          ignore-unfixed: true
+          exit-code: ${{ inputs.scan_blocking && '1' || '0' }}
+          format: table
+
+      - name: Login registre
+        if: steps.chk.outputs.found == 'true' && inputs.push
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ${{ inputs.registry }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build & push
+        id: push
+        if: steps.chk.outputs.found == 'true' && inputs.push
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.context }}/${{ inputs.dockerfile }}
+          push: true
+          platforms: ${{ inputs.platforms }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          cache-from: type=gha
+
+      - name: Attestation de provenance
+        if: steps.chk.outputs.found == 'true' && inputs.push
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-name: ${{ steps.name.outputs.image }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+      - name: Image non publiÃ©e
+        if: steps.chk.outputs.found == 'true' && !inputs.push
+        shell: bash
+        run: echo "::notice title=Build::image construite et scannÃ©e, non publiÃ©e (push=false)"

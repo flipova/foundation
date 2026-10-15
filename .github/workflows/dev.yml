@@ -1,0 +1,93 @@
+name: Dev
+
+# Feedback rapide + préversion alpha (calculée, non taguée sauf TAG_ALPHA=true).
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+  security-events: write
+  statuses: write
+
+concurrency:
+  group: dev
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    uses: ./.github/workflows/shared-quality.yml
+
+  security:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/shared-security.yml
+
+  test:
+    uses: ./.github/workflows/shared-test.yml
+
+  version:
+    uses: ./.github/workflows/shared-version.yml
+    with:
+      channel: alpha
+
+  build:
+    needs: [version]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-build.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      push: false
+
+  dev-gate:
+    name: Dev gate
+    if: always()
+    needs: [quality, security, test, version, build]
+    uses: ./.github/workflows/shared-gate.yml
+    with:
+      needs_json: ${{ toJSON(needs) }}
+      required: quality,security,version
+      title: Dev gate
+
+  # Ouvre automatiquement dev -> staging quand dev est vert (désactiver : AUTO_PROMOTE=false)
+  promote:
+    if: ${{ !cancelled() && needs.dev-gate.result == 'success' && vars.AUTO_PROMOTE != 'false' }}
+    needs: [dev-gate]
+    permissions:
+      # `contents: write` est exigé par le nettoyage de branches du workflow
+      # partagé : sans lui, GitHub refuse ce fichier avant même de l'exécuter.
+      contents: write
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/shared-branch-flow.yml
+    with:
+      action: promote
+      source: dev
+      target: staging
+    secrets:
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+
+  # Tag alpha facultatif (TAG_ALPHA=true) : évite d'inonder le dépôt de tags
+  release-alpha:
+    if: ${{ !cancelled() && needs.dev-gate.result == 'success' && vars.TAG_ALPHA == 'true' && needs.version.outputs.tag_exists == 'false' }}
+    needs: [dev-gate, version]
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      tag: ${{ needs.version.outputs.tag }}
+      prerelease: true

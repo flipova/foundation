@@ -1,0 +1,125 @@
+﻿name: Shared - Issue Triage
+
+# Ã€ appeler sur `issues: [opened, edited, reopened, labeled]`.
+on:
+  workflow_call:
+    inputs:
+      welcome_message:
+        type: string
+        default: "Merci d'avoir ouvert une issue ! ðŸ™ Nous la trions dÃ¨s que possible."
+    secrets:
+      PROJECT_TOKEN:
+        required: false
+
+permissions: {}
+
+jobs:
+  triage:
+    name: Labels, assignation, complÃ©tude
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          DEFAULT_ASSIGNEE: ${{ vars.DEFAULT_ASSIGNEE }}
+          DEFAULT_MILESTONE: ${{ vars.DEFAULT_MILESTONE }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const issue = context.payload.issue;
+            const number = issue.number;
+            const action = context.payload.action;
+            const existing = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+
+            async function safe(label, fn) {
+              try { return await fn(); }
+              catch (e) { core.warning(`${label} : ${e.message}`, { title: 'Issue triage' }); }
+            }
+            async function ensureLabel(name, color) {
+              try { await github.rest.issues.getLabel({ owner, repo, name }); }
+              catch (e) { if (e.status === 404) await github.rest.issues.createLabel({ owner, repo, name, color }); else throw e; }
+            }
+
+            if (issue.pull_request) { core.notice('Ã‰vÃ©nement sur une PR : ignorÃ©.'); return; }
+
+            const toAdd = [];
+            // type depuis le prÃ©fixe du titre
+            const t = /^\s*\[?(bug|feature|feat|question|docs|chore)\]?[:\s-]/i.exec(issue.title);
+            const map = { bug: ['type: bug', 'd73a4a'], feature: ['type: feature', '0e8a16'], feat: ['type: feature', '0e8a16'],
+                          question: ['type: question', 'd876e3'], docs: ['type: docs', '0075ca'], chore: ['type: chore', 'ededed'] };
+            if (t && !existing.some(n => n.startsWith('type:'))) toAdd.push(map[t[1].toLowerCase()]);
+
+            // statut de triage Ã  l'ouverture
+            if (action === 'opened' && !existing.some(n => n.startsWith('status:'))) toAdd.push(['status: triage', 'fbca04']);
+
+            // complÃ©tude
+            const body = (issue.body || '').trim();
+            if (body.length < 30) {
+              toAdd.push(['status: needs-info', 'fef2c0']);
+              core.warning('Description trop courte : label "status: needs-info" appliquÃ©.', { title: 'Issue triage' });
+              if (action === 'opened') {
+                await safe('commentaire needs-info', () => github.rest.issues.createComment({ owner, repo, issue_number: number,
+                  body: 'Pourrais-tu dÃ©tailler ? Contexte, comportement attendu/observÃ©, Ã©tapes de reproduction. Merci !' }));
+              }
+            } else if (existing.includes('status: needs-info') && body.length >= 30) {
+              await safe('retrait needs-info', () => github.rest.issues.removeLabel({ owner, repo, issue_number: number, name: 'status: needs-info' }));
+            }
+
+            await safe('labels', async () => {
+              const fresh = toAdd.filter(([n]) => !existing.includes(n));
+              for (const [n, c] of fresh) await ensureLabel(n, c);
+              if (fresh.length) await github.rest.issues.addLabels({ owner, repo, issue_number: number, labels: fresh.map(x => x[0]) });
+            });
+
+            // assignation
+            const assignee = (process.env.DEFAULT_ASSIGNEE || '').trim();
+            if (action !== 'opened') core.info('Assignation uniquement Ã  lâ€™ouverture.');
+            else if ((issue.assignees || []).length) core.info('DÃ©jÃ  assignÃ©e.');
+            else if (!assignee) core.notice('Variable DEFAULT_ASSIGNEE non dÃ©finie : issue non assignÃ©e.', { title: 'Issue assignee' });
+            else await safe('assignation', () => github.rest.issues.addAssignees({ owner, repo, issue_number: number, assignees: [assignee] }));
+
+            // milestone
+            const ms = (process.env.DEFAULT_MILESTONE || '').trim();
+            if (action === 'opened' && ms && !issue.milestone) {
+              await safe('milestone', async () => {
+                const list = await github.paginate(github.rest.issues.listMilestones, { owner, repo, state: 'open', per_page: 100 });
+                const f = list.find(x => x.title === ms);
+                if (f) await github.rest.issues.update({ owner, repo, issue_number: number, milestone: f.number });
+                else core.warning(`Milestone ouvert "${ms}" introuvable.`, { title: 'Issue milestone' });
+              });
+            }
+
+  project:
+    name: Ajout au GitHub Project
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      PROJECT_URL: ${{ vars.PROJECT_URL }}
+      HAS_TOKEN: ${{ secrets.PROJECT_TOKEN != '' }}
+    steps:
+      - id: chk
+        shell: bash
+        run: |
+          if [ -z "${PROJECT_URL}" ]; then
+            echo "::notice title=Project::PROJECT_URL non dÃ©finie : ajout ignorÃ©"; echo "ok=false" >> "$GITHUB_OUTPUT"
+          elif [ "${HAS_TOKEN}" != "true" ]; then
+            echo "::warning title=Project::secret PROJECT_TOKEN absent : ajout ignorÃ©"; echo "ok=false" >> "$GITHUB_OUTPUT"
+          else echo "ok=true" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/add-to-project@5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd # v2.0.0
+        if: steps.chk.outputs.ok == 'true'
+        with:
+          project-url: ${{ vars.PROJECT_URL }}
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+
+  welcome:
+    name: PremiÃ¨re issue
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3
+        with:
+          repo_token: ${{ github.token }}
+          issue_message: ${{ inputs.welcome_message }}

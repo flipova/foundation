@@ -1,0 +1,105 @@
+name: Main
+
+# Release stable : gate final, build/push, tag + GitHub Release, synchronisation main -> dev.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+  security-events: write
+  statuses: write
+
+concurrency:
+  group: main
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    uses: ./.github/workflows/shared-quality.yml
+    with:
+      strict_docs: true
+
+  security:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/shared-security.yml
+    with:
+      scorecard: true
+
+  test:
+    uses: ./.github/workflows/shared-test.yml
+
+  version:
+    uses: ./.github/workflows/shared-version.yml
+    with:
+      channel: stable
+
+  build:
+    needs: [version]
+    if: needs.version.outputs.release_needed == 'true'
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-build.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      push: true
+      platforms: linux/amd64,linux/arm64
+
+  main-gate:
+    name: Main gate
+    if: always()
+    needs: [quality, security, test, version, build]
+    uses: ./.github/workflows/shared-gate.yml
+    with:
+      needs_json: ${{ toJSON(needs) }}
+      required: quality,security,test,version
+      title: Main gate
+
+  # Hook de déploiement production : environnement GitHub "production" protégé (approbation).
+  # deploy-production:
+  #   needs: [main-gate, build]
+  #   environment: production
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "déploiement + vérification post-déploiement ici"
+
+  release:
+    if: ${{ !cancelled() && needs.main-gate.result == 'success' && needs.version.outputs.release_needed == 'true' && needs.version.outputs.tag_exists == 'false' }}
+    needs: [main-gate, version]
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      tag: ${{ needs.version.outputs.tag }}
+      prerelease: false
+
+  # Réaligne dev sur main (hotfix, tags, historique de promotion)
+  sync-back:
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
+    needs: [release]
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/shared-branch-flow.yml
+    with:
+      action: promote
+      source: main
+      target: dev
+      title: "chore(release): sync main back to dev"
+    secrets:
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

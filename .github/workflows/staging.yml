@@ -1,0 +1,109 @@
+name: Staging
+
+# Validation complète. Beta à chaque merge ; RC à la demande (workflow_dispatch).
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Canal de préversion"
+        type: choice
+        options: [beta, rc]
+        default: beta
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  actions: read
+  security-events: write
+  statuses: write
+
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    uses: ./.github/workflows/shared-quality.yml
+    with:
+      strict_docs: true
+
+  security:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+      id-token: write
+      pull-requests: write
+    uses: ./.github/workflows/shared-security.yml
+    with:
+      scorecard: false
+
+  test:
+    uses: ./.github/workflows/shared-test.yml
+
+  version:
+    uses: ./.github/workflows/shared-version.yml
+    with:
+      channel: ${{ inputs.channel || 'beta' }}
+
+  build:
+    needs: [version]
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-build.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      push: true
+
+  staging-gate:
+    name: Staging gate
+    if: always()
+    needs: [quality, security, test, version, build]
+    uses: ./.github/workflows/shared-gate.yml
+    with:
+      needs_json: ${{ toJSON(needs) }}
+      required: quality,security,version
+      title: Staging gate
+
+  # Hook de déploiement préproduction : à implémenter dans ton dépôt
+  # (environnement GitHub "staging" avec ses propres secrets).
+  # deploy-staging:
+  #   needs: [staging-gate, build]
+  #   environment: staging
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "déploiement + smoke tests ici"
+
+  release-prerelease:
+    if: ${{ !cancelled() && needs.staging-gate.result == 'success' && needs.version.outputs.tag_exists == 'false' }}
+    needs: [staging-gate, version]
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/shared-release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+      tag: ${{ needs.version.outputs.tag }}
+      prerelease: true
+
+  promote:
+    if: ${{ !cancelled() && needs.staging-gate.result == 'success' && vars.AUTO_PROMOTE != 'false' && github.event_name == 'push' }}
+    needs: [staging-gate]
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    uses: ./.github/workflows/shared-branch-flow.yml
+    with:
+      action: promote
+      source: staging
+      target: main
+    secrets:
+      APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}

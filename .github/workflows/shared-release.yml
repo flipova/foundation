@@ -1,0 +1,110 @@
+name: Shared - Release
+
+# Publie un tag + une GitHub Release (notes générées via .github/release.yml).
+# Garde-fous : refuse si le tag existe déjà. Attestation et signature optionnelles.
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      prerelease:
+        type: boolean
+        default: false
+      artifact_name:
+        description: "Nom d'un artefact (upload-artifact) à joindre à la release ; vide = aucun"
+        type: string
+        default: ""
+      attest:
+        description: "Attester la provenance des fichiers de l'artefact"
+        type: boolean
+        default: false
+      sign:
+        description: "Signer les fichiers avec cosign (keyless)"
+        type: boolean
+        default: false
+      draft:
+        type: boolean
+        default: false
+    outputs:
+      url:
+        value: ${{ jobs.release.outputs.url }}
+
+permissions: {}
+
+jobs:
+  release:
+    name: Publier ${{ inputs.tag }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    outputs:
+      url: ${{ steps.gh.outputs.url }}
+    steps:
+      - name: Le tag existe-t-il déjà ?
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          if gh api "repos/$REPO/git/ref/tags/$TAG" >/dev/null 2>&1; then
+            echo "::error title=Release::le tag $TAG existe déjà : publication refusée (une version ne doit jamais être publiée deux fois)"
+            exit 1
+          fi
+          echo "Tag $TAG disponible."
+
+      - name: Télécharger l'artefact
+        if: inputs.artifact_name != ''
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: dist
+
+      - name: Attestation de provenance
+        if: inputs.attest && inputs.artifact_name != ''
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3
+        with:
+          subject-path: dist/**
+
+      - name: Installer cosign
+        if: inputs.sign && inputs.artifact_name != ''
+        uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+
+      - name: Signer les fichiers
+        if: inputs.sign && inputs.artifact_name != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          find dist -type f ! -name '*.sigstore.json' -print0 | while IFS= read -r -d '' f; do
+            cosign sign-blob --yes --bundle "$f.sigstore.json" "$f"
+          done
+
+      - name: Avertissements de configuration
+        shell: bash
+        env:
+          ATTEST: ${{ inputs.attest }}
+          SIGN: ${{ inputs.sign }}
+          ARTIFACT: ${{ inputs.artifact_name }}
+        run: |
+          if [ -z "$ARTIFACT" ] && { [ "$ATTEST" = true ] || [ "$SIGN" = true ]; }; then
+            echo "::warning title=Release::attest/sign demandés mais aucun artefact (artifact_name) fourni : ignorés"
+          fi
+
+      - name: Créer la release
+        id: gh
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ inputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          draft: ${{ inputs.draft }}
+          generate_release_notes: true
+          make_latest: ${{ !inputs.prerelease }}
+          files: ${{ inputs.artifact_name != '' && 'dist/**' || '' }}

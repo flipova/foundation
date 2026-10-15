@@ -1,0 +1,19 @@
+# Maintient les versions des Actions (et idéalement leurs SHA épinglés) à jour.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    target-branch: dev
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions:
+        patterns: ["*"]
+  # Ajoute ton écosystème applicatif (npm, pip, gomod, cargo, maven, docker...) :
+  # - package-ecosystem: npm
+  #   directory: "/"
+  #   target-branch: dev
+  #   schedule: { interval: weekly }
+  #   commit-message: { prefix: "chore(deps)" }

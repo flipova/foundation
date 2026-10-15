@@ -1,0 +1,71 @@
+name: Shared - Gate
+
+# Agrège les résultats des jobs d'un orchestrateur.
+#   failure / cancelled        -> ::error + échec
+#   skipped (job "required")   -> ::error + échec
+#   skipped (job optionnel)    -> ::notice
+#   success                    -> ligne dans le résumé
+on:
+  workflow_call:
+    inputs:
+      needs_json:
+        description: "toJSON(needs) du workflow appelant"
+        required: true
+        type: string
+      required:
+        description: "Jobs (séparés par des virgules) qui ne doivent pas être skippés"
+        required: false
+        type: string
+        default: ""
+      title:
+        required: false
+        type: string
+        default: "Gate"
+
+permissions: {}
+
+jobs:
+  gate:
+    name: ${{ inputs.title }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Évaluer les résultats
+        shell: bash
+        env:
+          NEEDS: ${{ inputs.needs_json }}
+          REQUIRED: ${{ inputs.required }}
+          TITLE: ${{ inputs.title }}
+        run: |
+          set -euo pipefail
+          fail=0
+          required_list="$(tr ',' '\n' <<<"$REQUIRED" | tr -d ' ' | sed '/^$/d' || true)"
+          {
+            echo "### ${TITLE}"
+            echo ""
+            echo "| Job | Résultat |"
+            echo "|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          while IFS=$'\t' read -r job result; do
+            is_required=false
+            if [ -n "$required_list" ] && grep -qx "$job" <<<"$required_list"; then is_required=true; fi
+            case "$result" in
+              success)
+                echo "| \`$job\` | ✅ succès |" >> "$GITHUB_STEP_SUMMARY" ;;
+              skipped)
+                if [ "$is_required" = true ]; then
+                  echo "::error title=${TITLE}::le job requis '$job' a été ignoré"
+                  echo "| \`$job\` | ❌ ignoré (requis) |" >> "$GITHUB_STEP_SUMMARY"
+                  fail=1
+                else
+                  echo "::notice title=${TITLE}::job '$job' ignoré (non applicable)"
+                  echo "| \`$job\` | ⏭️ ignoré |" >> "$GITHUB_STEP_SUMMARY"
+                fi ;;
+              *)
+                echo "::error title=${TITLE}::le job '$job' a terminé en '$result'"
+                echo "| \`$job\` | ❌ $result |" >> "$GITHUB_STEP_SUMMARY"
+                fail=1 ;;
+            esac
+          done < <(jq -r 'to_entries[] | [.key, .value.result] | @tsv' <<<"$NEEDS")
+
+          exit "$fail"

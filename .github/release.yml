@@ -1,0 +1,23 @@
+# Catégories des notes de release générées automatiquement (shared-release.yml)
+changelog:
+  exclude:
+    labels:
+      - skip-changelog
+    authors:
+      - dependabot
+      - renovate
+  categories:
+    - title: "💥 Changements incompatibles"
+      labels: ["breaking"]
+    - title: "✨ Fonctionnalités"
+      labels: ["type: feature"]
+    - title: "🐛 Corrections"
+      labels: ["type: bug", "hotfix"]
+    - title: "⚡ Performance"
+      labels: ["type: perf"]
+    - title: "📚 Documentation"
+      labels: ["type: docs"]
+    - title: "🔧 Maintenance"
+      labels: ["type: chore", "type: ci", "type: build", "type: refactor", "type: test", "area: deps"]
+    - title: "Autres changements"
+      labels: ["*"]

@@ -1,0 +1,170 @@
+name: Shared - Branch Flow
+
+# action = promote : ouvre (si besoin) une PR source -> cible (dev->staging, staging->main, main->dev).
+# action = cleanup : supprime la branche d'une PR fusionnée (hors branches protégées).
+#
+# Limite connue : les PR créées avec GITHUB_TOKEN ne déclenchent pas d'autres workflows.
+# Définis la variable APP_ID et le secret APP_PRIVATE_KEY (GitHub App) pour que les checks démarrent.
+on:
+  workflow_call:
+    inputs:
+      action:
+        description: "promote | cleanup"
+        type: string
+        required: true
+      source:
+        type: string
+        default: ""
+      target:
+        type: string
+        default: ""
+      title:
+        type: string
+        default: ""
+      draft:
+        type: boolean
+        default: false
+    secrets:
+      APP_PRIVATE_KEY:
+        required: false
+
+permissions: {}
+
+jobs:
+  promote:
+    name: Promotion ${{ inputs.source }} → ${{ inputs.target }}
+    if: inputs.action == 'promote'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    env:
+      APP_ID: ${{ vars.APP_ID }}
+      HAS_APP_KEY: ${{ secrets.APP_PRIVATE_KEY != '' }}
+    steps:
+      - name: Valider les entrées
+        shell: bash
+        env:
+          SOURCE: ${{ inputs.source }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          if [ -z "$SOURCE" ] || [ -z "$TARGET" ]; then
+            echo "::error title=Branch flow::source et target sont requis pour promote"; exit 1
+          fi
+
+      - name: Token GitHub App
+        id: app
+        if: env.APP_ID != '' && env.HAS_APP_KEY == 'true'
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        with:
+          app-id: ${{ vars.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Avertir si pas d'App
+        if: steps.app.outcome == 'skipped'
+        shell: bash
+        run: |
+          echo "::warning title=Branch flow::pas de GitHub App (APP_ID / APP_PRIVATE_KEY), la PR sera créée avec GITHUB_TOKEN et ses checks ne démarreront pas automatiquement"
+
+      - name: Ouvrir la PR de promotion
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          SOURCE: ${{ inputs.source }}
+          TARGET: ${{ inputs.target }}
+          TITLE: ${{ inputs.title }}
+          DRAFT: ${{ inputs.draft }}
+          RELEASE_MANAGER: ${{ vars.RELEASE_MANAGER }}
+          DEFAULT_REVIEWERS: ${{ vars.DEFAULT_REVIEWERS }}
+        with:
+          github-token: ${{ steps.app.outputs.token || github.token }}
+          script: |
+            const { owner, repo } = context.repo;
+            const source = process.env.SOURCE, target = process.env.TARGET;
+
+            async function safe(label, fn) {
+              try { return await fn(); }
+              catch (e) { core.warning(`${label} : ${e.message}`, { title: 'Branch flow' }); }
+            }
+
+            let cmp;
+            try {
+              cmp = await github.rest.repos.compareCommitsWithBasehead({ owner, repo, basehead: `${target}...${source}` });
+            } catch (e) {
+              core.warning(`Comparaison ${target}...${source} impossible (branche absente ?) : ${e.message}`, { title: 'Branch flow' });
+              return;
+            }
+            if (cmp.data.ahead_by === 0) {
+              core.notice(`${source} n'a rien de neuf par rapport à ${target} : aucune PR à ouvrir.`, { title: 'Branch flow' });
+              return;
+            }
+
+            const open = await github.rest.pulls.list({ owner, repo, state: 'open', head: `${owner}:${source}`, base: target });
+            if (open.data.length) {
+              core.notice(`PR #${open.data[0].number} déjà ouverte pour ${source} → ${target}.`, { title: 'Branch flow' });
+              return;
+            }
+
+            const commits = cmp.data.commits.slice(-50)
+              .map(c => `- ${c.commit.message.split('\n')[0]} (\`${c.sha.slice(0, 7)}\`)`).join('\n');
+            const body = [
+              `Promotion automatique **${source} → ${target}**.`,
+              '',
+              `Commits inclus (${cmp.data.ahead_by}) :`,
+              commits,
+              '',
+              '> Fusionner avec un **merge commit** (pas de squash) pour garder les branches alignées.',
+            ].join('\n');
+
+            const pr = await github.rest.pulls.create({
+              owner, repo, head: source, base: target,
+              title: process.env.TITLE || `chore(release): promote ${source} to ${target}`,
+              body, draft: process.env.DRAFT === 'true',
+            });
+            core.notice(`PR #${pr.data.number} ouverte : ${pr.data.html_url}`, { title: 'Branch flow' });
+
+            await safe('label promotion', async () => {
+              try { await github.rest.issues.getLabel({ owner, repo, name: 'promotion' }); }
+              catch (e) { if (e.status === 404) await github.rest.issues.createLabel({ owner, repo, name: 'promotion', color: '5319e7' }); else throw e; }
+              await github.rest.issues.addLabels({ owner, repo, issue_number: pr.data.number, labels: ['promotion'] });
+            });
+
+            const assignee = (process.env.RELEASE_MANAGER || '').trim() || context.actor;
+            if (!/\[bot\]$/.test(assignee)) {
+              await safe('assignation', () => github.rest.issues.addAssignees({ owner, repo, issue_number: pr.data.number, assignees: [assignee] }));
+            }
+
+            const reviewers = (process.env.DEFAULT_REVIEWERS || '').split(',').map(s => s.trim()).filter(Boolean);
+            if (reviewers.length) {
+              await safe('reviewers', () => github.rest.pulls.requestReviewers({ owner, repo, pull_number: pr.data.number, reviewers }));
+            } else {
+              core.notice('DEFAULT_REVIEWERS non défini : reviewers non demandés.', { title: 'Branch flow' });
+            }
+
+  cleanup:
+    name: Nettoyage de la branche fusionnée
+    if: inputs.action == 'cleanup'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) { core.notice('Pas d’événement pull_request : rien à nettoyer.'); return; }
+            if (!pr.merged) { core.notice('PR fermée sans fusion : branche conservée.', { title: 'Cleanup' }); return; }
+            if (pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.notice('Branche d’un fork : non supprimable.', { title: 'Cleanup' }); return;
+            }
+            const ref = pr.head.ref;
+            if (['main', 'master', 'dev', 'staging'].includes(ref) || /^release\//.test(ref)) {
+              core.notice(`Branche protégée "${ref}" : conservée.`, { title: 'Cleanup' }); return;
+            }
+            try {
+              await github.rest.git.deleteRef({ ...context.repo, ref: `heads/${ref}` });
+              core.notice(`Branche "${ref}" supprimée.`, { title: 'Cleanup' });
+            } catch (e) {
+              if (e.status === 422 || e.status === 404) core.notice(`Branche "${ref}" déjà supprimée.`, { title: 'Cleanup' });
+              else core.warning(`Suppression de "${ref}" impossible : ${e.message}`, { title: 'Cleanup' });
+            }

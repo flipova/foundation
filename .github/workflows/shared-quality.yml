@@ -1,0 +1,214 @@
+name: Shared - Quality
+
+# Qualité statique universelle. Chaque contrôle est détecté : si non applicable,
+# il est ignoré avec un ::notice explicite (jamais un échec silencieux).
+on:
+  workflow_call:
+    inputs:
+      superlinter:
+        description: "Activer Super-Linter (langages de code)"
+        type: boolean
+        default: true
+      strict:
+        description: "true = les erreurs de lint bloquent ; false = elles restent visibles mais non bloquantes"
+        type: boolean
+        default: true
+      strict_docs:
+        description: "true = fautes d'orthographe / liens morts bloquent ; false = warnings"
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  detect:
+    name: Détection des contrôles applicables
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      workflows: ${{ steps.d.outputs.workflows }}
+      markdown: ${{ steps.d.outputs.markdown }}
+      yaml: ${{ steps.d.outputs.yaml }}
+      editorconfig: ${{ steps.d.outputs.editorconfig }}
+      precommit: ${{ steps.d.outputs.precommit }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - id: d
+        shell: bash
+        run: |
+          set -euo pipefail
+          has() { [ -n "$(git ls-files -- "$@" | head -n1 || true)" ]; }
+          check() { # nom, condition(0/1), message si skip
+            if [ "$2" = 0 ]; then echo "$1=true" >> "$GITHUB_OUTPUT"
+            else echo "$1=false" >> "$GITHUB_OUTPUT"; echo "::notice title=Quality skipped::$3"; fi
+          }
+          rc=0; has '.github/workflows/*.yml' '.github/workflows/*.yaml' || rc=1
+          check workflows "$rc" "actionlint ignoré : aucun workflow GitHub Actions dans ce dépôt"
+          rc=0; has '*.md' || rc=1
+          check markdown "$rc" "markdownlint ignoré : aucun fichier Markdown"
+          rc=0; has '*.yml' '*.yaml' || rc=1
+          check yaml "$rc" "yamllint ignoré : aucun fichier YAML"
+          rc=0; [ -f .editorconfig ] || rc=1
+          check editorconfig "$rc" "editorconfig-checker ignoré : pas de fichier .editorconfig (créé-le pour activer le contrôle)"
+          rc=0; [ -f .pre-commit-config.yaml ] || rc=1
+          check precommit "$rc" "pre-commit ignoré : pas de .pre-commit-config.yaml"
+
+  super-linter:
+    name: Super-Linter (code)
+    needs: detect
+    if: inputs.superlinter
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+      statuses: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
+          # Délégués à des actions dédiées (plus précises)
+          VALIDATE_GITHUB_ACTIONS: false
+          VALIDATE_MARKDOWN: false
+          VALIDATE_YAML: false
+          VALIDATE_EDITORCONFIG: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_JSCPD: false
+          SAVE_SUPER_LINTER_SUMMARY: true
+          ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
+
+  actionlint:
+    name: actionlint
+    needs: detect
+    if: needs.detect.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: raven-actions/actionlint@3d39aea434753780c3b3d4a1a31c854b4dbf49d7 # v2
+        with:
+          fail-on-error: true
+
+  editorconfig:
+    name: editorconfig-checker
+    needs: detect
+    if: needs.detect.outputs.editorconfig == 'true'
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: editorconfig-checker/action-editorconfig-checker@7b3ae4aa4c2245e1296bfeb7690729093697f5b3 # v2
+      - run: editorconfig-checker
+
+  markdownlint:
+    name: markdownlint
+    needs: detect
+    if: needs.detect.outputs.markdown == 'true'
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: DavidAnson/markdownlint-cli2-action@992badcdf24e3b8eb7e87ff9287fe931bcb00c6e # v20
+        with:
+          globs: |
+            **/*.md
+            !node_modules/**
+            !**/CHANGELOG.md
+
+  yamllint:
+    name: yamllint
+    needs: detect
+    if: needs.detect.outputs.yaml == 'true'
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Config par défaut si absente
+        shell: bash
+        run: |
+          if [ ! -f .yamllint ] && [ ! -f .yamllint.yml ] && [ ! -f .yamllint.yaml ]; then
+            echo "::notice title=yamllint::aucune config .yamllint : config souple par défaut utilisée"
+            printf 'extends: relaxed\nrules:\n  line-length: disable\n' > "$RUNNER_TEMP/yamllint.yml"
+            echo "YAMLLINT_CFG=$RUNNER_TEMP/yamllint.yml" >> "$GITHUB_ENV"
+          fi
+      - uses: ibiqlik/action-yamllint@2576378a8e339169678f9939646ee3ee325e845c # v3
+        with:
+          config_file: ${{ env.YAMLLINT_CFG }}
+          file_or_dir: .
+          strict: false
+
+  pre-commit:
+    name: pre-commit
+    needs: detect
+    if: needs.detect.outputs.precommit == 'true'
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.x"
+      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+
+  spelling:
+    name: codespell
+    needs: detect
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ !inputs.strict_docs }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2
+        with:
+          skip: ".git,*.lock,package-lock.json,pnpm-lock.yaml,yarn.lock,go.sum,*.min.js,*.svg"
+          check_filenames: true
+
+  links:
+    name: lychee (liens)
+    needs: detect
+    if: needs.detect.outputs.markdown == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          args: --no-progress --max-retries 2 --accept 200,204,429 --exclude-mail "**/*.md"
+          fail: ${{ inputs.strict_docs }}
+          jobSummary: true

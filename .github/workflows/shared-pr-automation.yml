@@ -1,0 +1,184 @@
+﻿name: Shared - PR Automation
+
+# Ã€ appeler depuis un workflow `pull_request_target` (labels/assignation sur PR de forks).
+# Aucun checkout du code de la PR n'est effectuÃ© : seul le contexte d'Ã©vÃ©nement est utilisÃ©.
+on:
+  workflow_call:
+    inputs:
+      labeler_config:
+        description: "Chemin de la config actions/labeler dans le dÃ©pÃ´t cible"
+        type: string
+        default: ".github/labeler.yml"
+      welcome_message:
+        description: "Message d'accueil pour une premiÃ¨re PR"
+        type: string
+        default: "Merci pour ta premiÃ¨re contribution ! ðŸŽ‰ VÃ©rifie que le titre suit Conventional Commits et que l'issue liÃ©e est rÃ©fÃ©rencÃ©e."
+    secrets:
+      PROJECT_TOKEN:
+        description: "PAT ou token d'App avec le scope project (pour GitHub Projects)"
+        required: false
+
+permissions: {}
+
+jobs:
+  metadata:
+    name: Labels, assignation, reviewers, milestone
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: read
+    steps:
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          DEFAULT_REVIEWERS: ${{ vars.DEFAULT_REVIEWERS }}
+          DEFAULT_MILESTONE: ${{ vars.DEFAULT_MILESTONE }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr = context.payload.pull_request;
+            const number = pr.number;
+
+            async function safe(label, fn) {
+              try { return await fn(); }
+              catch (e) { core.warning(`${label} : ${e.message}`, { title: 'PR automation' }); }
+            }
+
+            async function ensureLabel(name, color, description = '') {
+              try { await github.rest.issues.getLabel({ owner, repo, name }); }
+              catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name, color, description });
+                } else throw e;
+              }
+            }
+
+            // 1. Type de changement depuis le titre
+            const types = {
+              feat: ['type: feature', '0e8a16'], fix: ['type: bug', 'd73a4a'],
+              docs: ['type: docs', '0075ca'], refactor: ['type: refactor', 'cfd3d7'],
+              perf: ['type: perf', 'fbca04'], test: ['type: test', 'bfd4f2'],
+              build: ['type: build', 'c5def5'], ci: ['type: ci', 'c5def5'],
+              chore: ['type: chore', 'ededed'], revert: ['type: revert', 'e99695'],
+            };
+            const m = /^(\w+)(\([^)]*\))?(!)?:/.exec(pr.title);
+            const labels = [];
+            if (m && types[m[1]]) labels.push(types[m[1]]);
+            else core.notice('Titre non conventionnel : aucun label de type appliquÃ©.', { title: 'PR labels' });
+            if (m && m[3]) labels.push(['breaking', 'b60205']);
+            if (pr.base.ref === 'main' && ['dev', 'staging'].includes(pr.head.ref)) labels.push(['promotion', '5319e7']);
+            if (/^hotfix\//.test(pr.head.ref)) labels.push(['hotfix', 'b60205']);
+
+            // 2. Taille
+            const size = pr.additions + pr.deletions;
+            const sz = size < 10 ? 'XS' : size < 50 ? 'S' : size < 250 ? 'M' : size < 1000 ? 'L' : 'XL';
+            labels.push([`size/${sz}`, 'ededed']);
+            if (sz === 'XL') core.warning(`PR trÃ¨s volumineuse (${size} lignes). Pense Ã  la dÃ©couper.`, { title: 'PR size' });
+
+            // retirer les anciens labels de taille
+            await safe('retrait ancien label size', async () => {
+              for (const l of pr.labels || []) {
+                if (l.name.startsWith('size/') && l.name !== `size/${sz}`) {
+                  await github.rest.issues.removeLabel({ owner, repo, issue_number: number, name: l.name });
+                }
+              }
+            });
+            await safe('application des labels', async () => {
+              for (const [name, color] of labels) await ensureLabel(name, color);
+              await github.rest.issues.addLabels({ owner, repo, issue_number: number, labels: labels.map(l => l[0]) });
+            });
+
+            // 3. Assignation de l'auteur
+            if (pr.user.type === 'Bot') core.notice('Auteur = bot : pas dâ€™assignation.', { title: 'PR assignee' });
+            else if ((pr.assignees || []).length) core.info('DÃ©jÃ  assignÃ©e.');
+            else await safe('assignation', () =>
+              github.rest.issues.addAssignees({ owner, repo, issue_number: number, assignees: [pr.user.login] }));
+
+            // 4. Reviewers par dÃ©faut (si pas de CODEOWNERS ni de reviewers dÃ©jÃ  demandÃ©s)
+            const reviewers = (process.env.DEFAULT_REVIEWERS || '').split(',').map(s => s.trim()).filter(Boolean)
+              .filter(r => r.toLowerCase() !== pr.user.login.toLowerCase());
+            if (pr.draft) core.notice('PR en draft : reviewers non demandÃ©s.', { title: 'PR reviewers' });
+            else if (!reviewers.length) core.notice('Variable DEFAULT_REVIEWERS non dÃ©finie : reviewers non demandÃ©s (CODEOWNERS peut sâ€™appliquer).', { title: 'PR reviewers' });
+            else if ((pr.requested_reviewers || []).length) core.info('Reviewers dÃ©jÃ  demandÃ©s.');
+            else await safe('demande de reviewers', () =>
+              github.rest.pulls.requestReviewers({ owner, repo, pull_number: number, reviewers }));
+
+            // 5. Milestone
+            const ms = (process.env.DEFAULT_MILESTONE || '').trim();
+            if (!ms) core.notice('Variable DEFAULT_MILESTONE non dÃ©finie : pas de milestone.', { title: 'PR milestone' });
+            else if (pr.milestone) core.info('Milestone dÃ©jÃ  dÃ©fini.');
+            else await safe('milestone', async () => {
+              const list = await github.paginate(github.rest.issues.listMilestones, { owner, repo, state: 'open', per_page: 100 });
+              const found = list.find(x => x.title === ms);
+              if (!found) { core.warning(`Milestone ouvert "${ms}" introuvable.`, { title: 'PR milestone' }); return; }
+              await github.rest.issues.update({ owner, repo, issue_number: number, milestone: found.number });
+            });
+
+  labeler:
+    name: Labels par chemins
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Config labeler prÃ©sente ?
+        id: cfg
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          CFG: ${{ inputs.labeler_config }}
+        with:
+          script: |
+            try {
+              await github.rest.repos.getContent({
+                ...context.repo, path: process.env.CFG, ref: context.payload.pull_request.base.sha,
+              });
+              core.setOutput('found', 'true');
+            } catch (e) {
+              core.setOutput('found', 'false');
+              core.notice(`Config labeler "${process.env.CFG}" absente : labels par chemins ignorÃ©s.`, { title: 'Labeler' });
+            }
+      - name: Appliquer les labels
+        if: steps.cfg.outputs.found == 'true'
+        uses: actions/labeler@b8dd2d9be0f68b860e7dae5dae7d772984eacd6d # v6
+        with:
+          configuration-path: ${{ inputs.labeler_config }}
+          sync-labels: true
+
+  project:
+    name: Ajout au GitHub Project
+    runs-on: ubuntu-latest
+    permissions: {}
+    env:
+      PROJECT_URL: ${{ vars.PROJECT_URL }}
+      HAS_TOKEN: ${{ secrets.PROJECT_TOKEN != '' }}
+    steps:
+      - name: VÃ©rifier la configuration
+        id: chk
+        shell: bash
+        run: |
+          if [ -z "${PROJECT_URL}" ]; then
+            echo "::notice title=Project::variable PROJECT_URL non dÃ©finie : ajout au Project ignorÃ©"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          elif [ "${HAS_TOKEN}" != "true" ]; then
+            echo "::warning title=Project::PROJECT_URL est dÃ©finie mais le secret PROJECT_TOKEN est absent : ajout ignorÃ©"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/add-to-project@5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd # v2.0.0
+        if: steps.chk.outputs.ok == 'true'
+        with:
+          project-url: ${{ vars.PROJECT_URL }}
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+
+  welcome:
+    name: PremiÃ¨re contribution
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3
+        with:
+          repo_token: ${{ github.token }}
+          pr_message: ${{ inputs.welcome_message }}

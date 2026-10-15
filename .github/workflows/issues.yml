@@ -1,0 +1,16 @@
+name: Issues
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions: {}
+
+jobs:
+  triage:
+    permissions:
+      issues: write
+      pull-requests: write
+    uses: ./.github/workflows/shared-issue-triage.yml
+    secrets:
+      PROJECT_TOKEN: ${{ secrets.PROJECT_TOKEN }}

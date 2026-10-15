@@ -1,37 +1,31 @@
-# GENERATED FILE - do not edit by hand.
-# Source of truth: .github/labels.yml (the `paths` of each label).
-# Regenerate with: flow labels --sync-labeler
-
-"registry":
+# Config actions/labeler v5+/v6 : label -> chemins
+"area: ci":
   - changed-files:
-      - any-glob-to-any-file: "design/**"
-"tokens":
+      - any-glob-to-any-file: [".github/**"]
+"area: docs":
   - changed-files:
-      - any-glob-to-any-file: "design/tokens.xml"
-"theme":
+      - any-glob-to-any-file: ["**/*.md", "docs/**"]
+"area: tests":
   - changed-files:
-      - any-glob-to-any-file: "design/themes.xml"
-"components":
+      - any-glob-to-any-file: ["**/test/**", "**/tests/**", "**/*.test.*", "**/*.spec.*", "**/*_test.*"]
+"area: deps":
   - changed-files:
-      - any-glob-to-any-file: "components/**"
-"config":
+      - any-glob-to-any-file:
+          - "package.json"
+          - "package-lock.json"
+          - "pnpm-lock.yaml"
+          - "yarn.lock"
+          - "requirements*.txt"
+          - "pyproject.toml"
+          - "go.mod"
+          - "go.sum"
+          - "Cargo.toml"
+          - "Cargo.lock"
+          - "pom.xml"
+          - "build.gradle*"
+"area: docker":
   - changed-files:
-      - any-glob-to-any-file: "tailwind.config.js"
+      - any-glob-to-any-file: ["**/Dockerfile*", "**/docker-compose*.y*ml", ".dockerignore"]
+"area: infra":
   - changed-files:
-      - any-glob-to-any-file: "postcss.config.js"
-  - changed-files:
-      - any-glob-to-any-file: "globals.css"
-  - changed-files:
-      - any-glob-to-any-file: "tsup.config.ts"
-  - changed-files:
-      - any-glob-to-any-file: "tsconfig.json"
-  - changed-files:
-      - any-glob-to-any-file: "gluestack-ui.config.json"
-  - changed-files:
-      - any-glob-to-any-file: "package.json"
-"ci":
-  - changed-files:
-      - any-glob-to-any-file: ".github/**"
-"docs":
-  - changed-files:
-      - any-glob-to-any-file: "docs/**"
+      - any-glob-to-any-file: ["**/*.tf", "terraform/**", "helm/**", "k8s/**", "infra/**"]

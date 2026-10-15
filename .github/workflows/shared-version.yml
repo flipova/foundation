@@ -1,0 +1,172 @@
+name: Shared - Version
+
+# Calcule la prochaine version SemVer à partir des tags Git et des Conventional Commits.
+# Ne crée AUCUN tag : la publication est faite par shared-release.yml.
+#
+# Canal "auto" : main -> stable, staging -> beta, autres (dev, PR) -> alpha.
+# Prérelease : X.Y.Z-<canal>.N, N = 1 + plus grand N existant pour cette cible (tags Git).
+on:
+  workflow_call:
+    inputs:
+      channel:
+        description: "auto | alpha | beta | rc | stable"
+        type: string
+        default: auto
+      bump:
+        description: "auto | major | minor | patch"
+        type: string
+        default: auto
+      tag_prefix:
+        type: string
+        default: "v"
+    outputs:
+      version:
+        description: "Version SemVer sans préfixe (ex. 1.5.0-beta.2)"
+        value: ${{ jobs.version.outputs.version }}
+      tag:
+        description: "Tag Git complet (ex. v1.5.0-beta.2)"
+        value: ${{ jobs.version.outputs.tag }}
+      build_version:
+        description: "Version + métadonnées de build (ex. 1.5.0-beta.2+sha.a81c92f)"
+        value: ${{ jobs.version.outputs.build_version }}
+      channel:
+        value: ${{ jobs.version.outputs.channel }}
+      bump:
+        value: ${{ jobs.version.outputs.bump }}
+      previous:
+        description: "Dernier tag stable (vide si aucun)"
+        value: ${{ jobs.version.outputs.previous }}
+      is_prerelease:
+        value: ${{ jobs.version.outputs.is_prerelease }}
+      release_needed:
+        description: "false si canal stable et aucun commit publiable (feat/fix/perf/!)"
+        value: ${{ jobs.version.outputs.release_needed }}
+      tag_exists:
+        value: ${{ jobs.version.outputs.tag_exists }}
+
+permissions: {}
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      tag: ${{ steps.v.outputs.tag }}
+      build_version: ${{ steps.v.outputs.build_version }}
+      channel: ${{ steps.v.outputs.channel }}
+      bump: ${{ steps.v.outputs.bump }}
+      previous: ${{ steps.v.outputs.previous }}
+      is_prerelease: ${{ steps.v.outputs.is_prerelease }}
+      release_needed: ${{ steps.v.outputs.release_needed }}
+      tag_exists: ${{ steps.v.outputs.tag_exists }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - id: v
+        shell: bash
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          BUMP_INPUT: ${{ inputs.bump }}
+          PREFIX: ${{ inputs.tag_prefix }}
+          REF_NAME: ${{ github.base_ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force --quiet || true
+
+          if [ "$CHANNEL" = auto ]; then
+            case "$REF_NAME" in
+              main|master) CHANNEL=stable ;;
+              staging)     CHANNEL=beta ;;
+              *)           CHANNEL=alpha ;;
+            esac
+          fi
+          case "$CHANNEL" in
+            alpha|beta|rc|stable) ;;
+            *) echo "::error title=Version::canal non supporté : '$CHANNEL' (alpha|beta|rc|stable|auto)"; exit 1 ;;
+          esac
+          case "$BUMP_INPUT" in
+            auto|major|minor|patch) ;;
+            *) echo "::error title=Version::bump non supporté : '$BUMP_INPUT'"; exit 1 ;;
+          esac
+
+          # Dernier tag stable
+          LAST="$(git tag --list "${PREFIX}*" --sort=-v:refname | grep -E "^${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" | head -n1 || true)"
+          if [ -z "$LAST" ]; then
+            PREV="0.0.0"; RANGE="HEAD"
+            echo "::notice title=Version::aucun tag stable existant : départ de ${PREFIX}0.0.0"
+          else
+            PREV="${LAST#"$PREFIX"}"; RANGE="${LAST}..HEAD"
+          fi
+
+          SUBJECTS="$(git log "$RANGE" --no-merges --format='%s' || true)"
+          BODIES="$(git log "$RANGE" --no-merges --format='%b' || true)"
+
+          BUMP="$BUMP_INPUT"
+          if [ "$BUMP" = auto ]; then
+            if grep -qE '^[a-z]+(\([^)]*\))?!:' <<<"$SUBJECTS" || grep -qE '^BREAKING[ -]CHANGE' <<<"$BODIES"; then BUMP=major
+            elif grep -qE '^feat(\([^)]*\))?:' <<<"$SUBJECTS"; then BUMP=minor
+            elif grep -qE '^(fix|perf)(\([^)]*\))?:' <<<"$SUBJECTS"; then BUMP=patch
+            else BUMP=none; fi
+          fi
+
+          RELEASE_NEEDED=true
+          if [ "$BUMP" = none ]; then
+            if [ "$CHANNEL" = stable ]; then
+              RELEASE_NEEDED=false
+              echo "::notice title=Version::aucun commit publiable (feat/fix/perf/!) depuis ${LAST:-le début} : pas de release stable"
+            fi
+            BUMP=patch
+          fi
+
+          IFS=. read -r MA MI PA <<<"$PREV"
+          case "$BUMP" in
+            major) MA=$((MA + 1)); MI=0; PA=0 ;;
+            minor) MI=$((MI + 1)); PA=0 ;;
+            patch) PA=$((PA + 1)) ;;
+          esac
+          NEXT="${MA}.${MI}.${PA}"
+
+          if [ "$CHANNEL" = stable ]; then
+            VERSION="$NEXT"; PRE=false
+          else
+            LAST_N="$(git tag --list "${PREFIX}${NEXT}-${CHANNEL}.*" | sed -E 's/.*\.([0-9]+)$/\1/' | sort -n | tail -n1 || true)"
+            VERSION="${NEXT}-${CHANNEL}.$(( ${LAST_N:-0} + 1 ))"; PRE=true
+          fi
+
+          SHORT="$(git rev-parse --short HEAD)"
+          TAG_EXISTS=false
+          if git rev-parse -q --verify "refs/tags/${PREFIX}${VERSION}" >/dev/null; then
+            TAG_EXISTS=true
+            echo "::warning title=Version::le tag ${PREFIX}${VERSION} existe déjà : toute publication sera refusée"
+          fi
+
+          {
+            echo "version=$VERSION"
+            echo "tag=${PREFIX}${VERSION}"
+            echo "build_version=${VERSION}+sha.${SHORT}"
+            echo "channel=$CHANNEL"
+            echo "bump=$BUMP"
+            echo "previous=${LAST:-}"
+            echo "is_prerelease=$PRE"
+            echo "release_needed=$RELEASE_NEEDED"
+            echo "tag_exists=$TAG_EXISTS"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Version calculée"
+            echo ""
+            echo "| Champ | Valeur |"
+            echo "|---|---|"
+            echo "| Version | \`$VERSION\` |"
+            echo "| Tag | \`${PREFIX}${VERSION}\` |"
+            echo "| Canal | $CHANNEL |"
+            echo "| Bump | $BUMP |"
+            echo "| Précédent stable | ${LAST:-aucun} |"
+            echo "| Release nécessaire | $RELEASE_NEEDED |"
+          } >> "$GITHUB_STEP_SUMMARY"
