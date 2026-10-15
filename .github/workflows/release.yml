@@ -55,7 +55,7 @@ jobs:
           exit 1
 
   qualite:
-    name: qualite (main)
+    name: qualite (${{ github.base_ref || github.ref_name }})
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -85,9 +85,24 @@ jobs:
           if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
           npm run design:gen:check
 
+  codeql:
+    name: analyse securite (CodeQL)
+    needs: qualite
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write # requis pour publier les resultats CodeQL
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/analyze@v3
+
   livrer:
     name: livraison (production)
-    needs: qualite
+    needs: codeql
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 30
