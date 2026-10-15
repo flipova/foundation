@@ -1,13 +1,24 @@
-# Pipeline — branche main (release) : qualité puis publication npm.
-# Template fourni par le starter flipova, copié dans le dépôt puis adapté librement.
+# Pipeline — branche main : qualité à chaque push, publication npm sur tag vX.Y.Z.
+#
+# Publication par « trusted publishing » npm (OIDC) : aucun token, aucun secret.
+# Le tag DOIT correspondre à la version de package.json — c'est ce qui rattache
+# le paquet publié au versionnement (`flipova version tag vX.Y.Z`).
+#
+# Prérequis (une fois, côté npm) :
+#   npm trust github <@scope/paquet> --file main.yml \
+#     --repository <org>/<dépôt> --allow-publish
+#
+# Template fourni par le starter flipova ; adapte librement à ce dépôt.
 name: main
 
 on:
   push:
     branches: [main]
+    tags: ['v*']
 
 jobs:
   qualite:
+    name: qualite
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +33,9 @@ jobs:
       - run: npm run build --if-present
 
   publier:
+    name: publication npm
     needs: qualite
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -36,5 +49,45 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: npm
       - run: npm ci
+
+      - name: Rattacher le tag à la version du paquet
+        run: |
+          paquet=$(node -p "require('./package.json').version")
+          tag="${GITHUB_REF_NAME#v}"
+          echo "package.json=$paquet  tag=$tag"
+          if [ "$paquet" != "$tag" ]; then
+            echo "::error::le tag ($tag) ne correspond pas à la version du paquet ($paquet)"
+            exit 1
+          fi
+
+      - name: La version est-elle déjà publiée ?
+        id: etat
+        run: |
+          nom=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          if npm view "$nom@$version" version >/dev/null 2>&1; then
+            echo "publiee=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$nom@$version est déjà sur le registre — publication ignorée"
+          else
+            echo "publiee=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - run: npm run build --if-present
-      - run: npm publish --provenance --access public
+
+      - name: Publication npm (OIDC, sans token)
+        if: steps.etat.outputs.publiee == 'false'
+        run: npm publish --provenance --access public
+
+      - name: Release GitHub (pré-release si alpha/beta/rc)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            *-alpha*|*-beta*|*-rc*) drapeau="--prerelease" ;;
+            *) drapeau="" ;;
+          esac
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            echo "release ${GITHUB_REF_NAME} déjà présente"
+          else
+            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes $drapeau
+          fi
