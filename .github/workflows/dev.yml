@@ -1,9 +1,9 @@
-# Pipeline — branche dev : porte d'entrée du cycle (développement précoce).
+﻿# Pipeline â€” branche dev : porte d'entrÃ©e du cycle (dÃ©veloppement prÃ©coce).
 #
-# Toute branche peut viser `dev`. La suite est verrouillée :
-#   dev  →  staging  →  main        (seuls les hotfix/* peuvent court-circuiter)
+# Toute branche peut viser `dev`. La suite est verrouillÃ©e :
+#   dev  â†’  staging  â†’  main        (seuls les hotfix/* peuvent court-circuiter)
 #
-# Adapté du template flipova pour @flipova/foundation.
+# AdaptÃ© du template flipova pour @flipova/foundation.
 name: dev
 
 on:
@@ -33,7 +33,7 @@ jobs:
           echo "source=$source  cible=$cible"
           case "$source" in
             dev|staging|main|master)
-              echo "::error::« $source » ne peut pas viser $cible : ouvre une branche de travail (feature/*, fix/*, chore/*, hotfix/*)"
+              echo "::error::Â« $source Â» ne peut pas viser $cible : ouvre une branche de travail (feature/*, fix/*, chore/*, hotfix/*)"
               exit 1
               ;;
             *) echo "::notice::$source -> $cible accepte" ;;
@@ -55,12 +55,10 @@ jobs:
           cache: npm
       - name: installation
         run: npm ci
-      - name: lint (avis — ne bloque pas encore la CI)
+      - name: lint
         run: npm run lint --if-present
-        continue-on-error: true
-      - name: format (avis)
+      - name: format
         run: npm run format:check --if-present
-        continue-on-error: true
       - name: typecheck
         run: npm run typecheck
       - name: tests

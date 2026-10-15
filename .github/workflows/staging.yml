@@ -1,9 +1,9 @@
-# Pipeline — branche staging : validation large avant la release.
+﻿# Pipeline â€” branche staging : validation large avant la release.
 #
-# Promotion VERROUILLÉE : la seule source autorisée vers `staging` est `dev`
-# (ou une branche `hotfix/*`). Tout le reste est refusé.
+# Promotion VERROUILLÃ‰E : la seule source autorisÃ©e vers `staging` est `dev`
+# (ou une branche `hotfix/*`). Tout le reste est refusÃ©.
 #
-# Adapté du template flipova pour @flipova/foundation : on ajoute ici les
+# AdaptÃ© du template flipova pour @flipova/foundation : on ajoute ici les
 # garde-fous lourds (registre de design complet, documentation, paquet npm).
 name: staging
 
@@ -21,12 +21,12 @@ permissions:
   contents: read
 
 env:
-  # Branche amont autorisée à promouvoir vers cette branche. `hotfix/*` est toujours permis.
+  # Branche amont autorisÃ©e Ã  promouvoir vers cette branche. `hotfix/*` est toujours permis.
   AMONT: dev
 
 jobs:
   promotion:
-    name: promotion (source autorisée)
+    name: promotion (source autorisÃ©e)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -39,7 +39,7 @@ jobs:
           case "$source" in
             "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
             *)
-              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
+              echo "::error::Â« $source Â» ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
               exit 1
               ;;
           esac
@@ -56,12 +56,10 @@ jobs:
           cache: npm
       - name: installation
         run: npm ci
-      - name: lint (avis — ne bloque pas encore la CI)
+      - name: lint
         run: npm run lint --if-present
-        continue-on-error: true
-      - name: format (avis)
+      - name: format
         run: npm run format:check --if-present
-        continue-on-error: true
       - name: typecheck
         run: npm run typecheck
       - name: tests

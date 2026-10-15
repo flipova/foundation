@@ -1,18 +1,18 @@
-# Pipeline — branche main : release (qualité + publication npm).
+﻿# Pipeline â€” branche main : release (qualitÃ© + publication npm).
 #
-# Promotion VERROUILLÉE : la seule source autorisée vers `main` est `staging`
-# (ou une branche `hotfix/*`). Tout le reste est refusé.
-#   dev  →  staging  →  main
+# Promotion VERROUILLÃ‰E : la seule source autorisÃ©e vers `main` est `staging`
+# (ou une branche `hotfix/*`). Tout le reste est refusÃ©.
+#   dev  â†’  staging  â†’  main
 #
-# Publication par « trusted publishing » npm (OIDC) : aucun token, aucun secret.
-# Le tag DOIT correspondre à la version de package.json — c'est ce qui rattache
-# le paquet publié au versionnement (`flipova version tag vX.Y.Z`).
+# Publication par Â« trusted publishing Â» npm (OIDC) : aucun token, aucun secret.
+# Le tag DOIT correspondre Ã  la version de package.json â€” c'est ce qui rattache
+# le paquet publiÃ© au versionnement (`flipova version tag vX.Y.Z`).
 #
-# Prérequis (une fois, côté npm) :
+# PrÃ©requis (une fois, cÃ´tÃ© npm) :
 #   npm trust github @flipova/foundation --file main.yml \
 #     --repository flipova/foundation --allow-publish
 #
-# Adapté du template flipova pour @flipova/foundation.
+# AdaptÃ© du template flipova pour @flipova/foundation.
 name: main
 
 on:
@@ -34,7 +34,7 @@ env:
 
 jobs:
   promotion:
-    name: promotion (source autorisée)
+    name: promotion (source autorisÃ©e)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -47,7 +47,7 @@ jobs:
           case "$source" in
             "${AMONT}"|hotfix/*) echo "::notice::$source -> $cible accepte" ;;
             *)
-              echo "::error::« $source » ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
+              echo "::error::Â« $source Â» ne peut pas viser $cible : passe d'abord par ${AMONT}, ou ouvre une branche hotfix/*"
               exit 1
               ;;
           esac
@@ -64,12 +64,10 @@ jobs:
           cache: npm
       - name: installation
         run: npm ci
-      - name: lint (avis — ne bloque pas encore la CI)
+      - name: lint
         run: npm run lint --if-present
-        continue-on-error: true
-      - name: format (avis)
+      - name: format
         run: npm run format:check --if-present
-        continue-on-error: true
       - name: typecheck
         run: npm run typecheck
       - name: tests
@@ -122,7 +120,7 @@ jobs:
           version=$(node -p "require('./package.json').version")
           if npm view "$nom@$version" version >/dev/null 2>&1; then
             echo "publiee=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::$nom@$version est deja sur le registre — publication ignoree"
+            echo "::notice::$nom@$version est deja sur le registre â€” publication ignoree"
           else
             echo "publiee=false" >> "$GITHUB_OUTPUT"
           fi
