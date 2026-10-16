@@ -1,6 +1,6 @@
 # Pipeline — every channel in ONE file.
 #
-#   dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag vX.Y.Z
+#   dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag @org/repo@X.Y.Z
 #
 # This replaces the three look-alike workflows (dev.yml, staging.yml,
 # release.yml) that ran the same four jobs under three different names —
@@ -13,15 +13,15 @@
 #   ladder    the policy: who may feed whom            (pull requests only)
 #   quality   the code: lint, format, types, tests     (every run)
 #   security  CodeQL                                   (pull requests + deliveries)
-#   deliver   npm + GitHub release                     (v* tags only)
+#   deliver   npm + GitHub release                     (release tags only)
 #   summary   what this run meant                      (always)
 #
 # Both switches you will ever need are `if:` (does the job apply here?) and the
 # job `name:` (what the reviewers see on the pull request). Everything else is
 # one command per step, in order, with no matrix gymnastics.
 #
-# Provided by the flipova starter: copied into the repository, then adapted
-# freely. The starter never takes a file back once the repository owns it.
+# Copied from the flipova starter. Adapt it freely: the starter never takes a
+# file back once the repository owns it.
 #
 # NOTE — the FILE is still called `release.yml` on purpose: npm binds a trusted
 # publisher to the workflow FILENAME, so renaming the file would break the delivery
@@ -33,7 +33,7 @@ name: pipeline
 on:
   push:
     branches: [dev, alpha, beta, rc, main]
-    tags: ['v*']
+    tags: ['v*', '@**'] # `v*` for tags cut before the convention, `@org/repo@X.Y.Z` from now on
   pull_request:
     branches: [dev, alpha, beta, rc, main]
   workflow_dispatch: # re-run by hand instead of pushing an empty commit
@@ -46,7 +46,7 @@ permissions:
 # from.
 concurrency:
   group: pipeline-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -182,7 +182,7 @@ jobs:
   security:
     name: security (CodeQL)
     needs: quality
-    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -196,13 +196,13 @@ jobs:
       - uses: github/codeql-action/analyze@v3
 
   # ---------------------------------------------------------------------------
-  # 4. deliver — production. A v* tag is the only thing that publishes, and only
+  # 4. deliver — production. A release tag is the only thing that publishes, and only
   #    after the tag has been checked against the version in the manifest.
   # ---------------------------------------------------------------------------
   deliver:
     name: deliver (production)
     needs: security
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
@@ -228,7 +228,8 @@ jobs:
         run: |
           if [ -f package.json ] && node -e "process.exit(require('./package.json').version ? 0 : 1)" 2>/dev/null; then
             version=$(node -p "require('./package.json').version")
-            tag="${GITHUB_REF_NAME#v}"
+            tag="${GITHUB_REF_NAME##*@}"
+            tag="${tag#v}" # a legacy v2.4.2 tag still works
             echo "manifest=$version  tag=$tag"
             if [ "$version" != "$tag" ]; then
               echo "::error::the tag ($tag) does not match the manifest ($version)"
@@ -299,7 +300,7 @@ jobs:
             echo "| security | ${{ needs.security.result }} |"
             echo "| deliver | ${{ needs.deliver.result }} |"
             echo ""
-            echo "Ladder: \`dev -> alpha -> beta -> rc -> main -> tag vX.Y.Z\`"
+            echo "Ladder: \`dev -> alpha -> beta -> rc -> main -> tag @org/repo@X.Y.Z\`"
             echo ""
             echo "\`skipped\` means the job does not apply here: \`deliver\` runs only on a \`v*\` tag,"
             echo "\`ladder\` only on a pull request, \`security\` on a pull request, a tag or \`main\`."
