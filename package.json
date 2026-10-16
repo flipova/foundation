@@ -101,7 +101,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "prettier": "^3.3.0",
     "typescript-eslint": "^8.0.0",
-    "@react-native/assets-registry": "^0.79.7",
+    "@react-native/assets-registry": "^0.87.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.2",
     "@types/js-yaml": "^4.0.9",
