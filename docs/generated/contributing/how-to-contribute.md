@@ -1,27 +1,32 @@
 # How to Contribute
 
-**One command runs the whole cycle.**
+## The channels
 
-```bash
-npm run flow
+Work lands on `dev`, and travels the release ladder one branch at a time. Each
+channel accepts only the one before it:
+
+```
+dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag vX.Y.Z
 ```
 
-It walks, in order: the issue, the release decision, the branch, the checks, the
-commit, the push, the pull request, and the link back to the issue. It skips
-whatever is already done, so running it before and after your changes is the
-expected way to work.
+`main` is production. For this repository the deliverable is the npm package, so
+`main` publishes; in another repository it would be a site, an image, anything.
 
-You make four decisions. Everything else is generated:
+1. Branch off `dev` and open a pull request into `dev`: squash is the only merge
+   allowed for work branches, and one review is required.
+2. Promote from the **workspace**, not from this repository. `corral` walks the
+   ladder, waits for the checks, and never cuts a delivery short:
 
-| You decide | Flow asks for |
-| --- | --- |
-| what the issue is | a title and a template (`feature`, `bug`, `chore`, blank) |
-| whether this is a release | `major`, `minor`, `patch`, or `none` |
-| what the change says | one line, which becomes the changelog entry |
-| the commit subject | one line |
+```bash
+corral promote v2.4.2-alpha.1 --repo foundation --merge   # dev   -> alpha, tag
+corral promote v2.4.2-beta.1  --repo foundation --merge   # alpha -> beta,  tag
+corral promote v2.4.2-rc.1    --repo foundation --merge   # beta  -> rc,    tag
+corral promote v2.4.2         --repo foundation --merge   # rc    -> main,  tag
+```
 
-The `Issues:` trailer, the `Closes #n` line, the branch, the version file and the
-labels are all derived, never typed.
+The tag is what publishes. `.github/workflows/release.yml` refuses a tag that
+does not match the version in `package.json`, runs `npm run deploy`, and opens
+the GitHub release with the notes GitHub generates for it.
 
 ## Designing in this repository
 
@@ -63,8 +68,8 @@ Four rules the tooling cannot check for you:
    families, shadows and z-index belong in the registries.
 3. **Never hand-edit a generated file** (`config.ts`, `tokens.js`,
    `docs/generated/**`). The next run overwrites it.
-4. **Commit the sources and the regenerated output together**, or `flow verify`
-   fails on drift.
+4. **Commit the sources and the regenerated output together**, or
+   `npm run design:gen:check` (run by CI) fails on drift.
 
 ### A theming change, in one line
 
@@ -76,49 +81,52 @@ follows on its own.
 ## The gate
 
 ```bash
-npm run flow verify
+npm run design:pipeline     # gen, check, verify, lint, doc
+npm run typecheck
+npm test
 ```
 
-Runs, in order: the changeset against its declaration, the generated files
-against the registries, the registry validation, and the types. It is a gate and
-not a formatter: nothing is rewritten, so a failure always means "look at this".
+CI runs all of it on every pull request, plus `npm run format:check` and the
+build: `.github/workflows/dev.yml` on `dev`, `staging.yml` for a pull request
+into `staging`, and `release.yml` on the release channels and `main`. The design
+gate is not a formatter — nothing is rewritten, so a failure always means "look
+at this".
 
-For the full regeneration, `npm run design:pipeline` (`gen`, `check`, `verify`,
-`lint`, `doc`). If you touched a registry, `npm run design:canonical` and commit
+If you touched a registry, run `npm run design:canonical` and commit
 `design/canonical.index.txt`.
 
 ## Versioning
 
 There is exactly **one** version in this repository: the root `package.json`,
 the one that actually gets published. The registries store no copy of it:
-
-- `npm run version:bump` (= `changeset version` **+** `flow release reset` **+**
-  `npm run design:doc`) bumps `package.json`, returns the release declaration to
-  `none`, and regenerates the documentation in one step. The release workflow
-  uses that command, so the version pull request can never be inconsistent.
-- `design/manifest.xml` has **no** `<version>` element: the XSD would reject it,
-  so a second copy cannot be reintroduced by accident.
-
-There is exactly one changeset too, `.changeset/release.md`, generated from
-`.github/flow/release.yml`. Declare the bump with `npm run flow -- release`;
-never edit the generated file and never add a second one.
+`design/manifest.xml` has **no** `<version>` element, the XSD would reject it, so
+a second copy cannot be reintroduced by accident. `corral promote` writes that
+one version, and the release workflow refuses a tag that disagrees with it.
 
 ### The release path
 
 ```
 branch
    |
-   v  pull request  (CI: typecheck, design gate, changeset required, flow state in sync)
+   v  pull request into dev   (CI: lint, format, typecheck, tests, build, design gate)
+dev
+   |
+   v  promote                 (each merge waits for the checks to be green)
+alpha
+   |
+   v  promote
+beta
+   |
+   v  promote
+rc
+   |
+   v  promote
 main
    |
-   v  changesets opens/updates the "chore: version packages" pull request
-"chore: version packages"  <-- the only path that publishes
-   |
-   v  merging it runs the release preflight, then publishes
+   v  tag vX.Y.Z              (the tag must match package.json)
 npm
 ```
 
-The preflight refuses to publish unless a changesets commit produced the version
-currently in `package.json`, so a release cannot happen by accident. A `hotfix`
-dispatch with a mandatory reason is the only exception, and the quality gates
-still run.
+Nothing publishes from an ordinary commit: only a `v*` tag on `main` reaches the
+registry, through the trusted publisher (OIDC) declared on npm, so there is no
+token to rotate and no secret to leak.

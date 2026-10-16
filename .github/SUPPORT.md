@@ -1,5 +1,5 @@
 # Support
 
-- Question d'usage → ouvre une **Discussion**.
-- Bug → ouvre une **issue** (template « Bug »).
-- Faille de sécurité → voir `SECURITY.md` (signalement privé).
+- Usage question → open a **Discussion**.
+- Bug → open an **issue** ("Bug" template).
+- Security flaw → see `SECURITY.md` (private reporting).

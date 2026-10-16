@@ -1,6 +1,6 @@
-# Politique de sécurité
+# Security policy
 
-## Signaler une vulnérabilité
+## Reporting a vulnerability
 
-Utilise l'onglet **Security → Report a vulnerability** (signalement privé).
-N'ouvre pas d'issue publique pour un problème de sécurité.
+Use the **Security → Report a vulnerability** tab (private reporting).
+Do not open a public issue for a security problem.
