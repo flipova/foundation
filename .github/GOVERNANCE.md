@@ -1,3 +1,3 @@
-# Gouvernance
+# Governance
 
-Les décisions passent par pull request : une revue est requise et le **squash** est la seule fusion autorisée. La branche par défaut est protégée.
+Decisions go through pull requests: one review is required and **squash** is the only merge allowed for work branches. The default branch is protected.

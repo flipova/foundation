@@ -1,5 +1,5 @@
-# Contribuer
+# Contributing
 
-1. Crée une branche depuis la branche par défaut.
-2. Ouvre une pull request (le squash est la seule fusion autorisée).
-3. Une revue est requise avant fusion.
+1. Create a branch from the default branch.
+2. Open a pull request (squash is the only merge allowed for work branches).
+3. One review is required before merging.

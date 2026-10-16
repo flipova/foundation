@@ -1,6 +1,6 @@
 {
   "name": "@flipova/foundation",
-  "version": "2.4.1",
+  "version": "2.4.2-rc.1",
   "description": "gluestack-ui components for React Native (iOS, Android) and Web, with a registry-driven theming pipeline (XML tokens/themes to gluestack config + Tailwind theme)",
   "author": "Flipova",
   "license": "MIT",
@@ -47,7 +47,6 @@
     "components",
     "design",
     "README.md",
-    "CHANGELOG.md",
     "LICENSE"
   ],
   "scripts": {
@@ -95,7 +94,6 @@
     }
   },
   "devDependencies": {
-    "@changesets/changelog-github": "^0.6.0",
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -103,7 +101,6 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "prettier": "^3.3.0",
     "typescript-eslint": "^8.0.0",
-    "@changesets/cli": "^2.30.0",
     "@react-native/assets-registry": "^0.79.7",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.2",
