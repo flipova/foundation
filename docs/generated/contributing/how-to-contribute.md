@@ -6,7 +6,7 @@ Work lands on `dev`, and travels the release ladder one branch at a time. Each
 channel accepts only the one before it:
 
 ```
-dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag vX.Y.Z
+dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag @org/repo@X.Y.Z
 ```
 
 `main` is production. For this repository the deliverable is the npm package, so
@@ -123,10 +123,10 @@ rc
    v  promote
 main
    |
-   v  tag vX.Y.Z              (the tag must match package.json)
+   v  tag @org/repo@X.Y.Z              (the tag must match package.json)
 npm
 ```
 
-Nothing publishes from an ordinary commit: only a `v*` tag on `main` reaches the
+Nothing publishes from an ordinary commit: only a release tag on `main` reaches the
 registry, through the trusted publisher (OIDC) declared on npm, so there is no
 token to rotate and no secret to leak.
