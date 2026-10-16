@@ -14,3 +14,8 @@ docs/.docusaurus/
 .expo/
 .github/flow/.state.json
 
+# env files: values stay local, only the example ships
+.env
+.env.local
+.env.*.local
+!.env.example

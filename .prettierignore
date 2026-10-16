@@ -11,6 +11,5 @@ design/canonical.index.txt
 # Prettier ne doit donc jamais les reformater, sinon les deux gardes s'opposent.
 components/ui/gluestack-ui-provider/config.ts
 components/ui/gluestack-ui-provider/tokens.js
-CHANGELOG.md
 package-lock.json
 docs/package-lock.json

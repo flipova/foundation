@@ -154,4 +154,4 @@ cd docs && npm start
 ## License
 
 MIT © Flipova. Participation is governed by
-[the Code of Conduct](CODE_OF_CONDUCT.md).
+[the Code of Conduct](.github/CODE_OF_CONDUCT.md).
