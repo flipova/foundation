@@ -157,7 +157,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "csstype": "^3.2.3",
-    "dom-helpers": "^5.2.1",
+    "dom-helpers": "^6.0.1",
     "immer": "^10.1.1",
     "lucide-react": ">=0.400.0",
     "motion": "^12.40.0",
