@@ -1,13 +1,13 @@
-## Résumé
+## Summary
 
-Décris le changement et son intérêt.
+Describe the change and why it matters.
 
-## Issue liée
+## Linked issue
 
 Closes #
 
 ## Checklist
 
-- [ ] Tests et lint passent
-- [ ] Documentation mise à jour
-- [ ] Changement sans rupture (ou documenté)
+- [ ] Tests and lint pass
+- [ ] Documentation updated
+- [ ] No breaking change (or documented)
