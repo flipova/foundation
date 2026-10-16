@@ -30,6 +30,14 @@
 # was confusing before.
 name: pipeline
 
+# Every run states what it is, in its own title, so the Actions tab stops being a
+# wall of commit subjects to decode:
+#   pull_request · rc <- chore/release-2.4.3      push · alpha      push · @flipova/x@1.2.3
+run-name: >-
+  ${{ github.event_name == 'pull_request'
+  && format('pull_request · {0} <- {1}', github.base_ref, github.head_ref)
+  || format('{0} · {1}', github.event_name, github.ref_name) }}
+
 on:
   push:
     branches: [dev, alpha, beta, rc, main]
