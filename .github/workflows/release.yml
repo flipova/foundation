@@ -1,98 +1,193 @@
-# Pipeline — branche main : PRODUCTION (livraison du livrable du dépôt).
+# Pipeline — every channel in ONE file.
 #
-# `main` n'est PAS réservé aux paquets npm : c'est la branche de PRODUCTION.
-# Tout ce qui est publié, déployé ou livré passe par ici, sur tag `v*`.
-# Pour @flipova/foundation le livrable EST le paquet npm — il est déclaré dans
-# le script `deploy` de package.json ; la CI ne fait que l'appeler.
+#   dev  ->  alpha  ->  beta  ->  rc  ->  main  ->  tag vX.Y.Z
 #
-# Promotion VERROUILLÉE : la seule source autorisée vers `main` est `staging`
-# (ou une branche `hotfix/*`). Tout le reste est refusé.
-#   dev  →  staging  →  main
+# This replaces the three look-alike workflows (dev.yml, staging.yml,
+# release.yml) that ran the same four jobs under three different names —
+# `qualite (node 20)`, `qualite (staging)`, `qualite (rc)` — and turned the
+# Actions tab into a wall of near-identical runs.
 #
-# Adapté du template flipova pour @flipova/foundation.
-name: release
+# Four jobs, one responsibility each, and the name says what the job does rather
+# than which branch happened to fire it:
+#
+#   ladder    the policy: who may feed whom            (pull requests only)
+#   quality   the code: lint, format, types, tests     (every run)
+#   security  CodeQL                                   (pull requests + deliveries)
+#   deliver   npm + GitHub release                     (v* tags only)
+#   summary   what this run meant                      (always)
+#
+# Both switches you will ever need are `if:` (does the job apply here?) and the
+# job `name:` (what the reviewers see on the pull request). Everything else is
+# one command per step, in order, with no matrix gymnastics.
+#
+# Provided by the flipova starter: copied into the repository, then adapted
+# freely. The starter never takes a file back once the repository owns it.
+#
+# NOTE — the FILE is still called `release.yml` on purpose: npm binds a trusted
+# publisher to the workflow FILENAME, so renaming the file would break the delivery
+# until `npm trust github <org>/<repo> --file <new-name> --allow-publish` has been
+# re-run. The `name:` below is what the Actions tab shows, and that is the part that
+# was confusing before.
+name: pipeline
 
 on:
   push:
-    branches: [main, alpha, beta, rc]
+    branches: [dev, alpha, beta, rc, main]
     tags: ['v*']
   pull_request:
-    branches: [main, alpha, beta, rc]
-
-concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: false # une livraison ne se coupe pas
+    branches: [dev, alpha, beta, rc, main]
+  workflow_dispatch: # re-run by hand instead of pushing an empty commit
 
 permissions:
   contents: read
 
+# One live run per branch or tag. A delivery is never cancelled; a check is
+# cancelled as soon as it is superseded — which is where most of the noise came
+# from.
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+
 jobs:
-  promotion:
-    name: promotion (source autorisee)
+  # ---------------------------------------------------------------------------
+  # 1. ladder — the only job that can fail for a reason that is not a failing
+  #    test. It answers one question: is this pull request allowed to exist?
+  # ---------------------------------------------------------------------------
+  ladder:
+    name: ladder
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: La source doit etre l'amont autorise (ou un hotfix)
+      - name: only the previous channel may feed the next one
         run: |
-          source="${GITHUB_HEAD_REF}"
-          cible="${GITHUB_BASE_REF}"
-          case "$cible" in
-            alpha) amont="dev" ;;
-            beta)  amont="alpha" ;;
-            rc)    amont="beta" ;;
-            main)  amont="rc staging" ;;
-            *)     amont="" ;;
+          src="${GITHUB_HEAD_REF}"
+          dst="${GITHUB_BASE_REF}"
+          case "$dst" in
+            dev)   upstream="any work branch" ;;
+            alpha) upstream="dev" ;;
+            beta)  upstream="alpha" ;;
+            rc)    upstream="beta" ;;
+            main)  upstream="rc" ;;
           esac
-          echo "source=$source  cible=$cible  amont=$amont"
-          for ok in $amont; do
-            if [ "$source" = "$ok" ]; then echo "::notice::$source -> $cible accepte"; exit 0; fi
-          done
-          case "$source" in
-            hotfix/*) echo "::notice::hotfix $source -> $cible accepte"; exit 0 ;;
+          echo "source=$src  target=$dst  expected=$upstream"
+
+          # Branches corral creates for itself: mechanics, not a decision. The
+          # gate that matters for them is the channel pull request that follows,
+          # so they pass here instead of painting the tab red. Same for hotfix.
+          case "$src" in
+            chore/release-*|chore/promotion-*)
+              echo "::notice::$src -> $dst : produced by corral, not policed here"
+              exit 0
+              ;;
+            hotfix/*)
+              echo "::notice::$src -> $dst : hotfix accepted"
+              exit 0
+              ;;
           esac
-          echo "::error::« $source » ne peut pas viser $cible : passe d'abord par « $amont », ou ouvre une branche hotfix/*"
+
+          if [ "$dst" = "dev" ]; then
+            echo "::notice::$src -> dev : any work branch is accepted"
+            exit 0
+          fi
+          if [ "$src" = "$upstream" ]; then
+            echo "::notice::$src -> $dst : accepted"
+            exit 0
+          fi
+
+          echo "::error::« $src » cannot target « $dst »: promote through « $upstream » first, or open a hotfix/* branch"
           exit 1
 
-  qualite:
-    name: qualite (${{ github.base_ref || github.ref_name }})
+  # ---------------------------------------------------------------------------
+  # 2. quality — the code. Node 20 and 22 so a version drift is caught here and
+  #    not in production; the heavy verification rides on node 22 only.
+  # ---------------------------------------------------------------------------
+  quality:
+    name: quality (node ${{ matrix.node }})
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    # `dev` is the cheap channel: the commands below, nothing else. From alpha
+    # onwards the run is a candidate for production, so the heavy verification
+    # (design artifacts, docs site, publishable tarball) joins in.
+    env:
+      HEAVY: ${{ (github.base_ref || github.ref_name) != 'dev' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: npm
-      - name: installation
+
+      - name: install
         run: npm ci
       - name: lint
         run: npm run lint --if-present
       - name: format
         run: npm run format:check --if-present
-      - name: typecheck
+      - name: types
         run: npm run typecheck
       - name: tests
         run: npm test
       - name: build
         run: npm run build
-      - name: python (outils du registre de design)
+
+      - name: python (design registry tooling)
+        if: matrix.node == 22
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: registre de design a jour (artefacts generes)
+
+      # The registry is the single source of truth: a generated file that drifts
+      # from it fails here, on every channel, cheaply.
+      - name: design registry up to date
+        if: matrix.node == 22
         run: |
           if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
           npm run design:gen:check
 
-  codeql:
-    name: analyse securite (CodeQL)
-    needs: qualite
+      # From alpha onwards this run can become a release, so the expensive
+      # checks join in: the full design pipeline, the docs site, the tarball.
+      - name: full design pipeline (gen, check, verify, lint, doc)
+        if: matrix.node == 22 && env.HEAVY == 'true'
+        run: |
+          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
+          npm run design:pipeline
+
+      - name: documentation site builds
+        if: matrix.node == 22 && env.HEAVY == 'true'
+        run: npm --prefix docs ci && npm --prefix docs run build
+
+      - name: npm tarball is publishable
+        if: matrix.node == 22 && env.HEAVY == 'true'
+        run: npm pack --dry-run
+
+      - name: dist, kept for the delivery
+        if: matrix.node == 22 && env.HEAVY == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+          if-no-files-found: error
+
+  # ---------------------------------------------------------------------------
+  # 3. security — CodeQL. On a pull request (before it can merge), on `main` and
+  #    on a tag (before it is delivered); not on every intermediate push, which
+  #    is what used to triple the minutes for no extra signal.
+  # ---------------------------------------------------------------------------
+  security:
+    name: security (CodeQL)
+    needs: quality
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
-      security-events: write # requis pour publier les resultats CodeQL
+      security-events: write # required to publish the findings
     steps:
       - uses: actions/checkout@v4
       - uses: github/codeql-action/init@v3
@@ -100,49 +195,53 @@ jobs:
           languages: javascript-typescript
       - uses: github/codeql-action/analyze@v3
 
-  livrer:
-    name: livraison (production)
-    needs: codeql
+  # ---------------------------------------------------------------------------
+  # 4. deliver — production. A v* tag is the only thing that publishes, and only
+  #    after the tag has been checked against the version in the manifest.
+  # ---------------------------------------------------------------------------
+  deliver:
+    name: deliver (production)
+    needs: security
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: production
     permissions:
       contents: write
-      id-token: write # OIDC : trusted publishing npm, sans token ni secret
+      id-token: write # OIDC: npm trusted publishing, no token and no secret
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: installation
+      - name: install
         run: npm ci
 
-      - name: npm recent + registre (le trusted publishing OIDC exige npm >= 11.5.1)
+      - name: npm recent + registry (trusted publishing needs npm >= 11.5.1)
         run: |
           npm install -g npm@latest
-          npm config set registry https://registry.npmjs.org/   # sinon setup-node ecrit un "always-auth" obsolete
+          npm config set registry https://registry.npmjs.org/ # otherwise setup-node writes a stale "always-auth"
           npm --version
 
-      - name: Rattacher le tag au versionnement (si le depot est versionne)
+      - name: the tag must match the manifest
         run: |
           if [ -f package.json ] && node -e "process.exit(require('./package.json').version ? 0 : 1)" 2>/dev/null; then
             version=$(node -p "require('./package.json').version")
             tag="${GITHUB_REF_NAME#v}"
-            echo "version du depot=$version  tag=$tag"
+            echo "manifest=$version  tag=$tag"
             if [ "$version" != "$tag" ]; then
-              echo "::error::le tag ($tag) ne correspond pas a la version du depot ($version)"
+              echo "::error::the tag ($tag) does not match the manifest ($version)"
               exit 1
             fi
           else
-            echo "::notice::depot non versionne — controle tag <-> version ignore"
+            echo "::notice::unversioned repository — the tag/manifest check does not apply"
           fi
 
       - name: build
         run: npm run build
 
-      - name: Livrer (script « deploy » du depot)
+      - name: deliver (the repository's own `deploy` script)
         run: |
           if [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.deploy ? 0 : 1)" 2>/dev/null; then
             version=$(node -p "require('./package.json').version")
@@ -152,27 +251,56 @@ jobs:
               *-rc*)    tag=rc ;;
               *)        tag=latest ;;
             esac
-            echo "::notice::livraison via « npm run deploy -- --tag $tag »"
+            echo "::notice::delivering with « npm run deploy -- --tag $tag »"
             if ! npm run deploy -- --tag "$tag"; then
-              echo "::error::la livraison a echoue. Si le journal ci-dessus contient ENEEDAUTH, le registre n'a pas de « trusted publisher » OIDC declare pour ce depot. Remede :"
-              echo "::error::  npm trust github ${{ github.repository }} --file main.yml --allow-publish"
-              echo "::error::  (ou : npmjs.com > paquet > Settings > Trusted Publisher > GitHub Actions)"
+              echo "::error::delivery failed. If the log above contains ENEEDAUTH, the registry has no OIDC trusted publisher declared for this repository. Fix:"
+              echo "::error::  npm trust github ${{ github.repository }} --file pipeline.yml --allow-publish"
+              echo "::error::  (or: npmjs.com > package > Settings > Trusted Publisher > GitHub Actions)"
               exit 1
             fi
           else
-            echo "::notice::aucun script « deploy » — rien a livrer (release GitHub uniquement)"
+            echo "::notice::no « deploy » script — nothing to deliver (GitHub release only)"
           fi
 
-      - name: Release GitHub (pre-release si alpha/beta/rc)
+      - name: GitHub release (pre-release for alpha/beta/rc)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           case "${GITHUB_REF_NAME}" in
-            *-alpha*|*-beta*|*-rc*) drapeau="--prerelease" ;;
-            *) drapeau="" ;;
+            *-alpha*|*-beta*|*-rc*) flag="--prerelease" ;;
+            *) flag="" ;;
           esac
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            echo "release ${GITHUB_REF_NAME} deja presente"
+            echo "release ${GITHUB_REF_NAME} already there"
           else
-            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes $drapeau
+            gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --generate-notes $flag
           fi
+
+  # ---------------------------------------------------------------------------
+  # 5. summary — one table at the end of every run saying what just happened, so
+  #    reading the Actions tab never requires opening a job and guessing.
+  # ---------------------------------------------------------------------------
+  summary:
+    name: summary
+    if: always()
+    needs: [ladder, quality, security, deliver]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: what this run meant
+        run: |
+          {
+            echo "### pipeline · \`${GITHUB_REF_NAME}\` · ${GITHUB_EVENT_NAME}"
+            echo ""
+            echo "| job | result |"
+            echo "| --- | --- |"
+            echo "| ladder | ${{ needs.ladder.result }} |"
+            echo "| quality | ${{ needs.quality.result }} |"
+            echo "| security | ${{ needs.security.result }} |"
+            echo "| deliver | ${{ needs.deliver.result }} |"
+            echo ""
+            echo "Ladder: \`dev -> alpha -> beta -> rc -> main -> tag vX.Y.Z\`"
+            echo ""
+            echo "\`skipped\` means the job does not apply here: \`deliver\` runs only on a \`v*\` tag,"
+            echo "\`ladder\` only on a pull request, \`security\` on a pull request, a tag or \`main\`."
+          } >> "$GITHUB_STEP_SUMMARY"
