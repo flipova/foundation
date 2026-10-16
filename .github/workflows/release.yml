@@ -87,7 +87,7 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -143,7 +143,7 @@ jobs:
       id-token: write # OIDC: lets a registry accept the publish without a secret
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
