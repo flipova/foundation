@@ -70,6 +70,7 @@ jobs:
           case "$src" in
             chore/release-*|chore/promotion-*) echo "::notice::$src -> $dst : produced by corral, not policed here"; exit 0 ;;
             hotfix/*) echo "::notice::$src -> $dst : hotfix accepted"; exit 0 ;;
+            dependabot/*) echo "::notice::$src -> $dst : dependabot PR accepted to $dst"; exit 0 ;;
           esac
           if [ "$dst" = "dev" ]; then echo "::notice::$src -> dev : any work branch is accepted"; exit 0; fi
           if [ "$src" = "$upstream" ]; then echo "::notice::$src -> $dst : accepted"; exit 0; fi
