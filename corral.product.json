@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "foundation",
+  "name": "foundation",
+  "description": "",
+  "type": "cli",
+  "stack": [
+    "react",
+    "typescript"
+  ],
+  "version": "2.4.3-alpha.1",
+  "channel": "stable",
+  "license": "MIT",
+  "lifecycle": "active",
+  "owners": [],
+  "links": {
+    "docs": "",
+    "support": "",
+    "tracker": ""
+  },
+  "dependencies": [],
+  "deliverables": [],
+  "environments": [
+    "dev",
+    "staging",
+    "prod"
+  ],
+  "compliance": {
+    "license": "MIT",
+    "sbom": false
+  }
+}
