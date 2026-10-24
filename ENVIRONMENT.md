@@ -25,11 +25,11 @@ corral vault gen --repo foundation --all
 
 ## Variables this repository needs
 
-| Key                 | Scope | Environments | Kind |
-| ------------------- | ----- | ------------ | ---- |
-| _none recorded yet_ | —     | —            | —    |
+| Key | Scope | Environments | Kind |
+| --- | --- | --- | --- |
+| _none recorded yet_ | — | — | — |
 
-Environments: dev, staging, prod. A key scoped to _this repo_ wins over a _shared_ one
+Environments: dev, staging, prod. A key scoped to *this repo* wins over a *shared* one
 of the same name.
 
 ## Manage them
