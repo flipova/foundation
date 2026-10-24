@@ -1154,7 +1154,7 @@ class SourceView(ttk.Frame):
 
     TAG_RE = re.compile(r"</?[\w:.\-]+|\??/?>")
     ATTR_RE = re.compile(r"""([\w:.\-]+)(\s*=\s*)("[^"]*"|'[^']*')""")
-    COMMENT_RE = re.compile(r"<!--.*?-->")
+    COMMENT_RE = re.compile(r"<!--(?:(?!-->).)*-->")
 
     def __init__(self, master: tk.Misc) -> None:
         super().__init__(master)
