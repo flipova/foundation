@@ -158,7 +158,7 @@
     "clsx": "^2.1.1",
     "csstype": "^3.2.3",
     "dom-helpers": "^6.0.1",
-    "immer": "^10.1.1",
+    "immer": "^11.2.9",
     "lucide-react": ">=0.400.0",
     "motion": "^12.40.0",
     "qrcode": "^1.5.4",
