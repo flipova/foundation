@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Flipova Foundation Design Tokens
+  =================================
+  Namespace: urn:flipova:foundation:registry
+  Schema: flipova.foundation/registry/1
+  Schema Location: schema.xsd
+  Register: tokens
+
+  PURPOSE:
+  Design tokens are the atomic values of the design system.
+  They define spacing, colors, typography, shadows, animations, etc.
+
+  TOKEN KINDS:
+  - scale: Numeric scale values (spacing, radii, font sizes)
+  - map: Named values without a scale (z-index, opacity)
+  - font: Font family definitions with platform variants
+  - color: Color palette with shades
+  - shadow: Shadow definitions with offset, blur, color
+  - animation: Duration and easing definitions
+-->
+<tokens xmlns="urn:flipova:foundation:registry"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:flipova:foundation:registry schema.xsd"
+        schema="flipova.foundation/registry/1"
+        register="tokens">
+    <items>
+        <!-- Spacing Scale: base 4px, formula n * 4 -->
+        <token id="spacing" kind="scale" unit="px" base="4" formula="n * 4">
+            <values>
+                <value id="0">0</value>
+                <value id="0.5">2</value>
+                <value id="1">4</value>
+                <value id="1.5">6</value>
+                <value id="2">8</value>
+                <value id="2.5">10</value>
+                <value id="3">12</value>
+                <value id="3.5">14</value>
+                <value id="4">16</value>
+                <value id="5">20</value>
+                <value id="6">24</value>
+                <value id="7">28</value>
+                <value id="8">32</value>
+                <value id="9">36</value>
+                <value id="10">40</value>
+                <value id="11">44</value>
+                <value id="12">48</value>
+                <value id="14">56</value>
+                <value id="16">64</value>
+                <value id="20">80</value>
+                <value id="24">96</value>
+                <value id="32">128</value>
+                <value id="40">160</value>
+                <value id="48">192</value>
+            </values>
+        </token>
+        <!-- Border Radii Scale -->
+        <token id="radii" kind="scale" unit="px">
+            <values>
+                <value id="none">0</value>
+                <value id="xs">2</value>
+                <value id="sm">4</value>
+                <value id="md">8</value>
+                <value id="lg">12</value>
+                <value id="xl">16</value>
+                <value id="2xl">24</value>
+                <value id="3xl">32</value>
+                <value id="full">9999</value>
+            </values>
+        </token>
+        <!-- Breakpoints Scale (min-width mode) -->
+        <token id="breakpoints" kind="scale" unit="px" mode="min-width">
+            <values>
+                <value id="base">0</value>
+                <value id="xs">480</value>
+                <value id="sm">640</value>
+                <value id="md">768</value>
+                <value id="lg">1024</value>
+                <value id="xl">1280</value>
+                <value id="2xl">1536</value>
+            </values>
+        </token>
+        <!-- Font Families (with platform variants) -->
+        <token id="family" kind="font">
+            <values>
+                <value id="system">
+                    <native>system</native>
+                    <web>system-ui, -apple-system, Segoe UI, Roboto, sans-serif</web>
+                </value>
+                <value id="mono">
+                    <native>monospace</native>
+                    <web>ui-monospace, SFMono-Regular, Menlo, monospace</web>
+                </value>
+                <value id="serif">
+                    <native>serif</native>
+                    <web>Georgia, Cambria, Times New Roman, serif</web>
+                </value>
+                <value id="sans">
+                    <native>System</native>
+                    <web>var(--font-sans)</web>
+                </value>
+                <value id="body">
+                    <native>System</native>
+                    <web>var(--font-sans)</web>
+                </value>
+                <value id="heading">
+                    <native>System</native>
+                    <web>var(--font-heading)</web>
+                </value>
+                <value id="roboto">
+                    <native>Roboto</native>
+                    <web>Roboto, sans-serif</web>
+                </value>
+            </values>
+        </token>
+        <!-- Font Sizes Scale -->
+        <token id="fontSizes" kind="scale" unit="px">
+            <values>
+                <value id="2xs">10</value>
+                <value id="xs">12</value>
+                <value id="sm">14</value>
+                <value id="md">16</value>
+                <value id="lg">18</value>
+                <value id="xl">20</value>
+                <value id="2xl">24</value>
+                <value id="3xl">30</value>
+                <value id="4xl">36</value>
+                <value id="5xl">48</value>
+                <value id="6xl">60</value>
+                <value id="7xl">72</value>
+                <value id="8xl">96</value>
+                <value id="9xl">128</value>
+            </values>
+        </token>
+        <!-- Font Weights Map -->
+        <token id="fontWeights" kind="map">
+            <values>
+                <value id="thin">100</value>
+                <value id="extralight">200</value>
+                <value id="light">300</value>
+                <value id="normal">400</value>
+                <value id="medium">500</value>
+                <value id="semibold">600</value>
+                <value id="bold">700</value>
+                <value id="extrabold">800</value>
+                <value id="black">900</value>
+            </values>
+        </token>
+        <!-- Line Heights Scale -->
+        <token id="lineHeights" kind="scale" unit="px">
+            <values>
+                <value id="xs">16</value>
+                <value id="sm">20</value>
+                <value id="md">24</value>
+                <value id="lg">28</value>
+                <value id="xl">28</value>
+                <value id="2xl">32</value>
+                <value id="3xl">36</value>
+                <value id="4xl">40</value>
+                <value id="5xl">1</value>
+                <value id="6xl">1</value>
+                <value id="7xl">1</value>
+                <value id="8xl">1</value>
+                <value id="9xl">1</value>
+            </values>
+        </token>
+        <!-- Letter Spacing Scale -->
+        <token id="letterSpacings" kind="scale" unit="em">
+            <values>
+                <value id="tighter">-0.05</value>
+                <value id="tight">-0.025</value>
+                <value id="normal">0</value>
+                <value id="wide">0.025</value>
+                <value id="wider">0.05</value>
+                <value id="widest">0.1</value>
+            </values>
+        </token>
+        <!-- Color Palette -->
+        <token id="color" kind="color">
+            <values>
+                <!-- Primary Colors -->
+                <value id="primary.50">#EFF6FF</value>
+                <value id="primary.100">#DBEAFE</value>
+                <value id="primary.200">#BFDBFE</value>
+                <value id="primary.300">#93C5FD</value>
+                <value id="primary.400">#60A5FA</value>
+                <value id="primary.500">#3B82F6</value>
+                <value id="primary.600">#2563EB</value>
+                <value id="primary.700">#1D4ED8</value>
+                <value id="primary.800">#1E40AF</value>
+                <value id="primary.900">#1E3A8A</value>
+                <value id="primary.950">#172554</value>
+                <!-- Secondary Colors -->
+                <value id="secondary.50">#F8FAFC</value>
+                <value id="secondary.100">#F1F5F9</value>
+                <value id="secondary.200">#E2E8F0</value>
+                <value id="secondary.300">#CBD5E1</value>
+                <value id="secondary.400">#94A3B8</value>
+                <value id="secondary.500">#64748B</value>
+                <value id="secondary.600">#475569</value>
+                <value id="secondary.700">#334155</value>
+                <value id="secondary.800">#1E293B</value>
+                <value id="secondary.900">#0F172A</value>
+                <value id="secondary.950">#020617</value>
+                <!-- Gray Colors -->
+                <value id="gray.50">#FAFAFA</value>
+                <value id="gray.100">#F4F4F5</value>
+                <value id="gray.200">#E4E4E7</value>
+                <value id="gray.300">#D4D4D8</value>
+                <value id="gray.400">#A1A1AA</value>
+                <value id="gray.500">#71717A</value>
+                <value id="gray.600">#52525B</value>
+                <value id="gray.700">#3F3F46</value>
+                <value id="gray.800">#27272A</value>
+                <value id="gray.900">#18181B</value>
+                <value id="gray.950">#09090B</value>
+                <!-- Success Colors -->
+                <value id="success.50">#F0FDF4</value>
+                <value id="success.100">#DCFCE7</value>
+                <value id="success.200">#BBF7D0</value>
+                <value id="success.300">#86EFAC</value>
+                <value id="success.400">#4ADE80</value>
+                <value id="success.500">#22C55E</value>
+                <value id="success.600">#16A34A</value>
+                <value id="success.700">#15803D</value>
+                <value id="success.800">#166534</value>
+                <value id="success.900">#14532D</value>
+                <value id="success.950">#052E16</value>
+                <!-- Warning Colors -->
+                <value id="warning.50">#FFFBEB</value>
+                <value id="warning.100">#FEF3C7</value>
+                <value id="warning.200">#FDE68A</value>
+                <value id="warning.300">#FCD34D</value>
+                <value id="warning.400">#FBBF24</value>
+                <value id="warning.500">#F59E0B</value>
+                <value id="warning.600">#D97706</value>
+                <value id="warning.700">#B45309</value>
+                <value id="warning.800">#92400E</value>
+                <value id="warning.900">#78350F</value>
+                <value id="warning.950">#451A03</value>
+                <!-- Error Colors -->
+                <value id="error.50">#FEF2F2</value>
+                <value id="error.100">#FEE2E2</value>
+                <value id="error.200">#FECACA</value>
+                <value id="error.300">#FCA5A5</value>
+                <value id="error.400">#F87171</value>
+                <value id="error.500">#EF4444</value>
+                <value id="error.600">#DC2626</value>
+                <value id="error.700">#B91C1C</value>
+                <value id="error.800">#991B1B</value>
+                <value id="error.900">#7F1D1D</value>
+                <value id="error.950">#450A0A</value>
+                <!-- Info Colors -->
+                <value id="info.50">#F0F9FF</value>
+                <value id="info.100">#E0F2FE</value>
+                <value id="info.200">#BAE6FD</value>
+                <value id="info.300">#7DD3FC</value>
+                <value id="info.400">#38BDF8</value>
+                <value id="info.500">#0EA5E9</value>
+                <value id="info.600">#0284C7</value>
+                <value id="info.700">#0369A1</value>
+                <value id="info.800">#075985</value>
+                <value id="info.900">#0C4A6E</value>
+                <value id="info.950">#082F49</value>
+                <!-- Special Colors -->
+                <value id="neutral.900">#262626</value>
+                <value id="white">#FFFFFF</value>
+                <value id="black">#000000</value>
+                <value id="transparent">transparent</value>
+            </values>
+        </token>
+        <!-- Shadows -->
+        <token id="shadow" kind="shadow">
+            <values>
+                <value id="sm">
+                    <color>
+                        <ref>$ref.tokens.color.black</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>1</y>
+                    </offset>
+                    <opacity>0.05</opacity>
+                    <radius>2</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="md">
+                    <color>
+                        <ref>$ref.tokens.color.black</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>3</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>4</radius>
+                    <elevation>3</elevation>
+                </value>
+                <value id="lg">
+                    <color>
+                        <ref>$ref.tokens.color.black</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>6</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>12</radius>
+                    <elevation>6</elevation>
+                </value>
+                <value id="xl">
+                    <color>
+                        <ref>$ref.tokens.color.black</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>12</y>
+                    </offset>
+                    <opacity>0.14</opacity>
+                    <radius>24</radius>
+                    <elevation>10</elevation>
+                </value>
+                <!-- Hard / soft shadows (gluestack decorative set) -->
+                <value id="hard-1">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>-2</x>
+                        <y>2</y>
+                    </offset>
+                    <opacity>0.2</opacity>
+                    <radius>8</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="hard-2">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>3</y>
+                    </offset>
+                    <opacity>0.2</opacity>
+                    <radius>10</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="hard-3">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>2</x>
+                        <y>2</y>
+                    </offset>
+                    <opacity>0.2</opacity>
+                    <radius>8</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="hard-4">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>-3</y>
+                    </offset>
+                    <opacity>0.2</opacity>
+                    <radius>10</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="hard-5">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>2</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>10</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="soft-1">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>0</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>10</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="soft-2">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>0</y>
+                    </offset>
+                    <opacity>0.2</opacity>
+                    <radius>20</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="soft-3">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>0</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>30</radius>
+                    <elevation>1</elevation>
+                </value>
+                <value id="soft-4">
+                    <color>
+                        <ref>$ref.tokens.color.neutral.900</ref>
+                    </color>
+                    <offset>
+                        <x>0</x>
+                        <y>0</y>
+                    </offset>
+                    <opacity>0.1</opacity>
+                    <radius>40</radius>
+                    <elevation>1</elevation>
+                </value>
+            </values>
+        </token>
+        <!-- Z-Index Map -->
+        <token id="zIndex" kind="map">
+            <values>
+                <value id="base">0</value>
+                <value id="sticky">100</value>
+                <value id="dropdown">1000</value>
+                <value id="popover">1500</value>
+                <value id="overlay">1300</value>
+                <value id="drawer">1400</value>
+                <value id="modal">2000</value>
+                <value id="toast">3000</value>
+                <value id="tooltip">3100</value>
+            </values>
+        </token>
+        <!-- Opacity Map -->
+        <token id="opacity" kind="map">
+            <values>
+                <value id="faint">0.08</value>
+                <value id="muted">0.4</value>
+                <value id="dim">0.6</value>
+                <value id="solid">1</value>
+            </values>
+        </token>
+        <!-- Animation Duration Map -->
+        <token id="duration" kind="map" unit="ms">
+            <values>
+                <value id="instant">0</value>
+                <value id="fastest">80</value>
+                <value id="fast">120</value>
+                <value id="normal">200</value>
+                <value id="slow">350</value>
+                <value id="slower">500</value>
+                <value id="slowest">700</value>
+            </values>
+        </token>
+        <!-- Animation Easing Map -->
+        <token id="easing" kind="animation">
+            <values>
+                <value id="standard">
+                    <native>
+                        <v>0.4</v>
+                        <v>0</v>
+                        <v>0.2</v>
+                        <v>1</v>
+                    </native>
+                    <web>cubic-bezier(0.4, 0, 0.2, 1)</web>
+                </value>
+                <value id="enter">
+                    <native>
+                        <v>0</v>
+                        <v>0</v>
+                        <v>0.2</v>
+                        <v>1</v>
+                    </native>
+                    <web>cubic-bezier(0, 0, 0.2, 1)</web>
+                </value>
+                <value id="exit">
+                    <native>
+                        <v>0.4</v>
+                        <v>0</v>
+                        <v>1</v>
+                        <v>1</v>
+                    </native>
+                    <web>cubic-bezier(0.4, 0, 1, 1)</web>
+                </value>
+                <value id="spring">
+                    <native>
+                        <damping>14</damping>
+                        <stiffness>220</stiffness>
+                        <mass>1</mass>
+                    </native>
+                    <web>spring</web>
+                </value>
+            </values>
+        </token>
+    </items>
+</tokens>

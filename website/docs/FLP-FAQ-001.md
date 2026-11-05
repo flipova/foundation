@@ -1,0 +1,55 @@
+---
+id: "FLP-FAQ-001"
+title: "Dépannage et FAQ"
+sidebar_label: "Dépannage et FAQ"
+---
+
+<!-- Généré par « corral docs docusaurus » depuis documentation/v1.0/FLP-FAQ-001_32_Depannage_et_FAQ_v1.0.md — ne pas modifier ici, modifier le document source. -->
+
+**Informations**
+
+|                        |                                     |
+|------------------------|-------------------------------------|
+| **Titre du document**  | Dépannage et FAQ |
+| **Version**            | 1.0 |
+| **Date de mise à jour** | 05/11/2026 |
+
+## 1. Avant de demander de l'aide
+
+- Vérifier la version installée : `npm ls @flipova/foundation`.
+- Voir les chemins résolus par l'outil : `npx flipova-design where`.
+- Chercher dans les problèmes déjà signalés : https://github.com/flipova/foundation/issues
+
+## 2. Problèmes courants
+
+| **Symptôme** | **Cause probable** | **Solution** |
+|--------------|--------------------|--------------|
+| `gen --check` échoue | Un fichier généré ne correspond plus aux registres. | Lancer `npx flipova-design gen` et valider les fichiers produits. |
+| « missing role » au démarrage | Votre thème n'a pas l'un des 27 rôles de couleur obligatoires. | Ajouter le rôle dans l'onglet Thèmes de l'interface graphique ou dans `themes.xml`. |
+| Tamagui refuse un nom de jeton | `true` ou `none` sont réservés. | L'adaptateur renomme `none` en `zero` ; utilisez ce nom côté tamagui. |
+| Un composant ne ressemble pas à la bibliothèque choisie | Cette bibliothèque ne le fournit pas, il est servi par flipova. | Consulter la couverture avec `coverageOf(adaptateur)` ou `COMPONENTS.md`. |
+| Module introuvable (`react-native-paper`…) | La dépendance facultative du fournisseur n'est pas installée. | L'installer avec npm. |
+
+## 3. Questions fréquentes
+
+**Faut-il installer toutes les bibliothèques ?**
+
+Non. Seul flipova est inclus ; chaque autre bibliothèque est une dépendance facultative, requise uniquement si vous choisissez son fournisseur.
+
+**Puis-je changer de fournisseur plus tard ?**
+
+Oui. Les propriétés des composants sont identiques ; il suffit de changer l'adaptateur passé à `FlipovaProvider`.
+
+**Où est mon thème ?**
+
+Dans le dossier `design/` de votre application (quatre fichiers XML). Le package ne fournit qu'un point de départ neutre.
+
+**Le package fonctionne-t-il sur le web ?**
+
+Le fournisseur flipova cible React Native. Les tests s'exécutent avec react-native-web, mais le rendu sur appareil n'est pas vérifié.
+
+## 4. Obtenir de l'aide
+
+Ouvrez un ticket en joignant : la version du package, votre système, la commande exécutée et sa sortie complète.
+
+Signaler un problème : https://github.com/flipova/foundation/issues
