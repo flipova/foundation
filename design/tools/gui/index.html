@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="flipova-token" content="__TOKEN__" />
+    <title>Flipova Design</title>
+    <style>
+      :root {
+        --bg: #f6f6f7;
+        --panel: #fff;
+        --ink: #17171a;
+        --mute: #6b6b76;
+        --line: #e3e3e8;
+        --accent: #2f5bea;
+        --accent-ink: #fff;
+        --ok: #17803d;
+        --bad: #c62828;
+        --warn: #b26a00;
+        --radius: 10px;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101012;
+          --panel: #18181b;
+          --ink: #f1f1f3;
+          --mute: #9a9aa6;
+          --line: #2a2a30;
+          --accent: #6c8cff;
+          --accent-ink: #0b0b10;
+          --ok: #4ade80;
+          --bad: #ff7b7b;
+          --warn: #fbbf24;
+          --shadow: none;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font:
+          14px/1.45 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 20px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+      }
+      header h1 {
+        font-size: 15px;
+        margin: 0;
+        font-weight: 650;
+        letter-spacing: 0.2px;
+      }
+      header .path {
+        color: var(--mute);
+        font-size: 12px;
+        max-width: 40ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .spacer {
+        flex: 1;
+      }
+      button,
+      select,
+      input {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: var(--mute);
+      }
+      button.primary {
+        background: var(--accent);
+        color: var(--accent-ink);
+        border-color: transparent;
+        font-weight: 600;
+      }
+      button.primary:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      button.ghost {
+        border-color: transparent;
+        color: var(--mute);
+        padding: 2px 6px;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible,
+      [role='tab']:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      select,
+      input[type='text'],
+      input[type='number'] {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 5px 8px;
+      }
+      nav {
+        display: flex;
+        gap: 2px;
+        padding: 0 20px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--line);
+      }
+      [role='tab'] {
+        border: 0;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        padding: 10px 14px;
+        background: none;
+        color: var(--mute);
+      }
+      [role='tab'][aria-selected='true'] {
+        color: var(--ink);
+        border-bottom-color: var(--accent);
+        font-weight: 600;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow);
+      }
+      .card h2 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--mute);
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 99px;
+        font-size: 12px;
+        border: 1px solid var(--line);
+        color: var(--mute);
+      }
+      .badge.dirty {
+        color: var(--warn);
+        border-color: var(--warn);
+      }
+      .badge.clean {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+        gap: 10px;
+      }
+      .sw {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12px;
+      }
+      .sw input[type='color'] {
+        width: 100%;
+        height: 40px;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: none;
+        cursor: pointer;
+      }
+      .sw .meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--mute);
+      }
+      .sw code {
+        color: var(--ink);
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 6px 8px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      th {
+        font-size: 12px;
+        color: var(--mute);
+        font-weight: 600;
+      }
+      .dot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+        border: 1px solid var(--line);
+        vertical-align: middle;
+      }
+      .err {
+        color: var(--bad);
+      }
+      .okc {
+        color: var(--ok);
+      }
+      .warnc {
+        color: var(--warn);
+      }
+      .split {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 16px;
+      }
+      @media (max-width: 760px) {
+        .split {
+          grid-template-columns: 1fr;
+        }
+        main {
+          padding: 12px;
+        }
+      }
+      .list button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        margin-bottom: 6px;
+      }
+      .list button[aria-current='true'] {
+        border-color: var(--accent);
+        box-shadow: inset 3px 0 0 var(--accent);
+      }
+      .stage {
+        border-radius: var(--radius);
+        padding: 20px;
+        border: 1px solid var(--line);
+      }
+      .stage h3 {
+        font: 600 12px system-ui;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        opacity: 0.6;
+        margin: 22px 0 10px;
+      }
+      .stage h3:first-child {
+        margin-top: 0;
+      }
+      .spec {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-end;
+      }
+      .spec figure {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+        max-width: 100%;
+      }
+      .spec figcaption {
+        font: 11px system-ui;
+        opacity: 0.55;
+      }
+      pre {
+        white-space: pre-wrap;
+        margin: 0;
+        font:
+          12px ui-monospace,
+          Menlo,
+          monospace;
+      }
+      #toast {
+        position: fixed;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        background: var(--ink);
+        color: var(--bg);
+        padding: 8px 14px;
+        border-radius: 8px;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        max-width: 80vw;
+      }
+      #toast.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Flipova Design</h1>
+      <span class="path" id="path"></span>
+      <span class="badge" id="dirty"></span>
+      <span class="spacer"></span>
+      <label class="row"
+        >Preview theme
+        <select id="themeSel" aria-label="Preview theme"></select
+      ></label>
+      <button id="revert">Revert</button>
+      <button id="validate">Validate</button>
+      <button id="save" class="primary">Save</button>
+    </header>
+    <nav role="tablist" id="tabs"></nav>
+    <main id="main"></main>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script>
+      'use strict';
+      const TOKEN = document.querySelector('meta[name=flipova-token]').content;
+      let S = null,
+        tab = 'preview',
+        scale = 'spacing',
+        themeId = null,
+        editTheme = null,
+        messages = [];
+
+      const h = (tag, attrs = {}, ...kids) => {
+        const e = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) {
+          if (v == null || v === false) continue;
+          if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+          else if (k === 'class') e.className = v;
+          else if (k === 'value') e.value = v;
+          else e.setAttribute(k, v === true ? '' : v);
+        }
+        for (const c of kids.flat())
+          if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(String(c)));
+        return e;
+      };
+      const $ = (s) => document.querySelector(s);
+      const say = (m) => {
+        const t = $('#toast');
+        t.textContent = m;
+        t.classList.add('show');
+        clearTimeout(say.t);
+        say.t = setTimeout(() => t.classList.remove('show'), 2600);
+      };
+
+      async function api(path, body) {
+        const r = await fetch(path, {
+          method: body ? 'POST' : 'GET',
+          headers: { 'x-flipova-token': TOKEN, ...(body ? { 'content-type': 'application/json' } : {}) },
+          body: body ? JSON.stringify(body) : undefined,
+        });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error || r.statusText);
+        return j;
+      }
+      async function edit(op) {
+        try {
+          S = await api('/api/edit', op);
+          render();
+        } catch (e) {
+          say(e.message);
+          render();
+        }
+      }
+
+      // ---- RN style -> CSS (the recipes are React Native style objects) ----
+      const SIDES = {
+        paddingHorizontal: ['padding-left', 'padding-right'],
+        paddingVertical: ['padding-top', 'padding-bottom'],
+        marginHorizontal: ['margin-left', 'margin-right'],
+        marginVertical: ['margin-top', 'margin-bottom'],
+      };
+      const UNITLESS = new Set([
+        'flex',
+        'opacity',
+        'fontWeight',
+        'zIndex',
+        'lineHeight_',
+        'shadowOpacity',
+        'elevation',
+      ]);
+      function css(style) {
+        const o = {};
+        const sh = {};
+        for (const [k, v] of Object.entries(style || {})) {
+          if (k.startsWith('shadow') || k === 'elevation' || k === 'textAlignVertical') {
+            sh[k] = v;
+            continue;
+          }
+          const px = typeof v === 'number' && !UNITLESS.has(k) ? v + 'px' : v;
+          if (SIDES[k]) SIDES[k].forEach((p) => (o[p] = px));
+          else o[k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase())] = px;
+        }
+        if (sh.shadowColor) {
+          const c = sh.shadowColor.replace('#', '');
+          const n = parseInt(c.length === 3 ? [...c].map((x) => x + x).join('') : c, 16);
+          const off = sh.shadowOffset || { width: 0, height: 0 };
+          o['box-shadow'] =
+            `${off.width}px ${off.height}px ${sh.shadowRadius || 0}px rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${sh.shadowOpacity ?? 1})`;
+        }
+        o.display = o.display || 'flex';
+        o['flex-direction'] = o['flex-direction'] || 'column';
+        o['box-sizing'] = 'border-box';
+        if (o['border-width'] && !o['border-style']) o['border-style'] = 'solid';
+        for (const s of ['top', 'right', 'bottom', 'left'])
+          if (o[`border-${s}-width`] && !o[`border-${s}-color`] && o['border-color'])
+            o[`border-${s}-color`] = o['border-color'];
+        return Object.entries(o)
+          .map(([k, v]) => `${k}:${v}`)
+          .join(';');
+      }
+      function node(n) {
+        const e = document.createElement(n.k === 'text' ? 'span' : 'div');
+        e.setAttribute(
+          'style',
+          n.k === 'text'
+            ? css({ ...n.style, display: 'block' }).replace('display:flex', 'display:block')
+            : css(n.style),
+        );
+        if (n.k === 'text') {
+          e.textContent = n.text;
+        } else for (const c of n.children || []) e.append(node(c));
+        return e;
+      }
+
+      // ---- views ----
+      async function viewPreview(el) {
+        if (!S.previewAvailable) {
+          el.append(
+            h(
+              'div',
+              { class: 'card' },
+              h('h2', {}, 'Preview'),
+              h(
+                'p',
+                {},
+                'The preview draws the published components, which are not built here. Run `npm run build` in the package, or use the published package.',
+              ),
+            ),
+          );
+          return;
+        }
+        let p;
+        try {
+          p = await api('/api/preview?theme=' + encodeURIComponent(themeId));
+        } catch (e) {
+          el.append(h('p', { class: 'err' }, e.message));
+          return;
+        }
+        if (!p.available) {
+          el.append(h('div', { class: 'card' }, h('p', { class: 'err' }, p.reason)));
+          return;
+        }
+        const stage = h('div', { class: 'stage' });
+        stage.style.background = p.background;
+        stage.style.color = p.foreground;
+        for (const g of p.groups) {
+          stage.append(h('h3', {}, g.title));
+          const row = h('div', { class: 'spec' });
+          for (const it of g.items) row.append(h('figure', {}, node(it.node), h('figcaption', {}, it.label)));
+          stage.append(row);
+        }
+        el.append(stage);
+      }
+
+      function palettes() {
+        const groups = new Map();
+        for (const c of S.colors) {
+          const i = c.id.lastIndexOf('.');
+          const name = i < 0 ? '(single colours)' : c.id.slice(0, i);
+          if (!groups.has(name)) groups.set(name, []);
+          groups.get(name).push(c);
+        }
+        return groups;
+      }
+      function viewColours(el) {
+        for (const [name, items] of palettes()) {
+          const base = h('input', {
+            type: 'color',
+            value: (items.find((c) => c.id.endsWith('.500')) || items[0]).value.slice(0, 7),
+            'aria-label': `base colour for ${name}`,
+          });
+          el.append(
+            h(
+              'section',
+              { class: 'card' },
+              h('h2', {}, name),
+              h(
+                'div',
+                { class: 'swatches' },
+                items.map((c) => {
+                  const pick = h('input', {
+                    type: 'color',
+                    value: normHex(c.value),
+                    'aria-label': c.id,
+                    onchange: (e) => edit({ type: 'setColor', id: c.id, value: e.target.value }),
+                  });
+                  return h(
+                    'div',
+                    { class: 'sw' },
+                    pick,
+                    h(
+                      'div',
+                      { class: 'meta' },
+                      h('code', {}, c.id.slice(c.id.lastIndexOf('.') + 1)),
+                      h('code', {}, c.value),
+                      h(
+                        'button',
+                        {
+                          class: 'ghost',
+                          title: 'Remove',
+                          'aria-label': `remove ${c.id}`,
+                          onclick: () => edit({ type: 'removeColor', id: c.id }),
+                        },
+                        '×',
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              name.startsWith('(')
+                ? null
+                : h(
+                    'div',
+                    { class: 'row', style: 'margin-top:12px' },
+                    h(
+                      'span',
+                      { style: 'color:var(--mute)' },
+                      'Build the palette from one colour (it becomes the 500):',
+                    ),
+                    base,
+                    h(
+                      'button',
+                      { onclick: () => edit({ type: 'palette', name, base: base.value }) },
+                      'Generate shades',
+                    ),
+                  ),
+            ),
+          );
+        }
+        const id = h('input', { type: 'text', placeholder: 'brand.500', 'aria-label': 'new colour id' });
+        const val = h('input', { type: 'color', value: '#2f5bea', 'aria-label': 'new colour' });
+        const pname = h('input', { type: 'text', placeholder: 'brand', 'aria-label': 'new palette name' });
+        const pbase = h('input', { type: 'color', value: '#2f5bea', 'aria-label': 'new palette base' });
+        el.append(
+          h(
+            'section',
+            { class: 'card' },
+            h('h2', {}, 'Add'),
+            h(
+              'div',
+              { class: 'row' },
+              id,
+              val,
+              h(
+                'button',
+                { onclick: () => edit({ type: 'addColor', id: id.value.trim(), value: val.value }) },
+                'Add colour',
+              ),
+            ),
+            h(
+              'div',
+              { class: 'row', style: 'margin-top:10px' },
+              pname,
+              pbase,
+              h(
+                'button',
+                { onclick: () => edit({ type: 'palette', name: pname.value.trim(), base: pbase.value }) },
+                'New palette from this colour',
+              ),
+            ),
+          ),
+        );
+      }
+      const normHex = (v) => {
+        v = v.trim();
+        return v.length === 4 ? '#' + [...v.slice(1)].map((c) => c + c).join('') : v.toLowerCase();
+      };
+
+      function viewScales(el) {
+        const names = Object.keys(S.scales);
+        const sel = h(
+          'select',
+          {
+            'aria-label': 'scale',
+            onchange: (e) => {
+              scale = e.target.value;
+              render();
+            },
+          },
+          names.map((n) => h('option', { value: n, selected: n === scale }, n)),
+        );
+        const rows = S.scales[scale] || [];
+        const nid = h('input', { type: 'text', placeholder: 'id', size: 8, 'aria-label': 'new id' });
+        const nval = h('input', { type: 'number', step: 'any', placeholder: 'value', 'aria-label': 'new value' });
+        el.append(
+          h(
+            'section',
+            { class: 'card' },
+            h('h2', {}, 'Scale'),
+            h('div', { class: 'row' }, sel),
+            h(
+              'table',
+              { style: 'margin-top:10px' },
+              h('thead', {}, h('tr', {}, h('th', {}, 'id'), h('th', {}, 'value'), h('th', {}))),
+              h(
+                'tbody',
+                {},
+                rows.map((r) =>
+                  h(
+                    'tr',
+                    {},
+                    h('td', {}, h('code', {}, r.id)),
+                    h(
+                      'td',
+                      {},
+                      h('input', {
+                        type: 'number',
+                        step: 'any',
+                        value: r.value,
+                        'aria-label': `${scale} ${r.id}`,
+                        onchange: (e) => edit({ type: 'setScale', scale, id: r.id, value: e.target.value }),
+                      }),
+                    ),
+                    h(
+                      'td',
+                      {},
+                      h(
+                        'button',
+                        {
+                          class: 'ghost',
+                          'aria-label': `remove ${r.id}`,
+                          onclick: () => edit({ type: 'removeScale', scale, id: r.id }),
+                        },
+                        '×',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            h(
+              'div',
+              { class: 'row', style: 'margin-top:12px' },
+              nid,
+              nval,
+              h(
+                'button',
+                { onclick: () => edit({ type: 'addScale', scale, id: nid.value.trim(), value: nval.value }) },
+                'Add value',
+              ),
+            ),
+          ),
+        );
+      }
+
+      function viewThemes(el) {
+        const t = S.themes.find((x) => x.id === editTheme) || S.themes[0];
+        editTheme = t.id;
+        const list = h(
+          'div',
+          { class: 'list' },
+          S.themes.map((x) =>
+            h(
+              'button',
+              {
+                'aria-current': x.id === t.id,
+                onclick: () => {
+                  editTheme = x.id;
+                  themeId = x.id;
+                  render();
+                },
+              },
+              x.id,
+              h(
+                'div',
+                { style: 'color:var(--mute);font-size:12px' },
+                `${x.mode} · ${x.variant}${x.id === S.default ? ' · ★ used first' : ''}`,
+              ),
+            ),
+          ),
+        );
+        const nid = h('input', { type: 'text', placeholder: 'new-theme-id', 'aria-label': 'new theme id' });
+        const nmode = h(
+          'select',
+          { 'aria-label': 'new theme mode' },
+          ['light', 'dark'].map((m) => h('option', { value: m }, m)),
+        );
+        const nvar = h('input', {
+          type: 'text',
+          placeholder: 'variant',
+          value: 'default',
+          'aria-label': 'new theme variant',
+        });
+        const rid = h('input', { type: 'text', value: t.id, 'aria-label': 'theme id' });
+        const rmode = h(
+          'select',
+          { 'aria-label': 'mode' },
+          ['light', 'dark'].map((m) => h('option', { value: m, selected: m === t.mode }, m)),
+        );
+        const rvar = h('input', { type: 'text', value: t.variant, 'aria-label': 'variant' });
+        const colourIds = S.colors.map((c) => c.id);
+        const roleRow = (r) => {
+          const cur = r.ref ? r.ref.replace('$ref.tokens.color.', '') : null;
+          const sel = h(
+            'select',
+            {
+              'aria-label': `${t.id} ${r.id}`,
+              onchange: (e) => {
+                if (e.target.value === '__custom') custom.click();
+                else edit({ type: 'setRole', theme: t.id, role: r.id, ref: '$ref.tokens.color.' + e.target.value });
+              },
+            },
+            ...colourIds.map((c) => h('option', { value: c, selected: c === cur }, c)),
+            h('option', { value: '__custom', selected: !r.ref }, r.ref ? 'custom colour…' : `custom ${r.value}`),
+          );
+          const custom = h('input', {
+            type: 'color',
+            value: normHex(r.value || r.color || '#000000'),
+            style: 'width:0;height:0;opacity:0;position:absolute',
+            'aria-hidden': 'true',
+            tabindex: '-1',
+            onchange: (e) => edit({ type: 'setRole', theme: t.id, role: r.id, value: e.target.value }),
+          });
+          return h(
+            'tr',
+            {},
+            h(
+              'td',
+              {},
+              h('code', {}, r.id),
+              r.required ? null : h('span', { class: 'badge', style: 'margin-left:6px' }, 'extra'),
+            ),
+            h('td', {}, h('span', { class: 'dot', style: `background:${r.color || 'transparent'}` })),
+            h('td', {}, sel, custom),
+            h('td', {}, h('code', {}, r.color || '')),
+          );
+        };
+        el.append(
+          h(
+            'div',
+            { class: 'split' },
+            h(
+              'div',
+              {},
+              h('div', { class: 'card' }, h('h2', {}, 'Themes'), list),
+              h(
+                'div',
+                { class: 'card' },
+                h('h2', {}, 'Duplicate'),
+                h(
+                  'div',
+                  { class: 'row' },
+                  nid,
+                  nmode,
+                  nvar,
+                  h(
+                    'button',
+                    {
+                      onclick: () =>
+                        edit({
+                          type: 'addTheme',
+                          id: nid.value.trim(),
+                          mode: nmode.value,
+                          variant: nvar.value.trim(),
+                          from: t.id,
+                        }),
+                    },
+                    `Copy “${t.id}”`,
+                  ),
+                ),
+              ),
+            ),
+            h(
+              'div',
+              {},
+              h(
+                'div',
+                { class: 'card' },
+                h('h2', {}, `Theme “${t.id}”`),
+                h(
+                  'div',
+                  { class: 'row' },
+                  rid,
+                  rmode,
+                  rvar,
+                  h(
+                    'button',
+                    {
+                      onclick: async () => {
+                        const nid2 = rid.value.trim();
+                        await edit({
+                          type: 'setTheme',
+                          id: t.id,
+                          newId: nid2,
+                          mode: rmode.value,
+                          variant: rvar.value.trim(),
+                        });
+                        if (S.themes.some((x) => x.id === nid2)) {
+                          editTheme = nid2;
+                          themeId = nid2;
+                          render();
+                        }
+                      },
+                    },
+                    'Apply',
+                  ),
+                  h(
+                    'button',
+                    {
+                      onclick: () => {
+                        if (confirm(`Delete theme “${t.id}”?`)) edit({ type: 'removeTheme', id: t.id });
+                      },
+                    },
+                    'Delete',
+                  ),
+                ),
+                t.missing.length
+                  ? h(
+                      'p',
+                      { class: 'err' },
+                      `Missing role(s) the components read: ${t.missing.join(', ')}. Add them to design/themes.xml.`,
+                    )
+                  : h('p', { class: 'okc' }, 'Every role the components read is defined.'),
+              ),
+              h(
+                'div',
+                { class: 'card' },
+                h('h2', {}, 'Roles'),
+                h(
+                  'table',
+                  {},
+                  h(
+                    'thead',
+                    {},
+                    h('tr', {}, h('th', {}, 'role'), h('th', {}), h('th', {}, 'colour'), h('th', {}, 'value')),
+                  ),
+                  h('tbody', {}, t.roles.map(roleRow)),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      function viewMessages(el) {
+        el.append(
+          h(
+            'section',
+            { class: 'card' },
+            h('h2', {}, 'Messages'),
+            messages.length
+              ? messages.map((m) =>
+                  h(
+                    'div',
+                    { style: 'margin-bottom:12px' },
+                    h('strong', { class: m.ok ? 'okc' : 'err' }, `${m.ok ? '✓' : '✗'} ${m.name}`),
+                    m.output ? h('pre', {}, m.output) : null,
+                  ),
+                )
+              : h('p', { style: 'color:var(--mute)' }, 'Run Validate or Save to see the checks here.'),
+          ),
+        );
+      }
+
+      const TABS = [
+        ['preview', 'Preview'],
+        ['colours', 'Colours'],
+        ['scales', 'Scales'],
+        ['themes', 'Themes'],
+        ['messages', 'Messages'],
+      ];
+      async function render() {
+        $('#path').textContent = S.designDir;
+        $('#path').title = S.designDir;
+        const d = $('#dirty');
+        d.textContent = S.dirty ? 'unsaved changes' : 'saved';
+        d.className = 'badge ' + (S.dirty ? 'dirty' : 'clean');
+        $('#save').disabled = !S.dirty;
+        const ids = S.themes.map((t) => t.id);
+        if (!ids.includes(themeId)) themeId = S.default && ids.includes(S.default) ? S.default : ids[0];
+        const sel = $('#themeSel');
+        sel.replaceChildren(...ids.map((i) => h('option', { value: i, selected: i === themeId }, i)));
+        const tabs = $('#tabs');
+        tabs.replaceChildren(
+          ...TABS.map(([k, label]) =>
+            h(
+              'button',
+              {
+                role: 'tab',
+                'aria-selected': k === tab,
+                onclick: () => {
+                  tab = k;
+                  render();
+                },
+              },
+              label + (k === 'messages' && messages.some((m) => !m.ok) ? ' •' : ''),
+            ),
+          ),
+        );
+        const main = $('#main');
+        main.replaceChildren();
+        if (S.error) main.append(h('div', { class: 'card' }, h('p', { class: 'err' }, S.error)));
+        if (tab === 'preview') await viewPreview(main);
+        else if (tab === 'colours') viewColours(main);
+        else if (tab === 'scales') viewScales(main);
+        else if (tab === 'themes') viewThemes(main);
+        else viewMessages(main);
+      }
+      $('#themeSel').addEventListener('change', (e) => {
+        themeId = e.target.value;
+        render();
+      });
+      $('#revert').addEventListener('click', () => {
+        if (!S.dirty || confirm('Discard every unsaved change?')) edit({ type: 'revert' });
+      });
+      $('#validate').addEventListener('click', async () => {
+        try {
+          const r = await api('/api/validate', {});
+          messages = r.steps;
+          tab = 'messages';
+          say(r.ok ? 'Everything checks out' : 'Some checks failed');
+          render();
+        } catch (e) {
+          say(e.message);
+        }
+      });
+      $('#save').addEventListener('click', async () => {
+        try {
+          const r = await api('/api/save', {});
+          messages = r.steps;
+          if (r.ok) {
+            S = await api('/api/state');
+            say('Saved. Registries and generated files are up to date.');
+          } else {
+            tab = 'messages';
+            say('Not saved: a check failed');
+          }
+          render();
+        } catch (e) {
+          say(e.message);
+        }
+      });
+      addEventListener('beforeunload', (e) => {
+        if (S && S.dirty) {
+          e.preventDefault();
+          e.returnValue = '';
+        }
+      });
+      api('/api/state')
+        .then((s) => {
+          S = s;
+          render();
+        })
+        .catch((e) => {
+          document.body.textContent = e.message;
+        });
+    </script>
+  </body>
+</html>
