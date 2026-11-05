@@ -1,9 +1,0 @@
-{
-  "extends": "@docusaurus/tsconfig",
-  "compilerOptions": {
-    "jsx": "preserve",
-    "baseUrl": ".",
-    "resolveJsonModule": true
-  },
-  "exclude": ["build", ".docusaurus"]
-}

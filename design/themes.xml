@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Flipova Foundation Themes
-  ==========================
+  Flipova Foundation Themes: neutral starter
+  ============================================
+  This file names no brand and no season: it is the starting point `npx flipova-design adopt`
+  copies into a project. Rename, add and recolour freely (a light/dark PAIR shares a `variant`);
+  the components read roles, never theme ids.
   Namespace: urn:flipova:foundation:registry
   Schema: flipova.foundation/registry/1
   Schema Location: schema.xsd
@@ -12,8 +15,8 @@
   A theme maps semantic roles to color token references. The role ids are the
   gluestack-ui / nativewind CSS variable names (the part after the two-dash
   prefix), so the design registry and the runtime theme config speak the same
-  language: generate.py turns this file into the CSS variables of
-  components/ui/gluestack-ui-provider/config.ts.
+  language: `flipova-design gen` turns this file into the CSS variables of
+  components/providers/gluestack/ui/gluestack-ui-provider/config.ts.
 
   ROLE NAMING:
   A role id is a CSS variable name without its two-dash prefix, e.g. the role
@@ -197,179 +200,6 @@
                 </role>
                 <role id="info-foreground">
                     <ref>$ref.tokens.color.white</ref>
-                </role>
-            </roleMap>
-        </theme>
-    <!-- Spring variant: a seasonal light/dark PAIR. Same roles, seasonal
-             greens, so the app can offer it as a theme and still honour the
-             light/dark mode the user picked. -->
-        <theme id="spring-light" mode="light" variant="spring">
-            <roleMap>
-                <role id="background">
-                    <ref>$ref.tokens.color.success.50</ref>
-                </role>
-                <role id="foreground">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="card">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="card-foreground">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="popover">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="popover-foreground">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="primary">
-                    <ref>$ref.tokens.color.success.600</ref>
-                </role>
-                <role id="primary-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="secondary">
-                    <ref>$ref.tokens.color.success.500</ref>
-                </role>
-                <role id="secondary-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="muted">
-                    <ref>$ref.tokens.color.success.100</ref>
-                </role>
-                <role id="muted-foreground">
-                    <ref>$ref.tokens.color.success.700</ref>
-                </role>
-                <role id="accent">
-                    <ref>$ref.tokens.color.success.200</ref>
-                </role>
-                <role id="accent-foreground">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="destructive">
-                    <ref>$ref.tokens.color.error.600</ref>
-                </role>
-                <role id="destructive-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="border">
-                    <ref>$ref.tokens.color.success.200</ref>
-                </role>
-                <role id="input">
-                    <ref>$ref.tokens.color.success.200</ref>
-                </role>
-                <role id="ring">
-                    <ref>$ref.tokens.color.success.400</ref>
-                </role>
-                <role id="success">
-                    <ref>$ref.tokens.color.success.600</ref>
-                </role>
-                <role id="success-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="warning">
-                    <ref>$ref.tokens.color.warning.600</ref>
-                </role>
-                <role id="warning-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="error">
-                    <ref>$ref.tokens.color.error.600</ref>
-                </role>
-                <role id="error-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="info">
-                    <ref>$ref.tokens.color.info.600</ref>
-                </role>
-                <role id="info-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-            </roleMap>
-        </theme>
-    <theme id="spring-dark" mode="dark" variant="spring">
-            <roleMap>
-                <role id="background">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="foreground">
-                    <ref>$ref.tokens.color.success.50</ref>
-                </role>
-                <role id="card">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="card-foreground">
-                    <ref>$ref.tokens.color.success.50</ref>
-                </role>
-                <role id="popover">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="popover-foreground">
-                    <ref>$ref.tokens.color.success.50</ref>
-                </role>
-                <role id="primary">
-                    <ref>$ref.tokens.color.success.400</ref>
-                </role>
-                <role id="primary-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="secondary">
-                    <ref>$ref.tokens.color.success.300</ref>
-                </role>
-                <role id="secondary-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="muted">
-                    <ref>$ref.tokens.color.success.900</ref>
-                </role>
-                <role id="muted-foreground">
-                    <ref>$ref.tokens.color.success.200</ref>
-                </role>
-                <role id="accent">
-                    <ref>$ref.tokens.color.success.800</ref>
-                </role>
-                <role id="accent-foreground">
-                    <ref>$ref.tokens.color.success.50</ref>
-                </role>
-                <role id="destructive">
-                    <ref>$ref.tokens.color.error.500</ref>
-                </role>
-                <role id="destructive-foreground">
-                    <ref>$ref.tokens.color.white</ref>
-                </role>
-                <role id="border">
-                    <ref>$ref.tokens.color.success.800</ref>
-                </role>
-                <role id="input">
-                    <ref>$ref.tokens.color.success.800</ref>
-                </role>
-                <role id="ring">
-                    <ref>$ref.tokens.color.success.300</ref>
-                </role>
-                <role id="success">
-                    <ref>$ref.tokens.color.success.400</ref>
-                </role>
-                <role id="success-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="warning">
-                    <ref>$ref.tokens.color.warning.400</ref>
-                </role>
-                <role id="warning-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="error">
-                    <ref>$ref.tokens.color.error.400</ref>
-                </role>
-                <role id="error-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
-                </role>
-                <role id="info">
-                    <ref>$ref.tokens.color.info.400</ref>
-                </role>
-                <role id="info-foreground">
-                    <ref>$ref.tokens.color.success.950</ref>
                 </role>
             </roleMap>
         </theme>

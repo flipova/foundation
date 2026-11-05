@@ -3,153 +3,204 @@
 [![npm version](https://img.shields.io/npm/v/@flipova/foundation.svg)](https://www.npmjs.com/package/@flipova/foundation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-gluestack-ui components for React Native (iOS, Android) and Web, plus a
-registry-driven theming pipeline.
+UI components for React Native (iOS, Android) and Web, with **one design applied to everything**.
+Write `<Button>` once; choose which library renders it (Flipova's own, gluestack, React Native
+Reusables, React Native Paper, Tamagui) in one line; the look comes from your own XML themes,
+which you edit visually with `npx flipova-design gui`.
 
-## Design pipeline
-
-The design pipeline has a single function:
-
-> **`design/tokens.xml` + `design/themes.xml`**
->
-> - -> `components/ui/gluestack-ui-provider/config.ts` (gluestack / nativewind colour vars)
-> - -> `components/ui/gluestack-ui-provider/tokens.js` (Tailwind/nativewind token theme)
-
-Role ids in `themes.xml` are the gluestack CSS variable names (dash-prefixed at
-generation time), so the design registry and the runtime theme config always
-speak the same language. Every colour is emitted as a space-separated RGB
-triplet, enabling Tailwind opacity modifiers such as `bg-primary/50`.
-
-The scale tokens (spacing, radii, breakpoints, typography, shadow, z-index,
-opacity, motion) are emitted as a Tailwind `theme` fragment, and the semantic
-colours are derived from the `themes.xml` roles. `tailwind.config.js` contains
-**no design value**: it just does `extend: tokens.theme`. The XML registries are
-therefore the single source of truth for both the gluestack runtime vars and
-the Tailwind/nativewind theme.
-
-```bash
-npm run design:pipeline   # gen + check + verify + lint + doc
-```
-
-| Script                     | What it does                                         |
-| :------------------------- | :--------------------------------------------------- |
-| `npm run design:gen`       | compile tokens/themes into `config.ts` + `tokens.js` |
-| `npm run design:gen:check` | verify regeneration is a no-op (drift check)         |
-| `npm run design:check`     | determinism rules + XSD pass + ruff                  |
-| `npm run design:verify`    | verify the committed canonical index                 |
-| `npm run design:canonical` | re-emit `design/canonical.index.txt`                 |
-| `npm run design:lint`      | XSD-validate every design XML                        |
-| `npm run design:doc`       | regenerate the docs site (`docs/generated`)          |
-| `npm run design:edit`      | open the XSD-driven XML editor                       |
-
-Never hand-edit the generated `config.ts`, `tokens.js` or `docs/generated/**` -
-the next run overwrites them. And never add a design value to
-`tailwind.config.js`: it only wires the generated theme.
-
-## Install
+## Quick start
 
 ```bash
 npm install @flipova/foundation
-npm install gluestack-ui
-npx flipova-design init
+npx flipova-design adopt     # copies the neutral starter themes into your project, writes theme/provider.tsx
+npx flipova-design gui       # edit colours, scales and themes visually (or edit design/*.xml by hand)
+npm run design:gen           # -> theme/design-theme.ts (+ Tailwind artifacts)
 ```
 
-`init` **does not copy the registries into your project**. The XML registries and
-the whole toolchain stay in `node_modules/@flipova/foundation/design`, and the
-command only injects the app-level wiring that the package cannot own:
+```tsx
+import { AppThemeProvider } from './theme/provider';
+import { Button, Card, Heading, Input, Select, Tabs } from '@flipova/foundation';
 
-- `tailwind.config.js`, `postcss.config.js`, `globals.css` - created only when
-  missing (never overwritten unless `--force`);
-- the `design:*` npm scripts in your `package.json` (`design:gen`, `design:lint`,
-  `design:check`, `design:verify`, `design:canonical`, `design:doc`,
-  `design:pipeline`).
-
-| Command                            | What it does                                          |
-| :--------------------------------- | :---------------------------------------------------- |
-| `npx flipova-design where`         | print the resolved registries/artifacts paths         |
-| `npx flipova-design inject`        | re-run the injection only                             |
-| `npx flipova-design adopt`         | copy the registries into the project and own them     |
-| `npx flipova-design gen [--check]` | compile the registries into `config.ts` + `tokens.js` |
-| `npx flipova-design lint`          | XSD-validate the registries                           |
-
-`gen` writes into the resolved output root, i.e. straight into the installed
-package (`node_modules/@flipova/foundation/components/ui/gluestack-ui-provider`),
-so the artifacts consumed by `@flipova/foundation/tokens` and
-`@flipova/foundation/ui` are always the ones the pipeline produced.
-
-## Own the design system
-
-An app that wants its own branding adopts the registries:
-
-```bash
-npx flipova-design adopt
+export default () => (
+  <AppThemeProvider mode="system">
+    <Card>
+      <Heading>Sign in</Heading>
+      <Input placeholder="Email" />
+      <Button onPress={signIn}>Continue</Button>
+    </Card>
+  </AppThemeProvider>
+);
 ```
 
-That copies `manifest.xml`, `schema.xsd`, `tokens.xml`, `themes.xml`,
-`documentation.xml` and `canonical.index.txt` into `design/` - and **not** the
-toolchain, which stays in `node_modules`. It rewrites the manifest outputs to
-`theme/config.ts` and `theme/tokens.js`, and creates `theme/provider.tsx`.
+`theme/provider.tsx` is yours: it names the library and hands your generated theme to the components.
 
-From then on the project is the source of truth:
-
-```bash
-# edit design/tokens.xml and design/themes.xml - the colours, the scales, the roles
-npm run design:gen        # -> theme/config.ts + theme/tokens.js
-npm run design:verify     # the registries are in step with the artifacts
-npm run design:check      # determinism + XSD, on YOUR registries
+```tsx
+<FlipovaProvider adapter={flipova} theme={designTheme} mode={mode}>
 ```
 
-Wire the two artifacts into the app:
+Switch library by changing `flipova` to `paper`, `tamagui`, `reusables` or `gluestack`
+(each imported from `@flipova/foundation/providers/<name>`). Nothing else changes.
+
+## Where things are
+
+```
+components/
+  theme/          design-theme.ts       generated from your XML: every colour of every theme, every scale
+  contract/       what a component is   props (types.ts) + recipes/ (one pure function per component: the exact
+                                        colours, radii, spacings, sizes) + theme resolution
+  providers/
+    provider.tsx  <FlipovaProvider>     mounts one library with one theme
+    rn-base/      React Native's own components, shared by every adapter
+    flipova/      Flipova's own         all 57 components, built from react-native only, styled only by the recipes
+    gluestack/    gluestack-ui         adapter (31 native) + ui/ (the whole gluestack catalogue, as it was)
+    reusables/    React Native Reusables  adapter (31 native), NativeWind classes
+    paper/        React Native Paper      adapter (31 native)
+    tamagui/      Tamagui                 adapter (32 native)
+  ui/             the unified components   import { Button } from '@flipova/foundation' (or '/ui')
+design/           the XML registries, the schema, and the toolchain (tools/: CLI, generator, checker, GUI)
+```
+
+**The unified `ui`** renders, for each component, the one the chosen library offers, with the design
+applied. When the library does not have it, the **flipova provider** serves it (and when no provider
+is mounted at all, flipova with the bundled neutral theme), so there is never a hole.
+
+The contract is **the whole gluestack catalogue: 57 components**. flipova implements all of them; every other
+provider implements natively what its library really has and the tests can verify, and the rest is served by
+flipova. The exact table is [`COMPONENTS.md`](COMPONENTS.md) (generated), and `coverageOf(adapter)` tells it in code.
+
+| Provider  | Native | of which the library's own | of which React Native's (shared) | Served by flipova |
+| :-------- | -----: | -------------------------: | -------------------------------: | ----------------: |
+| flipova   |     57 |                         43 |                               14 |                 0 |
+| gluestack |     31 |                         31 |                                0 |                26 |
+| reusables |     31 |                         19 |                               12 |                26 |
+| paper     |     31 |                         17 |                               14 |                26 |
+| tamagui   |     32 |                         20 |                               12 |                25 |
+
+Every adapter is native for more than half of the contract. "React Native's" are the 14 components that are React
+Native itself (View, ScrollView, FlatList, SectionList, VirtualizedList, SafeAreaView, KeyboardAvoidingView,
+StatusBar, RefreshControl, InputAccessoryView, Image, ImageBackground, Pressable, Box): no library replaces them,
+so they live once in `providers/rn-base` and every adapter that does not wrap its own serves that one.
+
+**Alignment check** (`components/alignment.test.ts`, part of `npm test`): every directory of the gluestack catalogue
+must be mapped to a contract name (a new one fails until it is), the mapping is one to one with `UI_NAMES`, flipova
+has a file for every name, the unified `ui` exports every name, adapters declare only names of the contract, and
+`COMPONENTS.md` is up to date (`npm run components:doc` rewrites it).
+
+Honest limits: four gluestack modules (bottomsheet, date-time-picker, image-viewer, slider) cannot be loaded by
+the test environment (native-only or missing dependencies), so no gluestack wrapper is declared for them. The
+animation libraries gluestack's overlays use (react-native-reanimated, @legendapp/motion) are replaced in tests by
+stand-ins in `test-support/` (plain views, no animation): what is verified is the gluestack component and its
+wrapper, not the animation. Components gluestack has but that still fall back (Accordion, Menu, Popover, Select,
+Tabs, Toast, Tooltip...) are listed with the reason in COMPONENTS.md; adding a wrapper is: write it in the adapter,
+add it to its `components`, `npm run components:doc`.
+
+Props are the same on every provider (`components/contract/types.ts`). Icons are text glyphs (no SVG
+dependency), Calendar and DateTimePicker work on dates only (`YYYY-MM-DD`), and `Portal` content is drawn by the
+flipova provider's host.
+
+To go straight to one library's own components, import from its sub-path
+(`@flipova/foundation/providers/paper`, `.../providers/gluestack/ui` for the whole gluestack catalogue, ...).
+Only that sub-path imports the library, which is an **optional peer dependency**: the root, `/ui`,
+`/contract`, `/providers` and `/providers/flipova` need nothing but `react` and `react-native`.
+
+| Sub-path                                  | Library                | Optional peer           |
+| :---------------------------------------- | :--------------------- | :---------------------- |
+| `@flipova/foundation` , `/ui`             | the unified components | none                    |
+| `@flipova/foundation/providers/flipova`   | Flipova's own          | none                    |
+| `@flipova/foundation/providers/gluestack` | gluestack-ui           | `nativewind`            |
+| `@flipova/foundation/providers/reusables` | React Native Reusables | `@rn-primitives/switch` |
+| `@flipova/foundation/providers/paper`     | React Native Paper     | `react-native-paper`    |
+| `@flipova/foundation/providers/tamagui`   | Tamagui                | `@tamagui/core`         |
+
+## The design is yours
+
+The package ships **no brand and no theme names**: only a neutral starter (`light` and `dark`).
+`adopt` copies it into `design/` and from then on the registries are your source of truth. The
+components read colour **roles** (`primary`, `card`, `border`, `success`, ...), never theme ids, so
+rename, add and recolour themes freely; a light/dark pair shares a `variant`
+(`<FlipovaProvider variant="brand">`). A theme must define the roles the components read
+(`REQUIRED_ROLES`); the GUI, `flipova-design check` on save, and the provider all name any that are missing.
+
+- **Tokens** (`design/tokens.xml`): colour palettes, spacing, radii, type sizes and weights, shadows, opacity, motion.
+- **Themes** (`design/themes.xml`): each theme maps roles to palette colours (`$ref.tokens.color.primary.600`) or to a literal colour.
+
+### `npx flipova-design gui`
+
+A local editor (nothing leaves your machine; it listens on 127.0.0.1 with a one-time token):
+
+- **Preview**: every component, drawn from the real recipes, in the theme you pick, updated as you edit.
+- **Colours**: edit any shade; build a whole palette from one colour; add or remove colours.
+- **Scales**: spacing, radii, font sizes, weights, line heights, opacity, durations, z-index, breakpoints.
+- **Themes**: add (copy), rename, change mode/variant, delete; map every role to a colour with a picker.
+- Edits live in a working copy. **Save** validates first (determinism rules, XSD, required roles), then writes
+  your XML, the canonical index and the generated files. **Revert** drops the working copy.
+- The preview needs the built package (`dist/`); the published package has it.
+
+Edits are made in the text of the XML (comments and layout are kept), so the diff is what a careful hand edit would give.
+
+## The XML toolchain
+
+Plain Node (>= 18, no dependency, no Python): `npx flipova-design <command>`.
+
+| Command                                | What it does                                                                                        |
+| :------------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| `init`                                 | inject app-level wiring (Tailwind/PostCSS/CSS files, `design:*` scripts); never overwrites          |
+| `adopt`                                | copy the registries into the project, rewrite the outputs into `theme/`, write `theme/provider.tsx` |
+| `gui [--port N] [--no-open]`           | the visual editor (adopts first if the project has not)                                             |
+| `gen [--check]`                        | compile the registries into `design-theme.ts`, `config.ts`, `tokens.js`                             |
+| `check`, `verify`, `canonical`, `lint` | determinism rules, canonical index, XSD                                                             |
+| `pipeline`                             | gen, check, verify, lint                                                                            |
+| `where`                                | print the resolved paths                                                                            |
+
+`design/schema.xsd` is validated by a built-in validator for the subset of XML Schema the registries use;
+a schema that uses anything else is refused when loaded rather than half-checked. Never hand-edit the
+generated files; and `tailwind.config.js` holds no design value: it only wires `theme/tokens`.
 
 ```js
-// tailwind.config.js
+// tailwind.config.js (only needed for the gluestack / reusables providers, which use NativeWind classes)
 const tokens = require('./theme/tokens');
 module.exports = { presets: [require('nativewind/preset')], theme: { extend: tokens.theme } };
 ```
 
-```tsx
-// theme/provider.tsx (generated by adopt)
-import { createGluestackUIProvider } from '@flipova/foundation/ui';
-import { config } from './config';
-export const AppThemeProvider = createGluestackUIProvider(config);
-```
+The flipova, Paper and Tamagui providers read `theme/design-theme.ts` directly; the gluestack and reusables
+providers build their CSS variables at runtime from the same theme you pass to `<FlipovaProvider>`.
 
-The package still provides the components, the generator and every token the app
-does not override. `npx flipova-design where` always says which side is in charge.
+## How "identical" is tested
 
-The generated theme is wired into your Tailwind config (app-level files are not
-shipped by the package):
+Parity is on the resolved style values, not on pixels. `npm test` runs the toolchain tests (including a real
+adopt, a real GUI server driven over HTTP, and the XML edits), the boundary check, and the component tests:
+Reusables classes resolved back to numbers and colours and compared with the recipes; the props handed to
+Paper; the Tamagui configuration; every recipe on every theme (no undefined or NaN value); the 57 flipova
+components rendered through react-native-web (interaction, accessibility attributes, the app's own theme
+applied, no colour literal in their source); the six shared components of the four libraries rendered in
+light and dark; and the natives each library gained rendered through its adapter. Not covered: rendering on a device, and the internals Paper imposes on its own Button and
+Switch (ripple, switch geometry): what is guaranteed there is what is passed to them.
 
-```js
-// tailwind.config.js
-const tokens = require('@flipova/foundation/tokens');
-module.exports = {
-  presets: [require('nativewind/preset')],
-  theme: { extend: tokens.theme },
-};
-```
+## Boundary with the frontend
 
-and the provider is mounted once at the root:
+Foundation is the bottom of the stack: primitives and the design. Layouts, sections, auth screens, mockups
+and effects live in the frontend package, and foundation depends on no other `@flipova/*` package.
+`npm run boundary` (run by `npm test` and CI) reads the imports and fails on: another `@flipova/*` import; a
+frontend folder under `components/`; a layer importing one above it (`theme` < `contract` < `providers` <
+`ui`, where `ui` reaches only the flipova provider); a provider importing another; an optional peer imported
+outside its own provider; the flipova provider importing anything but `react` and `react-native`.
 
-```tsx
-import { GluestackUIProvider } from '@flipova/foundation/ui';
-// <GluestackUIProvider mode="system"> ... </GluestackUIProvider>
-```
+## Migrating from 2.x
 
-The design tooling needs Python 3.8+ with `lxml` (`design/tools/requirements.txt`).
-Resolution order: `$FOUNDATION_PYTHON`, then `$FOUNDATION_VENV`, then
-`design/tools/.venv`, then any `python3`/`python` on `PATH` that can import
-`lxml`.
+- `@flipova/foundation` and `/ui` now export the **unified** components (`Button`, `Card`, ...). The gluestack
+  catalogue (`Box`, `VStack`, `Accordion`, ...) moved to `@flipova/foundation/providers/gluestack/ui`.
+- `createGluestackUIProvider` and `GluestackUIProvider` are there too; `<FlipovaProvider adapter={gluestack}>`
+  replaces them for new code.
+- The package no longer ships the `spring` theme; add your own with the GUI.
+- `@flipova/foundation/tokens` is unchanged.
 
 ## Documentation
 
-The full guide (installation, theming, tokens, the gluestack config, tools,
-contributing) is generated from `design/documentation.xml` into the Docusaurus
-site under `docs/`:
-
-```bash
-cd docs && npm start
-```
+- [DOCS.md](DOCS.md): the maintainer guide (setup, architecture, tests, releasing, conformity).
+- [COMPONENTS.md](COMPONENTS.md): the generated coverage table of the five providers.
+- Public documentation: `documentation/v1.0/` (French, written from the public templates of `flipova.assets` with
+  `corral docs`) published as a Docusaurus site from `website/` (`corral docs docusaurus --repo foundation`).
+- `npm run docs:check` keeps all of the above consistent with the code (see [DOCS.md](DOCS.md#11-public-documentation)).
 
 ## License
 

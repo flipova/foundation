@@ -140,10 +140,20 @@ npm run build
 npm test            # design toolchain, boundary, components (vitest, react-native-web)
 ```
 
-`npm test` = `design:test` + `boundary:test` + `boundary` + `vitest run`. The pipeline (`.github/workflows/release.yml`):
-`ladder` (who may feed whom), `quality` (node 20 and 22: lint, format, types, build, boundary, tests, registry up to date;
-from alpha: full design pipeline, `npm pack --dry-run`), `security` (CodeQL), `deliver` (release tags only), `summary`.
-A change is verified **once**, on its pull request; only a release tag starts a run on push.
+`npm test` = `design:test` + `boundary:test` + `boundary` + `docs:test` + `docs:check` + `vitest run`.
+
+The pipeline (`.github/workflows/release.yml`) is the **Corral model**: the same file in every repository, with no logic of
+its own, stamped with a fingerprint on its first line (`# corral-pipeline v2 kind:node sha256:…`). It also checks itself: an `integrity` job fails any pull request that edited it (Dependabot included), `corral release doctor --fix` regenerates it. Jobs: `integrity`, `verify` (node 20 and 22:
+`npm ci`, then `npm run ci:verify`), `security` (CodeQL), `deliver` (release tags only), `summary`. Everything specific to
+foundation lives in `package.json`, not in the YAML:
+
+- `ci:verify` = `node scripts/ci-verify.js` (lint, format, types, build, tests, design registry up to date, design pipeline,
+  `npm pack --dry-run`; every step runs, the exit code says if any failed). Add a check there.
+- `ci:deliver` = `npm run deploy --` (npm trusted publishing with provenance; receives `--tag <channel>`).
+
+A change is verified **once**, on its pull request; only a release tag starts a run on push. Do not edit the YAML by hand:
+`corral release doctor` compares it with the model and `corral release doctor --fix --merge` rewrites it.
+(Dependabot's `github-actions` ecosystem edits this file too: that counts as drift. Bump the actions in Corral's model instead.)
 
 Test environment notes: `react-native` is aliased to `react-native-web`; stand-ins in `test-support/` replace modules that
 cannot load there (nativewind, react-native-svg, safe-area-context, react-native-reanimated, @legendapp/motion). Animation
@@ -151,41 +161,38 @@ is therefore not verified.
 
 ## 8. Releasing with Corral
 
-Ladder: `work branch → dev → alpha → beta → rc → main → tag @flipova/foundation@X.Y.Z`; each channel only accepts the
-previous one (hotfix/* may target anywhere). The tag triggers `deliver`: tag matches `package.json`, build, `npm run deploy`
-(npm trusted publishing with provenance, dist-tag from the version's stage), GitHub release (pre-release for alpha/beta/rc).
-
-**First rung: get the work onto `dev`.** `corral promote` only walks `dev → alpha → beta → rc → main` and works on what is
-already on `dev` (it opens its PRs on the forge), so local changes must be committed, pushed and merged first:
-
-```bash
-corral conform --repo foundation                      # once: creates dev/alpha/beta/rc and the protections
-corral script run foundation-ship                     # work branch → commit → push → PR to dev → merge when CI is green
-# the same by hand:
-corral checkout feat/foundation-3.0 --repo foundation
-corral commit --repo foundation -m "feat!: …"
-corral push --repo foundation
-corral prs open --repo foundation --merge             # PR work branch → dev, waits for green CI, merges (squash)
-```
-
-Then the ladder itself (`corral script run foundation-release …`, or by hand):
+**One branch.** `main` is the only long-lived branch. A version is a **tag** (`@flipova/foundation@X.Y.Z`); `alpha`, `beta`,
+`rc` and stable are tags on the **same commit**, published under the npm dist-tags `alpha`, `beta`, `rc` and `latest`.
+Promoting is a new tag: no branch, no pull request, nothing that can diverge. The version lives in the tag only: the
+pipeline stamps it into `package.json` inside the runner (nothing is committed), so the manifest is never edited by hand and
+can never disagree with the tag.
 
 ```bash
-corral version state --repo foundation            # current version, stage, tag
-corral version next major --repo foundation       # compute the next version (read-only): 3.0.0
-corral promote 3.0.0-alpha.1 --repo foundation --dry-run   # what it would do
-corral promote 3.0.0-alpha.1 --repo foundation --merge     # alpha: opens the PRs, merges when CI is green
-corral promote 3.0.0-beta.1  --repo foundation --merge
-corral promote 3.0.0-rc.1    --repo foundation --merge
-corral promote 3.0.0         --repo foundation --merge     # main + tag -> delivery
-corral releases --repo foundation                 # latest release / tag
-corral version sync --repo foundation             # tags never published to npm ("ghost tags")
+corral release status --repo foundation                        # version, last run, pipeline file, workflow, leftover branches
+corral release plan --repo foundation --bump minor --stage alpha    # every check, nothing touched
+corral release run  --repo foundation --bump minor --stage alpha    # tag -> pipeline -> npm -> GitHub release
+corral release promote --repo foundation                       # next rung (beta, rc, stable) on the SAME commit
+corral release rollback --to @flipova/foundation@2.4.4 --repo foundation --dry-run   # return to an earlier STABLE version: its content is republished as the next patch (nothing is deleted)
+corral release resume  --repo foundation                       # finish after a failure or an approval
+corral release gui                                             # the same, with graphs, in the browser
 ```
 
-Before the first alpha of 3.0.0: update this file and `CHANGES.md`, and run the toolchain gates locally
-(`npm run typecheck && npm run lint && npm test && npm run design:pipeline && npm pack --dry-run`).
-The npm trusted publisher is bound to the workflow **file name** (`release.yml`): do not rename it
-(`npm trust github flipova/foundation --file release.yml --allow-publish`).
+Before tagging, the plan checks — and refuses if one is red: the pipeline file **at the commit to tag** is the model (a tag runs
+the file of the commit it points to, so a fix made afterwards cannot help it), the workflow is enabled, `package.json` has
+`ci:verify` and `ci:deliver`, the tag and the npm version are free, and the ladder is respected (the previous rung was
+delivered). Corral creates the **tag** only; the pipeline creates the GitHub release once npm has the package, so a release
+can no longer exist without a delivery. A failure is reported with its job and step and finished with `corral release resume`
+(each step is read back from GitHub and npm: nothing is re-tagged).
+
+Getting work onto `main`: `corral script run ship --set repo=foundation --set message="feat: …"` moves the uncommitted changes
+to a work branch, pushes it, opens the PR to `main` and merges it when CI is green. Hotfix: the same, then
+`corral release run --repo foundation --bump patch --stage stable --skip-ladder`.
+
+Moving from the old ladder (once): `corral release doctor --fix --merge --repo foundation` (the model), then
+`corral release migrate foundation` (dry-run: which of `dev`, `alpha`, `beta`, `rc` are fully contained in `main`) and
+`corral release migrate foundation --confirm foundation`. The npm trusted publisher is bound to the workflow **file name**
+(`release.yml`): do not rename it (`npm trust github flipova/foundation --file release.yml --allow-publish`).
+`corral promote`, `corral align` and the `promote-next` / `foundation-release` scripts are deprecated and will be removed.
 
 ## 9. Conformity with Corral
 
