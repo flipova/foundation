@@ -1,4 +1,4 @@
-# corral-pipeline v2 kind:node sha256:f16ca65fabb520e2
+# corral-pipeline v2 kind:node sha256:90f32378ef7a022c
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -71,7 +71,8 @@ jobs:
   security:
     name: security (CodeQL)
     needs: verify
-    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/')
+    # not for Dependabot PRs: a dependency bump gets verify; CodeQL runs on every other PR and on every tag
+    if: (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
