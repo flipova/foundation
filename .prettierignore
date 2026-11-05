@@ -1,15 +1,20 @@
 dist
 node_modules
 coverage
-docs/build
-docs/.docusaurus
-docs/generated
-design/tools/sources
 design/canonical.index.txt
-# Artefacts GÉNÉRÉS par design/tools/sources/generate.py : leur format est celui
+# Artefacts GÉNÉRÉS par flipova-design gen : leur format est celui
 # du générateur, et `design:gen:check` (CI) vérifie qu'ils n'ont pas bougé.
 # Prettier ne doit donc jamais les reformater, sinon les deux gardes s'opposent.
-components/ui/gluestack-ui-provider/config.ts
-components/ui/gluestack-ui-provider/tokens.js
+components/providers/gluestack/ui/gluestack-ui-provider/config.ts
+components/providers/gluestack/ui/gluestack-ui-provider/tokens.js
+components/theme/design-theme.ts
 package-lock.json
-docs/package-lock.json
+design/tools/test/*.json
+COMPONENTS.md
+# générés par corral (`corral setup`, `corral product generate`) : corral les réécrit à sa façon
+ENVIRONMENT.md
+corral.product.json
+
+# site de documentation (Docusaurus) : généré par `corral docs docusaurus`, formaté par ses propres règles
+website/
+documentation/

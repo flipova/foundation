@@ -1,11 +1,11 @@
 // The Tailwind theme is 100% generated from the design registries:
 //   design/tokens.xml  (scales: spacing, radii, type, shadow, z, motion)
 //   design/themes.xml  (semantic colours, one per gluestack CSS variable)
-//   -> components/ui/gluestack-ui-provider/tokens.js   (`npm run design:gen`)
+//   -> components/providers/gluestack/ui/gluestack-ui-provider/tokens.js   (`npm run design:gen`)
 //
 // Do NOT add design values here: change the XML and regenerate, so the
 // gluestack/nativewind theme and the runtime config can never drift apart.
-const tokens = require('./components/ui/gluestack-ui-provider/tokens');
+const tokens = require('./components/providers/gluestack/ui/gluestack-ui-provider/tokens');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

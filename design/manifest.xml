@@ -12,8 +12,9 @@
         <pipeline>
             <source>design/tokens.xml, design/themes.xml</source>
             <outputs>
-                <gluestackConfig>components/ui/gluestack-ui-provider/config.ts</gluestackConfig>
-                <gluestackTokens>components/ui/gluestack-ui-provider/tokens.js</gluestackTokens>
+                <gluestackConfig>components/providers/gluestack/ui/gluestack-ui-provider/config.ts</gluestackConfig>
+                <gluestackTokens>components/providers/gluestack/ui/gluestack-ui-provider/tokens.js</gluestackTokens>
+                <designTheme>components/theme/design-theme.ts</designTheme>
             </outputs>
         </pipeline>
         <determinism>
@@ -52,7 +53,7 @@
                 </params>
             </rule>
             <rule id="version.sync" kind="sync" severity="error">
-                <description>manifest &lt;version&gt; and @schema propagate to every root tag declaring them (fix: checker.py --sync-version)</description>
+                <description>manifest &lt;version&gt; and @schema propagate to every root tag declaring them (fix: flipova-design check --sync-version)</description>
                 <applyTo>*.xml</applyTo>
             </rule>
         </determinism>

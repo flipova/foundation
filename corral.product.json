@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "foundation",
   "name": "foundation",
-  "description": "",
-  "type": "cli",
+  "description": "Provider-agnostic UI contract and design toolchain: 57 components over flipova, gluestack, reusables, paper and tamagui, themed from the app's own XML registries.",
+  "type": "library",
   "stack": [
     "react",
     "typescript"
@@ -14,12 +14,17 @@
   "lifecycle": "active",
   "owners": [],
   "links": {
-    "docs": "",
-    "support": "",
-    "tracker": ""
+    "docs": "https://github.com/flipova/foundation/blob/main/DOCS.md",
+    "support": "https://github.com/flipova/foundation/blob/main/.github/SUPPORT.md",
+    "tracker": "https://github.com/flipova/foundation/issues"
   },
   "dependencies": [],
-  "deliverables": [],
+  "deliverables": [
+    {
+      "kind": "npm",
+      "name": "@flipova/foundation"
+    }
+  ],
   "environments": [
     "dev",
     "staging",

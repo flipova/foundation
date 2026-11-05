@@ -37,6 +37,10 @@ const nativeExternal = [
   'tailwind-variants',
   '@legendapp/motion',
   'dom-helpers',
+  // optional peers of the provider sub-paths: each adapter imports only its own library
+  'react-native-paper',
+  '@tamagui/core',
+  '@rn-primitives/switch',
 ];
 
 const sharedExternal = ['react', 'react-dom', 'react-native', ...nativeExternal];
@@ -47,6 +51,14 @@ export default defineConfig([
     entry: {
       index: 'index.ts',
       'ui/index': 'components/ui/index.ts',
+      'contract/index': 'components/contract/index.ts',
+      'providers/index': 'components/providers/index.ts',
+      'providers/flipova/index': 'components/providers/flipova/index.tsx',
+      'providers/gluestack/index': 'components/providers/gluestack/index.tsx',
+      'providers/gluestack/ui/index': 'components/providers/gluestack/ui/index.ts',
+      'providers/paper/index': 'components/providers/paper/index.tsx',
+      'providers/tamagui/index': 'components/providers/tamagui/index.tsx',
+      'providers/reusables/index': 'components/providers/reusables/index.tsx',
     },
     format: ['cjs', 'esm'],
     dts: true,

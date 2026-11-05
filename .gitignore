@@ -5,12 +5,7 @@ dist/
 .env
 .env.local
 .npm-cache/
-__pycache__/
-.venv/
-.ruff_cache/
 *.tgz
-docs/build/
-docs/.docusaurus/
 .expo/
 .github/flow/.state.json
 

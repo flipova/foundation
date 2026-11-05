@@ -40,7 +40,8 @@ run-name: >-
 
 on:
   push:
-    branches: [dev, alpha, beta, rc, main]
+    # A change is verified ONCE, on the pull request that carries it; a push to a channel only records a merge
+    # that was already verified. Only a release tag starts a run (the delivery). Re-run by hand: workflow_dispatch.
     tags: ['v*', '@**'] # `v*` for tags cut before the convention, `@org/repo@X.Y.Z` from now on
   pull_request:
     branches: [dev, alpha, beta, rc, main]
@@ -138,36 +139,29 @@ jobs:
         run: npm run format:check --if-present
       - name: types
         run: npm run typecheck
-      - name: tests
-        run: npm test
       - name: build
         run: npm run build
-
-      - name: python (design registry tooling)
-        if: matrix.node == 22
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.12'
+      # Foundation is the bottom layer: no @flipova/* import, no frontend folder, layers respected,
+      # optional peers only in their own provider (scripts/check-boundary.js).
+      - name: boundary
+        run: npm run boundary
+      # dist/ exists here, so the GUI preview test must run (it is skipped locally without a build)
+      - name: tests
+        run: npm test
+        env:
+          FLIPOVA_REQUIRE_DIST: '1'
 
       # The registry is the single source of truth: a generated file that drifts
       # from it fails here, on every channel, cheaply.
       - name: design registry up to date
         if: matrix.node == 22
-        run: |
-          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
-          npm run design:gen:check
+        run: npm run design:gen:check
 
       # From alpha onwards this run can become a release, so the expensive
       # checks join in: the full design pipeline, the docs site, the tarball.
-      - name: full design pipeline (gen, check, verify, lint, doc)
+      - name: full design pipeline (gen, check, verify, lint)
         if: matrix.node == 22 && env.HEAVY == 'true'
-        run: |
-          if [ -f design/tools/requirements.txt ]; then pip install -r design/tools/requirements.txt; fi
-          npm run design:pipeline
-
-      - name: documentation site builds
-        if: matrix.node == 22 && env.HEAVY == 'true'
-        run: npm --prefix docs ci && npm --prefix docs run build
+        run: npm run design:pipeline
 
       - name: npm tarball is publishable
         if: matrix.node == 22 && env.HEAVY == 'true'
@@ -263,7 +257,7 @@ jobs:
             echo "::notice::delivering with « npm run deploy -- --tag $tag »"
             if ! npm run deploy -- --tag "$tag"; then
               echo "::error::delivery failed. If the log above contains ENEEDAUTH, the registry has no OIDC trusted publisher declared for this repository. Fix:"
-              echo "::error::  npm trust github ${{ github.repository }} --file pipeline.yml --allow-publish"
+              echo "::error::  npm trust github ${{ github.repository }} --file release.yml --allow-publish"
               echo "::error::  (or: npmjs.com > package > Settings > Trusted Publisher > GitHub Actions)"
               exit 1
             fi
