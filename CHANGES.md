@@ -1,5 +1,12 @@
 # Changes
 
+## Unreleased
+
+- **Release system, one branch.** The pipeline (`.github/workflows/release.yml`) is now the Corral model (fingerprinted, no
+  repository-specific step); what proves foundation fit to ship lives in `package.json`: `ci:verify` (`scripts/ci-verify.js`) and
+  `ci:deliver`. The version is the git tag, stamped into the manifest inside the runner. DOCS.md sections 7 and 8 describe
+  `corral release plan | run | promote | resume | doctor | migrate | gui`; the branch ladder is retired.
+
 Versions follow SemVer with the channels `alpha → beta → rc → stable` (see [DOCS.md](DOCS.md#8-releasing-with-corral)).
 
 ## 3.0.0 (next, breaking)

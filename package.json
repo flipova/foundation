@@ -1,7 +1,7 @@
 {
   "name": "@flipova/foundation",
-  "version": "3.1.0",
-  "description": "gluestack-ui components for React Native (iOS, Android) and Web, with a registry-driven theming pipeline (XML tokens/themes to gluestack config + Tailwind theme)",
+  "version": "2.4.4",
+  "description": "Foundation of the Flipova design system: a provider-agnostic UI contract (57 components), five providers (flipova, gluestack, reusables, paper, tamagui), and a registry-driven theming toolchain with a local GUI.",
   "author": "Flipova",
   "license": "MIT",
   "workspaces": [
@@ -29,10 +29,66 @@
       "require": "./dist/ui/index.js",
       "default": "./dist/ui/index.js"
     },
+    "./contract": {
+      "types": "./dist/contract/index.d.ts",
+      "browser": "./dist/contract/index.js",
+      "import": "./dist/contract/index.mjs",
+      "require": "./dist/contract/index.js",
+      "default": "./dist/contract/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "browser": "./dist/providers/index.js",
+      "import": "./dist/providers/index.mjs",
+      "require": "./dist/providers/index.js",
+      "default": "./dist/providers/index.js"
+    },
+    "./providers/flipova": {
+      "types": "./dist/providers/flipova/index.d.ts",
+      "browser": "./dist/providers/flipova/index.js",
+      "import": "./dist/providers/flipova/index.mjs",
+      "require": "./dist/providers/flipova/index.js",
+      "default": "./dist/providers/flipova/index.js"
+    },
+    "./providers/gluestack": {
+      "types": "./dist/providers/gluestack/index.d.ts",
+      "browser": "./dist/providers/gluestack/index.js",
+      "import": "./dist/providers/gluestack/index.mjs",
+      "require": "./dist/providers/gluestack/index.js",
+      "default": "./dist/providers/gluestack/index.js"
+    },
+    "./providers/gluestack/ui": {
+      "types": "./dist/providers/gluestack/ui/index.d.ts",
+      "browser": "./dist/providers/gluestack/ui/index.js",
+      "import": "./dist/providers/gluestack/ui/index.mjs",
+      "require": "./dist/providers/gluestack/ui/index.js",
+      "default": "./dist/providers/gluestack/ui/index.js"
+    },
+    "./providers/paper": {
+      "types": "./dist/providers/paper/index.d.ts",
+      "browser": "./dist/providers/paper/index.js",
+      "import": "./dist/providers/paper/index.mjs",
+      "require": "./dist/providers/paper/index.js",
+      "default": "./dist/providers/paper/index.js"
+    },
+    "./providers/tamagui": {
+      "types": "./dist/providers/tamagui/index.d.ts",
+      "browser": "./dist/providers/tamagui/index.js",
+      "import": "./dist/providers/tamagui/index.mjs",
+      "require": "./dist/providers/tamagui/index.js",
+      "default": "./dist/providers/tamagui/index.js"
+    },
+    "./providers/reusables": {
+      "types": "./dist/providers/reusables/index.d.ts",
+      "browser": "./dist/providers/reusables/index.js",
+      "import": "./dist/providers/reusables/index.mjs",
+      "require": "./dist/providers/reusables/index.js",
+      "default": "./dist/providers/reusables/index.js"
+    },
     "./tokens": {
-      "types": "./components/ui/gluestack-ui-provider/tokens.d.ts",
-      "require": "./components/ui/gluestack-ui-provider/tokens.js",
-      "default": "./components/ui/gluestack-ui-provider/tokens.js"
+      "types": "./components/providers/gluestack/ui/gluestack-ui-provider/tokens.d.ts",
+      "require": "./components/providers/gluestack/ui/gluestack-ui-provider/tokens.js",
+      "default": "./components/providers/gluestack/ui/gluestack-ui-provider/tokens.js"
     }
   },
   "publishConfig": {
@@ -40,12 +96,19 @@
     "registry": "https://registry.npmjs.org/"
   },
   "bin": {
-    "flipova-design": "design/tools/npm.js"
+    "flipova-design": "design/tools/cli.js"
   },
   "files": [
     "dist",
     "components",
+    "!components/**/*.test.ts",
+    "!components/**/*.test.tsx",
+    "!components/providers/class-resolver.ts",
     "design",
+    "!design/tools/test",
+    "COMPONENTS.md",
+    "DOCS.md",
+    "CHANGES.md",
     "README.md",
     "LICENSE"
   ],
@@ -55,62 +118,86 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build && npm run typecheck",
     "deploy": "npm view $npm_package_name@$npm_package_version version >/dev/null 2>&1 || npm publish --provenance --access public",
-    "docs": "npm run design:doc",
-    "docs:build": "npm --prefix docs run build",
-    "test": "vitest run",
+    "boundary": "node scripts/check-boundary.js",
+    "boundary:test": "node --test scripts/boundary.test.js",
+    "docs:check": "node scripts/check-docs.js",
+    "docs:test": "node --test scripts/docs.test.js",
+    "test": "npm run design:test && npm run boundary:test && npm run boundary && npm run docs:test && npm run docs:check && vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "design:gen": "node design/tools/design.js gen",
-    "design:gen:check": "node design/tools/design.js gen --check",
-    "design:gen:list": "node design/tools/design.js gen --list",
-    "design:check": "node design/tools/design.js check",
-    "design:check:list-rules": "node design/tools/design.js check --list-rules",
-    "design:verify": "node design/tools/design.js verify",
-    "design:canonical": "node design/tools/design.js canonical",
-    "design:lint": "node design/tools/design.js lint",
-    "design:doc": "node design/tools/design.js doc",
-    "design:run": "node design/tools/design.js run",
-    "design:edit": "node design/tools/design.js edit",
-    "design:pipeline": "npm run design:gen && npm run design:check && npm run design:verify && npm run design:lint && npm run design:doc"
+    "design:gen": "node design/tools/cli.js gen",
+    "design:gen:check": "node design/tools/cli.js gen --check",
+    "design:gen:list": "node design/tools/cli.js gen --list",
+    "design:check": "node design/tools/cli.js check",
+    "design:check:list-rules": "node design/tools/cli.js check --list-rules",
+    "design:verify": "node design/tools/cli.js verify",
+    "design:canonical": "node design/tools/cli.js canonical",
+    "design:lint": "node design/tools/cli.js lint",
+    "design:pipeline": "node design/tools/cli.js pipeline",
+    "design:test": "node --test design/tools/test/*.test.js",
+    "components:doc": "UPDATE_COMPONENTS_DOC=1 vitest run components/alignment.test.ts",
+    "ci:verify": "node scripts/ci-verify.js",
+    "ci:deliver": "npm run deploy --"
   },
   "peerDependencies": {
+    "@rn-primitives/switch": ">=1.0.0",
+    "@tamagui/core": ">=3.0.0",
     "expo": ">=55.0.0",
     "expo-glass-effect": ">=55.0.0",
     "lucide-react": ">=0.400.0",
     "nativewind": ">=4.1.23",
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "react-native": ">=0.72.0",
+    "react-native-paper": ">=5.15.0"
   },
   "peerDependenciesMeta": {
+    "@rn-primitives/switch": {
+      "optional": true
+    },
+    "@tamagui/core": {
+      "optional": true
+    },
     "expo": {
       "optional": true
     },
     "expo-glass-effect": {
       "optional": true
     },
+    "lucide-react": {
+      "optional": true
+    },
+    "nativewind": {
+      "optional": true
+    },
     "react-dom": {
+      "optional": true
+    },
+    "react-native-paper": {
       "optional": true
     }
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
-    "eslint": "^9.0.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-react": "^7.37.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "prettier": "^3.3.0",
-    "typescript-eslint": "^8.0.0",
     "@react-native/assets-registry": "^0.88.0",
+    "@rn-primitives/switch": "^1.5.2",
+    "@tamagui/core": "^3.2.2",
     "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
     "@types/prompts": "^2.4.9",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.0",
     "@types/react-native": "^0.72.8",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.6.1",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "expo-glass-effect": "^57.0.4",
     "fast-check": "^4.6.0",
     "happy-dom": "21.0.4",
@@ -119,25 +206,32 @@
     "lottie-react": "^2.4.1",
     "nativewind": "^4.2.7",
     "postcss": "^8.5.28",
+    "prettier": "^3.3.0",
     "prompts": "^2.4.2",
     "react-dom": "^19.3.0",
+    "react-native-paper": "^5.15.4",
     "readable-stream": "^4.7.0",
     "tailwindcss": "^3.4.19",
     "ts-morph": "^28.0.0",
     "tsup": "^8.5.0",
     "typescript": "^5.3.0",
+    "typescript-eslint": "^8.0.0",
     "uuid": "^14.0.2",
     "vitest": "^4.1.2"
   },
   "keywords": [
-    "react-native",
     "design-system",
     "design-tokens",
-    "theming",
-    "layout",
-    "ui",
+    "expo",
     "flipova",
-    "expo"
+    "gluestack",
+    "layout",
+    "nativewind",
+    "react-native",
+    "react-native-paper",
+    "tamagui",
+    "theming",
+    "ui"
   ],
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -179,5 +273,12 @@
   },
   "overrides": {
     "postcss-selector-parser": "7.1.6"
+  },
+  "homepage": "https://github.com/flipova/foundation#readme",
+  "bugs": {
+    "url": "https://github.com/flipova/foundation/issues"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

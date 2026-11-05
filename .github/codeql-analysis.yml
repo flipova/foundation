@@ -1,0 +1,3 @@
+version: 2
+ci:
+  workflows: ['.github/workflows/release.yml']

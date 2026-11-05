@@ -3,11 +3,15 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: daily
     open-pull-requests-limit: 5
-    target-branch: dev
   - package-ecosystem: github-actions
     directory: /
     schedule:
+      interval: daily
+  # the documentation site (Docusaurus) has its own lockfile: its alerts go through the default branch like everything else
+  - package-ecosystem: npm
+    directory: /website
+    schedule:
       interval: weekly
-    target-branch: dev
+    open-pull-requests-limit: 3

@@ -50,7 +50,7 @@ Prérequis : Node.js 20 ou supérieur et npm.
 <!-- corral:section:start id="sec-4" type="section" title="Conventions" level="1" order="4" after="sec-3" -->
 # 4. Conventions
 
-- Branches : une branche de travail par modification ; les canaux dev, alpha, beta et rc ne reçoivent que le canal précédent.
+- Branches : une branche de travail par modification ; on fusionne dans main ; une version est un tag (alpha, beta, rc puis stable sur le même commit), voir DOCS.md, sections 7 et 8.
 - Messages de commit : un résumé court à l'impératif, détaillé si utile.
 - Style de code et vérifications : `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm run boundary`.
 - Tests : `npm test` doit passer ; un nouveau composant ajoute son type, sa recette et son implémentation flipova, puis régénère `COMPONENTS.md` avec `npm run components:doc`.
