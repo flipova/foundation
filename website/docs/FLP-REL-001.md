@@ -1,0 +1,66 @@
+---
+id: "FLP-REL-001"
+title: "Notes de version"
+sidebar_label: "Notes de version"
+---
+
+<!-- Généré par « corral docs docusaurus » depuis documentation/v1.0/FLP-REL-001_34_Notes_de_Version_v1.0.md — ne pas modifier ici, modifier le document source. -->
+
+**Informations**
+
+|                        |                                     |
+|------------------------|-------------------------------------|
+| **Titre du document**  | Notes de version |
+| **Version**            | 1.0 |
+| **Date de mise à jour** | 05/11/2026 |
+
+## 1. Résumé
+
+Version : 2.4.4
+
+La version 3.0.0 (en préparation) introduit une nouvelle architecture : un contrat unique de 57 composants, cinq fournisseurs et des thèmes qui appartiennent à l'application. Elle comporte des changements incompatibles avec la série 2.x.
+
+## 2. Nouveautés
+
+- Contrat de 57 composants (`@flipova/foundation/contract`) : propriétés et recettes.
+- Composants unifiés (racine et `/ui`) : ils rendent le composant du fournisseur choisi dans `FlipovaProvider`, avec repli sur flipova.
+- Cinq fournisseurs : flipova (57), gluestack, reusables, paper, tamagui, chacun dépendance facultative chargée depuis son sous-chemin.
+- `providers/rn-base` : les 14 composants qui sont React Native lui-même, servis par tous les adaptateurs.
+- `COMPONENTS.md` : tableau de couverture généré et contrôlé par un test.
+- `flipova-design gui` : éditeur local des registres XML.
+- `flipova-design adopt` : copie des registres dans l'application.
+- `npm run boundary` : contrôle des couches et des dépendances facultatives.
+
+## 3. Corrections
+
+- Le fournisseur reçoit désormais le thème par la propriété `theme` ; la documentation indiquait à tort `registry`.
+- Les dépendances `react-native` (obligatoire), `nativewind` et `lucide-react` (facultatives) sont déclarées correctement comme dépendances homologues.
+
+## 4. Changements incompatibles et migration
+
+| **Changement** | **Qui est concerné** | **Comment migrer** |
+|----------------|----------------------|--------------------|
+| Les thèmes ne sont plus livrés ; seul un point de départ neutre l'est. | Tous les utilisateurs de la série 2.x. | `npx flipova-design adopt` puis `npx flipova-design gen`. |
+| Le catalogue gluestack est déplacé vers `providers/gluestack/ui`. | Imports directs de composants gluestack. | Utiliser les composants unifiés ou le sous-chemin `@flipova/foundation/providers/gluestack/ui`. |
+| `components/ui` devient la couche unifiée. | Imports internes de l'ancien dossier. | Importer depuis la racine ou depuis `/ui`. |
+| Les outils Python et `design/documentation.xml` sont supprimés. | Scripts qui les appelaient. | Utiliser la CLI Node `flipova-design`. |
+
+## 5. Dépréciations
+
+| **Élément déprécié** | **Remplacé par** | **Retrait prévu** |
+|----------------------|------------------|-------------------|
+| Aucun | — | — |
+
+## 6. Compatibilité
+
+Node.js 20 ou supérieur pour l'outillage ; React 18+ et React Native 0.72+. Les bibliothèques de fournisseurs sont facultatives.
+
+## 7. Mettre à jour
+
+```bash
+npm install @flipova/foundation@latest
+npx flipova-design adopt
+npx flipova-design gen
+```
+
+Points d'attention : enveloppez l'application dans `<FlipovaProvider adapter={…} theme={designTheme}>` (`adopt` écrit `theme/provider.tsx`), remplacez les imports gluestack par les composants unifiés, et installez la dépendance facultative du fournisseur choisi.
