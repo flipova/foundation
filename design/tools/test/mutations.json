@@ -1,0 +1,347 @@
+[
+ {
+  "name": "baseline",
+  "edits": [],
+  "note": ""
+ },
+ {
+  "name": "id-not-slug",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\"",
+    "replace": "<token id=\"9radii\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "dangling-ref",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "$ref.tokens.color.gray.50",
+    "replace": "$ref.tokens.color.gray.999"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "ref-bad-format",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "<ref>$ref.tokens.color.gray.900</ref>",
+    "replace": "<ref>tokens</ref>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "timestamp-attr",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\" kind=\"scale\" unit=\"px\"",
+    "replace": "<token id=\"radii\" kind=\"scale\" unit=\"px\" base=\"2024-05-06\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "timestamp-text",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<value id=\"none\">0</value>",
+    "replace": "<value id=\"none\">2024-05-06T10:00:00Z</value>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "non-ascii-value",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<value id=\"none\">0</value>",
+    "replace": "<value id=\"none\">0é</value>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "non-ascii-label-ok",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<values>",
+    "replace": "<label>café</label><values>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "schema-drift",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "schema=\"flipova.foundation/registry/1\"",
+    "replace": "schema=\"other/1\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "register-mismatch",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "register=\"themes\"",
+    "replace": "register=\"tokens\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "catalog-order",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "<catalog register=\"tokens\">\n            <file>tokens.xml</file>\n        </catalog>\n        <catalog register=\"themes\">\n            <file>themes.xml</file>\n        </catalog>",
+    "replace": "<catalog register=\"themes\">\n            <file>themes.xml</file>\n        </catalog>\n        <catalog register=\"tokens\">\n            <file>tokens.xml</file>\n        </catalog>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "siblings-order",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "<param name=\"mode\">registers</param>",
+    "replace": "<param name=\"mode\">siblings</param>\n                    <param name=\"selectors\">token,value</param>"
+   },
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"breakpoints\"",
+    "replace": "<token id=\"aaa-first-moved\" kind=\"map\"><values><value id=\"1\">1</value></values></token>\n        <token id=\"breakpoints\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "unknown-ordering-mode",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "<param name=\"mode\">registers</param>",
+    "replace": "<param name=\"mode\">weird</param>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "unknown-rule-kind",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "kind=\"timestamps\"",
+    "replace": "kind=\"nonexistent\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "malformed-xml",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "</items>",
+    "replace": "</itemz>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-unknown-attr",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\"",
+    "replace": "<token color=\"red\" id=\"radii\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-missing-required",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\" kind=\"scale\" unit=\"px\">",
+    "replace": "<token id=\"radii\" unit=\"px\">"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-bad-enum",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\" kind=\"scale\"",
+    "replace": "<token id=\"radii\" kind=\"bogus\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-wrong-fixed",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "register=\"tokens\">",
+    "replace": "register=\"themes\">"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-unexpected-child",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<values>",
+    "replace": "<surprise/><values>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-child-order",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "<roleMap>",
+    "replace": "<roleMap><role id=\"zzz\"><value>1 2 3</value><ref>$ref.tokens.color.gray.50</ref></role>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-missing-child",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "<registryRoot>design</registryRoot>",
+    "replace": ""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-text-in-elementonly",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "<meta>",
+    "replace": "<meta>stray text"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-bad-severity",
+  "edits": [
+   {
+    "file": "manifest.xml",
+    "find": "severity=\"error\">\n                <description>explicit uid",
+    "replace": "severity=\"fatal\">\n                <description>explicit uid"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "xsd-unknown-root",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<tokens ",
+    "replace": "<tokenz "
+   },
+   {
+    "file": "tokens.xml",
+    "find": "</tokens>",
+    "replace": "</tokenz>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "canonical-drift",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"zIndex\"",
+    "replace": "<token id=\"zIndexX\""
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "multiline-start-tag",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<token id=\"radii\" kind=\"scale\" unit=\"px\">",
+    "replace": "<token id=\"9radii\"\n               kind=\"scale\"\n               unit=\"px\">"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "gen-bad-colour",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "<role id=\"background\">\n                    <ref>$ref.tokens.color.gray.50</ref>",
+    "replace": "<role id=\"background\">\n                    <value>not-a-colour</value>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "gen-short-hex",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "<role id=\"background\">\n                    <ref>$ref.tokens.color.gray.50</ref>",
+    "replace": "<role id=\"background\">\n                    <value>#abc</value>"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "gen-variant-twice",
+  "edits": [
+   {
+    "file": "themes.xml",
+    "find": "<theme id=\"dark\" mode=\"dark\" variant=\"default\">",
+    "replace": "<theme id=\"dark\" mode=\"light\" variant=\"default\">"
+   }
+  ],
+  "note": ""
+ },
+ {
+  "name": "gen-lineheight-px",
+  "edits": [
+   {
+    "file": "tokens.xml",
+    "find": "<value id=\"xs\">16</value>\n                <value id=\"sm\">20</value>",
+    "replace": "<value id=\"xs\">1.5</value>\n                <value id=\"sm\">20</value>"
+   }
+  ],
+  "note": ""
+ }
+]
