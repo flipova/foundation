@@ -1,0 +1,76 @@
+/* Généré par « corral docs docusaurus » : ne pas modifier (la charte vient du pack assets, voir custom.css pour ajouter des styles). */
+@font-face{font-family:"Lexend";src:url("../../static/fonts/Lexend-VariableFont_wght.ttf") format("truetype");font-weight:100 900;font-style:normal;font-display:block}
+@font-face{font-family:"Bricolage Grotesque";src:url("../../static/fonts/BricolageGrotesque-VariableFont_opsz_wdth_wght.ttf") format("truetype");font-weight:100 900;font-style:normal;font-display:block}
+@font-face{font-family:"Space Mono";src:url("../../static/fonts/SpaceMono-Regular.ttf") format("truetype");font-weight:400;font-style:normal;font-display:block}
+:root {
+  --ifm-color-primary: #000091;
+  --ifm-color-primary-dark: color-mix(in srgb, #000091 90%, #000);
+  --ifm-color-primary-darker: color-mix(in srgb, #000091 82%, #000);
+  --ifm-color-primary-darkest: color-mix(in srgb, #000091 68%, #000);
+  --ifm-color-primary-light: color-mix(in srgb, #000091 85%, #fff);
+  --ifm-color-primary-lighter: color-mix(in srgb, #000091 72%, #fff);
+  --ifm-color-primary-lightest: color-mix(in srgb, #000091 55%, #fff);
+  --ifm-font-family-base: "Lexend", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --ifm-heading-font-family: "Bricolage Grotesque", "Lexend", "Lexend", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --ifm-font-family-monospace: "Space Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ifm-background-color: #FAFAFA;
+  --ifm-background-surface-color: #FFFFFF;
+  --ifm-font-color-base: #18181B;
+  --ifm-heading-color: #18181B;
+  --ifm-color-content: #18181B;
+  --ifm-color-content-secondary: #52525B;
+  --ifm-navbar-background-color: #FFFFFF;
+  --ifm-navbar-link-color: #18181B;
+  --ifm-footer-background-color: #F4F4F5;
+  --ifm-footer-color: #18181B;
+  --ifm-footer-title-color: #18181B;
+  --ifm-footer-link-color: #18181B;
+  --ifm-code-background: #F4F4F5;
+  --ifm-color-emphasis-0: #FAFAFA;
+  --ifm-color-emphasis-100: color-mix(in srgb, #18181B 8%, #FAFAFA);
+  --ifm-color-emphasis-200: color-mix(in srgb, #18181B 16%, #FAFAFA);
+  --ifm-color-emphasis-300: color-mix(in srgb, #18181B 28%, #FAFAFA);
+  --ifm-color-emphasis-400: color-mix(in srgb, #18181B 42%, #FAFAFA);
+  --ifm-color-emphasis-500: color-mix(in srgb, #18181B 56%, #FAFAFA);
+  --ifm-color-emphasis-600: color-mix(in srgb, #18181B 68%, #FAFAFA);
+  --ifm-color-emphasis-700: color-mix(in srgb, #18181B 78%, #FAFAFA);
+  --ifm-color-emphasis-800: color-mix(in srgb, #18181B 88%, #FAFAFA);
+  --ifm-color-emphasis-900: color-mix(in srgb, #18181B 94%, #FAFAFA);
+  --ifm-color-emphasis-1000: #18181B;
+}
+[data-theme='dark'] {
+  --ifm-color-primary: #3333A7;
+  --ifm-color-primary-dark: color-mix(in srgb, #3333A7 90%, #000);
+  --ifm-color-primary-darker: color-mix(in srgb, #3333A7 82%, #000);
+  --ifm-color-primary-darkest: color-mix(in srgb, #3333A7 68%, #000);
+  --ifm-color-primary-light: color-mix(in srgb, #3333A7 85%, #fff);
+  --ifm-color-primary-lighter: color-mix(in srgb, #3333A7 72%, #fff);
+  --ifm-color-primary-lightest: color-mix(in srgb, #3333A7 55%, #fff);
+  --ifm-background-color: #18181B;
+  --ifm-background-surface-color: #27272A;
+  --ifm-font-color-base: #F4F4F5;
+  --ifm-heading-color: #F4F4F5;
+  --ifm-color-content: #F4F4F5;
+  --ifm-color-content-secondary: #A1A1AA;
+  --ifm-navbar-background-color: #27272A;
+  --ifm-navbar-link-color: #F4F4F5;
+  --ifm-footer-background-color: #27272A;
+  --ifm-footer-color: #F4F4F5;
+  --ifm-footer-title-color: #F4F4F5;
+  --ifm-footer-link-color: #F4F4F5;
+  --ifm-code-background: #27272A;
+  --ifm-color-emphasis-0: #18181B;
+  --ifm-color-emphasis-100: color-mix(in srgb, #F4F4F5 8%, #18181B);
+  --ifm-color-emphasis-200: color-mix(in srgb, #F4F4F5 16%, #18181B);
+  --ifm-color-emphasis-300: color-mix(in srgb, #F4F4F5 28%, #18181B);
+  --ifm-color-emphasis-400: color-mix(in srgb, #F4F4F5 42%, #18181B);
+  --ifm-color-emphasis-500: color-mix(in srgb, #F4F4F5 56%, #18181B);
+  --ifm-color-emphasis-600: color-mix(in srgb, #F4F4F5 68%, #18181B);
+  --ifm-color-emphasis-700: color-mix(in srgb, #F4F4F5 78%, #18181B);
+  --ifm-color-emphasis-800: color-mix(in srgb, #F4F4F5 88%, #18181B);
+  --ifm-color-emphasis-900: color-mix(in srgb, #F4F4F5 94%, #18181B);
+  --ifm-color-emphasis-1000: #F4F4F5;
+  --ifm-link-color: color-mix(in srgb, #3333A7 55%, #fff);
+  --ifm-menu-color-active: color-mix(in srgb, #3333A7 55%, #fff);
+  --ifm-breadcrumb-color-active: color-mix(in srgb, #3333A7 55%, #fff);
+}

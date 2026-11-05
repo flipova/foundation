@@ -1,0 +1,89 @@
+---
+id: "FLP-GST-001"
+title: "Démarrer avec Foundation"
+sidebar_label: "Démarrer avec Foundation"
+---
+
+<!-- Généré par « corral docs docusaurus » depuis documentation/v1.0/FLP-GST-001_28_Guide_de_Demarrage_v1.0.md — ne pas modifier ici, modifier le document source. -->
+
+**Informations**
+
+|                        |                                     |
+|------------------------|-------------------------------------|
+| **Titre du document**  | Démarrer avec Foundation |
+| **Version**            | 1.0 |
+| **Date de mise à jour** | 05/11/2026 |
+
+## 1. Avant de commencer
+
+- Node.js 20 ou supérieur et npm.
+- Une application React Native (Expo ou non) avec React 18+ et React Native 0.72+.
+- Un dépôt git propre est recommandé : `adopt` et `gen` créent des fichiers dans votre projet.
+
+Durée estimée : 10 minutes.
+
+## 2. Installation
+
+```bash
+npm install @flipova/foundation react react-native
+```
+
+Pour utiliser une bibliothèque autre que flipova, installez aussi sa dépendance facultative :
+
+```bash
+npm install react-native-paper     # fournisseur paper
+npm install @tamagui/core          # fournisseur tamagui
+npm install @rn-primitives/switch  # fournisseur reusables (selon les composants)
+```
+
+## 3. Configuration minimale
+
+Votre design vit dans quatre fichiers XML du dossier `design/` : `tokens.xml`, `themes.xml`, `manifest.xml` et `schema.xsd`. Copiez-les depuis le point de départ neutre fourni, puis compilez-les :
+
+```bash
+npx flipova-design adopt   # copie les registres dans ./design et écrit theme/provider.tsx
+npx flipova-design gen     # produit theme/design-theme.ts, config.ts et tokens.js
+```
+
+Un thème doit définir les 27 rôles de couleur obligatoires ; un rôle manquant est refusé avec son nom.
+
+## 4. Premier usage pas à pas
+
+1. Montez le fournisseur une seule fois à la racine de l'application :
+
+   ```tsx
+   import { AppThemeProvider } from './theme/provider';
+
+   export default function App() {
+     return <AppThemeProvider mode="system">{/* votre application */}</AppThemeProvider>;
+   }
+   ```
+
+2. Importez les composants depuis le package :
+
+   ```tsx
+   import { Button, Card, Heading, Text, VStack } from '@flipova/foundation';
+   ```
+
+3. Affichez un premier écran :
+
+   ```tsx
+   <Card>
+     <VStack space="4">
+       <Heading level={2}>Bienvenue</Heading>
+       <Button onPress={() => {}}>Enregistrer</Button>
+     </VStack>
+   </Card>
+   ```
+
+## 5. Vérifier que tout fonctionne
+
+- Le composant s'affiche avec les couleurs de votre thème (clair ou sombre selon `mode`).
+- `npx flipova-design pipeline` se termine sans erreur : il enchaîne `gen`, `check`, `verify` et `lint`.
+- `npx flipova-design gui` ouvre l'éditeur local ; l'onglet Aperçu montre les composants avec votre thème.
+
+## 6. Étapes suivantes
+
+- Guides pratiques : changer de fournisseur, modifier le thème, vérifier la couverture.
+- Concepts et fonctionnement : contrat, recettes, fournisseurs et repli.
+- Référence : commandes `flipova-design`, sous-chemins du package, propriétés de `FlipovaProvider`.
