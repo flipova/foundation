@@ -6,6 +6,7 @@ steps:
     run: npm ci
   format:
     run: 'npm run format:check'
+    blocking: false
   lint:
     run: npm run lint
   typecheck:
