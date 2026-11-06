@@ -5,7 +5,7 @@ steps:
   install:
     run: npm ci
   format:
-    run: "npm run format:check"
+    run: 'npm run format:check'
   lint:
     run: npm run lint
   typecheck:
@@ -22,4 +22,4 @@ steps:
   secrets:
     use: ci/lib/secrets
   sbom:
-    skip: "not requested (corral ci add <name> turns it on)"
+    skip: 'not requested (corral ci add <name> turns it on)'
