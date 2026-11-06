@@ -191,7 +191,7 @@
     "@types/prompts": "^2.4.9",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.0.0",
-    "@types/react-native": "^0.72.8",
+    "@types/react-native": "^0.73.0",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.6.1",
     "eslint": "^9.0.0",
