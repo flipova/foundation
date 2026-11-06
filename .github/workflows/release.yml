@@ -1,9 +1,9 @@
-# corral-pipeline v3 kind:node sha256:0ac05e810d26efe8
+# corral-pipeline v4 kind:node ci:1f76744ac03776ef sha256:2e85e522e3b5ab21
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
 # What is specific to a repository lives in the repository, as an OVERRIDE of a default:
-#   verify   npm script `ci:verify` (default: lint, typecheck, test, build when the scripts exist)
+#   verify   the steps of `ci/ci.yml` (edit it, then `corral ci sync`)
 #   deliver  npm script `ci:deliver -- --tag <channel>` (default: npm publish --provenance --access public --tag <channel>)
 #
 # The version is the git tag. Nothing is committed: `deliver` stamps the tag's version into the build inside the runner.
@@ -44,6 +44,16 @@ jobs:
             echo "::error::$f was edited (by hand or by a bot such as Dependabot). Do not edit it: run 'corral release doctor --fix' to restore the model."
             exit 1
           fi
+      - name: ci/ci.yml is the one this file was generated from
+        run: |
+          f=.github/workflows/release.yml
+          declared=$(head -n 1 "$f" | sed -n 's/.* ci:\([0-9a-f]*\) .*/\1/p')
+          actual=$(tr -d '\r' < ci/ci.yml | sha256sum | cut -c1-16)
+          echo "declared=$declared actual=$actual"
+          if [ "$declared" != "$actual" ]; then
+            echo "::error::ci/ci.yml changed since $f was generated from it. Run 'corral ci sync' and commit both files."
+            exit 1
+          fi
 
   verify:
     name: verify (node ${{ matrix.node }})
@@ -60,30 +70,37 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-      - run: npm ci
-      - name: verify
-        run: |
-          if node -e "process.exit(require('./package.json').scripts?.['ci:verify'] ? 0 : 1)"; then
-            npm run ci:verify
-          else
-            npm run lint --if-present && npm run typecheck --if-present && npm test --if-present && npm run build --if-present
-          fi
+      - name: install
+        run: npm ci
+      - name: format
+        run: "npm run format:check"
+      - name: lint
+        run: npm run lint
+      - name: typecheck
+        run: npm run typecheck
+      - name: test
+        run: npm test
+      - name: build
+        run: npm run build
+      - name: audit
+        continue-on-error: true
+        run: npm audit --json
   security:
-    name: security (CodeQL)
+    name: security
     needs: verify
-    # not for Dependabot PRs: a dependency bump gets verify; CodeQL runs on every other PR and on every tag
+    # not for Dependabot PRs: a dependency bump gets verify; the security steps of ci/ci.yml run on every other PR and on every tag
     if: (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]') || startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: read
-      security-events: write
     steps:
       - uses: actions/checkout@v6
-      - uses: github/codeql-action/init@v4
-        with:
-          languages: javascript-typescript
-      - uses: github/codeql-action/analyze@v4
+      - name: sast
+        uses: ./ci/lib/semgrep
+      - name: secrets
+        uses: ./ci/lib/secrets
+      # sbom: skipped — not requested (corral ci add <name> turns it on)
   deliver:
     name: deliver (production)
     needs: security
@@ -100,7 +117,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: install
+        run: npm ci
       - name: npm recent (trusted publishing needs npm >= 11.5.1)
         run: |
           npm install -g npm@latest
@@ -120,7 +138,8 @@ jobs:
           echo "RELEASE_TAG=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
       - name: stamp the tag's version into package.json (not committed)
         run: npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version
-      - run: npm run build --if-present
+      - name: build
+        run: npm run build
       - name: deliver
         run: |
           if node -e "process.exit(require('./package.json').scripts?.['ci:deliver'] ? 0 : 1)"; then

@@ -1,0 +1,25 @@
+# CI contract: how THIS project does each standard step. The workflow (.github/workflows/release.yml) is generated from it:
+# after editing, run `corral ci sync`. One of run | script | use | skip per step. See `corral help ci`.
+version: 1
+steps:
+  install:
+    run: npm ci
+  format:
+    run: "npm run format:check"
+  lint:
+    run: npm run lint
+  typecheck:
+    run: npm run typecheck
+  test:
+    run: npm test
+  build:
+    run: npm run build
+  audit:
+    run: npm audit --json
+    blocking: false
+  sast:
+    use: ci/lib/semgrep
+  secrets:
+    use: ci/lib/secrets
+  sbom:
+    skip: "not requested (corral ci add <name> turns it on)"
