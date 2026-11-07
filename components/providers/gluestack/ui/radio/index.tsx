@@ -20,7 +20,7 @@ const UIRadio = createRadio({
   Label: Text,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

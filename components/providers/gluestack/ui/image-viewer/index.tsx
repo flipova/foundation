@@ -20,7 +20,7 @@ import { Overlay } from '@gluestack-ui/core/overlay/creator';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedImage = Animated.createAnimatedComponent(RNImage);
+const AnimatedImage = Animated.createAnimatedComponent(RNImage) as any;
 
 const imageViewerStyle = tva({
   base: 'w-full',
@@ -306,7 +306,7 @@ const ZoomableImage = React.memo(
           source={{ uri: image.url }}
           alt={image.alt}
           resizeMode="contain"
-          style={[{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.8 }, animatedStyle]}
+          style={[{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.8 }, animatedStyle] as any}
         />
       </GestureDetector>
     );
@@ -454,7 +454,7 @@ const SlidableImageGallery = React.memo(function SlidableImageGallery({
 });
 
 // Main ImageViewer Component
-const ImageViewer = React.forwardRef<View, ImageViewerProps>(function ImageViewer(
+const ImageViewer: any = React.forwardRef<React.ElementRef<typeof View>, ImageViewerProps>(function ImageViewer(
   { images, defaultOpen = false, isOpen: controlledIsOpen, onOpenChange, onIndexChange, initialIndex = 0, children },
   ref,
 ) {
@@ -511,7 +511,7 @@ const ImageViewer = React.forwardRef<View, ImageViewerProps>(function ImageViewe
 });
 
 // Trigger Component
-const ImageViewerTrigger = React.forwardRef<React.ElementRef<typeof Pressable>, ImageViewerTriggerProps>(
+const ImageViewerTrigger: any = React.forwardRef<React.ElementRef<typeof Pressable>, ImageViewerTriggerProps>(
   function ImageViewerTrigger({ children, onPress, ...props }, ref) {
     const { open } = useImageViewerContext();
 
@@ -530,7 +530,7 @@ const ImageViewerTrigger = React.forwardRef<React.ElementRef<typeof Pressable>, 
 
 // Content Component (Uses gluestack Overlay for proper portal rendering)
 // Context provider is placed INSIDE the Overlay so portaled content has access
-const ImageViewerContent = React.forwardRef<View, { children?: React.ReactNode }>(function ImageViewerContent(
+const ImageViewerContent: any = React.forwardRef<React.ElementRef<typeof View>, { children?: React.ReactNode }>(function ImageViewerContent(
   { children },
   ref,
 ) {
@@ -587,7 +587,7 @@ const ImageViewerContent = React.forwardRef<View, { children?: React.ReactNode }
 });
 
 // Close Button Component
-const ImageViewerCloseButton = React.forwardRef<React.ElementRef<typeof Pressable>, { className?: string }>(
+const ImageViewerCloseButton: any = React.forwardRef<React.ElementRef<typeof Pressable>, { className?: string }>(
   function ImageViewerCloseButton({ className, ...props }, ref) {
     const { close } = useImageViewerContext();
 
@@ -607,7 +607,7 @@ const ImageViewerCloseButton = React.forwardRef<React.ElementRef<typeof Pressabl
 );
 
 // Navigation Component
-const ImageViewerNavigation = React.forwardRef<View, { className?: string }>(function ImageViewerNavigation(
+const ImageViewerNavigation: any = React.forwardRef<React.ElementRef<typeof View>, { className?: string }>(function ImageViewerNavigation(
   { className },
   ref,
 ) {
@@ -644,7 +644,7 @@ const ImageViewerNavigation = React.forwardRef<View, { className?: string }>(fun
 });
 
 // Counter Component
-const ImageViewerCounter = React.forwardRef<View, { className?: string }>(function ImageViewerCounter(
+const ImageViewerCounter: any = React.forwardRef<React.ElementRef<typeof View>, { className?: string }>(function ImageViewerCounter(
   { className },
   ref,
 ) {

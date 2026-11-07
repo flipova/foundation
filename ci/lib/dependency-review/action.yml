@@ -1,0 +1,24 @@
+# corral-ci-lib dependency-review v1 sha256:a3920dcfed828f81
+name: dependency-review
+description: On a pull request, fails when it adds a dependency with a known vulnerability or a forbidden licence. Skipped on tags and on other events.
+inputs:
+  fail-on-severity:
+    description: Lowest severity that fails the step (low, moderate, high or critical)
+    default: high
+  deny-licenses:
+    description: Licences refused (comma-separated SPDX ids, empty = none)
+    default: ''
+  warn-only:
+    description: Report without failing (true or false)
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Review the dependency changes
+      if: github.event_name == 'pull_request'
+      uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
+      with:
+        fail-on-severity: ${{ inputs.fail-on-severity }}
+        deny-licenses: ${{ inputs.deny-licenses }}
+        warn-only: ${{ inputs.warn-only }}
+        comment-summary-in-pr: never

@@ -13,8 +13,8 @@ export const UIProgress = createProgress({
   FilledTrack: View,
 });
 
-cssInterop(UIProgress, { className: 'style' });
-cssInterop(UIProgress.FilledTrack, { className: 'style' });
+(cssInterop as any)(UIProgress, { className: 'style' });
+(cssInterop as any)(UIProgress.FilledTrack, { className: 'style' });
 
 const progressStyle = tva({
   base: 'bg-primary/20 relative h-2 w-full overflow-hidden rounded-full',

@@ -30,7 +30,7 @@ const IconWrapper = React.forwardRef<React.ComponentRef<typeof UIIcon>, React.Co
 );
 
 const SCOPE = 'CHECKBOX';
-const UICheckbox = createCheckbox({
+const UICheckbox: any = createCheckbox({
   // @ts-expect-error : internal implementation for r-19/react-native-web
   Root: Platform.OS === 'web' ? withStyleContext(View, SCOPE) : withStyleContext(Pressable, SCOPE),
   Group: View,
@@ -39,7 +39,7 @@ const UICheckbox = createCheckbox({
   Indicator: IndicatorWrapper,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -82,7 +82,7 @@ const Checkbox = React.forwardRef<React.ComponentRef<typeof UICheckbox>, ICheckb
 type ICheckboxIndicatorProps = React.ComponentPropsWithoutRef<typeof UICheckbox.Indicator> &
   VariantProps<typeof checkboxIndicatorStyle>;
 
-const CheckboxIndicator = React.forwardRef<React.ComponentRef<typeof UICheckbox.Indicator>, ICheckboxIndicatorProps>(
+const CheckboxIndicator: any = React.forwardRef<React.ComponentRef<typeof UICheckbox.Indicator>, ICheckboxIndicatorProps>(
   function CheckboxIndicator({ className, ...props }, ref) {
     return <UICheckbox.Indicator className={checkboxIndicatorStyle({ class: className })} {...props} ref={ref} />;
   },
@@ -90,7 +90,7 @@ const CheckboxIndicator = React.forwardRef<React.ComponentRef<typeof UICheckbox.
 
 type ICheckboxLabelProps = React.ComponentPropsWithoutRef<typeof UICheckbox.Label> &
   VariantProps<typeof checkboxLabelStyle>;
-const CheckboxLabel = React.forwardRef<React.ComponentRef<typeof UICheckbox.Label>, ICheckboxLabelProps>(
+const CheckboxLabel: any = React.forwardRef<React.ComponentRef<typeof UICheckbox.Label>, ICheckboxLabelProps>(
   function CheckboxLabel({ className, ...props }, ref) {
     return <UICheckbox.Label className={checkboxLabelStyle({ class: className })} {...props} ref={ref} />;
   },

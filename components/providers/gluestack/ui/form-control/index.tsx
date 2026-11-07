@@ -141,7 +141,7 @@ const formControlLabelAstrickStyle = tva({
 type IFormControlLabelAstrickProps = React.ComponentPropsWithoutRef<typeof Text> &
   VariantProps<typeof formControlLabelAstrickStyle>;
 
-const FormControlLabelAstrick = React.forwardRef<React.ComponentRef<typeof Text>, IFormControlLabelAstrickProps>(
+const FormControlLabelAstrick: any = React.forwardRef<React.ComponentRef<typeof Text>, IFormControlLabelAstrickProps>(
   function FormControlLabelAstrick({ className, ...props }, ref) {
     return (
       <Text
@@ -155,7 +155,7 @@ const FormControlLabelAstrick = React.forwardRef<React.ComponentRef<typeof Text>
   },
 );
 
-export const UIFormControl = createFormControl({
+export const UIFormControl: any = createFormControl({
   Root: withStyleContext(View, SCOPE),
   Error: View,
   ErrorText: Text,
@@ -167,7 +167,7 @@ export const UIFormControl = createFormControl({
   HelperText: Text,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

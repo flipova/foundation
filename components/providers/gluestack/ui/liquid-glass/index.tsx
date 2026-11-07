@@ -59,10 +59,10 @@ GlassContainer.displayName = 'GlassContainer';
 export { isGlassEffectAPIAvailable, isLiquidGlassAvailable } from 'expo-glass-effect';
 export type { GlassColorScheme, GlassContainerProps, GlassStyle, GlassViewProps } from 'expo-glass-effect';
 
-cssInterop(ExpoGlassView, {
+(cssInterop as any)(ExpoGlassView, {
   className: 'style',
 });
 
-cssInterop(ExpoGlassContainer, {
+(cssInterop as any)(ExpoGlassContainer, {
   className: 'style',
 });

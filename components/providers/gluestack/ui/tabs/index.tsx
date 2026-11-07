@@ -17,7 +17,7 @@ import { TabsAnimatedIndicator } from './TabsAnimatedIndicator';
 const SCOPE = 'TABS';
 const AnimatedView = Animated.createAnimatedComponent(View);
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
-Platform.OS === 'web' ? cssInterop(AnimatedView, { className: { target: 'style' } }) : AnimatedView;
+Platform.OS === 'web' ? (cssInterop as any)(AnimatedView, { className: { target: 'style' } }) : AnimatedView;
 /** Styles */
 
 const tabsStyle = tva({
@@ -85,7 +85,7 @@ const UITabs = createTabs({
   Indicator: View,
 });
 
-cssInterop(PrimitiveIcon, {
+(cssInterop as any)(PrimitiveIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

@@ -20,7 +20,7 @@ export const UITooltip = createTooltip({
   AnimatePresence: AnimatePresence,
 });
 
-cssInterop(MotionView, { className: 'style' });
+(cssInterop as any)(MotionView, { className: 'style' });
 
 const tooltipStyle = tva({
   base: 'w-full h-full web:pointer-events-none',

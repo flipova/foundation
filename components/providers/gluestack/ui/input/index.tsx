@@ -17,7 +17,7 @@ const UIInput = createInput({
   Input: TextInput,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

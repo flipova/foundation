@@ -36,7 +36,7 @@ type IAnimatedPressableProps = React.ComponentProps<typeof Pressable> &
 
 const AnimatedPressable = createMotionAnimatedComponent(Pressable) as React.ComponentType<IAnimatedPressableProps>;
 
-export const UIActionsheet = createActionsheet({
+export const UIActionsheet: any = createActionsheet({
   Root: View,
   Content: MotionView,
   Item: ItemWrapper,
@@ -53,26 +53,26 @@ export const UIActionsheet = createActionsheet({
   AnimatePresence: AnimatePresence,
 });
 
-cssInterop(UIActionsheet, { className: 'style' });
-cssInterop(UIActionsheet.Content, { className: 'style' });
-cssInterop(UIActionsheet.Item, { className: 'style' });
-cssInterop(UIActionsheet.ItemText, { className: 'style' });
-cssInterop(UIActionsheet.DragIndicator, { className: 'style' });
-cssInterop(UIActionsheet.DragIndicatorWrapper, { className: 'style' });
-cssInterop(UIActionsheet.Backdrop, { className: 'style' });
-cssInterop(UIActionsheet.ScrollView, {
+(cssInterop as any)(UIActionsheet, { className: 'style' });
+(cssInterop as any)(UIActionsheet.Content, { className: 'style' });
+(cssInterop as any)(UIActionsheet.Item, { className: 'style' });
+(cssInterop as any)(UIActionsheet.ItemText, { className: 'style' });
+(cssInterop as any)(UIActionsheet.DragIndicator, { className: 'style' });
+(cssInterop as any)(UIActionsheet.DragIndicatorWrapper, { className: 'style' });
+(cssInterop as any)(UIActionsheet.Backdrop, { className: 'style' });
+(cssInterop as any)(UIActionsheet.ScrollView, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
   indicatorClassName: 'indicatorStyle',
 });
-cssInterop(UIActionsheet.VirtualizedList, {
+(cssInterop as any)(UIActionsheet.VirtualizedList, {
   className: 'style',
   ListFooterComponentClassName: 'ListFooterComponentStyle',
   ListHeaderComponentClassName: 'ListHeaderComponentStyle',
   contentContainerClassName: 'contentContainerStyle',
   indicatorClassName: 'indicatorStyle',
 });
-cssInterop(UIActionsheet.FlatList, {
+(cssInterop as any)(UIActionsheet.FlatList, {
   className: 'style',
   ListFooterComponentClassName: 'ListFooterComponentStyle',
   ListHeaderComponentClassName: 'ListHeaderComponentStyle',
@@ -80,10 +80,10 @@ cssInterop(UIActionsheet.FlatList, {
   contentContainerClassName: 'contentContainerStyle',
   indicatorClassName: 'indicatorStyle',
 });
-cssInterop(UIActionsheet.SectionList, { className: 'style' });
-cssInterop(UIActionsheet.SectionHeaderText, { className: 'style' });
+(cssInterop as any)(UIActionsheet.SectionList, { className: 'style' });
+(cssInterop as any)(UIActionsheet.SectionHeaderText, { className: 'style' });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -259,7 +259,7 @@ const ActionsheetContent = React.forwardRef<React.ComponentRef<typeof UIActionsh
   },
 );
 
-const ActionsheetItem = React.forwardRef<React.ComponentRef<typeof UIActionsheet.Item>, IActionsheetItemProps>(
+const ActionsheetItem: any = React.forwardRef<React.ComponentRef<typeof UIActionsheet.Item>, IActionsheetItemProps>(
   function ActionsheetItem({ className, ...props }, ref) {
     return (
       <UIActionsheet.Item

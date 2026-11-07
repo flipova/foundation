@@ -12,7 +12,7 @@ const AnimatedView = Animated.createAnimatedComponent(View);
 
 const SCOPE = 'POPOVER';
 
-const UIPopover = createPopover({
+const UIPopover: any = createPopover({
   Root: withStyleContext(AnimatedView, SCOPE),
   Arrow: View,
   Backdrop: AnimatedPressable,
@@ -23,8 +23,8 @@ const UIPopover = createPopover({
   Header: View,
 });
 
-cssInterop(AnimatedView, { className: 'style' });
-cssInterop(AnimatedPressable, { className: 'style' });
+(cssInterop as any)(AnimatedView, { className: 'style' });
+(cssInterop as any)(AnimatedPressable, { className: 'style' });
 
 const popoverStyle = tva({
   base: 'group/popover w-full h-full justify-center items-center web:pointer-events-none',
@@ -108,7 +108,7 @@ type IPopoverBackdropProps = React.ComponentProps<typeof UIPopover.Backdrop> &
 type IPopoverCloseButtonProps = React.ComponentProps<typeof UIPopover.CloseButton> &
   VariantProps<typeof popoverCloseButtonStyle> & { className?: string };
 
-const Popover = React.forwardRef<React.ComponentRef<typeof UIPopover>, IPopoverProps>(function Popover(
+const Popover: any = React.forwardRef<React.ComponentRef<typeof UIPopover>, IPopoverProps>(function Popover(
   { className, placement = 'bottom', ...props },
   ref,
 ) {

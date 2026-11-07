@@ -26,9 +26,9 @@ import {
 import { Menu, MenuItem, MenuItemLabel } from '../menu';
 
 // Apply cssInterop for NativeWind support
-cssInterop(View, { className: 'style' });
-cssInterop(Text, { className: 'style' });
-cssInterop(Pressable, { className: 'style' });
+(cssInterop as any)(View, { className: 'style' });
+(cssInterop as any)(Text, { className: 'style' });
+(cssInterop as any)(Pressable, { className: 'style' });
 
 // Styled Root Component
 const CalendarRoot = React.forwardRef<
@@ -360,7 +360,7 @@ const CalendarComponent = React.forwardRef<React.ElementRef<typeof View>, Calend
 CalendarComponent.displayName = 'Calendar';
 
 // Export components
-export const Calendar = CalendarComponent;
+export const Calendar: any = CalendarComponent;
 export const CalendarHeader = UICalendar.Header;
 export const CalendarHeaderPrevButton = UICalendar.HeaderPrevButton;
 export const CalendarHeaderNextButton = UICalendar.HeaderNextButton;

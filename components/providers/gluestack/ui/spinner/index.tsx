@@ -4,13 +4,13 @@ import React from 'react';
 import { tva } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
 
-cssInterop(ActivityIndicator, {
+(cssInterop as any)(ActivityIndicator, {
   className: { target: 'style', nativeStyleToProp: { color: true } },
 });
 
 const spinnerStyle = tva({});
 
-const Spinner = React.forwardRef<
+const Spinner: any = React.forwardRef<
   React.ComponentRef<typeof ActivityIndicator>,
   React.ComponentProps<typeof ActivityIndicator>
 >(function Spinner({ className, color, focusable = false, 'aria-label': ariaLabel = 'loading', ...props }, ref) {

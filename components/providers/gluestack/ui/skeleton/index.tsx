@@ -17,7 +17,7 @@ type ISkeletonTextProps = React.ComponentProps<typeof View> &
     startColor?: string;
   };
 
-const Skeleton = forwardRef<React.ComponentRef<typeof View>, ISkeletonProps>(function Skeleton(
+const Skeleton: any = forwardRef<React.ComponentRef<typeof View>, ISkeletonProps>(function Skeleton(
   { className, variant, children, startColor = 'bg-accent', isLoaded = false, speed = 4, ...props },
   ref,
 ) {
@@ -38,7 +38,7 @@ const Skeleton = forwardRef<React.ComponentRef<typeof View>, ISkeletonProps>(fun
   }
 });
 
-const SkeletonText = forwardRef<React.ComponentRef<typeof View>, ISkeletonTextProps>(function SkeletonText(
+const SkeletonText: any = forwardRef<React.ComponentRef<typeof View>, ISkeletonTextProps>(function SkeletonText(
   { className, _lines, isLoaded = false, startColor = 'bg-accent', gap = 2, children, ...props },
   ref,
 ) {

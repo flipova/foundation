@@ -58,7 +58,7 @@ const UIAccordion = createAccordion({
   Content: View,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -71,7 +71,7 @@ cssInterop(UIIcon, {
   },
 });
 
-cssInterop(H3, {
+(cssInterop as any)(H3, {
   className: {
     target: 'style',
   },
