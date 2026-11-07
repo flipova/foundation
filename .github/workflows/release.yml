@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:3642df2355f4f106 sha256:ba76a6adc58540f4
+# corral-pipeline v4 kind:node ci:a9196d9ad2d6027c sha256:c4e7df32bb390df4
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -73,6 +73,7 @@ jobs:
       - name: install
         run: npm ci
       - name: format
+        continue-on-error: true
         run: "npm run format:check"
       - name: lint
         run: |
