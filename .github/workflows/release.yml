@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:fa5454a2fc66ac54 sha256:3d8acb0d892009d4
+# corral-pipeline v4 kind:node ci:3642df2355f4f106 sha256:ba76a6adc58540f4
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -73,16 +73,23 @@ jobs:
       - name: install
         run: npm ci
       - name: format
-        continue-on-error: true
         run: "npm run format:check"
       - name: lint
-        run: npm run lint
+        run: |
+          npm run lint
+          npm run design:check
+          npm run design:verify
+          npm run design:lint
       - name: typecheck
         run: npm run typecheck
+      - name: codegen
+        run: "npm run design:gen:check"
       - name: test
         run: npm test
       - name: build
-        run: npm run build
+        run: |
+          npm run build
+          npm pack --dry-run
       - name: audit
         continue-on-error: true
         run: npm audit --json
@@ -101,7 +108,10 @@ jobs:
         uses: ./ci/lib/semgrep
       - name: secrets
         uses: ./ci/lib/secrets
-      # sbom: skipped — not requested (corral ci add <name> turns it on)
+      - name: codeql
+        uses: ./ci/lib/codeql
+      - name: deps
+        uses: ./ci/lib/dependency-review
   deliver:
     name: deliver (production)
     needs: security
@@ -140,7 +150,9 @@ jobs:
       - name: stamp the tag's version into package.json (not committed)
         run: npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version
       - name: build
-        run: npm run build
+        run: |
+          npm run build
+          npm pack --dry-run
       - name: deliver
         run: |
           if node -e "process.exit(require('./package.json').scripts?.['ci:deliver'] ? 0 : 1)"; then

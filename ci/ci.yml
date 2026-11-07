@@ -5,16 +5,23 @@ steps:
   install:
     run: npm ci
   format:
-    run: 'npm run format:check'
-    blocking: false
+    run: npm run format:check
   lint:
-    run: npm run lint
+    run: |
+      npm run lint
+      npm run design:check
+      npm run design:verify
+      npm run design:lint
   typecheck:
     run: npm run typecheck
+  codegen:
+    run: npm run design:gen:check
   test:
     run: npm test
   build:
-    run: npm run build
+    run: |
+      npm run build
+      npm pack --dry-run
   audit:
     run: npm audit --json
     blocking: false
@@ -22,5 +29,7 @@ steps:
     use: ci/lib/semgrep
   secrets:
     use: ci/lib/secrets
-  sbom:
-    skip: 'not requested (corral ci add <name> turns it on)'
+  codeql:
+    use: ci/lib/codeql
+  deps:
+    use: ci/lib/dependency-review
