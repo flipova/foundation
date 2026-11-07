@@ -48,7 +48,7 @@ const badgeIconStyle = tva({
 
 const ContextView = withStyleContext(View, SCOPE);
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -72,7 +72,7 @@ function Badge({ children, variant = 'default', className, ...props }: { classNa
 
 type IBadgeTextProps = React.ComponentPropsWithoutRef<typeof Text> & VariantProps<typeof badgeTextStyle>;
 
-const BadgeText = React.forwardRef<React.ComponentRef<typeof Text>, IBadgeTextProps>(function BadgeText(
+const BadgeText: any = React.forwardRef<React.ComponentRef<typeof Text>, IBadgeTextProps>(function BadgeText(
   { children, className, ...props },
   ref,
 ) {

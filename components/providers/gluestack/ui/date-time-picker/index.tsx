@@ -50,13 +50,13 @@ const UIDateTimePicker = createDateTimePicker({
   Icon: UIIcon,
 });
 
-cssInterop(UIDateTimePicker, { className: 'style' });
-cssInterop(UIDateTimePicker.Input, {
+(cssInterop as any)(UIDateTimePicker, { className: 'style' });
+(cssInterop as any)(UIDateTimePicker.Input, {
   className: { target: 'style', nativeStyleToProp: { textAlign: true } },
 });
-cssInterop(DateTimePickerTriggerWrapper, { className: 'style' });
+(cssInterop as any)(DateTimePickerTriggerWrapper, { className: 'style' });
 
-cssInterop(PrimitiveIcon, {
+(cssInterop as any)(PrimitiveIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

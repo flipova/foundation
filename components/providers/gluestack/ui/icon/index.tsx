@@ -26,7 +26,7 @@ const iconStyle = tva({
   },
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

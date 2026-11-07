@@ -9,7 +9,7 @@ import Animated, { SlideInUp } from 'react-native-reanimated';
 const useToast = createToastHook(View);
 const SCOPE = 'TOAST';
 const AnimatedView = Animated.createAnimatedComponent(View);
-cssInterop(AnimatedView, { className: 'style' });
+(cssInterop as any)(AnimatedView, { className: 'style' });
 const toastStyle = tva({
   base: 'p-4 m-1 rounded-md gap-1 web:pointer-events-auto border-border',
   variants: {
@@ -161,7 +161,7 @@ const toastDescriptionStyle = tva({
   },
 });
 
-const Root = withStyleContext(AnimatedView, SCOPE);
+const Root: any = withStyleContext(AnimatedView, SCOPE);
 type IToastProps = React.ComponentProps<typeof Root> & {
   className?: string;
 } & VariantProps<typeof toastStyle>;
@@ -185,7 +185,7 @@ type IToastTitleProps = React.ComponentProps<typeof Text> & {
   className?: string;
 } & VariantProps<typeof toastTitleStyle>;
 
-const ToastTitle = React.forwardRef<React.ComponentRef<typeof Text>, IToastTitleProps>(function ToastTitle(
+const ToastTitle: any = React.forwardRef<React.ComponentRef<typeof Text>, IToastTitleProps>(function ToastTitle(
   { className, size = 'md', children, ...props },
   ref,
 ) {
@@ -221,7 +221,7 @@ type IToastDescriptionProps = React.ComponentProps<typeof Text> & {
   className?: string;
 } & VariantProps<typeof toastDescriptionStyle>;
 
-const ToastDescription = React.forwardRef<React.ComponentRef<typeof Text>, IToastDescriptionProps>(
+const ToastDescription: any = React.forwardRef<React.ComponentRef<typeof Text>, IToastDescriptionProps>(
   function ToastDescription({ className, size = 'md', ...props }, ref) {
     const { variant: parentVariant } = useStyleContext(SCOPE);
     return (

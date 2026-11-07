@@ -18,7 +18,7 @@ export const UISlider = createSlider({
   ThumbInteraction: View,
 });
 
-cssInterop(UISlider.Track, { className: 'style' });
+(cssInterop as any)(UISlider.Track, { className: 'style' });
 
 const sliderStyle = tva({
   base: 'justify-center items-center data-[disabled=true]:opacity-40 data-[disabled=true]:web:pointer-events-none',

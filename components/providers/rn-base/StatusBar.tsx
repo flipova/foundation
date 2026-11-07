@@ -13,5 +13,5 @@ export function StatusBar({ style = 'auto' }: StatusBarProps) {
       : style === 'light'
         ? 'light-content'
         : 'dark-content';
-  return <RNStatusBar barStyle={bar} backgroundColor={t.colors.background} />;
+  return <RNStatusBar barStyle={bar} />;
 }

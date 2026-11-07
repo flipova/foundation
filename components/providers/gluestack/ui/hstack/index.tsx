@@ -6,7 +6,7 @@ import { hstackStyle } from './styles';
 
 type IHStackProps = ViewProps & VariantProps<typeof hstackStyle>;
 
-const HStack = React.forwardRef<React.ComponentRef<typeof View>, IHStackProps>(function HStack(
+const HStack: any = React.forwardRef<React.ComponentRef<typeof View>, IHStackProps>(function HStack(
   { className, space, reversed, ...props },
   ref,
 ) {

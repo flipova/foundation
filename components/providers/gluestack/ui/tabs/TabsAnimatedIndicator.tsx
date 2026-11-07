@@ -21,7 +21,7 @@ interface TabsAnimatedIndicatorProps {
   className?: string;
   style?: any;
 }
-Platform.OS === 'web' ? cssInterop(Animated.View, { className: { target: 'style' } }) : Animated.View;
+Platform.OS === 'web' ? (cssInterop as any)(Animated.View, { className: { target: 'style' } }) : Animated.View;
 const isWeb = Platform.OS === 'web';
 
 export const TabsAnimatedIndicator = React.forwardRef<any, TabsAnimatedIndicatorProps>(

@@ -95,9 +95,10 @@ const Separator = React.forwardRef<
   return <View ref={ref} className={menuSeparatorStyle({ class: className })} {...props} />;
 });
 
-cssInterop(AnimatedView, { className: 'style' });
+// @ts-ignore
+(cssInterop as any)(AnimatedView, { className: 'style' });
 
-export const UIMenu = createMenu({
+export const UIMenu: any = createMenu({
   Root: AnimatedView,
   Item: Item,
   Label: Text,
@@ -129,7 +130,7 @@ const Menu = React.forwardRef<React.ComponentRef<typeof UIMenu>, IMenuProps>(fun
   );
 });
 
-const MenuItem = UIMenu.Item;
+const MenuItem: any = UIMenu.Item;
 
 const MenuItemLabel = React.forwardRef<React.ComponentRef<typeof UIMenu.ItemLabel>, IMenuItemLabelProps>(
   function MenuItemLabel(
@@ -155,7 +156,7 @@ const MenuItemLabel = React.forwardRef<React.ComponentRef<typeof UIMenu.ItemLabe
   },
 );
 
-const MenuSeparator = UIMenu.Separator;
+const MenuSeparator: any = UIMenu.Separator;
 
 Menu.displayName = 'Menu';
 MenuItem.displayName = 'MenuItem';

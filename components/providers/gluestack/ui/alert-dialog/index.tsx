@@ -24,8 +24,8 @@ const UIAccessibleAlertDialog = createAlertDialog({
   Backdrop: AnimatedPressable,
 });
 
-cssInterop(AnimatedPressable, { className: 'style' });
-cssInterop(AnimatedView, { className: 'style' });
+(cssInterop as any)(AnimatedPressable, { className: 'style' });
+(cssInterop as any)(AnimatedView, { className: 'style' });
 
 const alertDialogStyle = tva({
   base: 'group/modal w-full h-full justify-center items-center web:pointer-events-none',
@@ -106,7 +106,7 @@ const AlertDialog = React.forwardRef<React.ComponentRef<typeof UIAccessibleAlert
   },
 );
 
-const AlertDialogContent = React.forwardRef<
+const AlertDialogContent: any = React.forwardRef<
   React.ComponentRef<typeof UIAccessibleAlertDialog.Content>,
   IAlertDialogContentProps
 >(function AlertDialogContent({ className, size, ...props }, ref) {

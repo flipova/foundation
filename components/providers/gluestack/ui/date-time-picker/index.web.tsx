@@ -7,7 +7,7 @@ import { Calendar } from '../calendar';
 import { PrimitiveIcon } from '@gluestack-ui/core/icon/creator';
 
 // Apply cssInterop for Tailwind support
-cssInterop(View, {
+(cssInterop as any)(View, {
   className: {
     target: 'style',
   },
@@ -27,7 +27,7 @@ interface DateTimePickerProps {
   style?: any;
 }
 
-const DateTimePicker = React.forwardRef<React.ComponentRef<typeof View>, DateTimePickerProps>(function DateTimePicker(
+const DateTimePicker: any = React.forwardRef<React.ComponentRef<typeof View>, DateTimePickerProps>(function DateTimePicker(
   {
     value,
     onChange,
@@ -166,7 +166,7 @@ function formatTimeForInput(date: Date): string {
 }
 
 // Export additional components (simplified versions)
-const DateTimePickerTrigger = React.forwardRef<
+const DateTimePickerTrigger: any = React.forwardRef<
   React.ComponentRef<typeof Pressable>,
   React.ComponentProps<typeof Pressable>
 >(function DateTimePickerTrigger({ children, ...props }, ref) {
@@ -177,7 +177,7 @@ const DateTimePickerTrigger = React.forwardRef<
   );
 });
 
-const DateTimePickerInput = React.forwardRef<
+const DateTimePickerInput: any = React.forwardRef<
   React.ComponentRef<typeof TextInput>,
   React.ComponentProps<typeof TextInput>
 >(function DateTimePickerInput(props, ref) {

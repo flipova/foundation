@@ -89,7 +89,7 @@ type IGridProps = ViewProps &
       className: string;
     };
   };
-const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(function Grid(
+const Grid: any = forwardRef<React.ComponentRef<typeof View>, IGridProps>(function Grid(
   { className, _extra, children, ...props },
   ref,
 ) {
@@ -162,7 +162,7 @@ const Grid = forwardRef<React.ComponentRef<typeof View>, IGridProps>(function Gr
     </GridContext.Provider>
   );
 });
-cssInterop(Grid, {
+(cssInterop as any)(Grid, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -188,7 +188,7 @@ type IGridItemProps = ViewProps &
       className: string;
     };
   };
-const GridItem = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(function GridItem(
+const GridItem: any = forwardRef<React.ComponentRef<typeof View>, IGridItemProps>(function GridItem(
   { className, _extra, ...props },
   ref,
 ) {

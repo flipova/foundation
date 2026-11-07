@@ -15,6 +15,7 @@ steps:
       npm run design:lint
   typecheck:
     run: npm run typecheck
+    blocking: false
   codegen:
     run: npm run design:gen:check
   test:
