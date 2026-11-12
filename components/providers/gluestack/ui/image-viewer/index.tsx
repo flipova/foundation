@@ -20,7 +20,7 @@ import { Overlay } from '@gluestack-ui/core/overlay/creator';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const AnimatedView = Animated.createAnimatedComponent(View);
-const AnimatedImage = Animated.createAnimatedComponent(RNImage);
+const AnimatedImage = Animated.createAnimatedComponent(RNImage) as any;
 
 const imageViewerStyle = tva({
   base: 'w-full',
@@ -306,7 +306,7 @@ const ZoomableImage = React.memo(
           source={{ uri: image.url }}
           alt={image.alt}
           resizeMode="contain"
-          style={[{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.8 }, animatedStyle]}
+          style={[{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT * 0.8 }, animatedStyle] as any}
         />
       </GestureDetector>
     );
@@ -454,7 +454,7 @@ const SlidableImageGallery = React.memo(function SlidableImageGallery({
 });
 
 // Main ImageViewer Component
-const ImageViewer = React.forwardRef<View, ImageViewerProps>(function ImageViewer(
+const ImageViewer: any = React.forwardRef<React.ElementRef<typeof View>, ImageViewerProps>(function ImageViewer(
   { images, defaultOpen = false, isOpen: controlledIsOpen, onOpenChange, onIndexChange, initialIndex = 0, children },
   ref,
 ) {
@@ -511,7 +511,7 @@ const ImageViewer = React.forwardRef<View, ImageViewerProps>(function ImageViewe
 });
 
 // Trigger Component
-const ImageViewerTrigger = React.forwardRef<React.ElementRef<typeof Pressable>, ImageViewerTriggerProps>(
+const ImageViewerTrigger: any = React.forwardRef<React.ElementRef<typeof Pressable>, ImageViewerTriggerProps>(
   function ImageViewerTrigger({ children, onPress, ...props }, ref) {
     const { open } = useImageViewerContext();
 
@@ -530,64 +530,63 @@ const ImageViewerTrigger = React.forwardRef<React.ElementRef<typeof Pressable>, 
 
 // Content Component (Uses gluestack Overlay for proper portal rendering)
 // Context provider is placed INSIDE the Overlay so portaled content has access
-const ImageViewerContent = React.forwardRef<View, { children?: React.ReactNode }>(function ImageViewerContent(
-  { children },
-  ref,
-) {
-  const context = useImageViewerContext();
-  const { images, currentIndex, isOpen, close, goNext, goPrevious } = context;
-  const currentImage = images[currentIndex];
+const ImageViewerContent: any = React.forwardRef<React.ElementRef<typeof View>, { children?: React.ReactNode }>(
+  function ImageViewerContent({ children }, ref) {
+    const context = useImageViewerContext();
+    const { images, currentIndex, isOpen, close, goNext, goPrevious } = context;
+    const currentImage = images[currentIndex];
 
-  return (
-    <Overlay isOpen={isOpen} onRequestClose={close} isKeyboardDismissable={true}>
-      <ImageViewerContext.Provider value={context}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <AnimatedView
-            entering={FadeIn.duration(300).easing(Easing.out(Easing.ease))}
-            exiting={FadeOut.duration(200).easing(Easing.in(Easing.ease))}
-            className={imageViewerModalStyle({})}
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <View
-              ref={ref}
-              className={imageViewerContentStyle({})}
+    return (
+      <Overlay isOpen={isOpen} onRequestClose={close} isKeyboardDismissable={true}>
+        <ImageViewerContext.Provider value={context}>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <AnimatedView
+              entering={FadeIn.duration(300).easing(Easing.out(Easing.ease))}
+              exiting={FadeOut.duration(200).easing(Easing.in(Easing.ease))}
+              className={imageViewerModalStyle({})}
               style={{
-                width: '100%',
-                height: '100%',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
             >
-              {currentImage && (
-                <SlidableImageGallery
-                  images={images}
-                  currentIndex={currentIndex}
-                  onIndexChange={(newIndex) => {
-                    if (newIndex > currentIndex) {
-                      goNext();
-                    } else if (newIndex < currentIndex) {
-                      goPrevious();
-                    }
-                  }}
-                  onDismiss={close}
-                />
-              )}
-              {children}
-            </View>
-          </AnimatedView>
-        </GestureHandlerRootView>
-      </ImageViewerContext.Provider>
-    </Overlay>
-  );
-});
+              <View
+                ref={ref}
+                className={imageViewerContentStyle({})}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {currentImage && (
+                  <SlidableImageGallery
+                    images={images}
+                    currentIndex={currentIndex}
+                    onIndexChange={(newIndex) => {
+                      if (newIndex > currentIndex) {
+                        goNext();
+                      } else if (newIndex < currentIndex) {
+                        goPrevious();
+                      }
+                    }}
+                    onDismiss={close}
+                  />
+                )}
+                {children}
+              </View>
+            </AnimatedView>
+          </GestureHandlerRootView>
+        </ImageViewerContext.Provider>
+      </Overlay>
+    );
+  },
+);
 
 // Close Button Component
-const ImageViewerCloseButton = React.forwardRef<React.ElementRef<typeof Pressable>, { className?: string }>(
+const ImageViewerCloseButton: any = React.forwardRef<React.ElementRef<typeof Pressable>, { className?: string }>(
   function ImageViewerCloseButton({ className, ...props }, ref) {
     const { close } = useImageViewerContext();
 
@@ -607,57 +606,55 @@ const ImageViewerCloseButton = React.forwardRef<React.ElementRef<typeof Pressabl
 );
 
 // Navigation Component
-const ImageViewerNavigation = React.forwardRef<View, { className?: string }>(function ImageViewerNavigation(
-  { className },
-  ref,
-) {
-  const { goPrevious, goNext, currentIndex, images } = useImageViewerContext();
+const ImageViewerNavigation: any = React.forwardRef<React.ElementRef<typeof View>, { className?: string }>(
+  function ImageViewerNavigation({ className }, ref) {
+    const { goPrevious, goNext, currentIndex, images } = useImageViewerContext();
 
-  const canGoPrevious = currentIndex > 0;
-  const canGoNext = currentIndex < images.length - 1;
+    const canGoPrevious = currentIndex > 0;
+    const canGoNext = currentIndex < images.length - 1;
 
-  return (
-    <View ref={ref} className={imageViewerNavigationStyle({ class: className })}>
-      {canGoPrevious && (
-        <TouchableOpacity
-          onPress={goPrevious}
-          className={imageViewerNavButtonStyle({})}
-          accessibilityLabel="Previous image"
-          accessibilityRole="button"
-        >
-          <Text className="text-white text-2xl font-bold">‹</Text>
-        </TouchableOpacity>
-      )}
-      <View className="flex-1" />
-      {canGoNext && (
-        <TouchableOpacity
-          onPress={goNext}
-          className={imageViewerNavButtonStyle({})}
-          accessibilityLabel="Next image"
-          accessibilityRole="button"
-        >
-          <Text className="text-white text-2xl font-bold">›</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-});
+    return (
+      <View ref={ref} className={imageViewerNavigationStyle({ class: className })}>
+        {canGoPrevious && (
+          <TouchableOpacity
+            onPress={goPrevious}
+            className={imageViewerNavButtonStyle({})}
+            accessibilityLabel="Previous image"
+            accessibilityRole="button"
+          >
+            <Text className="text-white text-2xl font-bold">‹</Text>
+          </TouchableOpacity>
+        )}
+        <View className="flex-1" />
+        {canGoNext && (
+          <TouchableOpacity
+            onPress={goNext}
+            className={imageViewerNavButtonStyle({})}
+            accessibilityLabel="Next image"
+            accessibilityRole="button"
+          >
+            <Text className="text-white text-2xl font-bold">›</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  },
+);
 
 // Counter Component
-const ImageViewerCounter = React.forwardRef<View, { className?: string }>(function ImageViewerCounter(
-  { className },
-  ref,
-) {
-  const { currentIndex, images } = useImageViewerContext();
+const ImageViewerCounter: any = React.forwardRef<React.ElementRef<typeof View>, { className?: string }>(
+  function ImageViewerCounter({ className }, ref) {
+    const { currentIndex, images } = useImageViewerContext();
 
-  return (
-    <View ref={ref} className={imageViewerCounterStyle({ class: className })}>
-      <Text className={imageViewerCounterTextStyle({})}>
-        {currentIndex + 1} / {images.length}
-      </Text>
-    </View>
-  );
-});
+    return (
+      <View ref={ref} className={imageViewerCounterStyle({ class: className })}>
+        <Text className={imageViewerCounterTextStyle({})}>
+          {currentIndex + 1} / {images.length}
+        </Text>
+      </View>
+    );
+  },
+);
 
 export {
   ImageViewer,

@@ -12,7 +12,9 @@
   "channel": "stable",
   "license": "MIT",
   "lifecycle": "active",
-  "owners": [],
+  "owners": [
+    "@dadflip"
+  ],
   "links": {
     "docs": "https://github.com/flipova/foundation/blob/main/DOCS.md",
     "support": "https://github.com/flipova/foundation/blob/main/.github/SUPPORT.md",

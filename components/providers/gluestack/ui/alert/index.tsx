@@ -46,7 +46,7 @@ export const UIAlert = createAlert({
   Icon: UIIcon,
 });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {

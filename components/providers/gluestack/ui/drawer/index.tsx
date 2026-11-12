@@ -35,8 +35,8 @@ const UIDrawer = createDrawer({
   Header: View,
 });
 
-cssInterop(AnimatedPressable, { className: 'style' });
-cssInterop(AnimatedView, { className: 'style' });
+(cssInterop as any)(AnimatedPressable, { className: 'style' });
+(cssInterop as any)(AnimatedView, { className: 'style' });
 const drawerStyle = tva({
   base: 'w-full h-full web:pointer-events-none relative',
   variants: {

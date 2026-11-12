@@ -85,7 +85,7 @@ const selectInputStyle = tva({
   },
 });
 
-const UISelect = createSelect(
+const UISelect: any = createSelect(
   {
     Root: View,
     Trigger: withStyleContext(SelectTriggerWrapper),
@@ -108,13 +108,13 @@ const UISelect = createSelect(
   },
 );
 
-cssInterop(UISelect, { className: 'style' });
-cssInterop(UISelect.Input, {
+(cssInterop as any)(UISelect, { className: 'style' });
+(cssInterop as any)(UISelect.Input, {
   className: { target: 'style', nativeStyleToProp: { textAlign: true } },
 });
-cssInterop(SelectTriggerWrapper, { className: 'style' });
+(cssInterop as any)(SelectTriggerWrapper, { className: 'style' });
 
-cssInterop(UIIcon, {
+(cssInterop as any)(UIIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
@@ -147,7 +147,7 @@ const Select = React.forwardRef<React.ComponentRef<typeof UISelect>, ISelectProp
 type ISelectTriggerProps = VariantProps<typeof selectTriggerStyle> &
   React.ComponentProps<typeof UISelect.Trigger> & { className?: string };
 
-const SelectTrigger = React.forwardRef<React.ComponentRef<typeof UISelect.Trigger>, ISelectTriggerProps>(
+const SelectTrigger: any = React.forwardRef<React.ComponentRef<typeof UISelect.Trigger>, ISelectTriggerProps>(
   function SelectTrigger({ className, size = 'md', variant = 'outline', ...props }, ref) {
     return (
       <UISelect.Trigger
@@ -197,11 +197,7 @@ const SelectIcon = React.forwardRef<React.ComponentRef<typeof UISelect.Icon>, IS
   const { size: parentSize } = useStyleContext();
   if (typeof size === 'number') {
     return <UISelect.Icon ref={ref} {...props} className={selectIconStyle({ class: className })} size={size} />;
-  } else if (
-    //@ts-expect-error : web only
-    (props?.height !== undefined || props?.width !== undefined) &&
-    size === undefined
-  ) {
+  } else if ((props?.height !== undefined || props?.width !== undefined) && size === undefined) {
     return <UISelect.Icon ref={ref} {...props} className={selectIconStyle({ class: className })} />;
   }
   return (
@@ -230,7 +226,7 @@ const SelectBackdrop = UISelect.Backdrop;
 const SelectContent = UISelect.Content;
 const SelectDragIndicator = UISelect.DragIndicator;
 const SelectDragIndicatorWrapper = UISelect.DragIndicatorWrapper;
-const SelectItem = UISelect.Item;
+const SelectItem: any = UISelect.Item;
 const SelectScrollView = UISelect.ScrollView;
 const SelectVirtualizedList = UISelect.VirtualizedList;
 const SelectFlatList = UISelect.FlatList;

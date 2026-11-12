@@ -6,7 +6,7 @@ import { textStyle } from './styles';
 
 type ITextProps = React.ComponentProps<typeof RNText> & VariantProps<typeof textStyle>;
 
-const Text = React.forwardRef<React.ComponentRef<typeof RNText>, ITextProps>(function Text(
+const Text: any = React.forwardRef<React.ComponentRef<typeof RNText>, ITextProps>(function Text(
   { className, isTruncated, bold, underline, strikeThrough, size = 'md', sub, italic, highlight, ...props },
   ref,
 ) {

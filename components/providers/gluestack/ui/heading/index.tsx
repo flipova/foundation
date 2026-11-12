@@ -9,12 +9,12 @@ type IHeadingProps = VariantProps<typeof headingStyle> &
     as?: React.ElementType;
   };
 
-cssInterop(H1, { className: 'style' });
-cssInterop(H2, { className: 'style' });
-cssInterop(H3, { className: 'style' });
-cssInterop(H4, { className: 'style' });
-cssInterop(H5, { className: 'style' });
-cssInterop(H6, { className: 'style' });
+(cssInterop as any)(H1, { className: 'style' });
+(cssInterop as any)(H2, { className: 'style' });
+(cssInterop as any)(H3, { className: 'style' });
+(cssInterop as any)(H4, { className: 'style' });
+(cssInterop as any)(H5, { className: 'style' });
+(cssInterop as any)(H6, { className: 'style' });
 
 const MappedHeading = memo(
   forwardRef<React.ComponentRef<typeof H1>, IHeadingProps>(function MappedHeading(
@@ -162,7 +162,7 @@ const MappedHeading = memo(
   }),
 );
 
-const Heading = memo(
+const Heading: any = memo(
   forwardRef<React.ComponentRef<typeof H1>, IHeadingProps>(function Heading(
     { className, size = 'lg', as: AsComp, ...props },
     ref,

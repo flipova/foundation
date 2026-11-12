@@ -103,7 +103,7 @@ export function RefreshControl(p: RefreshControlProps) {
 export function StatusBar({ style = 'auto' }: StatusBarProps) {
   const t = useResolvedTheme();
   const dark = style === 'auto' ? t.mode === 'dark' : style === 'light';
-  return <GStatusBar barStyle={dark ? 'light-content' : 'dark-content'} backgroundColor={t.colors.background} />;
+  return <GStatusBar barStyle={dark ? 'light-content' : 'dark-content'} />;
 }
 
 export const InputAccessoryView = (p: InputAccessoryViewProps) => (

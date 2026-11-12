@@ -310,7 +310,7 @@ export const BottomSheetContent = ({ className, focusScope = true, ...props }: I
   const keyDownHandlers = useMemo(() => {
     if (Platform.OS !== 'web') return {};
     return {
-      onKeyDown: (e: React.KeyboardEvent) => {
+      onKeyDown: (e: any) => {
         if (e.key === 'Escape') {
           e.preventDefault();
           handleClose();
@@ -403,43 +403,44 @@ export const BottomSheetFlatList = GorhomBottomSheetFlatList;
 export const BottomSheetSectionList = GorhomBottomSheetSectionList;
 
 // Configure cssInterop for all Gorhom components to support className
-cssInterop(GorhomBottomSheet, {
+(cssInterop as any)(GorhomBottomSheet, {
   className: 'style',
   backgroundClassName: 'backgroundStyle',
   handleIndicatorClassName: 'handleIndicatorStyle',
 });
 
-cssInterop(GorhomBottomSheetBackdrop, {
+(cssInterop as any)(GorhomBottomSheetBackdrop, {
   className: 'style',
 });
 
-cssInterop(GorhomBottomSheetHandle, {
+(cssInterop as any)(GorhomBottomSheetHandle, {
   className: 'style',
 });
 
-cssInterop(GorhomBottomSheetView, {
+(cssInterop as any)(GorhomBottomSheetView, {
   className: 'style',
 });
 
-cssInterop(GorhomBottomSheetFooter, {
+(cssInterop as any)(GorhomBottomSheetFooter, {
   className: 'style',
 });
 
-cssInterop(GorhomBottomSheetScrollView, {
-  className: 'style',
-  contentContainerClassName: 'contentContainerStyle',
-});
-
-cssInterop(GorhomBottomSheetFlatList, {
+(cssInterop as any)(GorhomBottomSheetScrollView, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
 });
 
-cssInterop(GorhomBottomSheetSectionList, {
+// @ts-ignore
+(cssInterop as any)(GorhomBottomSheetFlatList, {
   className: 'style',
   contentContainerClassName: 'contentContainerStyle',
 });
 
-cssInterop(GorhomBottomSheetInput, {
+(cssInterop as any)(GorhomBottomSheetSectionList, {
+  className: 'style',
+  contentContainerClassName: 'contentContainerStyle',
+});
+
+(cssInterop as any)(GorhomBottomSheetInput, {
   className: 'style',
 });
