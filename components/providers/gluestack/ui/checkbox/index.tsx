@@ -82,11 +82,12 @@ const Checkbox = React.forwardRef<React.ComponentRef<typeof UICheckbox>, ICheckb
 type ICheckboxIndicatorProps = React.ComponentPropsWithoutRef<typeof UICheckbox.Indicator> &
   VariantProps<typeof checkboxIndicatorStyle>;
 
-const CheckboxIndicator: any = React.forwardRef<React.ComponentRef<typeof UICheckbox.Indicator>, ICheckboxIndicatorProps>(
-  function CheckboxIndicator({ className, ...props }, ref) {
-    return <UICheckbox.Indicator className={checkboxIndicatorStyle({ class: className })} {...props} ref={ref} />;
-  },
-);
+const CheckboxIndicator: any = React.forwardRef<
+  React.ComponentRef<typeof UICheckbox.Indicator>,
+  ICheckboxIndicatorProps
+>(function CheckboxIndicator({ className, ...props }, ref) {
+  return <UICheckbox.Indicator className={checkboxIndicatorStyle({ class: className })} {...props} ref={ref} />;
+});
 
 type ICheckboxLabelProps = React.ComponentPropsWithoutRef<typeof UICheckbox.Label> &
   VariantProps<typeof checkboxLabelStyle>;

@@ -197,10 +197,7 @@ const SelectIcon = React.forwardRef<React.ComponentRef<typeof UISelect.Icon>, IS
   const { size: parentSize } = useStyleContext();
   if (typeof size === 'number') {
     return <UISelect.Icon ref={ref} {...props} className={selectIconStyle({ class: className })} size={size} />;
-  } else if (
-    (props?.height !== undefined || props?.width !== undefined) &&
-    size === undefined
-  ) {
+  } else if ((props?.height !== undefined || props?.width !== undefined) && size === undefined) {
     return <UISelect.Icon ref={ref} {...props} className={selectIconStyle({ class: className })} />;
   }
   return (

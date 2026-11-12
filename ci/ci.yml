@@ -1,12 +1,12 @@
 # CI contract: how THIS project does each standard step. The workflow (.github/workflows/release.yml) is generated from it:
 # after editing, run `corral ci sync`. One of run | script | use | skip per step. See `corral help ci`.
 version: 1
+runtimes: [22]
 steps:
   install:
     run: npm ci
   format:
     run: npm run format:check
-    blocking: false
   lint:
     run: |
       npm run lint
@@ -15,7 +15,6 @@ steps:
       npm run design:lint
   typecheck:
     run: npm run typecheck
-    blocking: false
   codegen:
     run: npm run design:gen:check
   test:

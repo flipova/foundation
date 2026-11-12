@@ -105,23 +105,21 @@ const Modal = React.forwardRef<React.ComponentRef<typeof UIModal>, IModalProps>(
   ),
 );
 
-const ModalBackdrop = React.forwardRef<any, IModalBackdropProps>(
-  function ModalBackdrop({ className, ...props }, ref) {
+const ModalBackdrop = React.forwardRef<any, IModalBackdropProps>(function ModalBackdrop({ className, ...props }, ref) {
+  // @ts-ignore
+  return (
     // @ts-ignore
-    return (
-      // @ts-ignore
-      <UIModal.Backdrop
-        ref={ref}
-        entering={FadeIn.duration(200).easing(Easing.linear)}
-        exiting={FadeOut.duration(200).easing(Easing.linear)}
-        {...props}
-        className={modalBackdropStyle({
-          class: className,
-        })}
-      />
-    );
-  },
-);
+    <UIModal.Backdrop
+      ref={ref}
+      entering={FadeIn.duration(200).easing(Easing.linear)}
+      exiting={FadeOut.duration(200).easing(Easing.linear)}
+      {...props}
+      className={modalBackdropStyle({
+        class: className,
+      })}
+    />
+  );
+});
 
 const ModalContent = React.forwardRef<React.ComponentRef<typeof UIModal.Content>, IModalContentProps>(
   function ModalContent({ className, size, ...props }, ref) {
