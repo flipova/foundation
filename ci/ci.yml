@@ -7,12 +7,14 @@ steps:
     run: npm ci
   format:
     run: npm run format:check
+    fix: npm run format
   lint:
     run: |
       npm run lint
       npm run design:check
       npm run design:verify
       npm run design:lint
+    fix: npm run lint -- --fix
   typecheck:
     run: npm run typecheck
   codegen:

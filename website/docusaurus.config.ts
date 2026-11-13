@@ -7,7 +7,7 @@ import i18n from './i18n.generated.json';
 // Le contenu (docs/), la barre latérale (sidebars.ts) et la charte (src/css/brand.css) sont régénérés à chaque exécution.
 const config: Config = {
   title: "foundation — documentation",
-  tagline: "Provider-agnostic UI contract and design toolchain: 57 components over flipova, gluestack, reusables, paper and tamagui, themed from the app's own XML registries.",
+  tagline: "Contrat d'interface indépendant du fournisseur et outillage de design : 57 composants sur flipova, gluestack, reusables, paper et tamagui, avec un thème issu des registres XML de l'application.",
   favicon: 'img/favicon.png',
 
   url: 'https://flipova.github.io',

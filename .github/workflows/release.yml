@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:b0e5f48b1271978a sha256:61700b2e80ed2099
+# corral-pipeline v4 kind:node ci:b1835ab644409316 sha256:55fabd8f5edb04b4
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -73,13 +73,40 @@ jobs:
       - name: install
         run: npm ci
       - name: format
-        run: "npm run format:check"
+        run: |
+          corral_d=$(mktemp -d)
+          cat > "$corral_d/check.sh" <<'CORRAL_FORMAT_CHECK'
+          npm run format:check
+          CORRAL_FORMAT_CHECK
+          cat > "$corral_d/fix.sh" <<'CORRAL_FORMAT_FIX'
+          npm run format
+          CORRAL_FORMAT_FIX
+          if ! bash -e "$corral_d/check.sh"; then
+            echo "::warning title=format::the check failed: applying the fix, then checking again"
+            bash -e "$corral_d/fix.sh"
+            git --no-pager diff --stat || true
+            bash -e "$corral_d/check.sh"
+            echo "::warning title=format::repaired in the runner only: apply it in your branch (corral code fix) and commit"
+          fi
       - name: lint
         run: |
+          corral_d=$(mktemp -d)
+          cat > "$corral_d/check.sh" <<'CORRAL_LINT_CHECK'
           npm run lint
           npm run design:check
           npm run design:verify
           npm run design:lint
+          CORRAL_LINT_CHECK
+          cat > "$corral_d/fix.sh" <<'CORRAL_LINT_FIX'
+          npm run lint -- --fix
+          CORRAL_LINT_FIX
+          if ! bash -e "$corral_d/check.sh"; then
+            echo "::warning title=lint::the check failed: applying the fix, then checking again"
+            bash -e "$corral_d/fix.sh"
+            git --no-pager diff --stat || true
+            bash -e "$corral_d/check.sh"
+            echo "::warning title=lint::repaired in the runner only: apply it in your branch (corral code fix) and commit"
+          fi
       - name: typecheck
         run: npm run typecheck
       - name: codegen
