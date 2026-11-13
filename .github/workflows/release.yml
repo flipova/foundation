@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:40a9f66f0b48ba48 sha256:10dffb1801d698bb
+# corral-pipeline v4 kind:node ci:611efb30efe559fa sha256:5881b793720caf34
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -149,6 +149,8 @@ jobs:
         uses: ./ci/lib/semgrep
       - name: secrets
         uses: ./ci/lib/secrets
+        with:
+          exclude: "(^|/)(node_modules|dist|build|coverage|vendor|\\.git)/|(^|/)(package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock)$|^documentation/i18n/"
       - name: codeql
         uses: ./ci/lib/codeql
       - name: deps

@@ -27,6 +27,8 @@ steps:
     use: ci/lib/semgrep
   secrets:
     use: ci/lib/secrets
+    with:
+      exclude: "(^|/)(node_modules|dist|build|coverage|vendor|\\.git)/|(^|/)(package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock)$|^documentation/i18n/"
   codeql:
     use: ci/lib/codeql
   deps:
