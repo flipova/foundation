@@ -1044,6 +1044,10 @@
       "src": "Non",
       "tgt": "No"
     },
+    "a7bd26c72048": {
+      "src": "Il n'y a aucun secret de publication : la publication utilise la publication de confiance de npm, liée au fichier `release.yml` et à l'environnement GitHub `production`. Le dépôt ne lit aucune variable du vault ; les variables d'environnement qu'il connaît (`FOUNDATION_DESIGN_DIR`, `FOUNDATION_PROJECT_ROOT`, `FLIPOVA_REQUIRE_DIST`, `UPDATE_COMPONENTS_DOC`, `CODEQL_FAIL_ON`) sont des réglages d'outillage sans valeur secrète. Le site de documentation est l'étape `docs` de `ci/ci.yml` : il est construit à chaque pull request et publié sur GitHub Pages par `release.yml` après une livraison stable (il n'y a pas de second workflow).",
+      "tgt": "There is no publishing secret: publication uses npm trusted publishing, tied to the `release.yml` file and to the GitHub environment `production`. The repository reads no vault variable; the environment variables it knows (`FOUNDATION_DESIGN_DIR`, `FOUNDATION_PROJECT_ROOT`, `FLIPOVA_REQUIRE_DIST`, `UPDATE_COMPONENTS_DOC`, `CODEQL_FAIL_ON`) are tooling settings with no secret value. The documentation site is the `docs` step of `ci/ci.yml`: it is built on every pull request and published to GitHub Pages by `release.yml` after a stable delivery (there is no second workflow)."
+    },
     "a8ef43821d51": {
       "src": "**Ce qui s'exécute**",
       "tgt": "**What runs**"
@@ -1195,10 +1199,6 @@
     "c0a6ab3df331": {
       "src": "Les mêmes propriétés quelle que soit la bibliothèque : changer de fournisseur ne demande aucune réécriture.",
       "tgt": "The same properties whatever the library: changing provider requires no rewriting."
-    },
-    "c12eb88213fd": {
-      "src": "Il n'y a aucun secret de publication : la publication utilise la publication de confiance de npm, liée au fichier `release.yml` et à l'environnement GitHub `production`. Le dépôt ne lit aucune variable du vault ; les variables d'environnement qu'il connaît (`FOUNDATION_DESIGN_DIR`, `FOUNDATION_PROJECT_ROOT`, `FLIPOVA_REQUIRE_DIST`, `UPDATE_COMPONENTS_DOC`, `CODEQL_FAIL_ON`) sont des réglages d'outillage sans valeur secrète. Le site de documentation est publié par le workflow séparé `docs.yml` (GitHub Pages) quand `documentation/**` ou `website/**` changent.",
-      "tgt": "There is no publishing secret: publication uses npm trusted publishing, tied to the `release.yml` file and to the GitHub environment `production`. The repository reads no vault variable; the environment variables it knows (`FOUNDATION_DESIGN_DIR`, `FOUNDATION_PROJECT_ROOT`, `FLIPOVA_REQUIRE_DIST`, `UPDATE_COMPONENTS_DOC`, `CODEQL_FAIL_ON`) are tooling settings with no secret value. The documentation site is published by the separate workflow `docs.yml` (GitHub Pages) when `documentation/**` or `website/**` change."
     },
     "c2b9c83ae890": {
       "src": "Foundation est la couche de base d'une application React Native : un contrat unique de 57 composants, cinq fournisseurs (flipova, gluestack, reusables, paper, tamagui) et l'outillage qui transforme les registres de design XML de votre application en fichiers de thème. Vous écrivez `<Button>` une seule fois ; la bibliothèque qui le dessine se choisit en une ligne.",

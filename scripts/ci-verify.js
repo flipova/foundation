@@ -29,12 +29,21 @@ if (process.argv.includes('--list')) {
   process.exit(0);
 }
 
+// No shell (a shell propagates the caller's settings and variables): npm is run through node itself, with the npm that started this
+// script (`npm_execpath`), which is also what works on Windows, where `npm` is a .cmd file that cannot be spawned without a shell.
+const npmCli = process.env.npm_execpath && /\.c?js$/.test(process.env.npm_execpath) ? process.env.npm_execpath : null;
+if (!npmCli && process.platform === 'win32') {
+  console.error('run this script through npm (npm run ci:verify) so that npm can be found without a shell');
+  process.exit(1);
+}
+const npm = npmCli ? { cmd: process.execPath, prefix: [npmCli] } : { cmd: 'npm', prefix: [] };
+
 const failed = [];
 for (const s of STEPS) {
   console.log(`\n▸ ${s.name}  (npm ${s.args.join(' ')})`);
-  const r = spawnSync('npm', s.args, {
+  const r = spawnSync(npm.cmd, [...npm.prefix, ...s.args], {
     stdio: 'inherit',
-    shell: process.platform === 'win32',
+    shell: false,
     env: { ...process.env, ...s.env },
   });
   if (r.status !== 0) failed.push(s.name);

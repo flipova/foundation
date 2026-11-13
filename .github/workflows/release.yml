@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:b1835ab644409316 sha256:55fabd8f5edb04b4
+# corral-pipeline v4 kind:node ci:40a9f66f0b48ba48 sha256:10dffb1801d698bb
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -119,7 +119,21 @@ jobs:
           npm pack --dry-run
       - name: audit
         continue-on-error: true
-        run: npm audit --json
+        run: |
+          corral_d=$(mktemp -d)
+          cat > "$corral_d/check.sh" <<'CORRAL_AUDIT_CHECK'
+          npm audit --json
+          CORRAL_AUDIT_CHECK
+          cat > "$corral_d/fix.sh" <<'CORRAL_AUDIT_FIX'
+          npm audit fix
+          CORRAL_AUDIT_FIX
+          if ! bash -e "$corral_d/check.sh"; then
+            echo "::warning title=audit::the check failed: applying the fix, then checking again"
+            bash -e "$corral_d/fix.sh"
+            git --no-pager diff --stat || true
+            bash -e "$corral_d/check.sh"
+            echo "::warning title=audit::repaired in the runner only: apply it in your branch (corral code fix) and commit"
+          fi
   security:
     name: security
     needs: verify
@@ -199,10 +213,44 @@ jobs:
             gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes $flag
           fi
 
+  docs:
+    name: documentation site
+    needs: integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: docs
+        uses: ./ci/lib/docs-site
+        with:
+          directory: website
+          install: "npm ci || npm install --no-audit --no-fund"
+          build: npm run build
+          output: build
+          node-version: "22"
+  pages:
+    name: publish the documentation
+    needs: [docs, deliver]
+    # only a stable version is published: alpha, beta and rc tags build the site (above) but do not replace it
+    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-rc')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
   summary:
     name: summary
     if: always()
-    needs: [integrity, verify, security, deliver]
+    needs: [integrity, verify, security, deliver, docs, pages]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -217,4 +265,6 @@ jobs:
             echo "| verify | ${{ needs.verify.result }} |"
             echo "| security | ${{ needs.security.result }} |"
             echo "| deliver | ${{ needs.deliver.result }} |"
+            echo "| docs | ${{ needs.docs.result }} |"
+            echo "| pages | ${{ needs.pages.result }} |"
           } >> "$GITHUB_STEP_SUMMARY"
