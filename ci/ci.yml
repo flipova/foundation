@@ -6,33 +6,38 @@ steps:
   install:
     run: npm ci
   format:
-    run: npm run format:check
+    run: "npm run format:check"
     fix: npm run format
   lint:
-    run: |
-      npm run lint
-      npm run design:check
-      npm run design:verify
-      npm run design:lint
+    run: "npm run lint\nnpm run design:check\nnpm run design:verify\nnpm run design:lint\n"
     fix: npm run lint -- --fix
   typecheck:
     run: npm run typecheck
   codegen:
-    run: npm run design:gen:check
+    run: "npm run design:gen:check"
   test:
     run: npm test
   build:
-    run: |
-      npm run build
-      npm pack --dry-run
+    run: "npm run build\nnpm pack --dry-run\n"
   audit:
     run: npm audit --json
+    fix: npm audit fix
     blocking: false
   sast:
     use: ci/lib/semgrep
   secrets:
     use: ci/lib/secrets
+    with:
+      exclude: "(^|/)(node_modules|dist|build|coverage|vendor|\\.git)/|(^|/)(package-lock\\.json|pnpm-lock\\.yaml|yarn\\.lock)$|^documentation/i18n/"
   codeql:
     use: ci/lib/codeql
   deps:
     use: ci/lib/dependency-review
+  docs:
+    use: ci/lib/docs-site
+    with:
+      directory: website
+      install: "npm ci || npm install --no-audit --no-fund"
+      build: npm run build
+      output: build
+      node-version: "22"

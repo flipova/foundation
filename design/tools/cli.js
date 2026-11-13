@@ -321,14 +321,17 @@ function gui(args) {
 /** Best effort: the URL is printed anyway. */
 function openBrowser(url) {
   const { spawn } = require('child_process');
+  // Only the local console is ever opened: a loopback http(s) address with no space or shell character in it.
+  if (!/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?(\/[\w\-./?=&%#]*)?$/.test(String(url))) return;
   const [cmd, ...a] =
     process.platform === 'darwin'
       ? ['open', url]
       : process.platform === 'win32'
-        ? ['cmd', '/c', 'start', '', url]
+        ? ['rundll32', 'url.dll,FileProtocolHandler', url]
         : ['xdg-open', url];
   try {
-    spawn(cmd, a, { stdio: 'ignore', detached: true })
+    // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- url validated above (loopback only), no shell
+    spawn(cmd, a, { stdio: 'ignore', detached: true, shell: false })
       .on('error', () => {})
       .unref();
   } catch (_) {

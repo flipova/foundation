@@ -29,7 +29,7 @@ A new architecture: one UI contract, five providers, themes that belong to the a
 - **`flipova-design gui`**: a local web editor for the XML registries (colours, scales, themes, roles, preview).
 - **`flipova-design adopt`**: copies the registries into the app, which then owns its design system.
 - **Boundary check** (`npm run boundary`): layers, optional peers, no `@flipova/*` import, no frontend folder.
-- **Public documentation** (`documentation/`, `website/`): 8 documents from the `flipova.assets` public templates, published as a Docusaurus site by `.github/workflows/docs.yml`.
+- **Public documentation** (`documentation/`, `website/`): 8 documents from the `flipova.assets` public templates, published as a Docusaurus site by the `docs` step of `ci/ci.yml` (built on every pull request, published by `release.yml` after a stable delivery; no second workflow).
 - **Docs ↔ code guard** (`npm run docs:check`, in `npm test`): documentation that disagrees with the code fails CI.
 
 ### Fixed

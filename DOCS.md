@@ -250,8 +250,8 @@ cd website && npm install && npm run build                    # local build
 ```
 
 A document that still contains a `[?…]` zone is not published. `website/postcss.config.js` is empty on purpose: it keeps
-Docusaurus from loading the library's own PostCSS (tailwind) configuration from the parent folder. Publication runs
-from `.github/workflows/docs.yml` on `main` (Settings → Pages → Source: GitHub Actions, once).
+Docusaurus from loading the library's own PostCSS (tailwind) configuration from the parent folder. Publication is the `docs` step of `ci/ci.yml` (sub-workflow `ci/lib/docs-site`):
+the site is built on every pull request and published by `release.yml` after a stable delivery (Settings → Pages → Source: GitHub Actions, once).
 
 **Docs ↔ code guard.** `npm run docs:check` (part of `npm test`) reads `README.md`, `DOCS.md` and `documentation/` and
 fails when they disagree with the code: an attribute that `<FlipovaProvider>` does not have, a `flipova-design` command
