@@ -1,0 +1,30 @@
+{
+  "sidebar.docs.category.Concepts": {
+    "message": "Concepts",
+    "description": "The label for category Concepts in sidebar docs"
+  },
+  "sidebar.docs.category.Contribuer": {
+    "message": "Contributing",
+    "description": "The label for category Contribuer in sidebar docs"
+  },
+  "sidebar.docs.category.Dépannage et FAQ": {
+    "message": "Troubleshooting and FAQ",
+    "description": "The label for category Dépannage et FAQ in sidebar docs"
+  },
+  "sidebar.docs.category.Démarrage": {
+    "message": "Getting started",
+    "description": "The label for category Démarrage in sidebar docs"
+  },
+  "sidebar.docs.category.Guides pratiques": {
+    "message": "Practical guides",
+    "description": "The label for category Guides pratiques in sidebar docs"
+  },
+  "sidebar.docs.category.Référence": {
+    "message": "Reference",
+    "description": "The label for category Référence in sidebar docs"
+  },
+  "sidebar.docs.category.Notes de version": {
+    "message": "Release notes",
+    "description": "The label for category Notes de version in sidebar docs"
+  }
+}

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "foundation",
   "name": "foundation",
-  "description": "Provider-agnostic UI contract and design toolchain: 57 components over flipova, gluestack, reusables, paper and tamagui, themed from the app's own XML registries.",
+  "description": "Contrat d'interface indépendant du fournisseur et outillage de design : 57 composants sur flipova, gluestack, reusables, paper et tamagui, avec un thème issu des registres XML de l'application.",
   "type": "library",
   "stack": [
     "react",
