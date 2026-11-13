@@ -1,0 +1,18 @@
+name: "Task"
+description: "A piece of work to do"
+labels: ["chore"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: "Goal"
+      description: "What is done when this is finished."
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: "Scope"
+      description: "What is in, what is out."
+    validations:
+      required: false
