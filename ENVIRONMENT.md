@@ -28,6 +28,7 @@ corral vault gen --repo foundation --all
 | Key | Scope | Environments | Kind |
 | --- | --- | --- | --- |
 | `DEEPL_API_KEY` | shared | dev | **secret** |
+| `ORG_READ_TOKEN` | shared | dev, staging, prod | **secret** |
 
 Environments: dev, staging, prod. A key scoped to *this repo* wins over a *shared* one
 of the same name.
