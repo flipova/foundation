@@ -1,6 +1,6 @@
-# corral-ci-lib docs-site v1 sha256:09d9609b0647afb7
+# corral-ci-lib docs-site v1 sha256:d6974b46f5c12f10
 name: docs-site
-description: 'Builds a documentation site (Docusaurus, MkDocs, VitePress, any static generator: you give the commands) and, on a tag, hands the result to the pages job of the pipeline, which publishes it to GitHub Pages after a stable delivery. On a pull request it only builds, so a broken page fails the review.'
+description: 'Builds a documentation site (Docusaurus, MkDocs, VitePress, any static generator: you give the commands) and, on a tag, hands the result to the pages job of the pipeline, which publishes it to GitHub Pages after the delivery of the tag. On a pull request it only builds, so a broken page fails the review.'
 inputs:
   directory:
     description: 'Directory of the site (where the install and build commands run)'
