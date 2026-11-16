@@ -97,7 +97,7 @@ They run in this order. Standard steps are proposed by `corral ci init`; **optio
 | `deps` | security | optional | what a pull request changes in the dependencies (known vulnerabilities, licences) | yes | `dependency-review` |
 | `vulns` | security | optional | vulnerabilities, secrets and misconfigurations found in the files | yes | `trivy` |
 | `deliver` | deliver | optional | publish the package (replaces the model’s default publication) | yes | `cloudflare-pages`, `cloudflare-workers`, `docker-push-ghcr`, `expo-eas-build`, `expo-eas-update`, `expo-web`, `npm-publish-private`, `publish-github-packages`, `supabase-deploy` |
-| `docs` | docs | optional | build the documentation site (published to GitHub Pages after a stable delivery) | yes | `docs-site` |
+| `docs` | docs | optional | build the documentation site (published to GitHub Pages after the delivery of a tag) | yes | `docs-site` |
 
 - **verify** steps run in the `verify` job (once per Node version for Node projects). **security** steps run in their own `security` job, which the delivery waits for; it is not run for Dependabot pull requests. **deliver** runs only on a tag.
 - A step that is `skip`ped keeps its reason in the generated file as a comment: a reader sees *why* nothing runs.
@@ -392,7 +392,7 @@ steps:
 
 ### `docs-site`, Documentation site (build, then GitHub Pages)
 
-Builds a documentation site (Docusaurus, MkDocs, VitePress, any static generator: you give the commands) and, on a tag, hands the result to the pages job of the pipeline, which publishes it to GitHub Pages after a stable delivery. On a pull request it only builds, so a broken page fails the review.
+Builds a documentation site (Docusaurus, MkDocs, VitePress, any static generator: you give the commands) and, on a tag, hands the result to the pages job of the pipeline, which publishes it to GitHub Pages after the delivery of the tag. On a pull request it only builds, so a broken page fails the review.
 
 | Property | Value |
 | --- | --- |
@@ -715,7 +715,7 @@ Fails when something that looks like a credential is committed (keys, tokens, pa
 
 | Input (`with:`) | Default | Meaning |
 | --- | --- | --- |
-| `exclude` | `(^\|/)(node_modules\|dist\|build\|coverage\|vendor\|\.git)/\|(^\|/)(package-lock\.json\|pnpm-lock\.yaml\|yarn\.lock\|Cargo\.lock\|poetry\.lock\|go\.sum)$\|^documentation/i18n/` | regular expression of paths to skip (default: dependencies, build output and lock files) |
+| `exclude` | `(^\|/)(node_modules\|dist\|build\|coverage\|vendor\|\.git)/\|(^\|/)(package-lock\.json\|pnpm-lock\.yaml\|yarn\.lock\|Cargo\.lock\|poetry\.lock\|go\.sum\|i18n\.lock\.json\|skills-lock\.json\|assets\.index\.json)$\|^documentation/i18n/` | regular expression of paths to skip (default: dependencies, build output and lock files) |
 
 Example:
 

@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:611efb30efe559fa sha256:5881b793720caf34
+# corral-pipeline v4 kind:node ci:611efb30efe559fa sha256:aedb8a823af5ef59
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -235,8 +235,8 @@ jobs:
   pages:
     name: publish the documentation
     needs: [docs, deliver]
-    # only a stable version is published: alpha, beta and rc tags build the site (above) but do not replace it
-    if: startsWith(github.ref, 'refs/tags/') && !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-rc')
+    # every tag publishes the site, prereleases included: the documentation follows the version that was just delivered
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
