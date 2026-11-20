@@ -1,6 +1,6 @@
 {
   "name": "@flipova/foundation",
-  "version": "2.4.4",
+  "version": "3.1.0",
   "description": "Foundation of the Flipova design system: a provider-agnostic UI contract (57 components), five providers (flipova, gluestack, reusables, paper, tamagui), and a registry-driven theming toolchain with a local GUI.",
   "author": "Flipova",
   "license": "MIT",
