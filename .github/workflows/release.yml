@@ -1,4 +1,4 @@
-# corral-pipeline v4 kind:node ci:611efb30efe559fa sha256:aedb8a823af5ef59
+# corral-pipeline v4 kind:node ci:611efb30efe559fa sha256:e124c64a758d27f7
 # Managed by Corral. Do not edit by hand: `corral release doctor --fix` rewrites this file.
 #
 # One pipeline per kind of project (node here), identical in every repository of that kind, with no logic of its own.
@@ -191,7 +191,32 @@ jobs:
           echo "RELEASE_CHANNEL=$channel" >> "$GITHUB_ENV"
           echo "RELEASE_TAG=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
       - name: stamp the tag's version into package.json (not committed)
-        run: npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version
+        run: |
+          npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version
+          # a monorepo: every workspace package gets the version too, and the ranges between them follow
+          stamp=$(mktemp)
+          cat > "$stamp" <<'JS'
+          const fs = require('fs'), path = require('path');
+          const v = process.env.RELEASE_VERSION;
+          const root = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const globs = Array.isArray(root.workspaces) ? root.workspaces : (root.workspaces?.packages ?? []);
+          const files = [];
+          for (const g of globs) {
+            const base = g.endsWith('/*') ? g.slice(0, -2) : null;
+            const dirs = base ? (fs.existsSync(base) ? fs.readdirSync(base).map((n) => path.join(base, n)) : []) : [g];
+            for (const d of dirs) if (fs.existsSync(path.join(d, 'package.json'))) files.push(path.join(d, 'package.json'));
+          }
+          const docs = files.map((f) => ({ f, j: JSON.parse(fs.readFileSync(f, 'utf8')) }));
+          const names = new Set(docs.map((d) => d.j.name));
+          for (const { f, j } of docs) {
+            j.version = v;
+            for (const k of ['dependencies', 'peerDependencies', 'optionalDependencies', 'devDependencies'])
+              for (const n of Object.keys(j[k] ?? {})) if (names.has(n)) { const m = /^([~^]?)\d/.exec(j[k][n]); if (m) j[k][n] = m[1] + v; }
+            fs.writeFileSync(f, JSON.stringify(j, null, 2) + '\n');
+          }
+          console.log('workspace packages stamped with ' + v + ': ' + docs.map((d) => d.j.name).join(', '));
+          JS
+          if node -e "process.exit(require('./package.json').workspaces ? 0 : 1)"; then node "$stamp"; fi
       - name: build
         run: |
           npm run build
@@ -255,18 +280,127 @@ jobs:
     needs: [integrity, verify, security, deliver, docs, pages]
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      actions: read
+      checks: read
+      contents: read
     steps:
       - name: what this run meant
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NEEDS: ${{ toJSON(needs) }}
         run: |
+          # The whole picture of the run, read from the run itself (jobs, steps, annotations, artifacts). It never fails the run.
+          set -uo pipefail
+          out="${GITHUB_STEP_SUMMARY:-/dev/stdout}"
+          work="$(mktemp -d)"
+          api() { gh api -H "Accept: application/vnd.github+json" "$@" 2>/dev/null; }
+          icon='def icon: {"success":"✅","failure":"❌","timed_out":"⏱️","cancelled":"🚫","skipped":"⏭️","neutral":"➖"}[.] // "⏳";'
+          fmt='def fmt: if . == null then "-" elif . < 60 then "\(.)s" else "\((. / 60) | floor)m \(. % 60)s" end;'
+          secs='def secs: try (((.completed_at | fromdate) - (.started_at | fromdate)) | if . < 0 then 0 else . end) catch null;'
+          cell='def cell: gsub("\\|"; "\\|") | gsub("[\\r\\n]+"; " ") | if length > 160 then .[0:157] + "..." else . end;'
+          api --paginate "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/attempts/${GITHUB_RUN_ATTEMPT:-1}/jobs?per_page=100" | jq -s '[.[].jobs[] | select(.name != "summary")]' > "$work/jobs.json" 2>/dev/null || echo '[]' > "$work/jobs.json"
+          if [ "$(jq 'length' "$work/jobs.json")" = "0" ]; then
+            {
+              echo "### pipeline · \`${GITHUB_REF_NAME}\` · ${GITHUB_EVENT_NAME}"
+              echo ""
+              echo "The details of the run could not be read; the result of each job:"
+              echo ""
+              echo "| job | result |"
+              echo "| --- | --- |"
+              echo "$NEEDS" | jq -r 'to_entries[] | "| \(.key) | \(.value.result) |"'
+            } >> "$out"
+            exit 0
+          fi
+          api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > "$work/run.json" || echo '{}' > "$work/run.json"
+          # annotations (warnings and errors of every job: the secret scan's reports, linters, ::warning:: lines)
+          : > "$work/ann.ndjson"
+          for id in $(jq -r '.[] | select(.conclusion != "skipped") | .id' "$work/jobs.json"); do
+            api "repos/$GITHUB_REPOSITORY/check-runs/$id/annotations?per_page=100" | jq -c --argjson id "$id" '.[]? | select(.annotation_level != "notice") | select((.message // "") | test("^Process completed with exit code") | not) | {id: $id, level: .annotation_level, path: (.path // ""), line: (.start_line // 0), message: (.message // "")}' >> "$work/ann.ndjson" 2>/dev/null || true
+          done
+          jq -s '.' "$work/ann.ndjson" > "$work/ann.json" 2>/dev/null || echo '[]' > "$work/ann.json"
+          started="$(jq -r '.run_started_at // empty' "$work/run.json")"
+          wall=""
+          if [ -n "$started" ]; then wall=$(( $(date +%s) - $(date -d "$started" +%s) )); fi
           {
-            echo "### pipeline · \`${GITHUB_REF_NAME}\` · ${GITHUB_EVENT_NAME}"
+            jq -r --argjson wall "${wall:-null}" --slurpfile run "$work/run.json" --slurpfile ann "$work/ann.json" "$icon $fmt $secs $cell"'
+              ($run[0]) as $r
+              | ($ann[0]) as $a
+              | [.[] | select(.conclusion == "failure" or .conclusion == "timed_out")] as $bad
+              | [.[] | select(.conclusion == "cancelled")] as $cut
+              | [.[] | select(.conclusion == null)] as $open
+              | (if ($bad | length) > 0 then "❌ failed: " + ($bad | map(.name) | join(", "))
+                 elif ($cut | length) > 0 then "🚫 cancelled: " + ($cut | map(.name) | join(", "))
+                 elif ($open | length) > 0 then "⏳ still running: " + ($open | map(.name) | join(", "))
+                 else "✅ all green" end) as $verdict
+              | "### " + $verdict,
+                "",
+                "pipeline · `" + (env.GITHUB_REF_NAME // "") + "` · " + (env.GITHUB_EVENT_NAME // "") + (if ($r.run_number // null) != null then " · run #" + ($r.run_number | tostring) + (if (env.GITHUB_RUN_ATTEMPT // "1") != "1" then " (attempt " + env.GITHUB_RUN_ATTEMPT + ")" else "" end) else "" end),
+                "",
+                "| | |", "| --- | --- |",
+                "| commit | `" + (($r.head_sha // env.GITHUB_SHA // "")[0:7]) + "` " + ((($r.head_commit.message // "") | split("\n")[0]) | cell) + " |",
+                (if ($r.display_title // "") != "" and (env.GITHUB_EVENT_NAME == "pull_request") then "| pull request | " + ($r.display_title | cell) + " |" else empty end),
+                "| by | " + (($r.triggering_actor.login // env.GITHUB_ACTOR // "-") | cell) + " |",
+                "| time | " + (if $wall != null then "**" + ($wall | fmt) + "** wall clock, " else "" end) + ((map(secs // 0) | add // 0) | fmt) + " of runner time over " + (length | tostring) + " job(s) |",
+                "| warnings | " + (([$a[] | select(.level == "warning")] | length) | tostring) + " warning(s), " + (([$a[] | select(.level == "failure")] | length) | tostring) + " error(s) |",
+                "",
+                "#### Jobs",
+                "",
+                "| job | result | time | steps | warnings |",
+                "| --- | --- | --- | --- | --- |",
+                (.[] | . as $j
+                  | (($j.steps // []) | map(select(.conclusion != null))) as $s
+                  | ([$a[] | select(.id == $j.id and .level == "warning")] | length) as $w
+                  | ([$a[] | select(.id == $j.id and .level == "failure")] | length) as $e
+                  | "| [" + ($j.name | cell) + "](" + $j.html_url + ") | " + ($j.conclusion | icon) + " " + ($j.conclusion // "running") + " | " + (($j | secs) | fmt) + " | "
+                    + (if ($j.conclusion == "skipped") then "-" else (([$s[] | select(.conclusion == "success")] | length | tostring) + "/" + (($j.steps // []) | map(select(.conclusion != "skipped")) | length | tostring)) end)
+                    + " | " + (if ($w + $e) == 0 then "-" else (if $e > 0 then "❌ " + ($e | tostring) + " " else "" end) + (if $w > 0 then "⚠️ " + ($w | tostring) else "" end) end) + " |")
+              ' "$work/jobs.json"
+
+            # what failed, step by step, with the link to the log
+            if [ "$(jq '[.[] | select(.conclusion == "failure" or .conclusion == "timed_out")] | length' "$work/jobs.json")" != "0" ]; then
+              echo ""
+              echo "#### What failed"
+              echo ""
+              jq -r '.[] | select(.conclusion == "failure" or .conclusion == "timed_out") | . as $j | ($j.steps // [])[] | select(.conclusion == "failure" or .conclusion == "timed_out") | "- **" + $j.name + "**: step `" + .name + "` · [open the log](" + $j.html_url + "#step:" + (.number | tostring) + ":1)"' "$work/jobs.json"
+            fi
+
+            # warnings and errors reported by the jobs (never a value: the messages are the ones already shown in the run)
+            if [ "$(jq 'length' "$work/ann.json")" != "0" ]; then
+              echo ""
+              echo "#### Reported by the jobs"
+              echo ""
+              echo "| job | | where | message |"
+              echo "| --- | --- | --- | --- |"
+              jq -r --slurpfile jobs "$work/jobs.json" "$cell"' sort_by(.level != "failure") | .[0:40][] | . as $x | ([$jobs[0][] | select(.id == $x.id) | .name] | first // "-") as $n | "| " + ($n | cell) + " | " + (if .level == "failure" then "❌" else "⚠️" end) + " | " + (if .path == "" then "-" else "`" + .path + (if .line > 0 then ":" + (.line | tostring) else "" end) + "`" end) + " | " + (.message | cell) + " |"' "$work/ann.json"
+              n="$(jq 'length' "$work/ann.json")"
+              [ "$n" -gt 40 ] && echo "" && echo "$((n - 40)) more in the logs of the jobs."
+            fi
+
+            # where the time went
             echo ""
-            echo "| job | result |"
-            echo "| --- | --- |"
-            echo "| integrity | ${{ needs.integrity.result }} |"
-            echo "| verify | ${{ needs.verify.result }} |"
-            echo "| security | ${{ needs.security.result }} |"
-            echo "| deliver | ${{ needs.deliver.result }} |"
-            echo "| docs | ${{ needs.docs.result }} |"
-            echo "| pages | ${{ needs.pages.result }} |"
-          } >> "$GITHUB_STEP_SUMMARY"
+            echo "#### Slowest steps"
+            echo ""
+            echo "| step | job | time |"
+            echo "| --- | --- | --- |"
+            jq -r "$fmt $secs $cell"' [.[] | . as $j | ($j.steps // [])[] | select(.conclusion != "skipped" and .conclusion != null) | select(.name | test("^(Set up job|Complete job|Post )") | not) | {job: $j.name, step: .name, t: secs}] | sort_by(-(.t // 0)) | .[0:5][] | "| " + (.step | cell) + " | " + (.job | cell) + " | " + (.t | fmt) + " |"' "$work/jobs.json"
+
+            # every step of every job, folded
+            echo ""
+            jq -r "$icon $fmt $secs"' .[] | select(.conclusion != "skipped") | . as $j | "<details><summary>" + ($j.conclusion | icon) + " " + $j.name + " · " + (($j | secs) | fmt) + "</summary>\n", (($j.steps // [])[] | select(.name | test("^(Set up job|Complete job)") | not) | "- " + (.conclusion | icon) + " " + .name + " · " + ((secs) | fmt)), "\n</details>\n"' "$work/jobs.json"
+
+            # artifacts
+            api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=50" | jq -r '(.artifacts // []) | if length == 0 then empty else "#### Artifacts\n", "| name | size |", "| --- | --- |", (.[] | "| " + .name + " | " + ((.size_in_bytes / 1024 | floor | tostring) + " KB") + " |") end' 2>/dev/null || true
+
+            # a tag is a delivery: where it went
+            case "${GITHUB_REF:-}" in
+              refs/tags/*)
+                echo ""
+                echo "#### Delivery"
+                echo ""
+                echo "tag \`${GITHUB_REF_NAME}\`"
+                api "repos/$GITHUB_REPOSITORY/releases/tags/${GITHUB_REF_NAME}" | jq -r '"- GitHub release: [" + .name + "](" + .html_url + ")" + (if .prerelease then " (pre-release)" else "" end) + (if (.assets | length) > 0 then " · " + (.assets | length | tostring) + " asset(s)" else "" end)' 2>/dev/null || echo "- no GitHub release yet (the deliver job creates it)"
+                ;;
+            esac
+          } >> "$out"
+          exit 0
