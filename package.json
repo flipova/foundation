@@ -213,7 +213,7 @@
     "readable-stream": "^4.7.0",
     "tailwindcss": "^3.4.19",
     "ts-morph": "^28.0.0",
-    "tsup": "^8.5.0",
+    "tsup": "^9.0.0",
     "typescript": "^5.3.0",
     "typescript-eslint": "^8.0.0",
     "uuid": "^14.0.2",
